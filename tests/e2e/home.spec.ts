@@ -131,6 +131,50 @@ test('EasyManager remains complete and linked when JavaScript is disabled', asyn
 	await context.close();
 });
 
+test('EasyManager mobile service pulse leaves the project title uncovered', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 780 });
+	await page.goto('/it/');
+
+	const card = page.locator('[data-featured-project][data-project-key="easymanager"]');
+	const pulse = card.locator('[data-service-pulse]');
+	const title = card.locator('h3');
+	await title.scrollIntoViewIfNeeded();
+
+	const pulseBox = await pulse.boundingBox();
+	const titleBox = await title.boundingBox();
+	expect(pulseBox).not.toBeNull();
+	expect(titleBox).not.toBeNull();
+	expect(pulseBox!.y + pulseBox!.height).toBeLessThanOrEqual(titleBox!.y);
+
+	const titleCenterActivatesLink = await page.evaluate(
+		({ x, y }) => document.elementFromPoint(x, y)?.closest('.project-card-link') !== null,
+		{ x: titleBox!.x + titleBox!.width / 2, y: titleBox!.y + titleBox!.height / 2 },
+	);
+	expect(titleCenterActivatesLink).toBe(true);
+});
+
+test('EasyManager card surface preserves whole-card activation across card contexts', async ({ page }) => {
+	const clickCenter = async (selector: string) => {
+		const region = page.locator(selector);
+		await region.scrollIntoViewIfNeeded();
+		const box = await region.boundingBox();
+		expect(box).not.toBeNull();
+		await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+	};
+
+	await page.goto('/it/');
+	await clickCenter('[data-featured-project][data-project-key="easymanager"] .project-meta');
+	await expect(page).toHaveURL(/\/it\/progetti\/easymanager-operazioni-ristorante\/$/);
+
+	await page.goto('/it/progetti/');
+	await clickCenter('[data-project-item][data-project-key="highway-route-planner"] .project-card-copy > p:not([class])');
+	await expect(page).toHaveURL(/\/it\/progetti\/pianificatore-percorsi-autostradali\/$/);
+
+	await page.goto('/it/articoli/ricostruire-galaxy-trucker-con-claude/');
+	await clickCenter('.related-work [data-project-key="galaxy-trucker"] .project-meta');
+	await expect(page).toHaveURL(/\/it\/progetti\/galaxy-trucker-progetto-java\/$/);
+});
+
 test('Highway Route Planner uses its dedicated route illustration in both locales', async ({ page }) => {
 	for (const path of [
 		'/it/progetti/pianificatore-percorsi-autostradali/',

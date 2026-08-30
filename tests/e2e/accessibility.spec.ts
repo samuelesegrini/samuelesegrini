@@ -21,6 +21,14 @@ test('homepage service pulse supports directional and boundary keyboard controls
 	const steps = pulse.getByRole('button');
 
 	await steps.first().focus();
+	await page.keyboard.press('ArrowLeft');
+	await expect(steps.nth(4)).toHaveAttribute('aria-pressed', 'true');
+	await expect(steps.nth(4)).toBeFocused();
+
+	await page.keyboard.press('ArrowRight');
+	await expect(steps.first()).toHaveAttribute('aria-pressed', 'true');
+	await expect(steps.first()).toBeFocused();
+
 	await page.keyboard.press('ArrowRight');
 	await expect(steps.nth(1)).toHaveAttribute('aria-pressed', 'true');
 	await expect(steps.nth(1)).toBeFocused();
@@ -32,6 +40,23 @@ test('homepage service pulse supports directional and boundary keyboard controls
 	await page.keyboard.press('Home');
 	await expect(steps.first()).toHaveAttribute('aria-pressed', 'true');
 	await expect(steps.first()).toBeFocused();
+});
+
+test('homepage service pulse changes state without motion when reduced motion is requested', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto('/en/');
+
+	const pulse = page.locator('[data-service-pulse]');
+	const thirdStep = pulse.getByRole('button', { name: 'Server acknowledgement', exact: true });
+	await thirdStep.click();
+	await expect(pulse).toHaveAttribute('data-active-step', '3');
+	await expect(thirdStep).toHaveAttribute('aria-pressed', 'true');
+
+	const motion = await thirdStep.locator('.pulse-node').evaluate((node) => {
+		const style = getComputedStyle(node);
+		return { transform: style.transform, transitionDuration: style.transitionDuration };
+	});
+	expect(motion).toEqual({ transform: 'none', transitionDuration: '0s' });
 });
 
 test('English article exposes localized SEO and structured data', async ({ page }) => {
