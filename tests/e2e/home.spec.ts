@@ -44,6 +44,73 @@ test('featured trio publishes EasyManager, Galaxy Trucker, and SpinGO in both lo
 	}
 });
 
+test('featured artwork motion keeps Galaxy Trucker and SpinGO covers accessible', async ({ page }) => {
+	await page.goto('/it/');
+
+	const galaxy = page.locator('[data-featured-project]').nth(1);
+	await expect(galaxy.locator('[data-artwork-treatment]')).toHaveAttribute(
+		'data-artwork-treatment',
+		'galaxy-network',
+	);
+	await expect(galaxy.getByRole('img', {
+		name: 'Nave modulare geometrica collegata tramite un server a quattro client',
+	})).toBeVisible();
+
+	const spingo = page.locator('[data-featured-project]').nth(2);
+	await expect(spingo.locator('[data-artwork-treatment]')).toHaveAttribute(
+		'data-artwork-treatment',
+		'spingo-route',
+	);
+	await expect(spingo.getByRole('img', {
+		name: 'Illustrazione geometrica di una bicicletta collegata da un percorso verde acido a un punto sicuro',
+	})).toBeVisible();
+});
+
+test('artwork motion is limited to featured cards', async ({ page }) => {
+	await page.goto('/it/progetti/');
+	const archiveGalaxy = page.locator('[data-project-item][data-project-key="galaxy-trucker"]');
+	await expect(archiveGalaxy.locator('[data-artwork-treatment]')).toHaveCount(0);
+	await expect(archiveGalaxy.getByRole('img', {
+		name: 'Nave modulare geometrica collegata tramite un server a quattro client',
+	})).toBeVisible();
+
+	await page.goto('/it/articoli/ricostruire-galaxy-trucker-con-claude/');
+	const relatedGalaxy = page.locator('.related-work [data-project-key="galaxy-trucker"]');
+	await expect(relatedGalaxy.locator('[data-artwork-treatment]')).toHaveCount(0);
+	await expect(relatedGalaxy.getByRole('img', {
+		name: 'Nave modulare geometrica collegata tramite un server a quattro client',
+	})).toBeVisible();
+});
+
+test('featured artwork reduced motion stops decorative overlays', async ({ browser }) => {
+	const context = await browser.newContext({
+		baseURL: 'http://127.0.0.1:4321',
+		reducedMotion: 'reduce',
+	});
+	const page = await context.newPage();
+	await page.goto('/it/');
+
+	for (const treatment of ['galaxy-network', 'spingo-route']) {
+		const artwork = page.locator(`[data-artwork-treatment="${treatment}"]`);
+		const overlay = artwork.locator('[data-artwork-overlay]');
+		await expect(overlay).toBeVisible();
+		const motion = await overlay.locator('[data-artwork-motion]').first().evaluate((element) => {
+			const style = getComputedStyle(element);
+			return { animationDuration: style.animationDuration, animationName: style.animationName };
+		});
+		expect(motion.animationDuration === '0.01ms' || motion.animationName === 'none').toBe(true);
+	}
+
+	await expect(page.getByRole('img', {
+		name: 'Nave modulare geometrica collegata tramite un server a quattro client',
+	})).toBeVisible();
+	await expect(page.getByRole('img', {
+		name: 'Illustrazione geometrica di una bicicletta collegata da un percorso verde acido a un punto sicuro',
+	})).toBeVisible();
+
+	await context.close();
+});
+
 test('English routes and localized language switches remain paired', async ({ page }) => {
 	await page.goto('/en/');
 	await expect(page.getByRole('heading', { level: 1 })).toContainText(

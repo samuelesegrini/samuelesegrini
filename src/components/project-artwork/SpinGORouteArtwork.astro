@@ -1,0 +1,34 @@
+---
+interface Props {
+	coverImage: string;
+	coverAlt: string;
+	lead: boolean;
+}
+
+const { coverImage, coverAlt, lead } = Astro.props;
+---
+
+<div class="project-artwork project-artwork-spingo" data-artwork-treatment="spingo-route">
+	<img
+		class="project-cover"
+		src={coverImage}
+		alt={coverAlt}
+		width="1200"
+		height="800"
+		loading={lead ? 'eager' : 'lazy'}
+	/>
+	<svg
+		class="project-artwork-overlay spingo-route-overlay"
+		data-artwork-overlay
+		viewBox="0 0 1200 800"
+		aria-hidden="true"
+		focusable="false"
+	>
+		<path class="spingo-route-path" data-artwork-motion d="M 120 620 C 280 660, 382 430, 580 470 S 810 250, 1080 190" />
+		<g class="spingo-route-markers">
+			<circle cx="290" cy="555" r="22" data-artwork-motion />
+			<circle cx="580" cy="470" r="22" data-artwork-motion />
+			<circle cx="940" cy="275" r="22" data-artwork-motion />
+		</g>
+	</svg>
+</div>

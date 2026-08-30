@@ -1,0 +1,41 @@
+---
+interface Props {
+	coverImage: string;
+	coverAlt: string;
+	lead: boolean;
+}
+
+const { coverImage, coverAlt, lead } = Astro.props;
+---
+
+<div class="project-artwork project-artwork-galaxy" data-artwork-treatment="galaxy-network">
+	<img
+		class="project-cover"
+		src={coverImage}
+		alt={coverAlt}
+		width="1200"
+		height="800"
+		loading={lead ? 'eager' : 'lazy'}
+	/>
+	<svg
+		class="project-artwork-overlay galaxy-network-overlay"
+		data-artwork-overlay
+		viewBox="0 0 1200 800"
+		aria-hidden="true"
+		focusable="false"
+	>
+		<g class="galaxy-network-paths" fill="none" stroke-linecap="round">
+			<path class="galaxy-network-path" data-artwork-motion d="M 186 150 C 310 150, 385 290, 520 370" />
+			<path class="galaxy-network-path" data-artwork-motion d="M 1014 150 C 890 150, 815 290, 680 370" />
+			<path class="galaxy-network-path" data-artwork-motion d="M 186 650 C 310 650, 385 510, 520 430" />
+			<path class="galaxy-network-path" data-artwork-motion d="M 1014 650 C 890 650, 815 510, 680 430" />
+		</g>
+		<g class="galaxy-network-nodes">
+			<circle cx="160" cy="150" r="26" />
+			<circle cx="1040" cy="150" r="26" />
+			<circle cx="160" cy="650" r="26" />
+			<circle cx="1040" cy="650" r="26" />
+			<rect x="520" y="340" width="160" height="120" rx="24" />
+		</g>
+	</svg>
+</div>

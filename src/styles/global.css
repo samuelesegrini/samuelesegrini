@@ -68,6 +68,12 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .project-card-link::after { content: ''; position: absolute; inset: 0; z-index: 3; }
 .project-cover { position: absolute; top: 15%; right: 5%; width: min(50%,35rem); height: 40%; border: 1px solid rgba(8,8,8,.2); border-radius: calc(var(--radius) * .65); object-fit: cover; box-shadow: 0 1.5rem 5rem rgba(8,8,8,.08); }
 .project-card.lead .project-cover { top: 12%; width: min(58%,45rem); height: 58%; }
+.project-artwork-overlay { position: absolute; top: 15%; right: 5%; z-index: 1; width: min(50%,35rem); height: 40%; overflow: visible; pointer-events: none; }
+.galaxy-network-path { stroke: rgba(8,8,8,.65); stroke-width: 7; }
+.galaxy-network-nodes circle { fill: var(--white); stroke: rgba(8,8,8,.7); stroke-width: 7; }
+.galaxy-network-nodes rect { fill: var(--acid); stroke: var(--ink); stroke-width: 7; }
+.spingo-route-path { fill: none; stroke: var(--acid); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 16 18; }
+.spingo-route-markers circle { fill: var(--white); stroke: var(--ink); stroke-width: 7; }
 .project-art { position: absolute; top: 18%; right: 8%; width: min(48%,28rem); aspect-ratio: 1; }
 .project-art span { position: absolute; inset: 0; border: 1px solid rgba(8,8,8,.35); border-radius: 50%; }
 .project-art span:nth-child(2) { inset: 18%; background: rgba(255,255,255,.34); }
@@ -271,6 +277,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 	.project-card.lead { min-height: 39rem; }
 	.project-art { top: 22%; width: 55%; }
 	.project-cover, .project-card.lead .project-cover { top: 17%; right: 7%; width: 62%; height: 43%; }
+	.project-artwork-overlay { top: 17%; right: 7%; width: 62%; height: 43%; }
 	.easy-service-pulse { top: 16%; right: 5%; width: 90%; min-height: 46%; padding: .85rem; }
 	.pulse-heading { font-size: max(.62rem,10px); }
 	.pulse-step-button { min-height: 5.4rem; font-size: max(.57rem,9px); }
@@ -310,9 +317,20 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 	.pulse-step-item::before { transition: opacity 220ms ease; }
 	.pulse-node { transition: transform 220ms ease, background-color 220ms ease, box-shadow 220ms ease; }
 	.pulse-step-button[aria-pressed='true'] .pulse-node { transform: translateY(-4px); }
+	.galaxy-network-path { animation: galaxy-network-pulse 2.8s ease-in-out infinite alternate; }
+	.galaxy-network-path:nth-child(2) { animation-delay: 140ms; }
+	.galaxy-network-path:nth-child(3) { animation-delay: 280ms; }
+	.galaxy-network-path:nth-child(4) { animation-delay: 420ms; }
+	.spingo-route-path { animation: spingo-route-draw 1.8s ease-out both; }
+	.spingo-route-markers [data-artwork-motion] { animation: spingo-marker-enter 800ms ease-out both; }
+	.spingo-route-markers [data-artwork-motion]:nth-child(2) { animation-delay: 240ms; }
+	.spingo-route-markers [data-artwork-motion]:nth-child(3) { animation-delay: 480ms; }
 }
 
 @keyframes rise { from { transform: translateY(1rem); } to { transform: translateY(0); } }
+@keyframes galaxy-network-pulse { from { stroke-opacity: .3; stroke-width: 5; } to { stroke-opacity: .9; stroke-width: 9; } }
+@keyframes spingo-route-draw { from { stroke-dashoffset: 240; } to { stroke-dashoffset: 0; } }
+@keyframes spingo-marker-enter { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion:reduce) {
 	html { scroll-behavior: auto; }

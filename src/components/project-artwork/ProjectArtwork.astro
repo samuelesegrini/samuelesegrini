@@ -1,5 +1,7 @@
 ---
 import EasyManagerServicePulse from './EasyManagerServicePulse.astro';
+import GalaxyNetworkArtwork from './GalaxyNetworkArtwork.astro';
+import SpinGORouteArtwork from './SpinGORouteArtwork.astro';
 
 interface Props {
 	translationKey?: string;
@@ -23,6 +25,10 @@ const {
 {
 	featured && translationKey === 'easymanager' ? (
 		<EasyManagerServicePulse lang={lang} />
+	) : featured && translationKey === 'galaxy-trucker' && coverImage ? (
+		<GalaxyNetworkArtwork coverImage={coverImage} coverAlt={coverAlt} lead={lead} />
+	) : featured && translationKey === 'spingo-sustainable-micromobility' && coverImage ? (
+		<SpinGORouteArtwork coverImage={coverImage} coverAlt={coverAlt} lead={lead} />
 	) : coverImage ? (
 		<img
 			class="project-cover"
