@@ -45,25 +45,64 @@ test('featured trio publishes EasyManager, Galaxy Trucker, and SpinGO in both lo
 });
 
 test('featured artwork motion keeps Galaxy Trucker and SpinGO covers accessible', async ({ page }) => {
+	for (const sample of [
+		{
+			path: '/it/',
+			galaxyAlt: 'Nave modulare geometrica collegata tramite un server a quattro client',
+			spingoAlt: 'Illustrazione geometrica di una bicicletta collegata da un percorso verde acido a un punto sicuro',
+		},
+		{
+			path: '/en/',
+			galaxyAlt: 'Geometric modular spaceship connected through a server to four clients',
+			spingoAlt: 'Geometric illustration of a bicycle connected by an acid-lime route to a safe destination',
+		},
+	]) {
+		await page.goto(sample.path);
+
+		const galaxy = page.locator('[data-featured-project]').nth(1);
+		await expect(galaxy.locator('[data-artwork-treatment]')).toHaveAttribute(
+			'data-artwork-treatment',
+			'galaxy-network',
+		);
+		await expect(galaxy.getByRole('img', { name: sample.galaxyAlt })).toBeVisible();
+
+		const spingo = page.locator('[data-featured-project]').nth(2);
+		await expect(spingo.locator('[data-artwork-treatment]')).toHaveAttribute(
+			'data-artwork-treatment',
+			'spingo-route',
+		);
+		await expect(spingo.getByRole('img', { name: sample.spingoAlt })).toBeVisible();
+	}
+});
+
+test('featured artwork motion renders the Galaxy network and SpinGO route identities without metrics', async ({ page }) => {
 	await page.goto('/it/');
 
-	const galaxy = page.locator('[data-featured-project]').nth(1);
-	await expect(galaxy.locator('[data-artwork-treatment]')).toHaveAttribute(
-		'data-artwork-treatment',
-		'galaxy-network',
-	);
-	await expect(galaxy.getByRole('img', {
-		name: 'Nave modulare geometrica collegata tramite un server a quattro client',
-	})).toBeVisible();
+	const galaxyOverlay = page.locator('[data-artwork-treatment="galaxy-network"] [data-artwork-overlay]');
+	await expect(galaxyOverlay.locator('[data-artwork-node="client"]')).toHaveCount(4);
+	await expect(galaxyOverlay.locator('[data-artwork-node="authoritative-server"]')).toHaveCount(1);
+	expect(await galaxyOverlay.evaluate((overlay) => overlay.textContent?.trim())).toBe('');
 
-	const spingo = page.locator('[data-featured-project]').nth(2);
-	await expect(spingo.locator('[data-artwork-treatment]')).toHaveAttribute(
-		'data-artwork-treatment',
-		'spingo-route',
-	);
-	await expect(spingo.getByRole('img', {
-		name: 'Illustrazione geometrica di una bicicletta collegata da un percorso verde acido a un punto sicuro',
-	})).toBeVisible();
+	const spingoOverlay = page.locator('[data-artwork-treatment="spingo-route"] [data-artwork-overlay]');
+	await expect(spingoOverlay.locator('[data-artwork-marker]')).toHaveCount(3);
+	expect(await spingoOverlay.evaluate((overlay) => overlay.textContent?.trim())).toBe('');
+});
+
+test('Galaxy artwork motion establishes a bounded connection', async ({ browser }) => {
+	const context = await browser.newContext({
+		baseURL: 'http://127.0.0.1:4321',
+		reducedMotion: 'no-preference',
+	});
+	const page = await context.newPage();
+	await page.goto('/it/');
+
+	const iterationCount = await page
+		.locator('[data-artwork-treatment="galaxy-network"] [data-artwork-motion]')
+		.first()
+		.evaluate((element) => getComputedStyle(element).animationIterationCount);
+	expect(iterationCount).toBe('1');
+
+	await context.close();
 });
 
 test('artwork motion is limited to featured cards', async ({ page }) => {
@@ -72,6 +111,11 @@ test('artwork motion is limited to featured cards', async ({ page }) => {
 	await expect(archiveGalaxy.locator('[data-artwork-treatment]')).toHaveCount(0);
 	await expect(archiveGalaxy.getByRole('img', {
 		name: 'Nave modulare geometrica collegata tramite un server a quattro client',
+	})).toBeVisible();
+	const archiveSpinGO = page.locator('[data-project-item][data-project-key="spingo-sustainable-micromobility"]');
+	await expect(archiveSpinGO.locator('[data-artwork-treatment]')).toHaveCount(0);
+	await expect(archiveSpinGO.getByRole('img', {
+		name: 'Illustrazione geometrica di una bicicletta collegata da un percorso verde acido a un punto sicuro',
 	})).toBeVisible();
 
 	await page.goto('/it/articoli/ricostruire-galaxy-trucker-con-claude/');
@@ -109,6 +153,25 @@ test('featured artwork reduced motion stops decorative overlays', async ({ brows
 	})).toBeVisible();
 
 	await context.close();
+});
+
+test('featured artwork motion stays contained by non-lead mobile cards', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 780 });
+	await page.goto('/it/');
+
+	for (const treatment of ['galaxy-network', 'spingo-route']) {
+		const card = page.locator(`[data-featured-project]:has([data-artwork-treatment="${treatment}"])`);
+		const overlay = card.locator('[data-artwork-overlay]');
+		await overlay.scrollIntoViewIfNeeded();
+		const cardBox = await card.boundingBox();
+		const overlayBox = await overlay.boundingBox();
+		expect(cardBox).not.toBeNull();
+		expect(overlayBox).not.toBeNull();
+		expect(overlayBox!.x).toBeGreaterThanOrEqual(cardBox!.x);
+		expect(overlayBox!.y).toBeGreaterThanOrEqual(cardBox!.y);
+		expect(overlayBox!.x + overlayBox!.width).toBeLessThanOrEqual(cardBox!.x + cardBox!.width);
+		expect(overlayBox!.y + overlayBox!.height).toBeLessThanOrEqual(cardBox!.y + cardBox!.height);
+	}
 });
 
 test('English routes and localized language switches remain paired', async ({ page }) => {
