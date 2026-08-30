@@ -1,0 +1,87 @@
+---
+translationKey: easymanager
+locale: en
+slug: easymanager-restaurant-operations
+title: EasyManager
+excerpt: A restaurant app became a modular Swift toolkit built around durable orders, device lanes, and honest fiscal reconciliation.
+draft: true
+coverImage: /images/projects/easymanager-service-pulse.svg
+coverAlt: Five connected stages follow a restaurant order from table draft to fiscal reconciliation
+seoTitle: EasyManager — Swift restaurant operations case study
+seoDescription: From a 2023 SwiftUI restaurant app to a modular Swift 6.3 operations toolkit designed around concurrency, hardware, and fiscal uncertainty.
+kind: package
+lifecycle: in-progress
+authorship: individual
+year: 2026
+role: Product designer and software engineer
+technologies:
+  - Swift 6.3
+  - SwiftUI
+  - Swift Concurrency
+  - SQL
+  - DocC
+outcomes:
+  - value: "31"
+    label: public modules
+    method: Versioned 0.1 package products documented and built by the release gate
+  - value: "0"
+    label: remote package dependencies
+    method: Swift package manifest
+  - value: "0.1.0"
+    label: released API
+    method: Signed public release
+startingPoint: A 2023 SwiftUI restaurant application whose product scope outgrew its original boundaries.
+links:
+  - url: https://github.com/samuelesegrini/easymanager
+    label: Original application
+    relationship: my-repository
+  - url: https://github.com/samuelesegrini/easymanager-pos
+    label: Later re-engineering
+    relationship: my-repository
+relatedPosts: []
+---
+
+> EasyManager is a restaurant-operations project with two distinct code histories. The public 2023 repository records a SwiftUI application. The later repository is an individual re-engineering effort: a modular Swift toolkit for orders, hardware, and Italian fiscal workflows. They share a problem domain, not a single finished product.
+
+## Two eras, one problem domain
+
+The original application made the restaurant problem tangible: a team needs to move an order from a table through preparation, payment, and a fiscal record without losing its meaning along the way. Its public repository is the historical starting point, not evidence that the later package architecture was present in 2023.
+
+The later work asks a narrower engineering question: which boundaries let that workflow remain understandable when an order can outlive a view, a device can answer late, and a fiscal mutation can be uncertain? It is an ongoing re-engineering, separate from the original app’s historical implementation.
+
+## What the original application exposed
+
+The app’s growing scope made the seams visible. A restaurant operation is not one screen: the order-taking flow, kitchen work, inventory, loyalty, reservations, checkout, devices, and fiscal records all have different lifetimes and failure modes. Keeping those concerns together made local changes carry hidden consequences elsewhere.
+
+That is the useful evidence from the first era. It exposed the domain vocabulary and the pressure points; it does not justify a claim that the original application had already solved deployment, hardware compatibility, or fiscal certification.
+
+## Re-engineering the boundaries
+
+The later repository turns those pressure points into separate Swift package products. The 0.1 public API documents and builds 31 products without remote package dependencies. That makes the package graph inspectable: feature code can depend on focused domain and hardware contracts rather than on one application-shaped service surface.
+
+Swift concurrency matters here because order work and device work cannot assume a single immediate response. The design uses explicit ownership and serialized device lanes where a physical endpoint needs ordered access. SQL remains at the persistence boundary; DocC records the public contracts beside the packages that own them.
+
+## Following one order through failure
+
+An order begins as a draft, but a durable operation needs more than a happy-path request. Once work is sent to a device or fiscal service, a lost response does not prove that nothing happened. The useful state distinction is therefore between an operation known not to have been sent and one that may already have executed.
+
+The re-engineering treats the outbox, acknowledgement, and reconciliation as separate stages. A timeout or malformed reply must preserve the uncertainty for follow-up instead of silently retrying a mutation and risking a duplicate fiscal action. This is a correctness boundary, not a claim that every real-world fiscal device has been validated.
+
+## Hardware is not another API
+
+Hardware has timing, connection state, and irreversible side effects. A device lane serializes access to a specific endpoint; its contract is different from a generic network client because two commands that are individually valid may be unsafe when interleaved.
+
+The fiscal layer follows the same discipline. It can report an incomplete or uncertain outcome rather than manufacture readiness from an ambiguous exchange. The repository contains protocol and driver work, but compatibility with a physical device depends on evidence outside source code.
+
+## What is released—and what is not
+
+The public 0.1.0 API is the released package surface described above. This case study is a draft because the broader narrative must remain constrained by what the repositories can show.
+
+**Current status**
+
+- The application migration is incomplete; the later packages are not a claim that the original app has adopted every new boundary.
+- There are no deployment claims here.
+- The 0.2 work is unreleased.
+- Physical device compatibility and fiscal certification evidence are missing.
+
+Those limits are part of the work, not footnotes to hide. They define what can honestly be evaluated now: the public package seams, the documented contracts, and failure semantics designed to avoid false certainty.

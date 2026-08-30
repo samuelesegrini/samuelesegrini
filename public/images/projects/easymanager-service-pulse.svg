@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title description">
+  <title id="title">A restaurant order moving through five service stages</title>
+  <desc id="description">Five geometric nodes connect a table draft to an outbox, an acknowledgement, a device lane, and a fiscal registry. The uncertain acknowledgement branch is an orange diamond as well as an orange path.</desc>
+  <rect width="1200" height="800" rx="48" fill="#CFEAFF"/>
+
+  <path d="M132 446H344C416 446 432 326 520 326H648C712 326 730 446 798 446H1048" fill="none" stroke="#C7FF9F" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M132 446H344C416 446 432 326 520 326H648C712 326 730 446 798 446H1048" fill="none" stroke="#080808" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M586 390V574H794" fill="none" stroke="#FF8C42" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M586 390V574H794" fill="none" stroke="#080808" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g stroke="#080808" stroke-width="6" stroke-linejoin="round">
+    <rect x="70" y="350" width="124" height="192" rx="24" fill="#F4F1E9"/>
+    <path d="M100 394H164M100 436H164M100 478H146" stroke-linecap="round"/>
+
+    <rect x="290" y="350" width="128" height="192" rx="24" fill="#F4F1E9"/>
+    <path d="M326 405H382V474H326z" fill="#C7FF9F"/>
+    <path d="M326 405 354 431l28-26M326 474l28-28 28 28" fill="none"/>
+
+    <circle cx="586" cy="326" r="76" fill="#F4F1E9"/>
+    <path d="m550 326 25 25 48-54" fill="none" stroke="#C7FF9F" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="m550 326 25 25 48-54" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="738" y="350" width="120" height="192" rx="24" fill="#F4F1E9"/>
+    <circle cx="798" cy="414" r="26" fill="#C7FF9F"/>
+    <path d="M798 440V498M768 498H828" fill="none" stroke-linecap="round"/>
+
+    <rect x="980" y="350" width="140" height="192" rx="24" fill="#080808"/>
+    <path d="M1014 402H1086V436H1014zM1014 462H1086V496H1014z" fill="#C7FF9F"/>
+    <path d="M1014 419H1086M1014 479H1086" stroke="#080808" stroke-width="4"/>
+
+    <path d="m794 532 42 42-42 42-42-42z" fill="#FF8C42"/>
+    <path d="M794 552V580M794 598H794" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

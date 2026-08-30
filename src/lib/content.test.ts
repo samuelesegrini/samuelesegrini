@@ -308,6 +308,24 @@ describe('project excerpts read as outcome decks', () => {
 });
 
 describe('content queries', () => {
+	test('excludes a bilingual draft project from featured work', () => {
+		const drafts: ProjectEntry[] = (['it', 'en'] as const).map((locale) => ({
+			...projects.find((project) => project.locale === locale)!,
+			translationKey: 'easymanager',
+			slug:
+				locale === 'it'
+					? 'easymanager-sistema-ristorazione'
+					: 'easymanager-restaurant-operations',
+			title: 'EasyManager',
+			draft: true,
+			featuredRank: 1,
+		}));
+
+		expect(
+			getFeaturedProjects([...projects, ...drafts], 'it').map(({ translationKey }) => translationKey),
+		).not.toContain('easymanager');
+	});
+
 	test('returns the requested localized translation', () => {
 		expect(getTranslationPair(posts, 'post-one', 'en')?.slug).toBe('note-one');
 	});

@@ -1,0 +1,87 @@
+---
+translationKey: easymanager
+locale: it
+slug: easymanager-operazioni-ristorante
+title: EasyManager
+excerpt: Un'app per ristoranti è diventata un toolkit Swift modulare, progettato attorno a ordini durevoli, corsie per dispositivi e riconciliazione fiscale onesta.
+draft: true
+coverImage: /images/projects/easymanager-service-pulse.svg
+coverAlt: Cinque fasi collegate seguono un ordine del ristorante dalla bozza del tavolo alla riconciliazione fiscale
+seoTitle: EasyManager — Case study Swift per le operazioni di ristorazione
+seoDescription: Da un'app SwiftUI per ristoranti del 2023 a un toolkit operativo modulare in Swift 6.3, progettato per concorrenza, hardware e incertezza fiscale.
+kind: package
+lifecycle: in-progress
+authorship: individual
+year: 2026
+role: Product designer e software engineer
+technologies:
+  - Swift 6.3
+  - SwiftUI
+  - Swift Concurrency
+  - SQL
+  - DocC
+outcomes:
+  - value: "31"
+    label: moduli pubblici
+    method: Prodotti package 0.1 versionati, documentati e compilati dal gate di release
+  - value: "0"
+    label: dipendenze remote del package
+    method: Manifest del package Swift
+  - value: "0.1.0"
+    label: API rilasciata
+    method: Release pubblica firmata
+startingPoint: Un'applicazione SwiftUI per ristoranti del 2023, il cui perimetro di prodotto aveva superato i confini originali.
+links:
+  - url: https://github.com/samuelesegrini/easymanager
+    label: Applicazione originale
+    relationship: my-repository
+  - url: https://github.com/samuelesegrini/easymanager-pos
+    label: Reingegnerizzazione successiva
+    relationship: my-repository
+relatedPosts: []
+---
+
+> EasyManager è un progetto per le operazioni di ristorazione con due storie di codice distinte. Il repository pubblico del 2023 documenta un'applicazione SwiftUI. Il repository successivo è una reingegnerizzazione individuale: un toolkit Swift modulare per ordini, hardware e flussi fiscali italiani. Condividono il dominio del problema, non un unico prodotto finito.
+
+## Due epoche, un solo dominio
+
+L'applicazione originale ha reso concreto il problema del ristorante: un team deve portare un ordine dal tavolo alla preparazione, al pagamento e al documento fiscale senza perderne il significato lungo il percorso. Il repository pubblico è il punto di partenza storico, non una prova che l'architettura a package successiva esistesse già nel 2023.
+
+Il lavoro successivo affronta una domanda ingegneristica più circoscritta: quali confini permettono a questo flusso di restare comprensibile quando un ordine può sopravvivere a una vista, un dispositivo può rispondere tardi e una mutazione fiscale può essere incerta? È una reingegnerizzazione in corso, separata dall'implementazione storica dell'app originale.
+
+## Cosa ha mostrato l'applicazione originale
+
+L'aumento del perimetro dell'app ha reso visibili i confini. Un'operazione di ristorazione non è una sola schermata: presa comande, cucina, inventario, loyalty, prenotazioni, checkout, dispositivi e registrazioni fiscali hanno cicli di vita e modalità di fallimento differenti. Tenere insieme questi aspetti faceva sì che modifiche locali portassero conseguenze nascoste altrove.
+
+Questa è l'evidenza utile della prima epoca. Ha mostrato il vocabolario del dominio e i punti di pressione; non giustifica affermazioni secondo cui l'app originale avesse già risolto deployment, compatibilità hardware o certificazione fiscale.
+
+## Ripensare i confini
+
+Il repository successivo traduce questi punti di pressione in prodotti Swift separati. L'API pubblica 0.1 documenta e compila 31 prodotti senza dipendenze remote. Il grafo dei package diventa così ispezionabile: il codice delle funzionalità può dipendere da contratti di dominio e hardware focalizzati invece che da un'unica superficie di servizi modellata sull'applicazione.
+
+La concorrenza di Swift è rilevante perché il lavoro sugli ordini e sui dispositivi non può assumere una risposta immediata e unica. Il design usa proprietà esplicite e corsie serializzate per i dispositivi quando un endpoint fisico richiede accesso ordinato. SQL resta al confine della persistenza; DocC descrive i contratti pubblici accanto ai package che ne sono responsabili.
+
+## Seguire un ordine attraverso il fallimento
+
+Un ordine inizia come bozza, ma un'operazione durevole richiede più di una richiesta nel caso felice. Quando il lavoro è inviato a un dispositivo o a un servizio fiscale, una risposta persa non dimostra che non sia avvenuto nulla. La distinzione utile è quindi tra un'operazione certamente non inviata e una che potrebbe essere già stata eseguita.
+
+La reingegnerizzazione tratta outbox, acknowledgement e riconciliazione come fasi separate. Un timeout o una risposta malformata deve conservare l'incertezza per il seguito, invece di ritentare silenziosamente una mutazione e rischiare un'azione fiscale duplicata. È un confine di correttezza, non un'affermazione che ogni dispositivo fiscale reale sia stato validato.
+
+## L'hardware non è un'altra API
+
+L'hardware ha tempi, stato di connessione ed effetti collaterali irreversibili. Una corsia per dispositivo serializza l'accesso a uno specifico endpoint; il suo contratto è diverso da quello di un client di rete generico perché due comandi validi singolarmente possono diventare insicuri se intercalati.
+
+Lo strato fiscale segue la stessa disciplina. Può riportare un esito incompleto o incerto invece di inventare prontezza da uno scambio ambiguo. Il repository contiene lavoro su protocolli e driver, ma la compatibilità con un dispositivo fisico dipende da evidenze esterne al codice sorgente.
+
+## Cosa è rilasciato e cosa non lo è
+
+L'API pubblica 0.1.0 è la superficie rilasciata del package descritta sopra. Questa case study è una bozza perché il racconto più ampio deve restare vincolato a ciò che i repository possono dimostrare.
+
+**Stato attuale**
+
+- La migrazione dell'applicazione è incompleta; i package successivi non affermano che l'app originale abbia adottato ogni nuovo confine.
+- Qui non ci sono affermazioni di deployment.
+- Il lavoro 0.2 è non rilasciato.
+- Mancano evidenze di compatibilità con dispositivi fisici e di certificazione fiscale.
+
+Questi limiti fanno parte del lavoro, non sono note da nascondere. Definiscono ciò che può essere valutato onestamente oggi: i confini pubblici dei package, i contratti documentati e le semantiche di fallimento progettate per evitare una falsa certezza.
