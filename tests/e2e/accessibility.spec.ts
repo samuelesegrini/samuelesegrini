@@ -15,6 +15,25 @@ for (const { width, height } of [
 	});
 }
 
+test('homepage service pulse supports directional and boundary keyboard controls', async ({ page }) => {
+	await page.goto('/en/');
+	const pulse = page.locator('[data-service-pulse]');
+	const steps = pulse.getByRole('button');
+
+	await steps.first().focus();
+	await page.keyboard.press('ArrowRight');
+	await expect(steps.nth(1)).toHaveAttribute('aria-pressed', 'true');
+	await expect(steps.nth(1)).toBeFocused();
+
+	await page.keyboard.press('End');
+	await expect(steps.nth(4)).toHaveAttribute('aria-pressed', 'true');
+	await expect(steps.nth(4)).toBeFocused();
+
+	await page.keyboard.press('Home');
+	await expect(steps.first()).toHaveAttribute('aria-pressed', 'true');
+	await expect(steps.first()).toBeFocused();
+});
+
 test('English article exposes localized SEO and structured data', async ({ page }) => {
 	await page.goto('/en/writing/designing-for-clarity/');
 	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/en\/writing\/designing-for-clarity\/$/);

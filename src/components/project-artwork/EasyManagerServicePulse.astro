@@ -1,0 +1,109 @@
+---
+interface Props {
+	lang: 'it' | 'en';
+}
+
+const { lang } = Astro.props;
+
+const steps = lang === 'it'
+	? ['Bozza del tavolo', 'Outbox persistente', 'Risposta del server', 'Corsia del dispositivo', 'Registro fiscale']
+	: ['Table draft', 'Durable outbox', 'Server acknowledgement', 'Device lane', 'Fiscal registry'];
+
+const copy = lang === 'it'
+	? {
+		label: 'Flusso operativo EasyManager',
+		heading: 'Impulso del servizio',
+		uncertain: 'Se l’esecuzione è incerta, il flusso viene riconciliato senza retry ciechi.',
+	}
+	: {
+		label: 'EasyManager operations flow',
+		heading: 'Service pulse',
+		uncertain: 'Uncertain execution is reconciled without a blind retry.',
+	};
+---
+
+<div
+	class="easy-service-pulse"
+	role="group"
+	aria-label={copy.label}
+	data-service-pulse
+	data-active-step="1"
+	data-uncertain-status={copy.uncertain}
+>
+	<div class="pulse-heading">
+		<p>{copy.heading}</p>
+		<span data-pulse-count>01 / 05</span>
+	</div>
+	<ol class="pulse-steps">
+		{
+			steps.map((step, index) => (
+				<li class="pulse-step-item">
+					<button
+						class="pulse-step-button"
+						type="button"
+						data-pulse-step
+						aria-pressed={index === 0 ? 'true' : 'false'}
+					>
+						<span class="pulse-node" aria-hidden="true" />
+						<span>{step}</span>
+					</button>
+				</li>
+			))
+		}
+	</ol>
+	<p class="pulse-status" aria-live="polite" data-pulse-status>{steps[0]}. {copy.uncertain}</p>
+</div>
+
+<script>
+	const initializeServicePulses = () => {
+		document.querySelectorAll<HTMLElement>('[data-service-pulse]').forEach((pulse) => {
+			if (pulse.dataset.pulseInitialized === 'true') return;
+
+			const steps = Array.from(pulse.querySelectorAll<HTMLButtonElement>('[data-pulse-step]'));
+			const status = pulse.querySelector<HTMLElement>('[data-pulse-status]');
+			const count = pulse.querySelector<HTMLElement>('[data-pulse-count]');
+			const uncertain = pulse.dataset.uncertainStatus ?? '';
+
+			const setActiveStep = (index: number, moveFocus = false) => {
+				const activeIndex = (index + steps.length) % steps.length;
+				pulse.dataset.activeStep = String(activeIndex + 1);
+				steps.forEach((step, stepIndex) => {
+					step.setAttribute('aria-pressed', String(stepIndex === activeIndex));
+				});
+				if (status) status.textContent = `${steps[activeIndex].textContent?.trim() ?? ''}. ${uncertain}`;
+				if (count) count.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(steps.length).padStart(2, '0')}`;
+				if (moveFocus) steps[activeIndex].focus();
+			};
+
+			steps.forEach((step, index) => {
+				step.addEventListener('click', () => setActiveStep(index));
+				step.addEventListener('keydown', (event) => {
+					let nextIndex: number | undefined;
+					switch (event.key) {
+						case 'ArrowLeft':
+							nextIndex = index - 1;
+							break;
+						case 'ArrowRight':
+							nextIndex = index + 1;
+							break;
+						case 'Home':
+							nextIndex = 0;
+							break;
+						case 'End':
+							nextIndex = steps.length - 1;
+							break;
+					}
+
+					if (nextIndex === undefined) return;
+					event.preventDefault();
+					setActiveStep(nextIndex, true);
+				});
+			});
+
+			pulse.dataset.pulseInitialized = 'true';
+		});
+	};
+
+	initializeServicePulses();
+	document.addEventListener('astro:page-load', initializeServicePulses);
+</script>

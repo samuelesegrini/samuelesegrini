@@ -1,0 +1,38 @@
+---
+import EasyManagerServicePulse from './EasyManagerServicePulse.astro';
+
+interface Props {
+	translationKey?: string;
+	lang: 'it' | 'en';
+	coverImage?: string;
+	coverAlt: string;
+	lead: boolean;
+	featured: boolean;
+}
+
+const {
+	translationKey,
+	lang,
+	coverImage,
+	coverAlt,
+	lead,
+	featured,
+} = Astro.props;
+---
+
+{
+	featured && translationKey === 'easymanager' ? (
+		<EasyManagerServicePulse lang={lang} />
+	) : coverImage ? (
+		<img
+			class="project-cover"
+			src={coverImage}
+			alt={coverAlt}
+			width="1200"
+			height="800"
+			loading={lead ? 'eager' : 'lazy'}
+		/>
+	) : (
+		<div class="project-art" aria-hidden="true"><span /><span /><span /></div>
+	)
+}

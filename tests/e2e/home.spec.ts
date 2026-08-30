@@ -11,7 +11,7 @@ test('Italian homepage presents the editorial portfolio hierarchy', async ({ pag
 	await expect(page.getByRole('heading', { name: 'Progetti in evidenza' })).toBeVisible();
 	await expect(page.locator('[data-featured-project]')).toHaveCount(3);
 	await expect(page.locator('[data-featured-project]').first().locator('.project-role')).toBeVisible();
-	await expect(page.getByRole('link', { name: 'Highway Route Planner' })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'EasyManager', exact: true })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Ultimi articoli' })).toBeVisible();
 	await expect(page.getByRole('link', { name: /English/ })).toHaveAttribute('href', '/en/');
 	await expect(page.locator('footer').getByRole('link', { name: 'Email' })).toHaveAttribute(
@@ -33,6 +33,17 @@ test('root sends visitors to the Italian default locale', async ({ page }) => {
 	await expect(page).toHaveURL(/\/it\/$/);
 });
 
+test('featured trio publishes EasyManager, Galaxy Trucker, and SpinGO in both locales', async ({ page }) => {
+	for (const path of ['/it/', '/en/']) {
+		await page.goto(path);
+		await expect(page.locator('[data-featured-project] h3')).toHaveText([
+			'EasyManager',
+			'Galaxy Trucker',
+			'SpinGO',
+		]);
+	}
+});
+
 test('English routes and localized language switches remain paired', async ({ page }) => {
 	await page.goto('/en/');
 	await expect(page.getByRole('heading', { level: 1 })).toContainText(
@@ -40,13 +51,84 @@ test('English routes and localized language switches remain paired', async ({ pa
 	);
 	await expect(page.locator('[data-featured-project]').first().locator('.project-role')).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Featured projects' })).toBeVisible();
-	await page.getByRole('link', { name: 'Highway Route Planner' }).click();
-	await expect(page).toHaveURL(/\/en\/projects\/highway-route-planner\/$/);
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	await expect(page).toHaveURL(/\/en\/projects\/easymanager-restaurant-operations\/$/);
 	await expect(page.getByRole('link', { name: /Italiano/ })).toHaveAttribute(
 		'href',
-		'/it/progetti/pianificatore-percorsi-autostradali/',
+		'/it/progetti/easymanager-operazioni-ristorante/',
 	);
-	await expect(page.getByText('Solo developer', { exact: true })).toBeVisible();
+	await expect(page.getByText('Product designer and software engineer', { exact: true })).toBeVisible();
+});
+
+test('EasyManager service pulse exposes five localized states and repository evidence', async ({ page }) => {
+	for (const sample of [
+		{
+			home: '/it/',
+			label: 'Flusso operativo EasyManager',
+			step: 'Risposta del server',
+			status:
+				'Risposta del server. Se l’esecuzione è incerta, il flusso viene riconciliato senza retry ciechi.',
+			detail: '/it/progetti/easymanager-operazioni-ristorante/',
+			links: [
+				{ label: 'Applicazione originale', href: 'https://github.com/samuelesegrini/easymanager' },
+				{ label: 'Reingegnerizzazione successiva', href: 'https://github.com/samuelesegrini/easymanager-pos' },
+			],
+		},
+		{
+			home: '/en/',
+			label: 'EasyManager operations flow',
+			step: 'Server acknowledgement',
+			status:
+				'Server acknowledgement. Uncertain execution is reconciled without a blind retry.',
+			detail: '/en/projects/easymanager-restaurant-operations/',
+			links: [
+				{ label: 'Original application', href: 'https://github.com/samuelesegrini/easymanager' },
+				{ label: 'Later re-engineering', href: 'https://github.com/samuelesegrini/easymanager-pos' },
+			],
+		},
+	]) {
+		await page.goto(sample.home);
+		const pulse = page.locator('[data-service-pulse]');
+		await expect(pulse).toHaveAttribute('aria-label', sample.label);
+		await expect(pulse.locator('[data-pulse-step]')).toHaveCount(5);
+		await pulse.getByRole('button', { name: sample.step, exact: true }).click();
+		await expect(pulse).toHaveAttribute('data-active-step', '3');
+		await expect(pulse.locator('[aria-live="polite"]')).toHaveText(sample.status);
+
+		await page.goto(sample.detail);
+		for (const link of sample.links) {
+			await expect(page.locator('.project-links a').filter({ hasText: link.label })).toHaveAttribute(
+				'href',
+				link.href,
+			);
+		}
+	}
+});
+
+test('EasyManager remains complete and linked when JavaScript is disabled', async ({ browser }) => {
+	const context = await browser.newContext({
+		baseURL: 'http://127.0.0.1:4321',
+		javaScriptEnabled: false,
+	});
+	const page = await context.newPage();
+	await page.goto('/it/');
+
+	const pulse = page.locator('[data-service-pulse]');
+	for (const step of [
+		'Bozza del tavolo',
+		'Outbox persistente',
+		'Risposta del server',
+		'Corsia del dispositivo',
+		'Registro fiscale',
+	]) {
+		await expect(pulse.getByText(step, { exact: true })).toBeVisible();
+	}
+	await expect(page.getByRole('link', { name: 'EasyManager', exact: true })).toHaveAttribute(
+		'href',
+		'/it/progetti/easymanager-operazioni-ristorante/',
+	);
+
+	await context.close();
 });
 
 test('Highway Route Planner uses its dedicated route illustration in both locales', async ({ page }) => {
@@ -64,17 +146,19 @@ test('Highway Route Planner uses its dedicated route illustration in both locale
 	}
 });
 
-test('second featured project opens the paired hardware case study', async ({ page }) => {
+test('second featured project opens the paired Galaxy Trucker case study', async ({ page }) => {
 	await page.goto('/it/');
 	const secondProject = page.locator('[data-featured-project]').nth(1);
-	await expect(secondProject).toContainText('Priority Task Queue Manager');
+	await expect(secondProject).toContainText('Galaxy Trucker');
 	await secondProject.getByRole('link').click();
-	await expect(page).toHaveURL(/\/it\/progetti\/gestore-coda-task-priorita\/$/);
+	await expect(page).toHaveURL(/\/it\/progetti\/galaxy-trucker-progetto-java\/$/);
 	await expect(page.getByRole('link', { name: /English/ })).toHaveAttribute(
 		'href',
-		'/en/projects/priority-task-queue-manager/',
+		'/en/projects/galaxy-trucker-java-project/',
 	);
-	await expect(page.getByText('Hardware designer e sviluppatore individuale', { exact: true })).toBeVisible();
+	await expect(
+		page.getByText('Sviluppatore nel team; autore della ricostruzione assistita da AI', { exact: true }),
+	).toBeVisible();
 });
 
 test('Priority Task Queue Manager uses its dedicated queue illustration in both locales', async ({ page }) => {

@@ -1,4 +1,6 @@
 ---
+import ProjectArtwork from './project-artwork/ProjectArtwork.astro';
+
 interface Props {
 	rank: number;
 	title: string;
@@ -40,6 +42,7 @@ const {
 	translationKey,
 	role,
 	authorshipLabel,
+	lang = 'it',
 } = Astro.props;
 ---
 
@@ -50,7 +53,7 @@ const {
 	data-project-key={translationKey}
 	data-kind={filterKind ?? kind}
 >
-	<a href={href}>
+	<div class="project-card-surface">
 		<div class="project-card-header">
 			<div class="project-meta">
 				<span>0{rank}</span>
@@ -58,26 +61,19 @@ const {
 			</div>
 			{featured && authorshipLabel && role && <p class="project-role">{authorshipLabel} · {role}</p>}
 		</div>
-		{
-			coverImage ? (
-				<img
-					class="project-cover"
-					src={coverImage}
-					alt={coverAlt}
-					width="1200"
-					height="800"
-					loading={lead ? 'eager' : 'lazy'}
-				/>
-			) : (
-				<div class="project-art" aria-hidden="true"><span /><span /><span /></div>
-			)
-		}
-		<div>
-			<h3>{title}</h3>
+		<ProjectArtwork
+			translationKey={translationKey}
+			lang={lang}
+			coverImage={coverImage}
+			coverAlt={coverAlt}
+			lead={lead}
+			featured={featured}
+		/>
+		<div class="project-card-copy">
+			<a class="project-card-link" href={href}><h3>{title}</h3><span class="project-arrow" aria-hidden="true">↗</span></a>
 			<p>{excerpt}</p>
 			{archive && outcome && <p class="project-proof"><strong>{outcome.value}</strong> {outcome.label}</p>}
 			{archive && lifecycleLabel && authorshipLabel && <p class="project-status">{lifecycleLabel} · {authorshipLabel}</p>}
 		</div>
-		<span class="project-arrow" aria-hidden="true">↗</span>
-	</a>
+	</div>
 </article>
