@@ -18,10 +18,10 @@ const copy = isIt
 		title: `${siteConfig.name} — Software Engineer`,
 		description: 'Portfolio bilingue di un Software Engineer: progetti, case study e note tecniche.',
 		eyebrow: 'Software Engineer · Italia',
-		headline: 'Software Engineer. Costruisco software utile e racconto',
-		emphasis: 'come funziona.',
-		intro: 'Progetti, sistemi e note oneste sul lavoro necessario per trasformare idee ambiziose in prodotti affidabili.',
-		cta: 'Parliamone',
+		headline: 'Software affidabile,',
+		emphasis: 'dall’interfaccia all’infrastruttura.',
+		intro: 'Progetto esperienze di prodotto e i sistemi che restano corretti quando reti, dispositivi e operazioni reali si complicano.',
+		cta: 'Email',
 		preview: 'Anteprima strutturale',
 		previewBody: 'Profilo, altri case study, articoli, GitHub e CV sono ancora da completare prima della pubblicazione.',
 		selected: 'Lavori selezionati',
@@ -39,10 +39,10 @@ const copy = isIt
 		title: `${siteConfig.name} — Software Engineer`,
 		description: 'Bilingual Software Engineer portfolio: projects, case studies, and technical writing.',
 		eyebrow: 'Software Engineer · Italy',
-		headline: 'Software Engineer. I build useful software and explain',
-		emphasis: 'how it works.',
-		intro: 'Projects, systems, and honest notes about the work behind turning ambitious ideas into reliable products.',
-		cta: 'Let’s talk',
+		headline: 'Reliable software,',
+		emphasis: 'from interface to infrastructure.',
+		intro: 'I design product experiences and the systems that stay correct when networks, devices, and real operations get messy.',
+		cta: 'Email',
 		preview: 'Structural preview',
 		previewBody: 'Profile copy, other case studies, articles, GitHub, and résumés still need completing before publication.',
 		selected: 'Selected work',
@@ -63,6 +63,9 @@ const tones = ['blue', 'lime', 'violet'] as const;
 const kindLabels = isIt
 	? { app: 'App', package: 'Pacchetto', 'open-source': 'Open source', experiment: 'Esperimento' }
 	: { app: 'App', package: 'Package', 'open-source': 'Open source', experiment: 'Experiment' };
+const authorshipLabels = isIt
+	? { individual: 'Individuale', team: 'Team', contribution: 'Contributo' }
+	: { individual: 'Individual', team: 'Team', contribution: 'Contribution' };
 const personData = {
 	'@context': 'https://schema.org',
 	'@type': 'Person',
@@ -111,6 +114,10 @@ const personData = {
 					tone={tones[index]}
 					lead={index === 0}
 					featured
+					translationKey={project.translationKey}
+					role={project.role}
+					authorshipLabel={authorshipLabels[project.authorship]}
+					lang={lang}
 					coverImage={project.coverImage}
 					coverAlt={project.coverAlt}
 				/>

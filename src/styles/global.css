@@ -63,7 +63,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .tone-violet { background: var(--violet); }
 .tone-orange { background: var(--orange); }
 .tone-paper { background: var(--white); border: 1px solid var(--line); }
-.project-meta { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; }
+.project-meta { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--mono); font-size: max(.7rem,11px); letter-spacing: .06em; text-transform: uppercase; }
 .project-card > a > :not(.project-cover,.project-art,.project-arrow) { position: relative; z-index: 2; }
 .project-cover { position: absolute; top: 15%; right: 5%; width: min(50%,35rem); height: 40%; border: 1px solid rgba(8,8,8,.2); border-radius: calc(var(--radius) * .65); object-fit: cover; box-shadow: 0 1.5rem 5rem rgba(8,8,8,.08); }
 .project-card.lead .project-cover { top: 12%; width: min(58%,45rem); height: 58%; }
@@ -75,9 +75,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .project-card:not(.lead) h3 { font-size: clamp(1.8rem,3vw,3.25rem); }
 .project-card:not(.lead) h3, .project-card:not(.lead) p { max-width: 52%; }
 .project-card p { max-width: 34rem; margin: 1.2rem 0 0; color: rgba(8,8,8,.64); }
-.project-card .project-proof { margin-top: .9rem; color: var(--ink); font: .74rem/1.4 var(--mono); text-transform: uppercase; }
+.project-card .project-role { margin-top: .9rem; color: rgba(8,8,8,.58); font: max(.75rem,12px)/1.4 var(--mono); letter-spacing: .045em; text-transform: uppercase; }
+.project-card .project-proof { margin-top: .9rem; color: var(--ink); font: max(.7rem,11px)/1.4 var(--mono); text-transform: uppercase; }
 .project-card .project-proof strong { margin-right: .3rem; font: 750 1.15rem/1 var(--sans); letter-spacing: -.03em; }
-.project-card .project-status { margin-top: .45rem; color: rgba(8,8,8,.58); font: .66rem var(--mono); letter-spacing: .045em; text-transform: uppercase; }
+.project-card .project-status { margin-top: .45rem; color: rgba(8,8,8,.58); font: max(.7rem,11px) var(--mono); letter-spacing: .045em; text-transform: uppercase; }
 .project-arrow { position: absolute; right: clamp(1.5rem,3vw,3rem); bottom: clamp(1.5rem,3vw,3rem); display: grid; width: 3rem; aspect-ratio: 1; place-items: center; border: 1px solid rgba(8,8,8,.28); border-radius: 50%; }
 .writing-section .section-heading h2, .related-section .section-heading h2 { color: var(--white); }
 .writing-section .section-heading > a { color: var(--white); }

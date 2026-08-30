@@ -68,6 +68,9 @@ const tones = ['blue', 'lime', 'violet', 'orange', 'paper'] as const;
 					href={projectPath(project)}
 					tone={tones[index % tones.length]}
 					archive
+					translationKey={project.translationKey}
+					role={project.role}
+					lang={lang}
 					coverImage={project.coverImage}
 					coverAlt={project.coverAlt}
 					outcome={project.outcomes[0]}

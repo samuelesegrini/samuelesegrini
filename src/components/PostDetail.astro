@@ -24,6 +24,9 @@ const translationPath = postPath(translation.data);
 const italianPath = isIt ? currentPath : translationPath;
 const englishPath = isIt ? translationPath : currentPath;
 const formattedDate = new Intl.DateTimeFormat(isIt ? 'it-IT' : 'en-GB', { day: '2-digit', month: 'long', year: 'numeric' }).format(post.publishedAt);
+const authorshipLabels = isIt
+	? { individual: 'Individuale', team: 'Team', contribution: 'Contributo' }
+	: { individual: 'Individual', team: 'Team', contribution: 'Contribution' };
 const structuredData = {
 	'@context': 'https://schema.org',
 	'@type': 'BlogPosting',
@@ -62,5 +65,5 @@ const structuredData = {
 			{showTableOfContents && <ArticleTableOfContents headings={tocHeadings} lang={post.locale} />}
 		</div>
 	</article>
-	{relatedProject && <section class="section related-work"><div class="section-heading"><div><p class="eyebrow dark">{isIt ? 'Dal progetto' : 'From the project'}</p><h2>{isIt ? 'Lavoro collegato' : 'Related work'}</h2></div></div><div class="project-grid single"><ProjectCard rank={1} title={relatedProject.data.title} excerpt={relatedProject.data.excerpt} kind={relatedProject.data.kind} year={relatedProject.data.year} href={projectPath(relatedProject.data)} tone="lime" coverImage={relatedProject.data.coverImage} coverAlt={relatedProject.data.coverAlt} /></div></section>}
+	{relatedProject && <section class="section related-work"><div class="section-heading"><div><p class="eyebrow dark">{isIt ? 'Dal progetto' : 'From the project'}</p><h2>{isIt ? 'Lavoro collegato' : 'Related work'}</h2></div></div><div class="project-grid single"><ProjectCard rank={1} title={relatedProject.data.title} excerpt={relatedProject.data.excerpt} kind={relatedProject.data.kind} year={relatedProject.data.year} href={projectPath(relatedProject.data)} tone="lime" translationKey={relatedProject.data.translationKey} role={relatedProject.data.role} authorshipLabel={authorshipLabels[relatedProject.data.authorship]} lang={post.locale} coverImage={relatedProject.data.coverImage} coverAlt={relatedProject.data.coverAlt} /></div></section>}
 </BaseLayout>

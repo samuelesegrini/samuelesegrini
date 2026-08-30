@@ -15,7 +15,10 @@ interface Props {
 	filterKind?: string;
 	outcome?: { value: string; label: string };
 	lifecycleLabel?: string;
+	translationKey?: string;
+	role?: string;
 	authorshipLabel?: string;
+	lang?: 'it' | 'en';
 }
 
 const {
@@ -34,6 +37,8 @@ const {
 	filterKind,
 	outcome,
 	lifecycleLabel,
+	translationKey,
+	role,
 	authorshipLabel,
 } = Astro.props;
 ---
@@ -42,12 +47,16 @@ const {
 	class:list={['project-card', `tone-${tone}`, { lead }]}
 	data-featured-project={featured ? '' : undefined}
 	data-project-item={archive ? '' : undefined}
+	data-project-key={translationKey}
 	data-kind={filterKind ?? kind}
 >
 	<a href={href}>
-		<div class="project-meta">
-			<span>0{rank}</span>
-			<span>{kind} · {year}</span>
+		<div class="project-card-header">
+			<div class="project-meta">
+				<span>0{rank}</span>
+				<span>{kind} · {year}</span>
+			</div>
+			{featured && authorshipLabel && role && <p class="project-role">{authorshipLabel} · {role}</p>}
 		</div>
 		{
 			coverImage ? (

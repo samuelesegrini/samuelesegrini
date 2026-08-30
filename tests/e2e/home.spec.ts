@@ -5,9 +5,12 @@ test('Italian homepage presents the editorial portfolio hierarchy', async ({ pag
 
 	await expect(page).toHaveTitle(/Software Engineer/);
 	await expect(page.getByRole('link', { name: 'Samuele Segrini, home' })).toBeVisible();
-	await expect(page.getByRole('heading', { level: 1 })).toContainText('Software Engineer');
+	await expect(page.getByRole('heading', { level: 1 })).toContainText(
+		'dall’interfaccia all’infrastruttura',
+	);
 	await expect(page.getByRole('heading', { name: 'Progetti in evidenza' })).toBeVisible();
 	await expect(page.locator('[data-featured-project]')).toHaveCount(3);
+	await expect(page.locator('[data-featured-project]').first().locator('.project-role')).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Highway Route Planner' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Ultimi articoli' })).toBeVisible();
 	await expect(page.getByRole('link', { name: /English/ })).toHaveAttribute('href', '/en/');
@@ -19,6 +22,10 @@ test('Italian homepage presents the editorial portfolio hierarchy', async ({ pag
 		'href',
 		'https://www.linkedin.com/in/samuele-segrini-221443241/',
 	);
+	await expect(page.locator('footer').getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+		'href',
+		'https://github.com/samuelesegrini',
+	);
 });
 
 test('root sends visitors to the Italian default locale', async ({ page }) => {
@@ -28,6 +35,10 @@ test('root sends visitors to the Italian default locale', async ({ page }) => {
 
 test('English routes and localized language switches remain paired', async ({ page }) => {
 	await page.goto('/en/');
+	await expect(page.getByRole('heading', { level: 1 })).toContainText(
+		'from interface to infrastructure',
+	);
+	await expect(page.locator('[data-featured-project]').first().locator('.project-role')).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Featured projects' })).toBeVisible();
 	await page.getByRole('link', { name: 'Highway Route Planner' }).click();
 	await expect(page).toHaveURL(/\/en\/projects\/highway-route-planner\/$/);
