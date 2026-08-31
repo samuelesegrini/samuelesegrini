@@ -17,40 +17,67 @@ const title = context === 'project'
 
 <script>
 	const readingLine = () => Math.min(window.innerHeight * 0.55, 480);
+	const cleanups = new Set<() => void>();
 
-	document.querySelectorAll<HTMLElement>('.article-toc').forEach((toc) => {
-		const links = Array.from(toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
-		const chapters = links.flatMap((link) => {
-			const id = decodeURIComponent(link.hash.slice(1));
-			const heading = document.getElementById(id);
-			return heading ? [{ heading, link }] : [];
-		});
+	const initializeTableOfContents = () => {
+		document.querySelectorAll<HTMLElement>('.article-toc').forEach((toc) => {
+			if (toc.dataset.tocInitialized === 'true') return;
 
-		if (chapters.length === 0) return;
-
-		let frame = 0;
-		const setCurrent = (current: HTMLAnchorElement) => {
-			links.forEach((link) => {
-				if (link === current) link.setAttribute('aria-current', 'location');
-				else link.removeAttribute('aria-current');
+			const links = Array.from(toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
+			const chapters = links.flatMap((link) => {
+				const id = decodeURIComponent(link.hash.slice(1));
+				const heading = document.getElementById(id);
+				return heading ? [{ heading, link }] : [];
 			});
-		};
-		const updateCurrentChapter = () => {
-			frame = 0;
-			let current = chapters[0];
-			for (const chapter of chapters) {
-				if (chapter.heading.getBoundingClientRect().top > readingLine()) break;
-				current = chapter;
-			}
-			setCurrent(current.link);
-		};
-		const scheduleUpdate = () => {
-			if (frame === 0) frame = window.requestAnimationFrame(updateCurrentChapter);
-		};
 
-		links.forEach((link) => link.addEventListener('click', () => setCurrent(link)));
-		window.addEventListener('scroll', scheduleUpdate, { passive: true });
-		window.addEventListener('resize', scheduleUpdate);
-		updateCurrentChapter();
-	});
+			if (chapters.length === 0) return;
+
+			let frame = 0;
+			const setCurrent = (current: HTMLAnchorElement) => {
+				links.forEach((link) => {
+					if (link === current) link.setAttribute('aria-current', 'location');
+					else link.removeAttribute('aria-current');
+				});
+			};
+			const updateCurrentChapter = () => {
+				frame = 0;
+				let current = chapters[0];
+				for (const chapter of chapters) {
+					if (chapter.heading.getBoundingClientRect().top > readingLine()) break;
+					current = chapter;
+				}
+				setCurrent(current.link);
+			};
+			const scheduleUpdate = () => {
+				if (frame === 0) frame = window.requestAnimationFrame(updateCurrentChapter);
+			};
+			const onLinkClick = (event: Event) => {
+				const link = event.currentTarget as HTMLAnchorElement;
+				setCurrent(link);
+			};
+
+			links.forEach((link) => link.addEventListener('click', onLinkClick));
+			window.addEventListener('scroll', scheduleUpdate, { passive: true });
+			window.addEventListener('resize', scheduleUpdate);
+			toc.dataset.tocInitialized = 'true';
+			cleanups.add(() => {
+				links.forEach((link) => link.removeEventListener('click', onLinkClick));
+				window.removeEventListener('scroll', scheduleUpdate);
+				window.removeEventListener('resize', scheduleUpdate);
+				if (frame !== 0) window.cancelAnimationFrame(frame);
+				frame = 0;
+				toc.removeAttribute('data-toc-initialized');
+			});
+			updateCurrentChapter();
+		});
+	};
+
+	const cleanupTableOfContents = () => {
+		cleanups.forEach((cleanup) => cleanup());
+		cleanups.clear();
+	};
+
+	initializeTableOfContents();
+	document.addEventListener('astro:page-load', initializeTableOfContents);
+	document.addEventListener('astro:before-swap', cleanupTableOfContents);
 </script>

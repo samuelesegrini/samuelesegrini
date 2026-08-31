@@ -56,4 +56,4 @@ Connect the GitHub repository in Cloudflare Pages and configure:
 
 Branch deployments remain previews. On `main`, `npm run launch:check` blocks the build while placeholder mode, demonstration copy, missing Tina credentials, a placeholder origin, or either CV PDF remains.
 
-Before public launch, replace all fixture content and profile values, set `isPlaceholder: false` in `src/config/site.ts`, add `public/cv/cv-it.pdf` and `public/cv/cv-en.pdf`, and set the real Cloudflare-provided origin.
+Before public launch, replace all fixture content and profile values, set `isPlaceholder: false` in `src/config/site-shared.mjs`, add `public/cv/cv-it.pdf` and `public/cv/cv-en.pdf`, and set the real Cloudflare-provided origin.

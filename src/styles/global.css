@@ -88,7 +88,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .project-card .project-role { margin-top: .9rem; color: rgba(8,8,8,.68); font: max(.75rem,12px)/1.4 var(--mono); letter-spacing: .045em; text-transform: uppercase; }
 .project-card .project-proof { margin-top: .9rem; color: var(--ink); font: max(.7rem,11px)/1.4 var(--mono); text-transform: uppercase; }
 .project-card .project-proof strong { margin-right: .3rem; font: 750 1.15rem/1 var(--sans); letter-spacing: -.03em; }
-.project-card .project-status { margin-top: .45rem; color: rgba(8,8,8,.58); font: max(.7rem,11px) var(--mono); letter-spacing: .045em; text-transform: uppercase; }
+.project-card .project-status { margin-top: .45rem; color: #5c566a; font: max(.7rem,11px) var(--mono); letter-spacing: .045em; text-transform: uppercase; }
 .project-arrow { position: absolute; right: clamp(1.5rem,3vw,3rem); bottom: clamp(1.5rem,3vw,3rem); display: grid; width: 3rem; aspect-ratio: 1; place-items: center; border: 1px solid rgba(8,8,8,.28); border-radius: 50%; transition: transform 180ms ease, background-color 180ms ease, color 180ms ease; }
 .project-card-link:hover .project-arrow, .project-card-link:focus-visible .project-arrow { transform: translate(3px,-3px); background: var(--ink); color: var(--white); }
 .project-card-link:active .project-arrow { transform: translate(1px,-1px) scale(.94); }

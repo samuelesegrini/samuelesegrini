@@ -5,6 +5,7 @@ dist/
 test-results/
 playwright-report/
 .lighthouseci/
+final-fix-report.md
 tina/__generated__/
 .superpowers/
 .worktrees/

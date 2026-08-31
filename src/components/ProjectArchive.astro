@@ -83,22 +83,29 @@ const tones = ['blue', 'lime', 'violet', 'orange', 'paper'] as const;
 </BaseLayout>
 
 <script>
-	const archive = document.querySelector<HTMLElement>('[data-project-archive]');
-	if (archive) {
-		const buttons = [...archive.querySelectorAll<HTMLButtonElement>('[data-project-filter]')];
-		const items = [...archive.querySelectorAll<HTMLElement>('[data-project-item]')];
-		const status = archive.querySelector<HTMLElement>('.filter-status');
-		for (const button of buttons) {
-			button.addEventListener('click', () => {
-				const filter = button.dataset.projectFilter ?? 'all';
-				for (const item of items) item.hidden = filter !== 'all' && item.dataset.kind !== filter;
-				for (const candidate of buttons) {
-					const active = candidate === button;
-					candidate.classList.toggle('is-active', active);
-					candidate.setAttribute('aria-pressed', String(active));
-				}
-				if (status) status.textContent = `${items.filter((item) => !item.hidden).length}`;
-			});
-		}
-	}
+	const initializeProjectArchives = () => {
+		document.querySelectorAll<HTMLElement>('[data-project-archive]').forEach((archive) => {
+			if (archive.dataset.projectArchiveInitialized === 'true') return;
+
+			const buttons = [...archive.querySelectorAll<HTMLButtonElement>('[data-project-filter]')];
+			const items = [...archive.querySelectorAll<HTMLElement>('[data-project-item]')];
+			const status = archive.querySelector<HTMLElement>('.filter-status');
+			for (const button of buttons) {
+				button.addEventListener('click', () => {
+					const filter = button.dataset.projectFilter ?? 'all';
+					for (const item of items) item.hidden = filter !== 'all' && item.dataset.kind !== filter;
+					for (const candidate of buttons) {
+						const active = candidate === button;
+						candidate.classList.toggle('is-active', active);
+						candidate.setAttribute('aria-pressed', String(active));
+					}
+					if (status) status.textContent = `${items.filter((item) => !item.hidden).length}`;
+				});
+			}
+			archive.dataset.projectArchiveInitialized = 'true';
+		});
+	};
+
+	initializeProjectArchives();
+	document.addEventListener('astro:page-load', initializeProjectArchives);
 </script>

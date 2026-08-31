@@ -1,17 +1,28 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+const accessibilityRoutes = [
+	'/it/',
+	'/it/progetti/',
+	'/it/progetti/easymanager-operazioni-ristorante/',
+	'/it/articoli/il-mio-primo-videogioco-era-un-sistema-distribuito/',
+	'/it/chi-sono/',
+	'/it/not-a-real-page',
+];
+
 for (const { width, height } of [
 	{ width: 320, height: 780 },
 	{ width: 768, height: 1024 },
 	{ width: 1440, height: 1000 },
 ]) {
-	test(`homepage has no serious accessibility violations at ${width}px`, async ({ page }) => {
+	test(`representative routes have no serious accessibility violations at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height });
-		await page.goto('/it/', { waitUntil: 'networkidle' });
-		const results = await new AxeBuilder({ page }).analyze();
-		const serious = results.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical');
-		expect(serious).toEqual([]);
+		for (const path of accessibilityRoutes) {
+			await page.goto(path, { waitUntil: 'networkidle' });
+			const results = await new AxeBuilder({ page }).analyze();
+			const serious = results.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical');
+			expect(serious, path).toEqual([]);
+		}
 	});
 }
 

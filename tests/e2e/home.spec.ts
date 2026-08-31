@@ -10,6 +10,8 @@ test('Italian homepage presents the editorial portfolio hierarchy', async ({ pag
 	);
 	await expect(page.locator('.hero .eyebrow')).toContainText('Software Engineer');
 	await expect(page.locator('.hero-bottom')).toContainText('Swift e iOS sono il mio punto di ancoraggio');
+	await expect(page.locator('.preview-notice')).not.toContainText('GitHub');
+	await expect(page.locator('.preview-notice')).toContainText('CV');
 	await expect(page.getByRole('heading', { name: 'Progetti in evidenza' })).toBeVisible();
 	await expect(page.locator('[data-featured-project]')).toHaveCount(3);
 	await expect(page.locator('[data-featured-project]').first().locator('.project-role')).toBeVisible();
@@ -269,6 +271,8 @@ test('English routes and localized language switches remain paired', async ({ pa
 	);
 	await expect(page.locator('.hero .eyebrow')).toContainText('Software Engineer');
 	await expect(page.locator('.hero-bottom')).toContainText('Swift and iOS are my strongest anchor');
+	await expect(page.locator('.preview-notice')).not.toContainText('GitHub');
+	await expect(page.locator('.preview-notice')).toContainText(/résumés|CV/i);
 	await expect(page.locator('[data-featured-project]').first().locator('.project-role')).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Featured projects' })).toBeVisible();
 	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
