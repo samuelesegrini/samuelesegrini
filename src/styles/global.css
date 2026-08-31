@@ -26,7 +26,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .site-header { position: fixed; top: 0; left: 0; z-index: 10; display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.25rem var(--page-padding); color: var(--white); border-bottom: 1px solid rgba(255,255,255,.12); transition: padding 180ms ease, background-color 180ms ease, backdrop-filter 180ms ease; }
 .site-header[data-scrolled] { padding-block: .7rem; background: rgba(8,8,8,.9); border-bottom-color: rgba(255,255,255,.18); backdrop-filter: blur(14px); }
 .wordmark { display: flex; flex-direction: column; font-weight: 750; letter-spacing: -.02em; }
-.wordmark small { color: rgba(255,254,249,.58); font-family: var(--mono); font-size: .62rem; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; }
+.wordmark small { color: rgba(255,254,249,.58); font-family: var(--mono); font-size: max(.7rem,11px); font-weight: 400; letter-spacing: .08em; text-transform: uppercase; }
 .site-header nav { display: flex; align-items: center; gap: clamp(.85rem,2.2vw,2rem); font-size: .82rem; font-weight: 650; }
 .site-header nav a:not(.contact-link) { transition: color 180ms ease; }
 .site-header nav a:not(.contact-link):hover { color: var(--acid); }
@@ -262,6 +262,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 [data-motion-ready] [data-reveal]:not([data-revealed]):focus-within, [data-reveal]:not([data-revealed]):focus-within { opacity: 1; transform: none; }
 [data-motion-ready] [data-reveal]:focus-within { opacity: 1; transform: none; animation: none; }
 [data-motion-ready] [data-reveal][data-revealed] { animation: reveal-rise 560ms cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--reveal-delay, 0ms); }
+[data-motion-ready] [data-reveal][data-revealed]:focus-within { opacity: 1; transform: none; animation: none; animation-delay: 0ms; }
 [data-motion-ready][data-motion-static] [data-reveal][data-revealed] { opacity: 1; transform: none; animation: none; }
 
 @media (max-width:1078px) {

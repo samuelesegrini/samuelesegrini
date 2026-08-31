@@ -32,7 +32,7 @@ for (const width of [320, 390, 768, 1280, 1440]) {
 
 			expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBe(width);
 			const metadataSizes = await page.locator(
-				'.project-meta, .project-role, .project-proof, .project-status, .post-meta, .article-hero time, .detail-grid aside span, .project-explainer figcaption',
+				'.wordmark small, .project-meta, .project-role, .project-proof, .project-status, .post-meta, .article-hero time, .detail-grid aside span, .project-explainer figcaption',
 			).evaluateAll((items) =>
 				items
 					.filter((item) => {
@@ -52,6 +52,68 @@ for (const width of [320, 390, 768, 1280, 1440]) {
 		}
 	});
 }
+
+for (const width of [320, 390, 768, 1280, 1440]) {
+	test(`homepage remains overflow-free after reveal motion at ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height: width < 500 ? 844 : 1000 });
+		await page.goto('/it/', { waitUntil: 'networkidle' });
+		await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+		await page.waitForTimeout(700);
+		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+	});
+}
+
+test('scrolled header exposes its compact backdrop state', async ({ page }) => {
+		await page.setViewportSize({ width: 1280, height: 800 });
+		await page.goto('/it/');
+		const header = page.locator('[data-site-header]');
+		await expect(header).not.toHaveAttribute('data-scrolled', '');
+		const topPadding = await header.evaluate((element) => getComputedStyle(element).paddingTop);
+		await page.evaluate(() => window.scrollTo(0, 320));
+		await expect(header).toHaveAttribute('data-scrolled', '');
+		const compactState = await header.evaluate((element) => {
+			const style = getComputedStyle(element);
+			return { paddingTop: style.paddingTop, background: style.backgroundColor };
+		});
+		expect(Number.parseFloat(compactState.paddingTop)).toBeLessThan(Number.parseFloat(topPadding));
+		expect(compactState.background).not.toBe('rgba(0, 0, 0, 0)');
+});
+
+test('card and pulse feedback has visible keyboard and pressed states', async ({ page }) => {
+		await page.goto('/it/');
+		const cardLink = page.getByRole('link', { name: 'EasyManager', exact: true });
+		await cardLink.focus();
+		const arrowState = await cardLink.locator('.project-arrow').evaluate((element) => {
+			const style = getComputedStyle(element);
+			return { transform: style.transform, background: style.backgroundColor };
+		});
+		expect(arrowState.transform).not.toBe('none');
+		await expect.poll(() => cardLink.locator('.project-arrow').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe(
+			'rgb(8, 8, 8)',
+		);
+
+		const pulseStep = page.getByRole('button', { name: 'Risposta del server', exact: true });
+		await pulseStep.click();
+		await expect(pulseStep).toHaveAttribute('aria-pressed', 'true');
+		await expect.poll(() => pulseStep.locator('.pulse-node').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe(
+			'rgb(199, 255, 159)',
+		);
+});
+
+test('English 404 localizes the shared navigation shell', async ({ page }) => {
+		await page.goto('/en/not-a-real-page');
+		await expect(page.getByRole('heading', { level: 1 })).toHaveText('This path does not lead to a page.');
+		const navigation = page.locator('.desktop-nav');
+		await expect(navigation.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/en/projects/');
+		await expect(navigation.getByRole('link', { name: 'Writing' })).toHaveAttribute('href', '/en/writing/');
+		await expect(navigation.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/en/about/');
+		await expect(navigation.getByRole('link', { name: 'Italiano' })).toHaveAttribute('href', '/it/');
+		await expect(navigation.getByRole('link', { name: 'Contact me' })).toHaveAttribute(
+			'href',
+			'mailto:samuele.segrini@gmail.com',
+		);
+		await expect(page.locator('.site-footer span')).toHaveText('Software, thoughtfully made.');
+});
 
 test('homepage service pulse supports directional and boundary keyboard controls', async ({ page }) => {
 	await page.goto('/en/');
