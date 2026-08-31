@@ -60,12 +60,17 @@ test('homepage service pulse changes state without motion when reduced motion is
 });
 
 test('destination project heading can receive focus after route navigation', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.goto('/it/');
 	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
 	const heading = page.getByRole('heading', { level: 1, name: 'EasyManager' });
 	await expect(heading).toHaveAttribute('tabindex', '-1');
-	await heading.focus();
 	await expect(heading).toBeFocused();
+
+	await page.goBack();
+	await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	await expect(page.getByRole('heading', { level: 1, name: 'EasyManager' })).toBeFocused();
 });
 
 test('homepage reveal choreography initializes progressively and honors reduced motion', async ({ page }) => {
@@ -78,6 +83,73 @@ test('homepage reveal choreography initializes progressively and honors reduced 
 	);
 	expect(revealState.length).toBeGreaterThan(0);
 	expect(revealState.every(({ revealed, opacity }) => revealed && opacity === '1')).toBe(true);
+});
+
+test('route swaps retain exactly one live reveal observer', async ({ page }) => {
+	await page.addInitScript(() => {
+		const stats = { created: 0, disconnected: 0 };
+		const OriginalObserver = window.IntersectionObserver;
+		class InstrumentedObserver extends OriginalObserver {
+			constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+				super(callback, options);
+				stats.created += 1;
+			}
+
+			disconnect(): void {
+				stats.disconnected += 1;
+				super.disconnect();
+			}
+		}
+		Object.defineProperty(window, 'IntersectionObserver', { configurable: true, value: InstrumentedObserver });
+		Object.defineProperty(window, '__motionObserverStats', { configurable: true, value: stats });
+	});
+
+	await page.goto('/it/');
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	await expect(page).toHaveURL(/\/it\/progetti\/easymanager-operazioni-ristorante\/$/);
+	await page.goBack();
+	await expect(page).toHaveURL(/\/it\/$/);
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	await expect(page.getByRole('heading', { level: 1, name: 'EasyManager' })).toBeFocused();
+
+	const stats = await page.evaluate(() => (window as typeof window & { __motionObserverStats: { created: number; disconnected: number } }).__motionObserverStats);
+	expect(stats.created).toBeGreaterThanOrEqual(3);
+	expect(stats.disconnected).toBe(stats.created - 1);
+});
+
+test('reveal fallback remains readable when IntersectionObserver is unavailable', async ({ page }) => {
+	await page.addInitScript(() => {
+		Object.defineProperty(document, 'startViewTransition', { configurable: true, value: undefined });
+		Object.defineProperty(window, 'IntersectionObserver', { configurable: true, value: {} });
+	});
+	await page.goto('/it/');
+
+	const revealState = await page.locator('[data-reveal]').evaluateAll((items) =>
+		items.map((item) => ({ revealed: item.hasAttribute('data-revealed'), opacity: getComputedStyle(item).opacity })),
+	);
+	expect(revealState.length).toBeGreaterThan(0);
+	expect(revealState.every(({ revealed, opacity }) => revealed && opacity === '1')).toBe(true);
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	await expect(page).toHaveURL(/\/it\/progetti\/easymanager-operazioni-ristorante\/$/);
+	await expect(page.getByRole('heading', { level: 1, name: 'EasyManager' })).toBeFocused();
+});
+
+test('keyboard focus reveals delayed card controls', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 780 });
+	await page.goto('/it/');
+
+	for (let index = 0; index < 6; index += 1) await page.keyboard.press('Tab');
+	const firstPulseStep = page.getByRole('button', { name: 'Bozza del tavolo', exact: true });
+	await expect(firstPulseStep).toBeFocused();
+	await expect(firstPulseStep).toBeVisible();
+	const pulseOpacity = await firstPulseStep.evaluate((item) => getComputedStyle(item.closest('[data-reveal]')!).opacity);
+	expect(pulseOpacity).toBe('1');
+
+	for (let index = 0; index < 5; index += 1) await page.keyboard.press('Tab');
+	const firstProjectLink = page.getByRole('link', { name: 'EasyManager', exact: true });
+	await expect(firstProjectLink).toBeFocused();
+	const cardOpacity = await firstProjectLink.evaluate((item) => getComputedStyle(item.closest('[data-reveal]')!).opacity);
+	expect(cardOpacity).toBe('1');
 });
 
 test('English article exposes localized SEO and structured data', async ({ page }) => {

@@ -44,6 +44,7 @@ test('route transition keeps the featured artwork continuous and restores homepa
 
 	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
 	await expect(page).toHaveURL(/\/it\/progetti\/easymanager-operazioni-ristorante\/$/);
+	await expect(page.getByRole('heading', { level: 1, name: 'EasyManager' })).toBeFocused();
 	const detailCover = page.locator('.detail-hero > img');
 	await expect(detailCover).toBeVisible();
 	expect(await detailCover.evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe(transitionName);
@@ -51,6 +52,8 @@ test('route transition keeps the featured artwork continuous and restores homepa
 	await page.goBack();
 	await expect(page).toHaveURL(/\/it\/$/);
 	await expect(page.getByRole('heading', { name: 'Progetti in evidenza' })).toBeVisible();
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	await expect(page.getByRole('heading', { level: 1, name: 'EasyManager' })).toBeFocused();
 });
 
 test('ordinary navigation remains available without JavaScript', async ({ browser }) => {
@@ -64,6 +67,21 @@ test('ordinary navigation remains available without JavaScript', async ({ browse
 	await expect(page).toHaveURL(/\/it\/progetti\/easymanager-operazioni-ristorante\/$/);
 	await expect(page.getByRole('heading', { level: 1, name: 'EasyManager' })).toBeVisible();
 	await context.close();
+});
+
+test('non-featured artwork uses the default route swap without a shared name', async ({ page }) => {
+	await page.goto('/it/progetti/');
+	const archiveNames = await page.locator('[data-project-item] [data-project-artwork]').evaluateAll((items) =>
+		items.map((item) => getComputedStyle(item).viewTransitionName),
+	);
+	expect(archiveNames.length).toBeGreaterThan(0);
+	expect(archiveNames.every((name) => name === 'none')).toBe(true);
+
+	await page.goto('/it/articoli/ricostruire-galaxy-trucker-con-claude/');
+	const relatedName = await page.locator('.related-work [data-project-artwork]').evaluate((item) =>
+		getComputedStyle(item).viewTransitionName,
+	);
+	expect(relatedName).toBe('none');
 });
 
 test('featured trio publishes EasyManager, Galaxy Trucker, and SpinGO in both locales', async ({ page }) => {

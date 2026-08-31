@@ -131,10 +131,9 @@ const aboutURL = lang === 'it' ? '/it/chi-sono/' : '/en/about/';
 			</div>
 		</footer>
 		<script>
-			import { initializePageMotion } from '../scripts/page-motion';
+			import { installPageMotion } from '../scripts/page-motion';
 
-			initializePageMotion();
-			document.addEventListener('astro:page-load', () => initializePageMotion());
+			installPageMotion();
 		</script>
 	</body>
 </html>

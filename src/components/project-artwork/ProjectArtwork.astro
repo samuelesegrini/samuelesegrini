@@ -34,7 +34,7 @@ const {
 	) : coverImage ? (
 		<img
 			data-project-artwork
-			transition:name={transitionName}
+			style={transitionName ? `view-transition-name: ${transitionName}` : undefined}
 			class="project-cover"
 			src={coverImage}
 			alt={coverAlt}
@@ -43,6 +43,6 @@ const {
 			loading={lead ? 'eager' : 'lazy'}
 		/>
 	) : (
-		<div class="project-art" data-project-artwork transition:name={transitionName} aria-hidden="true"><span /><span /><span /></div>
+		<div class="project-art" data-project-artwork style={transitionName ? `view-transition-name: ${transitionName}` : undefined} aria-hidden="true"><span /><span /><span /></div>
 	)
 }

@@ -254,7 +254,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .footer-links { display: flex; gap: 1.5rem; font-weight: 700; }
 .footer-links a:hover { text-decoration: underline; text-underline-offset: .35rem; }
 [data-motion-ready] [data-reveal]:not([data-revealed]) { opacity: 0; transform: translateY(1rem); }
+[data-motion-ready] [data-reveal]:not([data-revealed]):focus-within { opacity: 1; transform: none; }
 [data-motion-ready] [data-reveal][data-revealed] { animation: reveal-rise 560ms cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--reveal-delay, 0ms); }
+[data-motion-ready][data-motion-static] [data-reveal][data-revealed] { opacity: 1; transform: none; animation: none; }
 
 @media (max-width:1078px) {
 	.article-layout, .article-layout.has-toc { grid-template-columns: minmax(0,1fr); }

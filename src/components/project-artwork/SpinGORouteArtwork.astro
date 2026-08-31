@@ -9,7 +9,7 @@ interface Props {
 const { coverImage, coverAlt, lead, transitionName } = Astro.props;
 ---
 
-<div class="project-artwork project-artwork-spingo" data-project-artwork transition:name={transitionName} data-artwork-treatment="spingo-route">
+<div class="project-artwork project-artwork-spingo" data-project-artwork style={transitionName ? `view-transition-name: ${transitionName}` : undefined} data-artwork-treatment="spingo-route">
 	<img
 		class="project-cover"
 		src={coverImage}

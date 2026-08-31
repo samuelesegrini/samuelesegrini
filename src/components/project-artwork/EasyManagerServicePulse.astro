@@ -26,7 +26,7 @@ const copy = lang === 'it'
 <div
 	class="easy-service-pulse"
 	data-project-artwork
-	transition:name={transitionName}
+	style={transitionName ? `view-transition-name: ${transitionName}` : undefined}
 	role="group"
 	aria-label={copy.label}
 	data-service-pulse
