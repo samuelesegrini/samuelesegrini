@@ -93,7 +93,7 @@ const aboutURL = lang === 'it' ? '/it/chi-sono/' : '/en/about/';
 	</head>
 	<body>
 		<a class="skip-link" href="#main">{labels.skip}</a>
-		<header class="site-header">
+		<header class="site-header" data-site-header>
 			<a class="wordmark" href={`${routeBase}/`} aria-label={`${siteConfig.name}, home`}>
 				<span>{siteConfig.name}</span>
 				<small>{siteConfig.role}</small>
@@ -134,6 +134,21 @@ const aboutURL = lang === 'it' ? '/it/chi-sono/' : '/en/about/';
 			import { installPageMotion } from '../scripts/page-motion';
 
 			installPageMotion();
+		</script>
+		<script is:inline>
+			if (!window.__portfolioHeaderInstalled) {
+				const updateHeader = () => {
+					const header = document.querySelector('[data-site-header]');
+					if (header) header.toggleAttribute('data-scrolled', window.scrollY > 12);
+				};
+				document.addEventListener('scroll', updateHeader, { passive: true });
+				document.addEventListener('astro:page-load', updateHeader);
+				window.__portfolioHeaderInstalled = true;
+			}
+			window.requestAnimationFrame(() => {
+				const header = document.querySelector('[data-site-header]');
+				if (header) header.toggleAttribute('data-scrolled', window.scrollY > 12);
+			});
 		</script>
 	</body>
 </html>

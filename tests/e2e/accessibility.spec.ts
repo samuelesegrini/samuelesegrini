@@ -15,6 +15,44 @@ for (const { width, height } of [
 	});
 }
 
+const sharedShellRoutes = [
+	'/it/',
+	'/it/progetti/easymanager-operazioni-ristorante/',
+	'/it/progetti/',
+	'/it/articoli/il-mio-primo-videogioco-era-un-sistema-distribuito/',
+	'/it/chi-sono/',
+	'/en/not-a-real-page',
+];
+
+for (const width of [320, 390, 768, 1280, 1440]) {
+	test(`shared shell fits representative routes at ${width}px`, async ({ page }) => {
+		for (const path of sharedShellRoutes) {
+			await page.setViewportSize({ width, height: width < 500 ? 844 : 1000 });
+			await page.goto(path, { waitUntil: 'networkidle' });
+
+			expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBe(width);
+			const metadataSizes = await page.locator(
+				'.project-meta, .project-role, .project-proof, .project-status, .post-meta, .article-hero time, .detail-grid aside span, .project-explainer figcaption',
+			).evaluateAll((items) =>
+				items
+					.filter((item) => {
+						const box = item.getBoundingClientRect();
+						return box.width > 0 && box.height > 0;
+					})
+					.map((item) => Number.parseFloat(getComputedStyle(item).fontSize)),
+			);
+			expect(metadataSizes.every((size) => size >= 11), `${path} metadata`).toBe(true);
+
+			if (width <= 390) {
+				const summary = page.locator('.mobile-menu summary');
+				const email = page.locator('footer a[href^="mailto:"]');
+				expect((await summary.boundingBox())?.height, `${path} menu`).toBeGreaterThanOrEqual(44);
+				expect((await email.boundingBox())?.height, `${path} email`).toBeGreaterThanOrEqual(44);
+			}
+		}
+	});
+}
+
 test('homepage service pulse supports directional and boundary keyboard controls', async ({ page }) => {
 	await page.goto('/en/');
 	const pulse = page.locator('[data-service-pulse]');

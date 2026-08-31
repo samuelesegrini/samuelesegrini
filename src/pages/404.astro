@@ -10,7 +10,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 	canonicalPath="/404.html"
 	noIndex
 >
-	<section class="not-found dark-section">
+	<section class="not-found dark-section" data-not-found>
 		<p class="eyebrow">404 · <span data-error-label>Pagina non trovata</span></p>
 		<h1 data-error-title>Questa strada non porta a una pagina.</h1>
 		<a class="primary-button" href="/it/" data-error-link>Torna alla home</a>
@@ -21,10 +21,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 	if (window.location.pathname.startsWith('/en/')) {
 		document.documentElement.lang = 'en';
 		document.title = 'Page not found — 404';
-		document.querySelector('[data-error-label]').textContent = 'Page not found';
-		document.querySelector('[data-error-title]').textContent = 'This path does not lead to a page.';
+		document.querySelector('[data-error-label]')?.replaceChildren('Page not found');
+		document.querySelector('[data-error-title]')?.replaceChildren('This path does not lead to a page.');
 		const link = document.querySelector('[data-error-link]');
-		link.textContent = 'Back to home';
-		link.href = '/en/';
+		if (link instanceof HTMLAnchorElement) {
+			link.textContent = 'Back to home';
+			link.href = '/en/';
+		}
+		for (const nav of document.querySelectorAll('.desktop-nav, .mobile-menu nav')) {
+			const links = nav.querySelectorAll('a');
+			const labels = ['Projects', 'Writing', 'About', 'Italiano', 'Contact me'];
+			const hrefs = ['/en/projects/', '/en/writing/', '/en/about/', '/it/', 'mailto:samuele.segrini@gmail.com'];
+			links.forEach((item, index) => {
+				item.textContent = labels[index];
+				item.setAttribute('href', hrefs[index]);
+			});
+		}
+		document.querySelector('.site-footer span')?.replaceChildren('Software, thoughtfully made.');
 	}
 </script>

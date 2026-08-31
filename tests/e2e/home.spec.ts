@@ -785,9 +785,9 @@ test('project archive offers only represented filters and works without hiding c
 	page,
 }) => {
 	await page.goto('/it/progetti/');
-	await expect(page.locator('[data-project-item]')).toHaveCount(6);
+	await expect(page.locator('[data-project-item]')).toHaveCount(7);
 	await expect(page.getByRole('button', { name: 'App' })).toBeVisible();
-	await expect(page.getByRole('button', { name: 'Pacchetti' })).toHaveCount(0);
+	await expect(page.getByRole('button', { name: 'Pacchetti' })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Open source' })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Esperimenti' })).toBeVisible();
 	await page.getByRole('button', { name: 'Esperimenti' }).click();
