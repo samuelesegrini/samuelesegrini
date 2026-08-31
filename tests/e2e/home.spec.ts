@@ -96,11 +96,20 @@ test('Galaxy artwork motion establishes a bounded connection', async ({ browser 
 	const page = await context.newPage();
 	await page.goto('/it/');
 
-	const iterationCount = await page
+	const pathAnimations = await page
 		.locator('[data-artwork-treatment="galaxy-network"] [data-artwork-motion]')
-		.first()
-		.evaluate((element) => getComputedStyle(element).animationIterationCount);
-	expect(iterationCount).toBe('1');
+		.evaluateAll((elements) =>
+			elements.map((element) => {
+				const style = getComputedStyle(element);
+				return { iterationCount: style.animationIterationCount, fillMode: style.animationFillMode };
+			}),
+		);
+	expect(pathAnimations).toHaveLength(4);
+	for (const animation of pathAnimations) {
+		expect(animation.iterationCount).not.toBe('infinite');
+		expect(animation.iterationCount).toBe('1');
+		expect(animation.fillMode).toBe('both');
+	}
 
 	await context.close();
 });
@@ -138,11 +147,11 @@ test('featured artwork reduced motion stops decorative overlays', async ({ brows
 		const artwork = page.locator(`[data-artwork-treatment="${treatment}"]`);
 		const overlay = artwork.locator('[data-artwork-overlay]');
 		await expect(overlay).toBeVisible();
-		const motion = await overlay.locator('[data-artwork-motion]').first().evaluate((element) => {
-			const style = getComputedStyle(element);
-			return { animationDuration: style.animationDuration, animationName: style.animationName };
-		});
-		expect(motion.animationDuration === '0.01ms' || motion.animationName === 'none').toBe(true);
+		const motionNames = await overlay.locator('[data-artwork-motion]').evaluateAll((elements) =>
+			elements.map((element) => getComputedStyle(element).animationName),
+		);
+		expect(motionNames).not.toHaveLength(0);
+		expect(motionNames.every((animationName) => animationName === 'none')).toBe(true);
 	}
 
 	await expect(page.getByRole('img', {
