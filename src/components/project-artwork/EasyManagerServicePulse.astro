@@ -7,19 +7,59 @@ interface Props {
 const { lang, transitionName } = Astro.props;
 
 const steps = lang === 'it'
-	? ['Bozza del tavolo', 'Outbox persistente', 'Risposta del server', 'Corsia del dispositivo', 'Registro fiscale']
-	: ['Table draft', 'Durable outbox', 'Server acknowledgement', 'Device lane', 'Fiscal registry'];
+	? [
+		{
+			label: 'Bozza del tavolo',
+			description: 'Il tavolo e il suo ordine restano una bozza modificabile finché l’operazione non è pronta a lasciare l’interfaccia.',
+		},
+		{
+			label: 'Outbox persistente',
+			description: 'L’operazione entra in un outbox durevole prima dell’invio, così l’intento sopravvive a un’interruzione del processo o della rete.',
+		},
+		{
+			label: 'Risposta del server',
+			description: 'L’acknowledgement del server conferma la ricezione; in sua assenza, l’esito in coda resta esplicitamente incerto.',
+		},
+		{
+			label: 'Corsia del dispositivo',
+			description: 'Il lavoro per cucina, bar e fisco passa attraverso corsie serializzate, così i comandi per uno stesso endpoint non si intercalano.',
+		},
+		{
+			label: 'Registro fiscale',
+			description: 'Checkout e registro fiscale confermano il completamento; un’esecuzione incerta viene riconciliata invece di essere ritentata alla cieca.',
+		},
+	]
+	: [
+		{
+			label: 'Table draft',
+			description: 'A table and its order stay editable as a draft until the operation is ready to leave the interface.',
+		},
+		{
+			label: 'Durable outbox',
+			description: 'The operation enters a durable outbox before dispatch, so its intent survives a process or network interruption.',
+		},
+		{
+			label: 'Server acknowledgement',
+			description: 'A server acknowledgement confirms receipt; without one, the queued outcome remains explicitly uncertain.',
+		},
+		{
+			label: 'Device lane',
+			description: 'Kitchen, bar, and fiscal work move through serialized device lanes so commands to one endpoint cannot interleave.',
+		},
+		{
+			label: 'Fiscal registry',
+			description: 'Checkout and the fiscal registry confirm completion; uncertain execution is reconciled instead of blindly retried.',
+		},
+	];
 
 const copy = lang === 'it'
 	? {
 		label: 'Flusso operativo EasyManager',
 		heading: 'Impulso del servizio',
-		uncertain: 'Se l’esecuzione è incerta, il flusso viene riconciliato senza retry ciechi.',
 	}
 	: {
 		label: 'EasyManager operations flow',
 		heading: 'Service pulse',
-		uncertain: 'Uncertain execution is reconciled without a blind retry.',
 	};
 ---
 
@@ -30,8 +70,8 @@ const copy = lang === 'it'
 	role="group"
 	aria-label={copy.label}
 	data-service-pulse
+	data-artwork-treatment="easy-service-pulse"
 	data-active-step="1"
-	data-uncertain-status={copy.uncertain}
 >
 	<div class="pulse-heading">
 		<p>{copy.heading}</p>
@@ -39,22 +79,31 @@ const copy = lang === 'it'
 	</div>
 	<ol class="pulse-steps">
 		{
-			steps.map((step, index) => (
+			steps.map(({ label }, index) => (
 				<li class="pulse-step-item">
 					<button
 						class="pulse-step-button"
 						type="button"
 						data-pulse-step
+						aria-label={label}
 						aria-pressed={index === 0 ? 'true' : 'false'}
 					>
 						<span class="pulse-node" aria-hidden="true" />
-						<span>{step}</span>
+						<span>{label}</span>
 					</button>
 				</li>
 			))
 		}
 	</ol>
-	<p class="pulse-status" aria-live="polite" data-pulse-status>{steps[0]}. {copy.uncertain}</p>
+	<ol class="pulse-descriptions">
+		{steps.map(({ label, description }) => (
+			<li data-pulse-description data-pulse-description-text={description}>
+				<strong>{label}</strong>
+				<span>{description}</span>
+			</li>
+		))}
+	</ol>
+	<p class="pulse-status" aria-live="polite" aria-atomic="true" data-pulse-status>{steps[0].label}. {steps[0].description}</p>
 </div>
 
 <script>
@@ -63,9 +112,9 @@ const copy = lang === 'it'
 			if (pulse.dataset.pulseInitialized === 'true') return;
 
 			const steps = Array.from(pulse.querySelectorAll<HTMLButtonElement>('[data-pulse-step]'));
+			const descriptions = Array.from(pulse.querySelectorAll<HTMLElement>('[data-pulse-description]'));
 			const status = pulse.querySelector<HTMLElement>('[data-pulse-status]');
 			const count = pulse.querySelector<HTMLElement>('[data-pulse-count]');
-			const uncertain = pulse.dataset.uncertainStatus ?? '';
 
 			const setActiveStep = (index: number, moveFocus = false) => {
 				const activeIndex = (index + steps.length) % steps.length;
@@ -73,7 +122,11 @@ const copy = lang === 'it'
 				steps.forEach((step, stepIndex) => {
 					step.setAttribute('aria-pressed', String(stepIndex === activeIndex));
 				});
-				if (status) status.textContent = `${steps[activeIndex].textContent?.trim() ?? ''}. ${uncertain}`;
+				if (status) {
+					const label = steps[activeIndex].textContent?.trim() ?? '';
+					const description = descriptions[activeIndex]?.dataset.pulseDescriptionText ?? '';
+					status.textContent = `${label}. ${description}`;
+				}
 				if (count) count.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(steps.length).padStart(2, '0')}`;
 				if (moveFocus) steps[activeIndex].focus();
 			};
@@ -104,6 +157,7 @@ const copy = lang === 'it'
 			});
 
 			pulse.dataset.pulseInitialized = 'true';
+			setActiveStep(Number(pulse.dataset.activeStep ?? '1') - 1);
 		});
 	};
 

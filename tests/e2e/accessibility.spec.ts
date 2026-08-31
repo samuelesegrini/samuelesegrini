@@ -57,8 +57,16 @@ for (const width of [320, 390, 768, 1280, 1440]) {
 	test(`homepage remains overflow-free after reveal motion at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: width < 500 ? 844 : 1000 });
 		await page.goto('/it/', { waitUntil: 'networkidle' });
-		await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-		await page.waitForTimeout(700);
+		const revealItems = page.locator('[data-reveal]');
+		for (let index = 0; index < await revealItems.count(); index += 1) {
+			await revealItems.nth(index).scrollIntoViewIfNeeded();
+		}
+		await expect.poll(() => revealItems.evaluateAll((items) =>
+			items.every((item) => item.hasAttribute('data-revealed')),
+		)).toBe(true);
+		await revealItems.evaluateAll(async (items) => {
+			await Promise.all(items.flatMap((item) => item.getAnimations()).map((animation) => animation.finished));
+		});
 		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
 	});
 }
@@ -100,10 +108,21 @@ test('card and pulse feedback has visible keyboard and pressed states', async ({
 		);
 });
 
-test('English 404 localizes the shared navigation shell', async ({ page }) => {
+test('English 404 localizes metadata, ARIA labels, navigation, and the complete shared shell', async ({ page }) => {
 		await page.goto('/en/not-a-real-page');
+		await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+		await expect(page).toHaveTitle('Page not found — 404');
+		await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', 'The requested page does not exist.');
+		await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/en\/not-a-real-page$/);
+		await expect(page.locator('link[type="application\/rss\+xml"]')).toHaveAttribute('href', /\/en\/rss\.xml$/);
+		await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Page not found — 404');
+		await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', 'The requested page does not exist.');
+		await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute('content', 'en_US');
+		await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', /\/en\/not-a-real-page$/);
+		await expect(page.locator('.skip-link')).toHaveText('Skip to content');
 		await expect(page.getByRole('heading', { level: 1 })).toHaveText('This path does not lead to a page.');
 		const navigation = page.locator('.desktop-nav');
+		await expect(navigation).toHaveAttribute('aria-label', 'Primary navigation');
 		await expect(navigation.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/en/projects/');
 		await expect(navigation.getByRole('link', { name: 'Writing' })).toHaveAttribute('href', '/en/writing/');
 		await expect(navigation.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/en/about/');
@@ -112,7 +131,33 @@ test('English 404 localizes the shared navigation shell', async ({ page }) => {
 			'href',
 			'mailto:samuele.segrini@gmail.com',
 		);
+		await expect(page.locator('.mobile-menu nav')).toHaveAttribute('aria-label', 'Mobile navigation');
 		await expect(page.locator('.site-footer span')).toHaveText('Software, thoughtfully made.');
+});
+
+test('English 404 remains complete and navigable without JavaScript', async ({ browser }) => {
+	const context = await browser.newContext({
+		baseURL: 'http://127.0.0.1:4321',
+		javaScriptEnabled: false,
+	});
+	const page = await context.newPage();
+	await page.goto('/en/not-a-real-page');
+
+	const fallback = page.locator('[data-english-404-fallback]');
+	await expect(fallback).toHaveAttribute('lang', 'en');
+	await expect(fallback.getByRole('heading', { name: 'This path does not lead to a page.' })).toBeVisible();
+	await expect(fallback.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/en/');
+	await expect(fallback.getByRole('navigation', { name: 'English error-page navigation' })).toBeVisible();
+	for (const link of [
+		{ name: 'Projects', href: '/en/projects/' },
+		{ name: 'Writing', href: '/en/writing/' },
+		{ name: 'About', href: '/en/about/' },
+		{ name: 'Contact me', href: 'mailto:samuele.segrini@gmail.com' },
+	]) {
+		await expect(fallback.getByRole('link', { name: link.name, exact: true })).toHaveAttribute('href', link.href);
+	}
+
+	await context.close();
 });
 
 test('homepage service pulse supports directional and boundary keyboard controls', async ({ page }) => {
@@ -144,6 +189,7 @@ test('homepage service pulse supports directional and boundary keyboard controls
 
 test('homepage service pulse changes state without motion when reduced motion is requested', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.setViewportSize({ width: 320, height: 780 });
 	await page.goto('/en/');
 
 	const pulse = page.locator('[data-service-pulse]');
@@ -151,6 +197,14 @@ test('homepage service pulse changes state without motion when reduced motion is
 	await thirdStep.click();
 	await expect(pulse).toHaveAttribute('data-active-step', '3');
 	await expect(thirdStep).toHaveAttribute('aria-pressed', 'true');
+	await expect(pulse.locator('[data-pulse-description]')).toHaveCount(5);
+	for (const description of await pulse.locator('[data-pulse-description]').all()) await expect(description).toBeVisible();
+	expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+	const pulseBox = await pulse.boundingBox();
+	const titleBox = await page.locator('[data-featured-project][data-project-key="easymanager"] h3').boundingBox();
+	expect(pulseBox).not.toBeNull();
+	expect(titleBox).not.toBeNull();
+	expect(pulseBox!.y + pulseBox!.height).toBeLessThanOrEqual(titleBox!.y);
 
 	const motion = await thirdStep.locator('.pulse-node').evaluate((node) => {
 		const style = getComputedStyle(node);

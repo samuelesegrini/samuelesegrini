@@ -8,6 +8,8 @@ test('Italian homepage presents the editorial portfolio hierarchy', async ({ pag
 	await expect(page.getByRole('heading', { level: 1 })).toContainText(
 		'dall’interfaccia all’infrastruttura',
 	);
+	await expect(page.locator('.hero .eyebrow')).toContainText('Software Engineer');
+	await expect(page.locator('.hero-bottom')).toContainText('Swift e iOS sono il mio punto di ancoraggio');
 	await expect(page.getByRole('heading', { name: 'Progetti in evidenza' })).toBeVisible();
 	await expect(page.locator('[data-featured-project]')).toHaveCount(3);
 	await expect(page.locator('[data-featured-project]').first().locator('.project-role')).toBeVisible();
@@ -92,6 +94,32 @@ test('featured trio publishes EasyManager, Galaxy Trucker, and SpinGO in both lo
 			'Galaxy Trucker',
 			'SpinGO',
 		]);
+		expect(
+			await page.locator('[data-featured-project] [data-artwork-treatment]').evaluateAll((items) =>
+				items.map((item) => item.getAttribute('data-artwork-treatment')),
+			),
+		).toEqual(['easy-service-pulse', 'galaxy-network', 'spingo-route']);
+	}
+});
+
+test('Galaxy Trucker homepage copy gives the four-person team sole featured-card prominence', async ({ page }) => {
+	for (const sample of [
+		{
+			path: '/it/',
+			role: 'Team · Sviluppatore nel team di quattro persone',
+			excerpt: 'Quattro persone hanno consegnato un gioco multiplayer Socket e RMI con un server autorevole, due trasporti di rete e due interfacce giocabili.',
+		},
+		{
+			path: '/en/',
+			role: 'Team · Developer on the four-person team',
+			excerpt: 'Four people shipped a Socket-and-RMI multiplayer game with one authoritative server, two network transports, and two playable interfaces.',
+		},
+	]) {
+		await page.goto(sample.path);
+		const card = page.locator('[data-featured-project][data-project-key="galaxy-trucker"]');
+		await expect(card.locator('.project-role')).toHaveText(sample.role);
+		await expect(card.locator('.project-card-copy > p')).toHaveText(sample.excerpt);
+		await expect(card).not.toContainText(/AI|Claude/i);
 	}
 });
 
@@ -239,6 +267,8 @@ test('English routes and localized language switches remain paired', async ({ pa
 	await expect(page.getByRole('heading', { level: 1 })).toContainText(
 		'from interface to infrastructure',
 	);
+	await expect(page.locator('.hero .eyebrow')).toContainText('Software Engineer');
+	await expect(page.locator('.hero-bottom')).toContainText('Swift and iOS are my strongest anchor');
 	await expect(page.locator('[data-featured-project]').first().locator('.project-role')).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Featured projects' })).toBeVisible();
 	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
@@ -257,22 +287,24 @@ test('EasyManager service pulse exposes five localized states and only public re
 			label: 'Flusso operativo EasyManager',
 			step: 'Risposta del server',
 			status:
-				'Risposta del server. Se l’esecuzione è incerta, il flusso viene riconciliato senza retry ciechi.',
+				'L’acknowledgement del server conferma la ricezione; in sua assenza, l’esito in coda resta esplicitamente incerto.',
 			detail: '/it/progetti/easymanager-operazioni-ristorante/',
 			links: [
 				{ label: 'Applicazione originale', href: 'https://github.com/samuelesegrini/easymanager' },
 			],
+			sourceNotice: 'Il sorgente della reingegnerizzazione successiva non è attualmente collegato pubblicamente né verificabile in modo indipendente in questa anteprima.',
 		},
 		{
 			home: '/en/',
 			label: 'EasyManager operations flow',
 			step: 'Server acknowledgement',
 			status:
-				'Server acknowledgement. Uncertain execution is reconciled without a blind retry.',
+				'A server acknowledgement confirms receipt; without one, the queued outcome remains explicitly uncertain.',
 			detail: '/en/projects/easymanager-restaurant-operations/',
 			links: [
 				{ label: 'Original application', href: 'https://github.com/samuelesegrini/easymanager' },
 			],
+			sourceNotice: 'The later re-engineering source is not currently publicly linked or independently inspectable in this preview.',
 		},
 	]) {
 		await page.goto(sample.home);
@@ -281,7 +313,7 @@ test('EasyManager service pulse exposes five localized states and only public re
 		await expect(pulse.locator('[data-pulse-step]')).toHaveCount(5);
 		await pulse.getByRole('button', { name: sample.step, exact: true }).click();
 		await expect(pulse).toHaveAttribute('data-active-step', '3');
-		await expect(pulse.locator('[aria-live="polite"]')).toHaveText(sample.status);
+		await expect(pulse.locator('[aria-live="polite"]')).toContainText(sample.status);
 
 		await page.goto(sample.detail);
 		await expect(page.locator('.project-links a')).toHaveCount(sample.links.length);
@@ -291,31 +323,59 @@ test('EasyManager service pulse exposes five localized states and only public re
 				link.href,
 			);
 		}
+		await expect(page.locator('.prose')).toContainText(sample.sourceNotice);
 	}
 });
 
-test('EasyManager remains complete and linked when JavaScript is disabled', async ({ browser }) => {
+test('EasyManager keeps all five localized stage descriptions and its link without JavaScript', async ({ browser }) => {
 	const context = await browser.newContext({
 		baseURL: 'http://127.0.0.1:4321',
 		javaScriptEnabled: false,
 	});
 	const page = await context.newPage();
-	await page.goto('/it/');
-
-	const pulse = page.locator('[data-service-pulse]');
-	for (const step of [
-		'Bozza del tavolo',
-		'Outbox persistente',
-		'Risposta del server',
-		'Corsia del dispositivo',
-		'Registro fiscale',
+	await page.setViewportSize({ width: 320, height: 780 });
+	for (const sample of [
+		{
+			path: '/it/',
+			labels: ['Bozza del tavolo', 'Outbox persistente', 'Risposta del server', 'Corsia del dispositivo', 'Registro fiscale'],
+			descriptions: [
+				'Il tavolo e il suo ordine restano una bozza modificabile finché l’operazione non è pronta a lasciare l’interfaccia.',
+				'L’operazione entra in un outbox durevole prima dell’invio, così l’intento sopravvive a un’interruzione del processo o della rete.',
+				'L’acknowledgement del server conferma la ricezione; in sua assenza, l’esito in coda resta esplicitamente incerto.',
+				'Il lavoro per cucina, bar e fisco passa attraverso corsie serializzate, così i comandi per uno stesso endpoint non si intercalano.',
+				'Checkout e registro fiscale confermano il completamento; un’esecuzione incerta viene riconciliata invece di essere ritentata alla cieca.',
+			],
+			href: '/it/progetti/easymanager-operazioni-ristorante/',
+		},
+		{
+			path: '/en/',
+			labels: ['Table draft', 'Durable outbox', 'Server acknowledgement', 'Device lane', 'Fiscal registry'],
+			descriptions: [
+				'A table and its order stay editable as a draft until the operation is ready to leave the interface.',
+				'The operation enters a durable outbox before dispatch, so its intent survives a process or network interruption.',
+				'A server acknowledgement confirms receipt; without one, the queued outcome remains explicitly uncertain.',
+				'Kitchen, bar, and fiscal work move through serialized device lanes so commands to one endpoint cannot interleave.',
+				'Checkout and the fiscal registry confirm completion; uncertain execution is reconciled instead of blindly retried.',
+			],
+			href: '/en/projects/easymanager-restaurant-operations/',
+		},
 	]) {
-		await expect(pulse.getByText(step, { exact: true })).toBeVisible();
+		await page.goto(sample.path);
+		const pulse = page.locator('[data-service-pulse]');
+		for (const label of sample.labels) await expect(pulse.getByRole('button', { name: label, exact: true })).toBeVisible();
+		for (const description of sample.descriptions) await expect(pulse.getByText(description, { exact: true })).toBeVisible();
+		await expect(pulse.locator('[data-pulse-description]')).toHaveCount(5);
+		await expect(page.getByRole('link', { name: 'EasyManager', exact: true })).toHaveAttribute(
+			'href',
+			sample.href,
+		);
+		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+		const pulseBox = await pulse.boundingBox();
+		const titleBox = await page.locator('[data-featured-project][data-project-key="easymanager"] h3').boundingBox();
+		expect(pulseBox).not.toBeNull();
+		expect(titleBox).not.toBeNull();
+		expect(pulseBox!.y + pulseBox!.height).toBeLessThanOrEqual(titleBox!.y);
 	}
-	await expect(page.getByRole('link', { name: 'EasyManager', exact: true })).toHaveAttribute(
-		'href',
-		'/it/progetti/easymanager-operazioni-ristorante/',
-	);
 
 	await context.close();
 });
@@ -390,7 +450,7 @@ test('second featured project opens the paired Galaxy Trucker case study', async
 		'/en/projects/galaxy-trucker-java-project/',
 	);
 	await expect(
-		page.getByText('Sviluppatore nel team; autore della ricostruzione assistita da AI', { exact: true }),
+		page.getByText('Sviluppatore nel team di quattro persone', { exact: true }),
 	).toBeVisible();
 });
 

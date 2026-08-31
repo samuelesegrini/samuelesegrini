@@ -3,7 +3,7 @@ import { collectLaunchFailures } from './launch-readiness.mjs';
 
 const productionInputs = {
 	isProduction: true,
-	siteConfigSource: 'export const siteConfig = { isPlaceholder: true };',
+	isPlaceholder: true,
 	environment: {},
 	existingFiles: new Set<string>(),
 	contentSources: new Map<string, string>(),
@@ -29,6 +29,8 @@ describe('collectLaunchFailures', () => {
 			'public/cv/cv-it.pdf is missing',
 			'public/cv/cv-en.pdf is missing',
 			'src/content/posts/it/learning-in-public.mdx still contains demonstration copy',
+			'src/content/projects/it/easymanager.mdx is missing the public later re-engineering repository link',
+			'src/content/projects/en/easymanager.mdx is missing the public later re-engineering repository link',
 		]);
 	});
 
@@ -36,7 +38,7 @@ describe('collectLaunchFailures', () => {
 		expect(
 			collectLaunchFailures({
 				isProduction: true,
-				siteConfigSource: 'const siteConfig = { isPlaceholder: false };',
+				isPlaceholder: false,
 				environment: {
 					PUBLIC_SITE_URL: 'https://samuelesegrini.dev',
 					TINA_PUBLIC_CLIENT_ID: 'client-id',
@@ -44,9 +46,52 @@ describe('collectLaunchFailures', () => {
 				},
 				existingFiles: new Set(['public/cv/cv-it.pdf', 'public/cv/cv-en.pdf']),
 				contentSources: new Map([
-					['src/content/projects/it/easymanager.mdx', '# EasyManager\nA complete case study.'],
+					[
+						'src/content/projects/it/easymanager.mdx',
+						'links:\n  - url: https://github.com/samuelesegrini/easymanager-pos',
+					],
+					[
+						'src/content/projects/en/easymanager.mdx',
+						'links:\n  - url: https://github.com/samuelesegrini/easymanager-pos',
+					],
 				]),
 			}),
 		).toEqual([]);
+	});
+
+	it('uses the supplied placeholder boolean instead of source-code text', () => {
+		expect(
+			collectLaunchFailures({
+				...productionInputs,
+				isPlaceholder: true,
+			}),
+		).toContain('siteConfig.isPlaceholder is not false');
+	});
+
+	it('requires a public later re-engineering repository link in both localized case studies', () => {
+		const failures = collectLaunchFailures({
+			...productionInputs,
+			isPlaceholder: false,
+			environment: {
+				PUBLIC_SITE_URL: 'https://samuelesegrini.dev',
+				TINA_PUBLIC_CLIENT_ID: 'client-id',
+				TINA_TOKEN: 'token',
+			},
+			existingFiles: new Set(['public/cv/cv-it.pdf', 'public/cv/cv-en.pdf']),
+			contentSources: new Map([
+				[
+					'src/content/projects/it/easymanager.mdx',
+					'links:\n  - url: https://github.com/samuelesegrini/easymanager-pos',
+				],
+				['src/content/projects/en/easymanager.mdx', '# EasyManager'],
+			]),
+		});
+
+		expect(failures).toContain(
+			'src/content/projects/en/easymanager.mdx is missing the public later re-engineering repository link',
+		);
+		expect(failures).not.toContain(
+			'src/content/projects/it/easymanager.mdx is missing the public later re-engineering repository link',
+		);
 	});
 });

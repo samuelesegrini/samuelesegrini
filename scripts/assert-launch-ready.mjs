@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { siteDefaults } from '../src/config/site-shared.mjs';
 import { collectLaunchFailures } from './launch-readiness.mjs';
 
 const isProduction = process.env.CF_PAGES_BRANCH === 'main';
@@ -16,13 +17,12 @@ for (const directory of contentDirectories) {
 	}
 }
 
-const siteConfigSource = readFileSync('src/config/site.ts', 'utf8');
 const existingFiles = new Set(
 	['public/cv/cv-it.pdf', 'public/cv/cv-en.pdf'].filter((file) => existsSync(file)),
 );
 const failures = collectLaunchFailures({
 	isProduction,
-	siteConfigSource,
+	isPlaceholder: siteDefaults.isPlaceholder,
 	environment: process.env,
 	existingFiles,
 	contentSources,

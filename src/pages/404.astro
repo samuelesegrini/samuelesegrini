@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../config/site';
 ---
 
 <BaseLayout
@@ -15,12 +16,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 		<h1 data-error-title>Questa strada non porta a una pagina.</h1>
 		<a class="primary-button" href="/it/" data-error-link>Torna alla home</a>
 	</section>
+	<noscript>
+		<section class="not-found not-found-fallback dark-section" lang="en" data-english-404-fallback>
+			<p class="eyebrow">English · 404 · Page not found</p>
+			<h2>This path does not lead to a page.</h2>
+			<p>The requested page does not exist. Use these English links to continue.</p>
+			<a class="primary-button" href="/en/">Back to home</a>
+			<nav class="not-found-navigation" aria-label="English error-page navigation">
+				<a href="/en/projects/">Projects</a>
+				<a href="/en/writing/">Writing</a>
+				<a href="/en/about/">About</a>
+				<a href={`mailto:${siteConfig.email}`}>Contact me</a>
+			</nav>
+		</section>
+	</noscript>
 </BaseLayout>
 
 <script is:inline>
 	if (window.location.pathname.startsWith('/en/')) {
+		const title = 'Page not found — 404';
+		const description = 'The requested page does not exist.';
 		document.documentElement.lang = 'en';
-		document.title = 'Page not found — 404';
+		document.title = title;
+		document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+		document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
+		document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+		document.querySelector('meta[property="og:locale"]')?.setAttribute('content', 'en_US');
+		const canonical = document.querySelector('link[rel="canonical"]');
+		if (canonical instanceof HTMLLinkElement) {
+			const pageURL = new URL(window.location.pathname, canonical.href).href;
+			canonical.href = pageURL;
+			document.querySelector('meta[property="og:url"]')?.setAttribute('content', pageURL);
+			const feed = document.querySelector('link[type="application/rss+xml"]');
+			if (feed instanceof HTMLLinkElement) feed.href = new URL('/en/rss.xml', canonical.href).href;
+		}
+		document.querySelector('.skip-link')?.replaceChildren('Skip to content');
 		document.querySelector('[data-error-label]')?.replaceChildren('Page not found');
 		document.querySelector('[data-error-title]')?.replaceChildren('This path does not lead to a page.');
 		const link = document.querySelector('[data-error-link]');
@@ -28,7 +58,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 			link.textContent = 'Back to home';
 			link.href = '/en/';
 		}
-		for (const nav of document.querySelectorAll('.desktop-nav, .mobile-menu nav')) {
+		const wordmark = document.querySelector('.wordmark');
+		if (wordmark instanceof HTMLAnchorElement) {
+			wordmark.href = '/en/';
+			wordmark.setAttribute('aria-label', 'Samuele Segrini, home');
+		}
+		for (const [index, nav] of [...document.querySelectorAll('.desktop-nav, .mobile-menu nav')].entries()) {
+			nav.setAttribute('aria-label', index === 0 ? 'Primary navigation' : 'Mobile navigation');
 			const links = nav.querySelectorAll('a');
 			const labels = ['Projects', 'Writing', 'About', 'Italiano', 'Contact me'];
 			const hrefs = ['/en/projects/', '/en/writing/', '/en/about/', '/it/', 'mailto:samuele.segrini@gmail.com'];

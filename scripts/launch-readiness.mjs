@@ -1,13 +1,18 @@
 /**
  * @typedef {object} LaunchInputs
  * @property {boolean} isProduction
- * @property {string} siteConfigSource
+ * @property {boolean} isPlaceholder
  * @property {NodeJS.ProcessEnv} environment
  * @property {ReadonlySet<string>} existingFiles
  * @property {ReadonlyMap<string, string>} contentSources
  */
 
 const requiredCVFiles = ['public/cv/cv-it.pdf', 'public/cv/cv-en.pdf'];
+const laterRepositoryURL = 'https://github.com/samuelesegrini/easymanager-pos';
+const localizedEasyManagerPaths = [
+	'src/content/projects/it/easymanager.mdx',
+	'src/content/projects/en/easymanager.mdx',
+];
 
 /**
  * Collect launch blockers without reading the filesystem or process state.
@@ -19,7 +24,7 @@ export function collectLaunchFailures(inputs) {
 	if (!inputs.isProduction) return [];
 
 	const failures = [];
-	if (!/\bisPlaceholder\s*:\s*false\b/.test(inputs.siteConfigSource)) {
+	if (inputs.isPlaceholder) {
 		failures.push('siteConfig.isPlaceholder is not false');
 	}
 
@@ -39,6 +44,13 @@ export function collectLaunchFailures(inputs) {
 	for (const [path, source] of inputs.contentSources) {
 		if (/\bdimostrativ[oa]\b|\bdemonstration\s+(?:content|article|biography)\b/i.test(source)) {
 			failures.push(`${path} still contains demonstration copy`);
+		}
+	}
+
+	for (const path of localizedEasyManagerPaths) {
+		const source = inputs.contentSources.get(path);
+		if (!source?.includes(`url: ${laterRepositoryURL}`)) {
+			failures.push(`${path} is missing the public later re-engineering repository link`);
 		}
 	}
 

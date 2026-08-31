@@ -2,6 +2,7 @@
 import EasyManagerServicePulse from './EasyManagerServicePulse.astro';
 import GalaxyNetworkArtwork from './GalaxyNetworkArtwork.astro';
 import SpinGORouteArtwork from './SpinGORouteArtwork.astro';
+import { getFeaturedArtworkTreatment } from '../../lib/project-artwork';
 
 interface Props {
 	translationKey?: string;
@@ -22,14 +23,17 @@ const {
 	featured,
 	transitionName,
 } = Astro.props;
+const treatment = featured
+	? getFeaturedArtworkTreatment(translationKey ?? '')
+	: undefined;
 ---
 
 {
-	featured && translationKey === 'easymanager' ? (
+	treatment === 'easy-service-pulse' ? (
 		<EasyManagerServicePulse lang={lang} transitionName={transitionName} />
-	) : featured && translationKey === 'galaxy-trucker' && coverImage ? (
+	) : treatment === 'galaxy-network' && coverImage ? (
 		<GalaxyNetworkArtwork coverImage={coverImage} coverAlt={coverAlt} lead={lead} transitionName={transitionName} />
-	) : featured && translationKey === 'spingo-sustainable-micromobility' && coverImage ? (
+	) : treatment === 'spingo-route' && coverImage ? (
 		<SpinGORouteArtwork coverImage={coverImage} coverAlt={coverAlt} lead={lead} transitionName={transitionName} />
 	) : coverImage ? (
 		<img

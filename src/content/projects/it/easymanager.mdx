@@ -23,14 +23,14 @@ technologies:
 featuredRank: 1
 outcomes:
   - value: "31"
-    label: moduli pubblici
-    method: Prodotti package 0.1 versionati, documentati e compilati dal gate di release
+    label: moduli nel sorgente 0.1 verificato
+    method: Prodotti package documentati e compilati dal gate di release 0.1
   - value: "0"
     label: dipendenze remote del package
     method: Manifest del package Swift
   - value: "0.1.0"
-    label: API rilasciata
-    method: Release pubblica firmata
+    label: API versionata
+    method: Release 0.1.0 firmata e verificata nel checkout del sorgente successivo
 startingPoint: Un'applicazione SwiftUI per ristoranti del 2023, il cui perimetro di prodotto aveva superato i confini originali.
 links:
   - url: https://github.com/samuelesegrini/easymanager
@@ -39,7 +39,7 @@ links:
 relatedPosts: []
 ---
 
-> EasyManager è un progetto per le operazioni di ristorazione con due storie di codice distinte. Il repository pubblico del 2023 documenta un'applicazione SwiftUI. Il repository successivo è una reingegnerizzazione individuale: un toolkit Swift modulare per ordini, hardware e flussi fiscali italiani. Condividono il dominio del problema, non un unico prodotto finito.
+> EasyManager è un progetto per le operazioni di ristorazione con due storie di codice distinte. Il repository pubblico del 2023 documenta un'applicazione SwiftUI. Il lavoro successivo è una reingegnerizzazione individuale: un toolkit Swift modulare per ordini, hardware e flussi fiscali italiani. Condividono il dominio del problema, non un unico prodotto finito. Il sorgente della reingegnerizzazione successiva non è attualmente collegato pubblicamente né verificabile in modo indipendente in questa anteprima.
 
 ## Due epoche, un solo dominio
 
@@ -55,9 +55,9 @@ Questa è l'evidenza utile della prima epoca. Ha mostrato il vocabolario del dom
 
 ## Ripensare i confini
 
-Il repository successivo traduce questi punti di pressione in prodotti Swift separati. L'API pubblica 0.1 documenta e compila 31 prodotti senza dipendenze remote. Il grafo dei package diventa così ispezionabile: il codice delle funzionalità può dipendere da contratti di dominio e hardware focalizzati invece che da un'unica superficie di servizi modellata sull'applicazione.
+Il sorgente successivo traduce questi punti di pressione in prodotti Swift separati. L'API versionata 0.1 documenta e compila 31 prodotti senza dipendenze remote. Nel checkout verificato, il codice delle funzionalità dipende da contratti di dominio e hardware focalizzati invece che da un'unica superficie di servizi modellata sull'applicazione. Questi fatti di architettura e release derivano dalla verifica del sorgente; l'anteprima non li presenta come evidenza GitHub ispezionabile anonimamente.
 
-La concorrenza di Swift è rilevante perché il lavoro sugli ordini e sui dispositivi non può assumere una risposta immediata e unica. Il design usa proprietà esplicite e corsie serializzate per i dispositivi quando un endpoint fisico richiede accesso ordinato. SQL resta al confine della persistenza; DocC descrive i contratti pubblici accanto ai package che ne sono responsabili.
+La concorrenza di Swift è rilevante perché il lavoro sugli ordini e sui dispositivi non può assumere una risposta immediata e unica. Il design usa proprietà esplicite e corsie serializzate per i dispositivi quando un endpoint fisico richiede accesso ordinato. SQL resta al confine della persistenza; DocC descrive i contratti versionati accanto ai package che ne sono responsabili.
 
 ## Seguire un ordine attraverso il fallimento
 
@@ -73,13 +73,14 @@ Lo strato fiscale segue la stessa disciplina. Può riportare un esito incompleto
 
 ## Cosa è rilasciato e cosa non lo è
 
-L'API pubblica 0.1.0 è la superficie rilasciata del package descritta sopra. Questa case study è una bozza perché il racconto più ampio deve restare vincolato a ciò che i repository possono dimostrare.
+L'API 0.1.0 è la superficie versionata del package descritta sopra. Questa anteprima pubblica la case study mantenendo scollegato il sorgente successivo, quindi il racconto resta vincolato alle verifiche già svolte senza rivendicare una riproducibilità pubblica indipendente.
 
 **Stato attuale**
 
 - La migrazione dell'applicazione è incompleta; i package successivi non affermano che l'app originale abbia adottato ogni nuovo confine.
+- Il sorgente della reingegnerizzazione successiva non è attualmente evidenza pubblica in questa anteprima.
 - Qui non ci sono affermazioni di deployment.
 - Il lavoro 0.2 è non rilasciato.
 - Mancano evidenze di compatibilità con dispositivi fisici e di certificazione fiscale.
 
-Questi limiti fanno parte del lavoro, non sono note da nascondere. Definiscono ciò che può essere valutato onestamente oggi: i confini pubblici dei package, i contratti documentati e le semantiche di fallimento progettate per evitare una falsa certezza.
+Questi limiti fanno parte del lavoro, non sono note da nascondere. Definiscono ciò che può essere valutato onestamente oggi: il repository pubblico originale, i fatti esplicitamente circoscritti qui e le semantiche di fallimento progettate per evitare una falsa certezza. L'ispezione pubblica dei package successivi resta un blocker di lancio.

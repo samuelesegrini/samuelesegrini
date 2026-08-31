@@ -23,14 +23,14 @@ technologies:
 featuredRank: 1
 outcomes:
   - value: "31"
-    label: public modules
-    method: Versioned 0.1 package products documented and built by the release gate
+    label: modules in verified 0.1 source
+    method: Package products documented and built by the 0.1 release gate
   - value: "0"
     label: remote package dependencies
     method: Swift package manifest
   - value: "0.1.0"
-    label: released API
-    method: Signed public release
+    label: versioned API
+    method: Signed 0.1.0 release verified in the later source checkout
 startingPoint: A 2023 SwiftUI restaurant application whose product scope outgrew its original boundaries.
 links:
   - url: https://github.com/samuelesegrini/easymanager
@@ -39,7 +39,7 @@ links:
 relatedPosts: []
 ---
 
-> EasyManager is a restaurant-operations project with two distinct code histories. The public 2023 repository records a SwiftUI application. The later repository is an individual re-engineering effort: a modular Swift toolkit for orders, hardware, and Italian fiscal workflows. They share a problem domain, not a single finished product.
+> EasyManager is a restaurant-operations project with two distinct code histories. The public 2023 repository records a SwiftUI application. The later work is an individual re-engineering effort: a modular Swift toolkit for orders, hardware, and Italian fiscal workflows. They share a problem domain, not a single finished product. The later re-engineering source is not currently publicly linked or independently inspectable in this preview.
 
 ## Two eras, one problem domain
 
@@ -55,9 +55,9 @@ That is the useful evidence from the first era. It exposed the domain vocabulary
 
 ## Re-engineering the boundaries
 
-The later repository turns those pressure points into separate Swift package products. The 0.1 public API documents and builds 31 products without remote package dependencies. That makes the package graph inspectable: feature code can depend on focused domain and hardware contracts rather than on one application-shaped service surface.
+The later source turns those pressure points into separate Swift package products. The versioned 0.1 API documents and builds 31 products without remote package dependencies. Within that verified checkout, feature code depends on focused domain and hardware contracts rather than on one application-shaped service surface. Those architecture and release facts come from source verification; this preview does not present them as anonymously inspectable GitHub evidence.
 
-Swift concurrency matters here because order work and device work cannot assume a single immediate response. The design uses explicit ownership and serialized device lanes where a physical endpoint needs ordered access. SQL remains at the persistence boundary; DocC records the public contracts beside the packages that own them.
+Swift concurrency matters here because order work and device work cannot assume a single immediate response. The design uses explicit ownership and serialized device lanes where a physical endpoint needs ordered access. SQL remains at the persistence boundary; DocC records the versioned contracts beside the packages that own them.
 
 ## Following one order through failure
 
@@ -73,13 +73,14 @@ The fiscal layer follows the same discipline. It can report an incomplete or unc
 
 ## What is released—and what is not
 
-The public 0.1.0 API is the released package surface described above. This case study is a draft because the broader narrative must remain constrained by what the repositories can show.
+The 0.1.0 API is the versioned package surface described above. This preview publishes the case study while keeping the later source unlinked, so the broader narrative remains constrained by the checks already performed rather than claiming independent public reproducibility.
 
 **Current status**
 
 - The application migration is incomplete; the later packages are not a claim that the original app has adopted every new boundary.
+- The later re-engineering source is not currently public evidence in this preview.
 - There are no deployment claims here.
 - The 0.2 work is unreleased.
 - Physical device compatibility and fiscal certification evidence are missing.
 
-Those limits are part of the work, not footnotes to hide. They define what can honestly be evaluated now: the public package seams, the documented contracts, and failure semantics designed to avoid false certainty.
+Those limits are part of the work, not footnotes to hide. They define what can honestly be evaluated now: the original public repository, the explicitly bounded facts recorded here, and failure semantics designed to avoid false certainty. Public inspection of the later package seams remains a launch blocker.
