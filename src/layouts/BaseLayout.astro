@@ -119,6 +119,7 @@ const aboutURL = lang === 'it' ? '/it/chi-sono/' : '/en/about/';
 		<main id="main">
 			<slot />
 		</main>
+		<slot name="body-fallback" />
 		<footer class="site-footer">
 			<div>
 				<strong>{siteConfig.name}</strong>

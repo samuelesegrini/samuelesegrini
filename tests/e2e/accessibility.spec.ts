@@ -135,7 +135,7 @@ test('English 404 localizes metadata, ARIA labels, navigation, and the complete 
 		await expect(page.locator('.site-footer span')).toHaveText('Software, thoughtfully made.');
 });
 
-test('English 404 remains complete and navigable without JavaScript', async ({ browser }) => {
+test('static 404 is one coherent bilingual page without JavaScript', async ({ browser }) => {
 	const context = await browser.newContext({
 		baseURL: 'http://127.0.0.1:4321',
 		javaScriptEnabled: false,
@@ -143,18 +143,50 @@ test('English 404 remains complete and navigable without JavaScript', async ({ b
 	const page = await context.newPage();
 	await page.goto('/en/not-a-real-page');
 
-	const fallback = page.locator('[data-english-404-fallback]');
-	await expect(fallback).toHaveAttribute('lang', 'en');
-	await expect(fallback.getByRole('heading', { name: 'This path does not lead to a page.' })).toBeVisible();
-	await expect(fallback.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/en/');
-	await expect(fallback.getByRole('navigation', { name: 'English error-page navigation' })).toBeVisible();
-	for (const link of [
-		{ name: 'Projects', href: '/en/projects/' },
-		{ name: 'Writing', href: '/en/writing/' },
-		{ name: 'About', href: '/en/about/' },
-		{ name: 'Contact me', href: 'mailto:samuele.segrini@gmail.com' },
+	await expect(page.locator('[data-not-found]')).toBeHidden();
+	await expect(page.getByRole('main')).toHaveCount(1);
+	await expect(page.getByRole('heading')).toHaveCount(1);
+	await expect(page.getByRole('heading', { level: 1 })).toContainText('Pagina non trovata');
+	await expect(page.getByRole('heading', { level: 1 })).toContainText('Page not found');
+
+	const fallback = page.locator('[data-bilingual-404-fallback]');
+	await expect(fallback).toBeVisible();
+	await expect(page.locator('.site-header')).toBeHidden();
+	await expect(page.locator('.site-footer')).toBeHidden();
+	await expect(fallback.locator('[data-fallback-copy="it"]')).toContainText('La pagina richiesta non esiste.');
+	await expect(fallback.locator('[data-fallback-copy="en"]')).toContainText('The requested page does not exist.');
+	const skipLink = page.locator('[data-bilingual-404-skip]');
+	await expect(skipLink).toBeVisible();
+	await expect(skipLink).toHaveAttribute('href', '#static-404-main');
+	await expect(fallback).toHaveAttribute('id', 'static-404-main');
+
+	for (const navigation of [
+		{
+			label: 'Navigazione pagina non trovata in italiano',
+			links: [
+				{ name: 'Home', href: '/it/' },
+				{ name: 'Progetti', href: '/it/progetti/' },
+				{ name: 'Articoli', href: '/it/articoli/' },
+				{ name: 'Chi sono', href: '/it/chi-sono/' },
+				{ name: 'Scrivimi', href: 'mailto:samuele.segrini@gmail.com' },
+			],
+		},
+		{
+			label: 'English page-not-found navigation',
+			links: [
+				{ name: 'Home', href: '/en/' },
+				{ name: 'Projects', href: '/en/projects/' },
+				{ name: 'Writing', href: '/en/writing/' },
+				{ name: 'About', href: '/en/about/' },
+				{ name: 'Contact me', href: 'mailto:samuele.segrini@gmail.com' },
+			],
+		},
 	]) {
-		await expect(fallback.getByRole('link', { name: link.name, exact: true })).toHaveAttribute('href', link.href);
+		const nav = fallback.getByRole('navigation', { name: navigation.label });
+		await expect(nav).toBeVisible();
+		for (const link of navigation.links) {
+			await expect(nav.getByRole('link', { name: link.name, exact: true })).toHaveAttribute('href', link.href);
+		}
 	}
 
 	await context.close();

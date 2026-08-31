@@ -548,13 +548,13 @@ git commit -m "feat: finish responsive launch polish"
 
 Inspect port 4321 and restart the Playwright-managed dev server if its process predates the current source. Do not diagnose source regressions against a stale Astro process.
 
-- [ ] **Step 2: Run the full suite once**
+- [x] **Step 2: Run the full suite once**
 
 Run: `npm run verify`
 
 Expected: Astro check, Vitest, full Playwright E2E, static build, and link scan all PASS.
 
-Status: the command was run once before the final link correction and exited at the link scan. The controller explicitly prohibited rerunning `npm run verify` for the final correction pass, so this checkbox remains open; the requested focused tests, complete home/accessibility E2E, Astro check, build, and link scan were run separately.
+Status: after commit `72c6813`, the controller ran `npm run verify` successfully: 27/27 unit tests, 81/81 E2E tests, a 32-page build, and 50/50 links passed. Production readiness remains deliberately blocked by the launch gate.
 
 - [x] **Step 3: Inspect representative rendered pages**
 
