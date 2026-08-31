@@ -3,12 +3,13 @@ interface Props {
 	coverImage: string;
 	coverAlt: string;
 	lead: boolean;
+	transitionName?: string;
 }
 
-const { coverImage, coverAlt, lead } = Astro.props;
+const { coverImage, coverAlt, lead, transitionName } = Astro.props;
 ---
 
-<div class="project-artwork project-artwork-spingo" data-artwork-treatment="spingo-route">
+<div class="project-artwork project-artwork-spingo" data-project-artwork transition:name={transitionName} data-artwork-treatment="spingo-route">
 	<img
 		class="project-cover"
 		src={coverImage}

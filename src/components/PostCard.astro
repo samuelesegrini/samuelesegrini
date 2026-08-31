@@ -16,7 +16,7 @@ const formattedDate = new Intl.DateTimeFormat(lang === 'it' ? 'it-IT' : 'en-GB',
 }).format(date);
 ---
 
-<article class="post-card" data-post-item>
+<article class="post-card" data-post-item data-reveal>
 	<a href={href}>
 		<div class="post-meta">
 			<time datetime={date.toISOString()}>{formattedDate}</time>

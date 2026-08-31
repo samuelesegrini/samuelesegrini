@@ -1,9 +1,10 @@
 ---
 interface Props {
 	lang: 'it' | 'en';
+	transitionName?: string;
 }
 
-const { lang } = Astro.props;
+const { lang, transitionName } = Astro.props;
 
 const steps = lang === 'it'
 	? ['Bozza del tavolo', 'Outbox persistente', 'Risposta del server', 'Corsia del dispositivo', 'Registro fiscale']
@@ -24,6 +25,8 @@ const copy = lang === 'it'
 
 <div
 	class="easy-service-pulse"
+	data-project-artwork
+	transition:name={transitionName}
 	role="group"
 	aria-label={copy.label}
 	data-service-pulse

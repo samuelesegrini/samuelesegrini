@@ -253,6 +253,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .site-footer span { font-family: var(--mono); font-size: .7rem; }
 .footer-links { display: flex; gap: 1.5rem; font-weight: 700; }
 .footer-links a:hover { text-decoration: underline; text-underline-offset: .35rem; }
+[data-motion-ready] [data-reveal]:not([data-revealed]) { opacity: 0; transform: translateY(1rem); }
+[data-motion-ready] [data-reveal][data-revealed] { animation: reveal-rise 560ms cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--reveal-delay, 0ms); }
 
 @media (max-width:1078px) {
 	.article-layout, .article-layout.has-toc { grid-template-columns: minmax(0,1fr); }
@@ -311,9 +313,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 }
 
 @media (prefers-reduced-motion:no-preference) {
-	.hero > *:not(.hero-orbit) { animation: rise 560ms both; }
-	.hero h1 { animation-delay: 80ms; }
-	.hero-bottom { animation-delay: 160ms; }
 	.pulse-step-item::before { transition: opacity 220ms ease; }
 	.pulse-node { transition: transform 220ms ease, background-color 220ms ease, box-shadow 220ms ease; }
 	.pulse-step-button[aria-pressed='true'] .pulse-node { transform: translateY(-4px); }
@@ -327,7 +326,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 	.spingo-route-markers [data-artwork-motion]:nth-child(3) { animation-delay: 480ms; }
 }
 
-@keyframes rise { from { transform: translateY(1rem); } to { transform: translateY(0); } }
+@keyframes reveal-rise { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
 @keyframes galaxy-network-establish { from { stroke-opacity: .15; stroke-width: 3; } to { stroke-opacity: .55; stroke-width: 7; } }
 @keyframes spingo-route-draw { from { stroke-dashoffset: 240; } to { stroke-dashoffset: 0; } }
 @keyframes spingo-marker-enter { from { opacity: 0; } to { opacity: 1; } }
@@ -335,6 +334,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 @media (prefers-reduced-motion:reduce) {
 	html { scroll-behavior: auto; }
 	*, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+	[data-motion-ready] [data-reveal] { opacity: 1; transform: none; animation: none !important; }
 	.pulse-node { transform: none !important; }
 	.pulse-step-button, .pulse-step-item::before, .pulse-node { transition: none !important; animation: none !important; }
 }

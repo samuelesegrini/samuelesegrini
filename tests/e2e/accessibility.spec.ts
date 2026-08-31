@@ -59,6 +59,27 @@ test('homepage service pulse changes state without motion when reduced motion is
 	expect(motion).toEqual({ transform: 'none', transitionDuration: '0s' });
 });
 
+test('destination project heading can receive focus after route navigation', async ({ page }) => {
+	await page.goto('/it/');
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	const heading = page.getByRole('heading', { level: 1, name: 'EasyManager' });
+	await expect(heading).toHaveAttribute('tabindex', '-1');
+	await heading.focus();
+	await expect(heading).toBeFocused();
+});
+
+test('homepage reveal choreography initializes progressively and honors reduced motion', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto('/it/');
+
+	await expect(page.locator('html')).toHaveAttribute('data-motion-ready', '');
+	const revealState = await page.locator('[data-reveal]').evaluateAll((items) =>
+		items.map((item) => ({ revealed: item.hasAttribute('data-revealed'), opacity: getComputedStyle(item).opacity })),
+	);
+	expect(revealState.length).toBeGreaterThan(0);
+	expect(revealState.every(({ revealed, opacity }) => revealed && opacity === '1')).toBe(true);
+});
+
 test('English article exposes localized SEO and structured data', async ({ page }) => {
 	await page.goto('/en/writing/designing-for-clarity/');
 	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/en\/writing\/designing-for-clarity\/$/);

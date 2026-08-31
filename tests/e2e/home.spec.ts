@@ -33,6 +33,39 @@ test('root sends visitors to the Italian default locale', async ({ page }) => {
 	await expect(page).toHaveURL(/\/it\/$/);
 });
 
+test('route transition keeps the featured artwork continuous and restores homepage history', async ({ page }) => {
+	await page.goto('/it/');
+	await expect(page.locator('meta[name="astro-view-transitions-enabled"]')).toHaveAttribute('content', 'true');
+
+	const featuredArtwork = page.locator('[data-featured-project][data-project-key="easymanager"] [data-project-artwork]');
+	await expect(featuredArtwork).toBeVisible();
+	const transitionName = await featuredArtwork.evaluate((element) => getComputedStyle(element).viewTransitionName);
+	expect(transitionName).not.toBe('none');
+
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	await expect(page).toHaveURL(/\/it\/progetti\/easymanager-operazioni-ristorante\/$/);
+	const detailCover = page.locator('.detail-hero > img');
+	await expect(detailCover).toBeVisible();
+	expect(await detailCover.evaluate((element) => getComputedStyle(element).viewTransitionName)).toBe(transitionName);
+
+	await page.goBack();
+	await expect(page).toHaveURL(/\/it\/$/);
+	await expect(page.getByRole('heading', { name: 'Progetti in evidenza' })).toBeVisible();
+});
+
+test('ordinary navigation remains available without JavaScript', async ({ browser }) => {
+	const context = await browser.newContext({
+		baseURL: 'http://127.0.0.1:4321',
+		javaScriptEnabled: false,
+	});
+	const page = await context.newPage();
+	await page.goto('/it/');
+	await page.getByRole('link', { name: 'EasyManager', exact: true }).click();
+	await expect(page).toHaveURL(/\/it\/progetti\/easymanager-operazioni-ristorante\/$/);
+	await expect(page.getByRole('heading', { level: 1, name: 'EasyManager' })).toBeVisible();
+	await context.close();
+});
+
 test('featured trio publishes EasyManager, Galaxy Trucker, and SpinGO in both locales', async ({ page }) => {
 	for (const path of ['/it/', '/en/']) {
 		await page.goto(path);

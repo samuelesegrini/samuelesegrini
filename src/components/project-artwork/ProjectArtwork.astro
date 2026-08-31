@@ -10,6 +10,7 @@ interface Props {
 	coverAlt: string;
 	lead: boolean;
 	featured: boolean;
+	transitionName?: string;
 }
 
 const {
@@ -19,18 +20,21 @@ const {
 	coverAlt,
 	lead,
 	featured,
+	transitionName,
 } = Astro.props;
 ---
 
 {
 	featured && translationKey === 'easymanager' ? (
-		<EasyManagerServicePulse lang={lang} />
+		<EasyManagerServicePulse lang={lang} transitionName={transitionName} />
 	) : featured && translationKey === 'galaxy-trucker' && coverImage ? (
-		<GalaxyNetworkArtwork coverImage={coverImage} coverAlt={coverAlt} lead={lead} />
+		<GalaxyNetworkArtwork coverImage={coverImage} coverAlt={coverAlt} lead={lead} transitionName={transitionName} />
 	) : featured && translationKey === 'spingo-sustainable-micromobility' && coverImage ? (
-		<SpinGORouteArtwork coverImage={coverImage} coverAlt={coverAlt} lead={lead} />
+		<SpinGORouteArtwork coverImage={coverImage} coverAlt={coverAlt} lead={lead} transitionName={transitionName} />
 	) : coverImage ? (
 		<img
+			data-project-artwork
+			transition:name={transitionName}
 			class="project-cover"
 			src={coverImage}
 			alt={coverAlt}
@@ -39,6 +43,6 @@ const {
 			loading={lead ? 'eager' : 'lazy'}
 		/>
 	) : (
-		<div class="project-art" aria-hidden="true"><span /><span /><span /></div>
+		<div class="project-art" data-project-artwork transition:name={transitionName} aria-hidden="true"><span /><span /><span /></div>
 	)
 }

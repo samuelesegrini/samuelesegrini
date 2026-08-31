@@ -63,8 +63,8 @@ const structuredData = {
 	<article class="case-study">
 		<header class="detail-hero dark-section">
 			<a class="back-link" href={isIt ? '/it/progetti/' : '/en/projects/'}>← {isIt ? 'Tutti i progetti' : 'All projects'}</a>
-			<div class="detail-title"><div><p class="eyebrow">{kindLabel} · {project.year}</p><h1>{project.title}</h1></div><p>{project.excerpt}</p></div>
-			<img src={project.coverImage} alt={project.coverAlt} width="1200" height="800" />
+			<div class="detail-title"><div><p class="eyebrow">{kindLabel} · {project.year}</p><h1 tabindex="-1">{project.title}</h1></div><p>{project.excerpt}</p></div>
+			<img transition:name={project.translationKey ? `project-art-${project.translationKey}` : undefined} src={project.coverImage} alt={project.coverAlt} width="1200" height="800" />
 		</header>
 		<div class="detail-grid section">
 			<aside aria-label={isIt ? 'Dettagli del progetto' : 'Project details'}>

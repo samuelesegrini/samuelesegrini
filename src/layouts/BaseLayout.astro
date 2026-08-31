@@ -4,6 +4,7 @@ import '@fontsource-variable/newsreader';
 import '@fontsource/ibm-plex-mono/400.css';
 import '../styles/global.css';
 import { siteConfig } from '../config/site';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
 	lang: 'it' | 'en';
@@ -87,6 +88,7 @@ const aboutURL = lang === 'it' ? '/it/chi-sono/' : '/en/about/';
 		{imageURL && <meta name="twitter:image" content={imageURL} />}
 		<meta name="twitter:card" content="summary_large_image" />
 		{structuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
+		<ClientRouter fallback="swap" />
 		<title>{title}</title>
 	</head>
 	<body>
@@ -128,5 +130,11 @@ const aboutURL = lang === 'it' ? '/it/chi-sono/' : '/en/about/';
 				<a href={siteConfig.linkedin}>LinkedIn</a>
 			</div>
 		</footer>
+		<script>
+			import { initializePageMotion } from '../scripts/page-motion';
+
+			initializePageMotion();
+			document.addEventListener('astro:page-load', () => initializePageMotion());
+		</script>
 	</body>
 </html>

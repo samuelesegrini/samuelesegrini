@@ -21,6 +21,7 @@ interface Props {
 	role?: string;
 	authorshipLabel?: string;
 	lang?: 'it' | 'en';
+	style?: string;
 }
 
 const {
@@ -43,6 +44,7 @@ const {
 	role,
 	authorshipLabel,
 	lang = 'it',
+	style,
 } = Astro.props;
 ---
 
@@ -52,6 +54,8 @@ const {
 	data-project-item={archive ? '' : undefined}
 	data-project-key={translationKey}
 	data-kind={filterKind ?? kind}
+	style={style}
+	data-reveal={featured ? '' : undefined}
 >
 	<div class="project-card-surface">
 		<div class="project-card-header">
@@ -62,6 +66,7 @@ const {
 			{featured && authorshipLabel && role && <p class="project-role">{authorshipLabel} · {role}</p>}
 		</div>
 		<ProjectArtwork
+			transitionName={featured && translationKey ? `project-art-${translationKey}` : undefined}
 			translationKey={translationKey}
 			lang={lang}
 			coverImage={coverImage}
