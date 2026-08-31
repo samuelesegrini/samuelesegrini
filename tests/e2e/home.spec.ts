@@ -250,7 +250,7 @@ test('English routes and localized language switches remain paired', async ({ pa
 	await expect(page.getByText('Product designer and software engineer', { exact: true })).toBeVisible();
 });
 
-test('EasyManager service pulse exposes five localized states and repository evidence', async ({ page }) => {
+test('EasyManager service pulse exposes five localized states and only public repository evidence', async ({ page }) => {
 	for (const sample of [
 		{
 			home: '/it/',
@@ -261,7 +261,6 @@ test('EasyManager service pulse exposes five localized states and repository evi
 			detail: '/it/progetti/easymanager-operazioni-ristorante/',
 			links: [
 				{ label: 'Applicazione originale', href: 'https://github.com/samuelesegrini/easymanager' },
-				{ label: 'Reingegnerizzazione successiva', href: 'https://github.com/samuelesegrini/easymanager-pos' },
 			],
 		},
 		{
@@ -273,7 +272,6 @@ test('EasyManager service pulse exposes five localized states and repository evi
 			detail: '/en/projects/easymanager-restaurant-operations/',
 			links: [
 				{ label: 'Original application', href: 'https://github.com/samuelesegrini/easymanager' },
-				{ label: 'Later re-engineering', href: 'https://github.com/samuelesegrini/easymanager-pos' },
 			],
 		},
 	]) {
@@ -286,6 +284,7 @@ test('EasyManager service pulse exposes five localized states and repository evi
 		await expect(pulse.locator('[aria-live="polite"]')).toHaveText(sample.status);
 
 		await page.goto(sample.detail);
+		await expect(page.locator('.project-links a')).toHaveCount(sample.links.length);
 		for (const link of sample.links) {
 			await expect(page.locator('.project-links a').filter({ hasText: link.label })).toHaveAttribute(
 				'href',
