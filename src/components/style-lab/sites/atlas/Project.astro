@@ -1,0 +1,33 @@
+---
+import type { LabSiteContent } from '../../../../lib/lab-sites';
+import '../../../../styles/lab-sites/atlas.css';
+
+interface Props { content: LabSiteContent }
+const { content } = Astro.props;
+const { projectDocument } = content;
+const chapters = [
+	['01', 'Origin', projectDocument.data.startingPoint],
+	['02', 'Pressure', projectDocument.data.excerpt],
+	['03', 'Boundary', projectDocument.data.technologies.join(' · ')],
+	['04', 'Outcome', projectDocument.data.outcomes[0] ? `${projectDocument.data.outcomes[0].value} ${projectDocument.data.outcomes[0].label}` : projectDocument.data.role],
+] as const;
+---
+
+<header class="atlas-project-hero">
+	<p class="atlas-meta atlas-route-marker">Atlas / case study / {projectDocument.data.year}</p>
+	<h1>{projectDocument.data.title}</h1>
+	<p class="atlas-narrative">{projectDocument.data.excerpt}</p>
+	<figure><img src={projectDocument.data.coverImage} alt={projectDocument.data.coverAlt} width="1200" height="800" /></figure>
+</header>
+
+<section class="atlas-chapters" aria-label="Case study chapters">
+	{chapters.map(([number, title, text]) => (
+		<section data-atlas-chapter>
+			<p class="atlas-chapter-number">{number}</p>
+			<div><p class="atlas-meta">Chapter</p><h2>{title}</h2></div>
+			<p>{text}</p>
+		</section>
+	))}
+</section>
+
+<article class="atlas-prose atlas-project-reading"><slot name="body" /></article>

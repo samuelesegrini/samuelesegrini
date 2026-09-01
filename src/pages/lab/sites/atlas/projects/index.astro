@@ -1,0 +1,10 @@
+---
+import Projects from '../../../../../components/style-lab/sites/atlas/Projects.astro';
+import { getLabSiteContent } from '../../../../../lib/lab-sites';
+import LabSiteLayout from '../../../../../layouts/LabSiteLayout.astro';
+const content = await getLabSiteContent();
+---
+
+<LabSiteLayout theme="atlas" page="projects" title="Project Atlas — Living Atlas" description="Selected software engineering work in the Living Atlas portfolio prototype.">
+	<Projects content={content} />
+</LabSiteLayout>

@@ -15,6 +15,41 @@ const monographRoutes = [
 	'/lab/sites/monograph/project/',
 ];
 
+const atlasRoutes = [
+	'/lab/sites/atlas/',
+	'/lab/sites/atlas/projects/',
+	'/lab/sites/atlas/article/',
+	'/lab/sites/atlas/project/',
+];
+
+for (const path of atlasRoutes) {
+	test(`Atlas route ${path} is private and navigable`, async ({ page }) => {
+		const response = await page.goto(path);
+		expect(response?.ok()).toBe(true);
+		await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+		await expect(page.locator('body')).toHaveClass(/lab-site--atlas/);
+		await expect(page.locator('[data-lab-site-nav] a')).toHaveCount(4);
+		const results = await new AxeBuilder({ page }).analyze();
+		const serious = results.violations.filter(
+			({ impact }) => impact === 'serious' || impact === 'critical',
+		);
+		expect(serious).toEqual([]);
+	});
+}
+
+test('Atlas uses editions and numbered chapters without a permanently dark reader', async ({ page }) => {
+	await page.goto('/lab/sites/atlas/');
+	await expect(page.locator('[data-atlas-edition]')).toHaveCount(3);
+	await expect(page.locator('[data-atlas-compact-index] [data-project-row]')).toHaveCount(3);
+	await page.goto('/lab/sites/atlas/projects/');
+	await expect(page.locator('[data-atlas-project-row]')).toHaveCount(3);
+	await page.goto('/lab/sites/atlas/article/');
+	await expect(page.locator('[data-atlas-aperture]')).toBeVisible();
+	await expect(page.locator('[data-atlas-reading]')).toBeVisible();
+	await page.goto('/lab/sites/atlas/project/');
+	await expect(page.locator('[data-atlas-chapter]')).toHaveCount(4);
+});
+
 for (const path of monographRoutes) {
 	test(`Monograph route ${path} is private and navigable`, async ({ page }) => {
 		const response = await page.goto(path);

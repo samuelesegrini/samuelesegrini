@@ -1,0 +1,14 @@
+---
+import { render } from 'astro:content';
+import Project from '../../../../../components/style-lab/sites/atlas/Project.astro';
+import { getLabSiteContent } from '../../../../../lib/lab-sites';
+import LabSiteLayout from '../../../../../layouts/LabSiteLayout.astro';
+const content = await getLabSiteContent();
+const { Content } = await render(content.projectDocument);
+---
+
+<LabSiteLayout theme="atlas" page="project" title={`${content.projectDocument.data.title} — Living Atlas`} description={content.projectDocument.data.excerpt}>
+	<Project content={content}>
+		<Content slot="body" />
+	</Project>
+</LabSiteLayout>
