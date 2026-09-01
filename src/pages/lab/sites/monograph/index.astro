@@ -1,0 +1,10 @@
+---
+import Home from '../../../../components/style-lab/sites/monograph/Home.astro';
+import { getLabSiteContent } from '../../../../lib/lab-sites';
+import LabSiteLayout from '../../../../layouts/LabSiteLayout.astro';
+const content = await getLabSiteContent();
+---
+
+<LabSiteLayout theme="monograph" page="home" title="Monograph — Style Lab" description="Monograph portfolio prototype.">
+	<Home content={content} />
+</LabSiteLayout>

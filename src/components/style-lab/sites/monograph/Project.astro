@@ -1,0 +1,36 @@
+---
+import type { LabSiteContent } from '../../../../lib/lab-sites';
+import '../../../../styles/lab-sites/monograph.css';
+
+interface Props { content: LabSiteContent }
+const { content } = Astro.props;
+const { projectDocument } = content;
+---
+
+<header class="monograph-project-hero">
+	<p class="monograph-label">Monograph no. 02 · case study · {projectDocument.data.year}</p>
+	<h1>{projectDocument.data.title}</h1>
+	<p class="monograph-lead">{projectDocument.data.excerpt}</p>
+</header>
+
+<figure class="monograph-primary-figure">
+	<img src={projectDocument.data.coverImage} alt={projectDocument.data.coverAlt} width="1200" height="800" />
+	<figcaption>{projectDocument.data.coverAlt}</figcaption>
+</figure>
+
+<section class="monograph-project-meta" aria-label="Project details">
+	<div><p class="monograph-label">Role</p><p>{projectDocument.data.role}</p></div>
+	<div><p class="monograph-label">Status</p><p>{projectDocument.data.lifecycle}</p></div>
+	<div><p class="monograph-label">Tools</p><p>{projectDocument.data.technologies.join(' · ')}</p></div>
+</section>
+
+<section class="monograph-outcomes" aria-label="Project outcomes">
+	{projectDocument.data.outcomes.map((outcome) => (
+		<div data-project-outcome>
+			<strong>{outcome.value}</strong>
+			<span>{outcome.label}</span>
+		</div>
+	))}
+</section>
+
+<article class="monograph-reading monograph-project-reading"><slot name="body" /></article>

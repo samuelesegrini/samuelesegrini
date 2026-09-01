@@ -8,6 +8,32 @@ const signalRoutes = [
 	'/lab/sites/signal/project/',
 ];
 
+const monographRoutes = [
+	'/lab/sites/monograph/',
+	'/lab/sites/monograph/projects/',
+	'/lab/sites/monograph/article/',
+	'/lab/sites/monograph/project/',
+];
+
+for (const path of monographRoutes) {
+	test(`Monograph route ${path} is private and navigable`, async ({ page }) => {
+		const response = await page.goto(path);
+		expect(response?.ok()).toBe(true);
+		await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+		await expect(page.locator('body')).toHaveClass(/lab-site--monograph/);
+		await expect(page.locator('[data-lab-site-nav] a')).toHaveCount(4);
+	});
+}
+
+test('Monograph keeps reading light and publication-led', async ({ page }) => {
+	await page.goto('/lab/sites/monograph/article/');
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('My first video game was a distributed system');
+	await expect(page.locator('[data-monograph-marginalia]')).toBeVisible();
+	expect(await page.locator('.monograph-reading').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(246, 241, 231)');
+	await page.goto('/lab/sites/monograph/project/');
+	await expect(page.locator('[data-project-outcome]')).toHaveCount(3);
+});
+
 for (const path of signalRoutes) {
 	test(`Signal route ${path} is private and navigable`, async ({ page }) => {
 		const response = await page.goto(path);

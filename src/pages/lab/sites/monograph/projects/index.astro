@@ -1,0 +1,10 @@
+---
+import Projects from '../../../../../components/style-lab/sites/monograph/Projects.astro';
+import { getLabSiteContent } from '../../../../../lib/lab-sites';
+import LabSiteLayout from '../../../../../layouts/LabSiteLayout.astro';
+const content = await getLabSiteContent();
+---
+
+<LabSiteLayout theme="monograph" page="projects" title="Projects — Monograph" description="Selected project index for the Monograph portfolio prototype.">
+	<Projects content={content} />
+</LabSiteLayout>

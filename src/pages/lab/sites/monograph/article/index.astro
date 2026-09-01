@@ -1,0 +1,14 @@
+---
+import { render } from 'astro:content';
+import Article from '../../../../../components/style-lab/sites/monograph/Article.astro';
+import { getLabSiteContent } from '../../../../../lib/lab-sites';
+import LabSiteLayout from '../../../../../layouts/LabSiteLayout.astro';
+const content = await getLabSiteContent();
+const { Content, headings } = await render(content.articleDocument);
+---
+
+<LabSiteLayout theme="monograph" page="article" title={`${content.articleDocument.data.title} — Monograph`} description={content.articleDocument.data.excerpt}>
+	<Article content={content} headings={headings}>
+		<Content slot="body" />
+	</Article>
+</LabSiteLayout>

@@ -1,0 +1,37 @@
+---
+import type { LabSiteContent } from '../../../../lib/lab-sites';
+import '../../../../styles/lab-sites/monograph.css';
+
+interface Props { content: LabSiteContent }
+const { content } = Astro.props;
+const [featured, ...remainingProjects] = content.featuredProjects;
+---
+
+<section class="monograph-home-intro">
+	<p class="monograph-label">Monograph no. 02 · selected work</p>
+	<h1>Software, read in full.</h1>
+	<p class="monograph-lead">A selection of projects and notes about the systems beneath an interface: their boundaries, failure modes, and the people they ask to collaborate.</p>
+</section>
+
+{featured && (
+	<article class="monograph-feature" data-featured-project>
+		<img src={featured.data.coverImage} alt={featured.data.coverAlt} width="1200" height="800" />
+		<div>
+			<p class="monograph-label">Featured project · {featured.data.year}</p>
+			<h2>{featured.data.title}</h2>
+			<p>{featured.data.excerpt}</p>
+			<span>{featured.data.role}</span>
+		</div>
+	</article>
+)}
+
+<section class="monograph-home-projects" aria-labelledby="further-reading">
+	<h2 id="further-reading" class="monograph-label">Further reading</h2>
+	{remainingProjects.map((document) => (
+		<article>
+			<p class="monograph-label">{document.data.kind} · {document.data.year}</p>
+			<h3>{document.data.title}</h3>
+			<p>{document.data.excerpt}</p>
+		</article>
+	))}
+</section>
