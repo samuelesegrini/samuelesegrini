@@ -2,6 +2,11 @@ import type { PostDocument, ProjectDocument } from './portfolio';
 
 export const labSiteThemes = ['signal', 'monograph', 'atlas'] as const;
 export const labSitePages = ['home', 'projects', 'article', 'project'] as const;
+const requiredFeaturedProjects = [
+	{ translationKey: 'easymanager', featuredRank: 1 },
+	{ translationKey: 'galaxy-trucker', featuredRank: 2 },
+	{ translationKey: 'spingo-sustainable-micromobility', featuredRank: 3 },
+] as const;
 export type LabSiteTheme = (typeof labSiteThemes)[number];
 export type LabSitePage = (typeof labSitePages)[number];
 
@@ -25,6 +30,12 @@ export function selectLabSiteContent(
 		.filter(({ data }) => data.featuredRank !== undefined)
 		.toSorted((left, right) => left.data.featuredRank! - right.data.featuredRank!);
 	if (featuredProjects.length !== 3) throw new Error('Lab sites require exactly three ranked English projects.');
+	if (!featuredProjects.every(({ data }, index) =>
+		data.translationKey === requiredFeaturedProjects[index].translationKey &&
+		data.featuredRank === requiredFeaturedProjects[index].featuredRank,
+	)) {
+		throw new Error('Lab sites require EasyManager, Galaxy Trucker, and SpinGO at featured ranks 1, 2, and 3.');
+	}
 	const projectDocument = allProjects.find(({ data }) => data.translationKey === 'easymanager');
 	if (!projectDocument) throw new Error('Lab sites require the English EasyManager project.');
 	const articleDocument = postDocuments.find(({ data }) => !data.draft && data.locale === 'en' && data.translationKey === 'my-first-video-game');

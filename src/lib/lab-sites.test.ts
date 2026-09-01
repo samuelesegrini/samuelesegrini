@@ -72,4 +72,14 @@ describe('lab site contract', () => {
 	it('fails instead of substituting missing portfolio evidence', () => {
 		expect(() => selectLabSiteContent([projectDocument('easymanager', 1)], [articleDocument])).toThrow('Lab sites require exactly three ranked English projects.');
 	});
+
+	it('fails when another English project takes one of the required featured ranks', () => {
+		expect(() => selectLabSiteContent([
+			projectDocument('easymanager', 1),
+			projectDocument('unverified-substitute', 2),
+			projectDocument('spingo-sustainable-micromobility', 3),
+		], [articleDocument])).toThrow(
+			'Lab sites require EasyManager, Galaxy Trucker, and SpinGO at featured ranks 1, 2, and 3.',
+		);
+	});
 });

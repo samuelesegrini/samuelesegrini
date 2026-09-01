@@ -137,6 +137,43 @@ test('theme navigation reaches every page without leaving the selected system', 
 	}
 });
 
+test('the neutral switcher reaches Studies and every complete-site direction', async ({ page }) => {
+	for (const destination of [
+		{ label: 'Studies', path: '/lab/styles/' },
+		{ label: 'Signal', path: '/lab/sites/signal/' },
+		{ label: 'Monograph', path: '/lab/sites/monograph/' },
+		{ label: 'Atlas', path: '/lab/sites/atlas/' },
+	]) {
+		await page.goto('/lab/sites/atlas/');
+		await page.getByRole('link', { name: destination.label, exact: true }).click();
+		await expect(page).toHaveURL(new RegExp(`${destination.path.replaceAll('/', '\\/')}$`));
+	}
+});
+
+test('keyboard focus remains visibly indicated in the neutral lab shell', async ({ page }) => {
+	await page.goto('/lab/sites/signal/');
+	const studies = page.locator('[data-lab-switcher] a[href="/lab/styles/"]');
+
+	for (let index = 0; index < 16; index += 1) {
+		await page.keyboard.press('Tab');
+		if (await studies.evaluate((element) => document.activeElement === element)) break;
+	}
+
+	await expect(studies).toBeFocused();
+	expect(await studies.evaluate((element) => {
+		const style = getComputedStyle(element);
+		return { outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth, outlineOffset: style.outlineOffset };
+	})).toEqual({ outlineStyle: 'solid', outlineWidth: '3px', outlineOffset: '4px' });
+});
+
+test('the shared lab shell honors reduced-motion preferences', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto('/lab/sites/monograph/');
+
+	expect(await page.locator('html').evaluate((element) => getComputedStyle(element).scrollBehavior)).toBe('auto');
+	expect(await page.locator('[data-lab-switcher] a').first().evaluate((element) => getComputedStyle(element).transitionDuration)).toBe('1e-05s');
+});
+
 for (const width of [390, 1280]) {
 	test(`lab mini-sites remain accessible and overflow-free at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
