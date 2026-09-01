@@ -1,0 +1,53 @@
+---
+interface Props { variation: 1 | 2 | 3 | 4 | 5 }
+const { variation } = Astro.props;
+const labels = [
+	['H–01', 'Public signal', 'Archivo × Instrument Serif'],
+	['H–02', 'Editorial opening', 'Instrument Serif × DM Sans'],
+	['H–03', 'Redline poster', 'Unbounded × Space Mono'],
+	['H–04', 'Open studio', 'Bricolage Grotesque × Cormorant'],
+	['H–05', 'Working index', 'Space Mono × Archivo'],
+] as const;
+const label = labels[variation - 1];
+---
+
+<header class="prototype-label"><span>{label[0]}</span><strong>{label[1]}</strong><small>{label[2]}</small></header>
+
+{variation === 1 && (
+	<div class="prototype-canvas hero-signal">
+		<div class="signal-status"><div><b>Based in</b><span>Italy / CET</span></div><div><b>Building</b><span>Reliable software</span></div><div><b>Available for</b><span>iOS teams · 2026</span></div><button type="button">Start a conversation</button></div>
+		<div class="signal-wordline"><span>A</span><span>SOFTWARE</span><span>ENGINEER</span></div>
+		<div class="signal-title"><h3>SYSTEMS YOU<br />CAN <em>TRUST.</em></h3><figure><img src="/images/projects/easymanager-service-pulse.svg" alt="EasyManager service flow" /><figcaption>Interfaces, infrastructure, and the difficult space between them.</figcaption></figure></div>
+		<div class="signal-footer"><span>Samuele Segrini</span><small>Swift · Distributed systems · Product thinking</small><b>Scroll ↓</b></div>
+	</div>
+)}
+
+{variation === 2 && (
+	<div class="prototype-canvas hero-editorial">
+		<div class="editorial-nav"><span>Samuele Segrini</span><span>Portfolio / MMXXVI</span><span>Index ↘</span></div>
+		<div class="editorial-grid"><p class="editorial-side">Software engineer<br />Product-minded<br />Italy, working anywhere</p><div><p class="editorial-issue">Issue N° 01 — Systems with a human point of view</p><h3>I make the<br /><em>invisible</em><br />understandable.</h3></div><p class="editorial-note">From the first gesture on screen to the failure mode nobody sees coming.</p></div>
+		<div class="editorial-rule"><span>Selected work</span><span>Essays & field notes</span><span>About the practice</span></div>
+	</div>
+)}
+
+{variation === 3 && (
+	<div class="prototype-canvas hero-poster">
+		<div class="poster-rail"><span>PORTFOLIO</span><span>26</span><span>ENGINEERING / DESIGN</span></div>
+		<div class="poster-main"><p>NOT JUST<br />WHAT SHIPS.</p><h3>HOW IT<br /><i>HOLDS.</i></h3><div class="poster-chip">Swift 6.3 / Java / Systems / UX</div></div>
+		<div class="poster-caption"><b>Samuele Segrini</b><span>Software engineered for the real world: concurrent, physical, imperfect.</span><span>Enter →</span></div>
+	</div>
+)}
+
+{variation === 4 && (
+	<div class="prototype-canvas hero-studio">
+		<nav><b>Samuele.</b><span>Work</span><span>Notes</span><span>Now</span><button type="button">Say hello ↗</button></nav>
+		<div class="studio-stage"><div class="studio-copy"><span>Software engineer / restless explainer</span><h3>Making hard<br />systems feel<br /><em>inevitable.</em></h3></div><div class="studio-window studio-window-a"><img src="/images/projects/galaxy-trucker-network.png" alt="Galaxy Trucker network interface" /></div><div class="studio-window studio-window-b"><span>01</span><b>Interfaces</b><small>that explain the system beneath.</small></div><div class="studio-window studio-window-c"><span>02</span><b>Infrastructure</b><small>that survives ambiguity.</small></div></div>
+	</div>
+)}
+
+{variation === 5 && (
+	<div class="prototype-canvas hero-indexed">
+		<div class="indexed-top"><span>SS/01</span><span>Software Engineering Practice</span><span>Last updated 01.09.26</span></div>
+		<div class="indexed-body"><aside><span>Specialisms</span><b>Native iOS</b><b>Concurrency</b><b>Hardware boundaries</b><b>Product systems</b></aside><div><p>Independent engineer, building from Italy.</p><h3>Clarity is<br />a <mark>runtime</mark><br />feature.</h3></div><div class="indexed-actions"><span>[ A ] View selected systems</span><span>[ B ] Read the field notes</span><span>[ C ] Inspect the evidence</span></div></div>
+	</div>
+)}

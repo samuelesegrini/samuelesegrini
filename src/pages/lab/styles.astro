@@ -1,0 +1,86 @@
+---
+import HeroStudy from '../../components/style-lab/HeroStudy.astro';
+import CardStudy from '../../components/style-lab/CardStudy.astro';
+import ArticleStudy from '../../components/style-lab/ArticleStudy.astro';
+import DetailStudy from '../../components/style-lab/DetailStudy.astro';
+import '../../styles/style-lab.css';
+
+const categories = [
+	{ href: '#heroes', label: 'Heroes', count: '05' },
+	{ href: '#project-cards', label: 'Project cards', count: '05' },
+	{ href: '#article-layouts', label: 'Articles', count: '05' },
+	{ href: '#project-details', label: 'Project detail', count: '05' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="robots" content="noindex, nofollow" />
+		<meta name="description" content="Twenty independent visual directions for a software engineering portfolio." />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,100..900&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=DM+Sans:opsz,wght@9..40,100..1000&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&family=Unbounded:wght@300;500;700&display=swap" rel="stylesheet" />
+		<title>Style Lab — 20 portfolio directions</title>
+	</head>
+	<body>
+		<a class="lab-skip" href="#lab-main">Skip to prototypes</a>
+		<header class="lab-header">
+			<a class="lab-mark" href="#top" aria-label="Style lab, back to top"><span>SS / STYLE LAB</span><small>20 independent directions</small></a>
+			<nav aria-label="Prototype categories">
+				{categories.map((category) => <a href={category.href}><span>{category.label}</span><sup>{category.count}</sup></a>)}
+			</nav>
+			<a class="lab-exit" href="/it/">Exit lab ↗</a>
+		</header>
+
+		<main id="lab-main">
+			<section class="lab-intro" id="top">
+				<p class="lab-kicker">A clean-room visual experiment / September 2026</p>
+				<h1>Not one redesign.<br /><em>Twenty provocations.</em></h1>
+				<div class="lab-intro-copy"><p>Four surfaces, five directions each. The reference informs the scale and confidence, not the identity.</p><p>Every frame is responsive, isolated, and intentionally allowed to disagree.</p></div>
+				<div class="lab-index" aria-label="Prototype index">
+					{categories.map((category, index) => <a href={category.href}><span>0{index + 1}</span><strong>{category.label}</strong><small>{category.count} studies</small></a>)}
+				</div>
+			</section>
+
+			<section class="prototype-group" id="heroes">
+				<header class="group-heading"><p>01 / First impressions</p><h2>Hero variations</h2><span>Scale, voice, arrival</span></header>
+				<article class="prototype" data-variation="hero-01"><HeroStudy variation={1} /></article>
+				<article class="prototype" data-variation="hero-02"><HeroStudy variation={2} /></article>
+				<article class="prototype" data-variation="hero-03"><HeroStudy variation={3} /></article>
+				<article class="prototype" data-variation="hero-04"><HeroStudy variation={4} /></article>
+				<article class="prototype" data-variation="hero-05"><HeroStudy variation={5} /></article>
+			</section>
+
+			<section class="prototype-group" id="project-cards">
+				<header class="group-heading"><p>02 / The work shelf</p><h2>Project-card variations</h2><span>Browse, compare, commit</span></header>
+				<article class="prototype" data-variation="cards-01"><CardStudy variation={1} /></article>
+				<article class="prototype" data-variation="cards-02"><CardStudy variation={2} /></article>
+				<article class="prototype" data-variation="cards-03"><CardStudy variation={3} /></article>
+				<article class="prototype" data-variation="cards-04"><CardStudy variation={4} /></article>
+				<article class="prototype" data-variation="cards-05"><CardStudy variation={5} /></article>
+			</section>
+
+			<section class="prototype-group" id="article-layouts">
+				<header class="group-heading"><p>03 / Reading systems</p><h2>Article-layout variations</h2><span>Pace, proof, reflection</span></header>
+				<article class="prototype" data-variation="articles-01"><ArticleStudy variation={1} /></article>
+				<article class="prototype" data-variation="articles-02"><ArticleStudy variation={2} /></article>
+				<article class="prototype" data-variation="articles-03"><ArticleStudy variation={3} /></article>
+				<article class="prototype" data-variation="articles-04"><ArticleStudy variation={4} /></article>
+				<article class="prototype" data-variation="articles-05"><ArticleStudy variation={5} /></article>
+			</section>
+
+			<section class="prototype-group" id="project-details">
+				<header class="group-heading"><p>04 / Case-study systems</p><h2>Project-detail variations</h2><span>Context, decisions, evidence</span></header>
+				<article class="prototype" data-variation="project-detail-01"><DetailStudy variation={1} /></article>
+				<article class="prototype" data-variation="project-detail-02"><DetailStudy variation={2} /></article>
+				<article class="prototype" data-variation="project-detail-03"><DetailStudy variation={3} /></article>
+				<article class="prototype" data-variation="project-detail-04"><DetailStudy variation={4} /></article>
+				<article class="prototype" data-variation="project-detail-05"><DetailStudy variation={5} /></article>
+			</section>
+		</main>
+		<footer class="lab-footer"><span>STYLE LAB / 20 DIRECTIONS</span><a href="#top">Back to top ↑</a><span>Private prototype route</span></footer>
+	</body>
+</html>

@@ -1,0 +1,52 @@
+---
+interface Props { variation: 1 | 2 | 3 | 4 | 5 }
+const { variation } = Astro.props;
+const labels = [
+	['C–01', 'Wide-screen reel', 'Image-led / compressed metadata'],
+	['C–02', 'Living index', 'Typography-led / reveal-ready'],
+	['C–03', 'Collected matter', 'Layered paper / tactile archive'],
+	['C–04', 'Proof grid', 'Evidence first / engineering portfolio'],
+	['C–05', 'Vertical editions', 'Poster-like / expressive collection'],
+] as const;
+const label = labels[variation - 1];
+---
+
+<header class="prototype-label"><span>{label[0]}</span><strong>{label[1]}</strong><small>{label[2]}</small></header>
+
+{variation === 1 && (
+	<div class="prototype-canvas cards-reel">
+		<header><span>[ 2023—2026 ]</span><h3>SELECTED SYSTEMS</h3></header>
+		<div class="reel-grid"><article><img src="/images/projects/easymanager-service-pulse.svg" alt="EasyManager system flow" /><div><b>EasyManager</b><span>Swift toolkit</span><span>2026</span></div><p>Concurrency · Hardware · Fiscal workflows · Modular architecture</p></article><article><img src="/images/projects/galaxy-trucker-network.png" alt="Galaxy Trucker network" /><div><b>Galaxy Trucker</b><span>Distributed game</span><span>2025</span></div><p>Java · RMI · Sockets · Authoritative state · Four-person team</p></article></div>
+	</div>
+)}
+
+{variation === 2 && (
+	<div class="prototype-canvas cards-index">
+		<div class="cards-index-head"><span>Project</span><span>Type</span><span>Proof</span><span>Year</span></div>
+		<div class="index-row active"><b>01</b><h3>EasyManager</h3><span>Software package</span><span>31 modules</span><em>2026 ↗</em><img src="/images/projects/easymanager-service-pulse.svg" alt="EasyManager preview" /></div>
+		<div class="index-row"><b>02</b><h3>Galaxy Trucker</h3><span>Distributed game</span><span>4 contributors</span><em>2025 ↗</em></div>
+		<div class="index-row"><b>03</b><h3>SpinGO</h3><span>Mobility research</span><span>109 survey responses</span><em>2024 ↗</em></div>
+		<div class="index-row"><b>04</b><h3>Route Planner</h3><span>Graph system</span><span>Implicit search</span><em>2024 ↗</em></div>
+	</div>
+)}
+
+{variation === 3 && (
+	<div class="prototype-canvas cards-stack">
+		<div class="stack-intro"><span>CASE STUDIES / 04</span><h3>Things made,<br /><em>lessons kept.</em></h3><p>A portfolio arranged like material on a desk: overlapping, imperfect, alive.</p></div>
+		<div class="paper-stack"><article class="paper-card paper-one"><span>01 / SWIFT</span><h4>EasyManager</h4><p>A restaurant system taught to acknowledge uncertainty.</p><b>Open case ↗</b></article><article class="paper-card paper-two"><span>02 / JAVA</span><h4>Galaxy<br />Trucker</h4><p>Four players. Two transports. One shared truth.</p><b>Open case ↗</b></article><article class="paper-card paper-three"><span>03 / RESEARCH</span><h4>SpinGO</h4><p>Mobility reframed around safety and trust.</p><b>Open case ↗</b></article></div>
+	</div>
+)}
+
+{variation === 4 && (
+	<div class="prototype-canvas cards-proof">
+		<header><p>Selected engineering evidence</p><h3>Work that can<br />answer follow-ups.</h3></header>
+		<div class="proof-grid"><article class="proof-lead"><span>01 / EASYMANAGER</span><h4>Restaurant operations as durable workflows.</h4><div><b>31<small>modules</small></b><b>0<small>remote deps</small></b><b>0.1.0<small>signed API</small></b></div><p>Swift 6.3 · Concurrency · Hardware · SQL</p></article><article class="proof-visual"><img src="/images/projects/easymanager-service-pulse.svg" alt="EasyManager order lifecycle" /></article><article class="proof-small"><span>02 / GALAXY TRUCKER</span><h4>Shared state over two network transports.</h4><b>4-person team ↗</b></article><article class="proof-small accent"><span>03 / SPINGO</span><h4>Research translated into a safer route concept.</h4><b>Read the synthesis ↗</b></article></div>
+	</div>
+)}
+
+{variation === 5 && (
+	<div class="prototype-canvas cards-editions">
+		<header><span>SELECTED WORK</span><p>Three editions from one evolving practice.</p></header>
+		<div class="edition-grid"><article class="edition-one"><span>No. 01 / 26</span><h3>EASY<br />MANAGER</h3><img src="/images/projects/easymanager-service-pulse.svg" alt="EasyManager flow" /><p>Software package<br />Swift / systems</p></article><article class="edition-two"><span>No. 02 / 25</span><h3>GALAXY<br />TRUCKER</h3><img src="/images/projects/galaxy-trucker-network.png" alt="Galaxy Trucker" /><p>Distributed game<br />Java / networks</p></article><article class="edition-three"><span>No. 03 / 24</span><h3>SPIN<br />GO</h3><img src="/images/projects/spingo-urban-night.jpg" alt="Bicycle in an urban setting" /><p>Mobility concept<br />Research / UX</p></article></div>
+	</div>
+)}

@@ -7,5 +7,5 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
 	site: process.env.PUBLIC_SITE_URL ?? 'https://portfolio-placeholder.pages.dev',
-	integrations: [mdx(), react(), sitemap()],
+	integrations: [mdx(), react(), sitemap({ filter: (page) => !page.includes('/lab/') })],
 });
