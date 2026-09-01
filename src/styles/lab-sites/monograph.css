@@ -73,7 +73,7 @@
 .lab-site--monograph .monograph-reading p,
 .lab-site--monograph .monograph-reading li { max-width: 38rem; }
 .lab-site--monograph .monograph-reading a { color: var(--mono-oxblood); text-decoration: underline; text-decoration-thickness: .07em; text-underline-offset: .15em; }
-.lab-site--monograph .monograph-reading blockquote { margin: 0 0 3rem; padding: 0 0 0 1.25rem; border-left: 1px solid var(--mono-oxblood); font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1.25; }
+.lab-site--monograph .monograph-reading blockquote { margin: 0 0 3rem; padding: 0 0 0 1.25rem; border-left: 1px solid color-mix(in srgb, var(--mono-ink) 65%, transparent); font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1.25; }
 .lab-site--monograph .monograph-reading > p:first-of-type::first-letter { float: left; margin: .1em .12em 0 0; color: var(--mono-oxblood); font-size: 4em; line-height: .72; }
 
 .lab-site--monograph .monograph-project-hero { text-align: center; padding-bottom: clamp(2.5rem, 5vw, 5rem); }

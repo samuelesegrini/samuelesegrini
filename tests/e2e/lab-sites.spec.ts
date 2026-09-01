@@ -34,6 +34,13 @@ test('Monograph keeps reading light and publication-led', async ({ page }) => {
 	await expect(page.locator('[data-project-outcome]')).toHaveCount(3);
 });
 
+test('Monograph blockquote rule is neutral rather than oxblood', async ({ page }) => {
+	await page.goto('/lab/sites/monograph/article/');
+	const blockquote = page.locator('.monograph-reading blockquote').first();
+	await expect(blockquote).toBeVisible();
+	expect(await blockquote.evaluate((element) => getComputedStyle(element).borderLeftColor)).not.toBe('rgb(127, 47, 42)');
+});
+
 test('Signal and Monograph project indexes list only selected projects', async ({ page }) => {
 	for (const path of ['/lab/sites/signal/projects/', '/lab/sites/monograph/projects/']) {
 		await page.goto(path);
