@@ -1,7 +1,7 @@
 # Three Full-Site Portfolio Variations
 
-**Date:** 2026-09-01  
-**Status:** Approved direction; implementation pending  
+**Date:** 2026-09-01
+**Status:** Approved direction; implementation pending
 **Scope:** Private `/lab/` prototype routes only
 
 ## Purpose
