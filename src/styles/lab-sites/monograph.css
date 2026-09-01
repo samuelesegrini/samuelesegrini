@@ -41,7 +41,7 @@
 .lab-site--monograph .monograph-home-projects p:not(.monograph-label),
 .lab-site--monograph [data-project-row] p:not(.monograph-label),
 .lab-site--monograph .monograph-project-meta p:last-child { line-height: 1.55; }
-.lab-site--monograph .monograph-feature span { margin-top: 1.5rem; color: var(--mono-oxblood); font-size: .85rem; }
+.lab-site--monograph .monograph-feature span { margin-top: 1.5rem; font-size: .85rem; }
 .lab-site--monograph .monograph-home-projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 6vw, 6rem); max-width: 78rem; margin: 0 auto; padding: clamp(2.5rem, 6vw, 6rem) 1.5rem 9rem; }
 .lab-site--monograph .monograph-home-projects > h2 { grid-column: 1 / -1; padding-bottom: 1rem; border-bottom: 1px solid color-mix(in srgb, var(--mono-ink) 65%, transparent); }
 .lab-site--monograph .monograph-home-projects h3 { font-size: clamp(2.25rem, 4vw, 4rem); }
@@ -53,7 +53,7 @@
 .lab-site--monograph [data-project-row] img { grid-column: 2; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--mono-blue); }
 .lab-site--monograph [data-project-row] > div { grid-column: 3; }
 .lab-site--monograph [data-project-row] h2 { margin-top: 0; font-size: clamp(2.35rem, 4vw, 4.75rem); }
-.lab-site--monograph .monograph-role { grid-column: 4; margin: 0; color: var(--mono-oxblood); font-size: .85rem; }
+.lab-site--monograph .monograph-role { grid-column: 4; margin: 0; font-size: .85rem; }
 
 .lab-site--monograph .monograph-article-hero { padding-bottom: clamp(3rem, 7vw, 6rem); border-bottom: 1px solid color-mix(in srgb, var(--mono-ink) 65%, transparent); }
 .lab-site--monograph .monograph-article-hero h1 { max-width: 13ch; }
@@ -64,7 +64,7 @@
 .lab-site--monograph .monograph-contents { display: grid; gap: .75rem; }
 .lab-site--monograph .monograph-contents a { border-bottom: 1px solid color-mix(in srgb, var(--mono-ink) 35%, transparent); padding-bottom: .5rem; }
 .lab-site--monograph .monograph-contents a:hover { color: var(--mono-oxblood); }
-.lab-site--monograph .monograph-marginalia { padding-top: 3.5rem; color: var(--mono-oxblood); }
+.lab-site--monograph .monograph-marginalia { padding-top: 3.5rem; }
 .lab-site--monograph .monograph-marginalia p:last-child { margin-top: .75rem; }
 .lab-site--monograph .monograph-reading { min-width: 0; font-size: clamp(1.25rem, 2vw, 1.55rem); line-height: 1.55; }
 .lab-site--monograph .monograph-reading > :first-child { margin-top: 0; }
@@ -87,7 +87,7 @@
 .lab-site--monograph .monograph-outcomes { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 78rem; margin: 0 auto; border-bottom: 1px solid color-mix(in srgb, var(--mono-ink) 65%, transparent); }
 .lab-site--monograph [data-project-outcome] { display: grid; gap: 1rem; min-height: 11rem; align-content: space-between; padding: 1.5rem; border-right: 1px solid color-mix(in srgb, var(--mono-ink) 65%, transparent); }
 .lab-site--monograph [data-project-outcome]:last-child { border-right: 0; }
-.lab-site--monograph [data-project-outcome] strong { color: var(--mono-oxblood); font: 400 clamp(3rem, 6vw, 6rem)/.8 'Instrument Serif', Georgia, serif; }
+.lab-site--monograph [data-project-outcome] strong { font: 400 clamp(3rem, 6vw, 6rem)/.8 'Instrument Serif', Georgia, serif; }
 .lab-site--monograph [data-project-outcome] span { font-size: .82rem; line-height: 1.4; }
 .lab-site--monograph .monograph-project-reading { max-width: 42rem; margin: 0 auto; padding: clamp(3rem, 7vw, 7rem) 1.5rem 10rem; }
 

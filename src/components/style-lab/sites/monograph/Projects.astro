@@ -13,7 +13,7 @@ const { content } = Astro.props;
 </header>
 
 <section class="monograph-project-index" aria-label="Project index">
-	{content.allProjects.map((document, index) => (
+	{content.featuredProjects.map((document, index) => (
 		<article data-project-row>
 			<p class="monograph-label">{String(index + 1).padStart(2, '0')} · {document.data.year}</p>
 			<img src={document.data.coverImage} alt={document.data.coverAlt} width="1200" height="800" />

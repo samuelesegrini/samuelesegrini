@@ -8,7 +8,7 @@ const { content } = Astro.props;
 
 <header class="signal-page-title"><p>[ 2023—2026 ]</p><h1>SELECTED SYSTEMS</h1></header>
 <div class="signal-project-index">
-	{content.allProjects.map((document, index) => (
+	{content.featuredProjects.map((document, index) => (
 		<article data-project-row>
 			<span>{String(index + 1).padStart(2, '0')}</span>
 			<div>

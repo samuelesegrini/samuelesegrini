@@ -34,6 +34,13 @@ test('Monograph keeps reading light and publication-led', async ({ page }) => {
 	await expect(page.locator('[data-project-outcome]')).toHaveCount(3);
 });
 
+test('Signal and Monograph project indexes list only selected projects', async ({ page }) => {
+	for (const path of ['/lab/sites/signal/projects/', '/lab/sites/monograph/projects/']) {
+		await page.goto(path);
+		await expect(page.locator('[data-project-row]')).toHaveCount(3);
+	}
+});
+
 for (const path of signalRoutes) {
 	test(`Signal route ${path} is private and navigable`, async ({ page }) => {
 		const response = await page.goto(path);
