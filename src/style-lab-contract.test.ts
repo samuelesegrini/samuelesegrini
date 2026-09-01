@@ -11,6 +11,15 @@ describe('style lab prototype contract', () => {
 		const source = readFileSync(labPagePath, 'utf8');
 		expect(source).toContain('<meta name="robots" content="noindex, nofollow" />');
 
+		for (const [name, path] of [
+			['Signal System', '/lab/sites/signal/'],
+			['Editorial Monograph', '/lab/sites/monograph/'],
+			['Living Atlas', '/lab/sites/atlas/'],
+		] as const) {
+			expect(source).toContain(name);
+			expect(source).toContain(path);
+		}
+
 		for (const category of ['hero', 'cards', 'articles', 'project-detail']) {
 			const variants = source.match(new RegExp(`data-variation="${category}-`, 'g')) ?? [];
 			expect(variants, `${category} should expose five prototypes`).toHaveLength(5);
@@ -18,5 +27,6 @@ describe('style lab prototype contract', () => {
 
 		const astroConfig = readFileSync(join(process.cwd(), 'astro.config.mjs'), 'utf8');
 		expect(astroConfig).toContain("sitemap({ filter: (page) => !page.includes('/lab/') })");
+		expect(astroConfig).toContain("!page.includes('/lab/')");
 	});
 });

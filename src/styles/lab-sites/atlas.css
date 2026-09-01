@@ -89,8 +89,7 @@
 .lab-site--atlas .atlas-project-reading { max-width: 45rem; margin: 0 auto; padding: clamp(4rem, 9vw, 9rem) 1.5rem 10rem; }
 
 @media (max-width: 900px) {
-	.lab-site--atlas .atlas-edition-row { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 1rem; }
-	.lab-site--atlas .atlas-edition { flex: 0 0 min(70vw, 24rem); scroll-snap-align: start; }
+	.lab-site--atlas .atlas-edition-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.lab-site--atlas .atlas-reading { grid-template-columns: minmax(10rem, .7fr) minmax(0, 1.7fr); }
 	.lab-site--atlas .atlas-evidence { position: static; grid-column: 2; }
 	.lab-site--atlas [data-atlas-project-row] { grid-template-columns: 3rem minmax(9rem, .8fr) minmax(10rem, 1fr); }
@@ -103,6 +102,7 @@
 	.lab-site--atlas .lab-site-nav { flex-wrap: nowrap; justify-content: flex-start; margin-top: 1rem; overflow-x: auto; }
 	.lab-site--atlas .lab-site-nav a { flex: 0 0 auto; min-height: 2.75rem; padding-inline: .6rem; }
 	.lab-site--atlas .atlas-home-hero h1, .lab-site--atlas .atlas-index-hero h1, .lab-site--atlas .atlas-project-hero h1 { font-size: clamp(2.75rem, 14vw, 4.75rem); }
+	.lab-site--atlas .atlas-edition-row { grid-template-columns: 1fr; }
 	.lab-site--atlas .atlas-compact-index { grid-template-columns: 1fr; }
 	.lab-site--atlas .atlas-compact-index [data-project-row] { grid-template-columns: 2rem minmax(0, 1fr); }
 	.lab-site--atlas .atlas-compact-index [data-project-row] p:last-child { grid-column: 2; }

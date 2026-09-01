@@ -1,6 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+const themes = ['signal', 'monograph', 'atlas'] as const;
+const pages = ['/', '/projects/', '/article/', '/project/'] as const;
+
 const signalRoutes = [
 	'/lab/sites/signal/',
 	'/lab/sites/signal/projects/',
@@ -110,3 +113,42 @@ test('Signal uses the approved content and structural signatures', async ({ page
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('EasyManager');
 	await expect(page.locator('[data-project-outcome]')).toHaveCount(3);
 });
+
+test('all themes expose the same selected portfolio records', async ({ page }) => {
+	for (const theme of themes) {
+		await page.goto(`/lab/sites/${theme}/`);
+		for (const title of ['EasyManager', 'Galaxy Trucker', 'SpinGO']) {
+			await expect(page.getByText(title, { exact: true }).first()).toBeVisible();
+		}
+		await page.goto(`/lab/sites/${theme}/article/`);
+		await expect(page.getByRole('heading', { level: 1 })).toHaveText('My first video game was a distributed system');
+		await page.goto(`/lab/sites/${theme}/project/`);
+		await expect(page.getByRole('heading', { level: 1 })).toHaveText('EasyManager');
+	}
+});
+
+test('theme navigation reaches every page without leaving the selected system', async ({ page }) => {
+	for (const theme of themes) {
+		await page.goto(`/lab/sites/${theme}/`);
+		for (const suffix of pages.slice(1)) {
+			await page.locator(`[data-lab-site-nav] a[href="/lab/sites/${theme}${suffix}"]`).click();
+			await expect(page).toHaveURL(new RegExp(`/lab/sites/${theme}${suffix.replaceAll('/', '\\/')}$`));
+		}
+	}
+});
+
+for (const width of [390, 1280]) {
+	test(`lab mini-sites remain accessible and overflow-free at ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
+		for (const theme of themes) {
+			for (const suffix of pages) {
+				const path = `/lab/sites/${theme}${suffix}`;
+				await page.goto(path, { waitUntil: 'networkidle' });
+				expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBe(width);
+				const results = await new AxeBuilder({ page }).analyze();
+				const serious = results.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical');
+				expect(serious, path).toEqual([]);
+			}
+		}
+	});
+}
