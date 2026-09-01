@@ -1,0 +1,25 @@
+---
+import type { LabSiteContent } from '../../../../lib/lab-sites';
+import '../../../../styles/lab-sites/signal.css';
+
+interface Props { content: LabSiteContent }
+const { content } = Astro.props;
+---
+
+<section class="signal-hero">
+	<div class="signal-status">Italy / CET · Software engineering · Selected work · 2023—2026</div>
+	<h1>SYSTEMS YOU<br />CAN <em>TRUST.</em></h1>
+	<p>Interfaces, infrastructure, and the difficult space between them.</p>
+</section>
+<section class="signal-featured" aria-labelledby="signal-work">
+	<h2 id="signal-work">Selected systems</h2>
+	{content.featuredProjects.map((document) => (
+		<article data-featured-project>
+			<img src={document.data.coverImage} alt={document.data.coverAlt} width="1200" height="800" />
+			<p>{document.data.kind} · {document.data.year}</p>
+			<h3>{document.data.title}</h3>
+			<p>{document.data.excerpt}</p>
+			<strong>{document.data.role}</strong>
+		</article>
+	))}
+</section>

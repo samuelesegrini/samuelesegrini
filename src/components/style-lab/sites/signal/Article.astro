@@ -1,0 +1,15 @@
+---
+import type { MarkdownHeading } from 'astro';
+import type { LabSiteContent } from '../../../../lib/lab-sites';
+import '../../../../styles/lab-sites/signal.css';
+
+interface Props { content: LabSiteContent; headings: readonly MarkdownHeading[] }
+const { content, headings } = Astro.props;
+---
+
+<header class="signal-article-hero"><p>FIELD NOTE / DISTRIBUTED SYSTEMS</p><h1>{content.articleDocument.data.title}</h1></header>
+<div class="signal-article-layout">
+	<aside aria-label="Article contents">{headings.filter(({ depth }) => depth === 2).map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}</aside>
+	<article class="signal-prose"><slot name="body" /></article>
+	<aside data-signal-evidence><span>INVARIANT</span><strong>Shared state needs one authority.</strong></aside>
+</div>

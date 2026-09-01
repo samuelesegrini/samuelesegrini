@@ -1,0 +1,10 @@
+---
+import Projects from '../../../../../components/style-lab/sites/signal/Projects.astro';
+import { getLabSiteContent } from '../../../../../lib/lab-sites';
+import LabSiteLayout from '../../../../../layouts/LabSiteLayout.astro';
+const content = await getLabSiteContent();
+---
+
+<LabSiteLayout theme="signal" page="projects" title="Selected Systems — Signal System" description="Selected software engineering systems in the Signal System portfolio prototype.">
+	<Projects content={content} />
+</LabSiteLayout>

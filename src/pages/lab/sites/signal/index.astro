@@ -1,0 +1,9 @@
+---
+import Home from '../../../../components/style-lab/sites/signal/Home.astro';
+import { getLabSiteContent } from '../../../../lib/lab-sites';
+import LabSiteLayout from '../../../../layouts/LabSiteLayout.astro';
+const content = await getLabSiteContent();
+---
+<LabSiteLayout theme="signal" page="home" title="Signal System — Style Lab" description="Signal System portfolio prototype.">
+	<Home content={content} />
+</LabSiteLayout>

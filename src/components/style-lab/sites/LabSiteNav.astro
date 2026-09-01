@@ -1,0 +1,38 @@
+---
+import { labSitePages, labSitePath, type LabSitePage, type LabSiteTheme } from '../../../lib/lab-sites';
+
+interface Props {
+	theme: LabSiteTheme;
+	currentPage: LabSitePage;
+}
+
+const { theme, currentPage } = Astro.props;
+const labels: Record<LabSitePage, string> = {
+	home: 'Home',
+	projects: 'Projects',
+	article: 'Article',
+	project: 'Case study',
+};
+const themeLabels: Record<LabSiteTheme, string> = {
+	signal: 'Signal System',
+	monograph: 'Monograph',
+	atlas: 'Atlas',
+};
+const themeMarks: Record<LabSiteTheme, string> = {
+	signal: 'SS / 01',
+	monograph: 'MO / 02',
+	atlas: 'AT / 03',
+};
+---
+
+<header class="lab-site-header">
+	<a class="lab-site-mark" href={labSitePath(theme, 'home')} aria-label={`${themeLabels[theme]} home`}>
+		<span>{themeMarks[theme]}</span>
+		<strong>Samuele Segrini</strong>
+	</a>
+	<nav class="lab-site-nav" data-lab-site-nav aria-label={`${themeLabels[theme]} pages`}>
+		{labSitePages.map((page) => (
+			<a href={labSitePath(theme, page)} aria-current={page === currentPage ? 'page' : undefined}>{labels[page]}</a>
+		))}
+	</nav>
+</header>
