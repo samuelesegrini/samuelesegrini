@@ -1,2 +1,54 @@
-/* Living Library styles are isolated behind the ll- prefix. */
-#living-library-root { min-height: 1px; }
+#variant-living{background:#eef1ec}
+.ll-head{display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:end}
+.ll-summary{padding:18px;border:1px solid #0002;border-radius:20px;background:#fff;font-size:18px}
+.ll-filters{display:flex;flex-wrap:wrap;gap:6px;width:max-content;margin:38px 0 20px;padding:7px;border-radius:999px;background:#dce4da}
+.ll-filters button{padding:9px 13px;border:0;border-radius:999px;background:transparent;color:#566056;cursor:pointer;font:8px var(--mono);text-transform:uppercase}
+.ll-filters button.active{background:#111;color:#fff}
+.ll-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ll-section{margin-top:24px}.ll-section-title{margin:0 0 12px;font-size:22px;letter-spacing:-.04em}
+.ll-card{min-width:0;padding:16px;border:1px solid #0002;border-radius:23px;background:#fff}
+.ll-card[hidden]{display:none}
+.ll-card header,.ll-card footer{display:flex;justify-content:space-between;gap:10px}
+.ll-card h2{margin:0;font-size:16px;letter-spacing:-.035em}
+.ll-card p{min-height:32px;margin:5px 0 13px;color:#777;font-size:10px;line-height:1.4}
+.ll-card footer{margin-top:10px;color:#777;font:7px var(--mono);text-transform:uppercase}
+.ll-stage{display:grid;min-height:124px;place-items:center;padding:14px;border-radius:16px;background:#111;overflow:hidden}
+.ll-safe-area{position:relative;display:grid;width:100%;min-height:96px;place-items:center;overflow:visible}
+.ll-control{position:relative;height:82px;border:0;border-radius:16px;background:#242424;color:#fff;cursor:pointer;overflow:visible}
+.ll-control.one{width:82px}.ll-control.two{width:172px}.ll-control.three{width:min(100%,262px)}.ll-control.four{width:min(100%,352px)}
+.ll-control:focus-visible,.ll-source-link:focus-visible,.ll-filters button:focus-visible{outline:3px solid var(--accent,#c7ff9f);outline-offset:3px}
+.ll-control [data-motion-part]{pointer-events:none;will-change:transform,opacity}
+@media(max-width:850px){.ll-head{grid-template-columns:1fr}.ll-filters{width:100%;border-radius:20px}.ll-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.ll-control *{animation-duration:.001ms!important;transition-duration:.001ms!important;animation-iteration-count:1!important}}
+
+.ll-source{color:#777;font:7px var(--mono);text-transform:uppercase}
+.ll-source-link{border:0;background:transparent;color:#777;cursor:pointer;font:7px var(--mono);text-transform:uppercase}
+.ll-original-progress{padding:10px;text-align:left}
+.ll-original-progress-tag,.ll-original-inbox-copy small{display:block;color:#9da39b;font:7px var(--mono);text-transform:uppercase}
+.ll-original-progress-track{display:block;position:relative;height:31px;margin-top:9px;border-radius:999px;background:#4b4b4b;overflow:hidden}
+.ll-original-progress-fill{display:block;position:relative;width:var(--progress);height:100%;border-radius:inherit;background:var(--accent,#c7ff9f);transition:width .22s ease}
+.ll-original-progress-head{position:absolute;right:-1px;top:4px;width:23px;height:23px;border-radius:50% 50% 42% 42%;background:#101510}
+.ll-original-progress-head i{position:absolute;top:7px;width:4px;height:4px;border-radius:50%;background:#fff}.ll-original-progress-head i:first-child{left:5px}.ll-original-progress-head i:last-child{right:5px}
+.ll-original-progress b{position:absolute;top:8px;left:10px;color:#111;font:8px var(--mono)}
+.ll-original-progress[data-state="act"]{animation:ll-progress-stretch 720ms cubic-bezier(.22,1,.36,1)}
+
+.ll-original-inbox{display:flex;align-items:center;justify-content:space-between;padding:12px;text-align:left}
+.ll-original-inbox-copy b{display:block;margin-top:4px;font-size:12px}
+.ll-original-inbox-body{position:relative;width:65px;height:57px;border-radius:47% 53% 46% 54%;background:var(--accent,#ffd4b8);transform:scale(var(--blob-scale));transform-origin:center;transition:transform .2s ease}
+.ll-original-inbox-eyes i{position:absolute;top:17px;width:6px;height:8px;border-radius:50%;background:#1d1d1d}.ll-original-inbox-eyes i:first-child{left:21px}.ll-original-inbox-eyes i:last-child{right:21px}
+.ll-original-inbox-mouth{position:absolute;left:25px;bottom:14px;width:15px;height:7px;border-radius:0 0 10px 10px;background:#1d1d1d}
+.ll-original-inbox-dots{position:absolute;top:-5px;right:-5px;display:flex;gap:2px}.ll-original-inbox-dots i{width:7px;height:7px;border-radius:50%;background:#fff}
+.ll-original-inbox[data-state="act"]{animation:ll-inbox-swallow 780ms cubic-bezier(.22,1,.36,1)}
+
+.ll-original-pixel{display:grid;place-items:center;background:#1d3650}.ll-original-pixel b{position:absolute;bottom:7px;font:7px var(--mono);text-transform:uppercase}
+.ll-original-pixel-sprite{display:grid;grid-template-columns:repeat(3,9px);gap:2px}.ll-original-pixel-sprite i{display:block;width:9px;height:9px;background:var(--accent,#cdefff)}.ll-original-pixel-sprite i:nth-child(1),.ll-original-pixel-sprite i:nth-child(3),.ll-original-pixel-sprite i:nth-child(7),.ll-original-pixel-sprite i:nth-child(9){opacity:.35}
+.ll-original-pixel[data-state="act"]{animation:ll-pixel-hop 700ms steps(5,end)}
+
+.ll-original-mood{background:#493f65}.ll-original-mood-eyes{position:absolute;top:24px;left:25px;display:flex;gap:13px}.ll-original-mood-eyes i{width:8px;height:10px;border-radius:50%;background:var(--accent,#ded1ff)}
+.ll-original-mood-mouth{position:absolute;left:29px;top:48px;width:24px;height:5px;border-radius:0 0 18px 18px;border-bottom:3px solid var(--accent,#ded1ff);transition:height .18s ease,border-radius .18s ease}
+.ll-original-mood[aria-pressed="true"] .ll-original-mood-mouth{height:12px;border-radius:0 0 18px 18px}.ll-original-mood[data-state="act"]{animation:ll-mood-smile 520ms cubic-bezier(.22,1,.36,1)}
+
+@keyframes ll-progress-stretch{0%,100%{transform:scaleX(1)}45%{transform:scaleX(1.04)}}
+@keyframes ll-inbox-swallow{0%,100%{transform:scale(1)}48%{transform:scale(.93,1.08)}}
+@keyframes ll-pixel-hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-15px)}}
+@keyframes ll-mood-smile{0%,100%{transform:rotate(0)}45%{transform:rotate(4deg) scale(1.06)}}

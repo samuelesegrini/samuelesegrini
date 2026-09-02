@@ -23,3 +23,34 @@ test('living variant has its own mount and every source has one stable identifie
 		await expect(page.locator(`#variant-library [data-component="${id}"]`)).toHaveCount(1);
 	}
 });
+
+test.beforeEach(async ({ page }) => {
+	await page.goto(livingUrl);
+});
+
+test('living library starts with four independently rendered original creatures', async ({ page }) => {
+	await expect(page.getByRole('heading', { name: 'A toolbar that feels alive.' })).toBeVisible();
+	await expect(page.locator('.ll-summary')).toHaveText('0 alternatives · 4 original creatures');
+	await expect(page.locator('[data-living-kind="original"]')).toHaveCount(4);
+	await expect(page.locator('[data-living-id="original-progress-creature"]')).toHaveCount(1);
+	await expect(page.locator('[data-living-id="original-inbox-blob"]')).toHaveCount(1);
+	await expect(page.locator('[data-living-id="original-pixel-guest"]')).toHaveCount(1);
+	await expect(page.locator('[data-living-id="original-mood-tile"]')).toHaveCount(1);
+});
+
+test('original creature filter hides non-original groups without touching the component library', async ({ page }) => {
+	await page.getByRole('button', { name: 'Originals' }).click();
+	await expect(page.locator('.ll-card:visible')).toHaveCount(4);
+	await expect(page.locator('#variant-library .lib-card')).toHaveCount(31);
+});
+
+test('original creature controls expose visible and accessible state', async ({ page }) => {
+	const progress = page.locator('[data-living-id="original-progress-creature"] [data-living-action]');
+	await progress.click();
+	await expect(progress).toHaveAttribute('aria-label', '65 percent read');
+	await expect(progress).toHaveAttribute('data-busy', 'false');
+
+	const mood = page.locator('[data-living-id="original-mood-tile"] [data-living-action]');
+	await mood.click();
+	await expect(mood).toHaveAttribute('aria-pressed', 'true');
+});
