@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
 
 test('living library starts with four independently rendered original creatures', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: 'A toolbar that feels alive.' })).toBeVisible();
-	await expect(page.locator('.ll-summary')).toHaveText('0 alternatives · 4 original creatures');
+	await expect(page.locator('.ll-summary')).toHaveText('7 alternatives · 4 original creatures');
 	await expect(page.locator('[data-living-kind="original"]')).toHaveCount(4);
 	await expect(page.locator('[data-living-id="original-progress-creature"]')).toHaveCount(1);
 	await expect(page.locator('[data-living-id="original-inbox-blob"]')).toHaveCount(1);
@@ -64,4 +64,32 @@ test('Pixel Guest switches its visible sprite for a finite celebration', async (
 	await expect(sprite).toHaveAttribute('data-pixel-sprite', 'celebrate');
 	await expect(pixel).toHaveAttribute('data-busy', 'false');
 	await expect(sprite).toHaveAttribute('data-pixel-sprite', 'idle');
+});
+
+const actionIds = ['courier-moth', 'scout-eye', 'drop-beetle', 'echo-jelly', 'link-twins', 'key-crab', 'compass-pup'];
+
+test('action family exposes seven distinct living alternatives', async ({ page }) => {
+	await page.getByRole('button', { name: 'Actions' }).click();
+	await expect(page.locator('.ll-card:visible')).toHaveCount(7);
+	for (const id of actionIds) await expect(page.locator(`[data-living-id="${id}"]`)).toHaveCount(1);
+});
+
+test('courier moth launches once, confirms send, and settles', async ({ page }) => {
+	const control = page.locator('[data-living-id="courier-moth"] [data-living-action]');
+	await control.click();
+	await expect(control).toHaveAttribute('data-busy', 'true');
+	await control.click({ force: true });
+	await expect(control).toHaveAttribute('aria-label', 'Sending email');
+	await expect(control).toHaveAttribute('data-busy', 'false', { timeout: 1600 });
+	await expect(control).toHaveAttribute('aria-label', 'Email sent');
+});
+
+test('an alternative links to and focuses its exact source card', async ({ page }) => {
+	const source = page.locator('[data-component="plane-send"]');
+	const phaseBefore = await source.locator('button').getAttribute('data-phase');
+	await page.locator('[data-living-id="courier-moth"] .ll-source-link').click();
+	await expect(page.locator('#variant-library')).toHaveClass(/active/);
+	await expect(source).toBeFocused();
+	await expect(source.locator('button')).toHaveAttribute('data-phase', phaseBefore!);
+	await expect(page.locator('#variant-library').getByRole('button', { name: 'All 31' })).toHaveClass(/active/);
 });

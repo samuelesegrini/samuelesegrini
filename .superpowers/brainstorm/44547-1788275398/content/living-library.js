@@ -156,6 +156,152 @@ livingControllers.mood = (card) => {
   }));
 };
 
+const actionCreatures = [
+  { id:'courier-moth', sourceId:'plane-send', sourceName:'Plane Send', name:'Courier Moth', kind:'alternative', category:'actions', slots:1, accent:'#ffd4b8', verb:'Launch', description:'Folds paper-like wings, launches, and returns to its perch.', renderer:'courierMoth', controller:'courierMoth' },
+  { id:'scout-eye', sourceId:'camera-lens-search', sourceName:'Camera-lens Search', name:'Scout Eye', kind:'alternative', category:'actions', slots:1, accent:'#cdefff', verb:'Focus', description:'Opens its iris to search and refocuses when closed.', renderer:'scoutEye', controller:'scoutEye' },
+  { id:'drop-beetle', sourceId:'trapdoor-download', sourceName:'Trapdoor Download', name:'Drop Beetle', kind:'alternative', category:'actions', slots:1, accent:'#c7ff9f', verb:'Drop', description:'Compresses its shell and releases the payload underneath.', renderer:'dropBeetle', controller:'dropBeetle' },
+  { id:'echo-jelly', sourceId:'share-ripple', sourceName:'Share Ripple', name:'Echo Jelly', kind:'alternative', category:'actions', slots:1, accent:'#ded1ff', verb:'Echo', description:'Contracts before sending confirmation rings through its body.', renderer:'echoJelly', controller:'echoJelly' },
+  { id:'link-twins', sourceId:'copy-link', sourceName:'Copy Link', name:'Link Twins', kind:'alternative', category:'actions', slots:2, accent:'#cdefff', verb:'Connect', description:'Two bodies reach across the slot and snap together.', renderer:'linkTwins', controller:'linkTwins' },
+  { id:'key-crab', sourceId:'command-launcher', sourceName:'Command Launcher', name:'Key Crab', kind:'alternative', category:'actions', slots:2, accent:'#ffd4b8', verb:'Press', description:'Raises its claws and presses the command sequence.', renderer:'keyCrab', controller:'keyCrab' },
+  { id:'compass-pup', sourceId:'magnet-action', sourceName:'Magnet Action', name:'Compass Pup', kind:'alternative', category:'actions', slots:1, accent:'#c7ff9f', verb:'Attract', description:'Leans toward the pointer with layered body and shadow depth.', renderer:'compassPup', controller:'compassPup' },
+];
+livingCatalog.push(...actionCreatures);
+
+livingRenderers.courierMoth = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-moth" data-living-action data-busy="false" aria-label="Send email"><i class="ll-moth-shadow" data-motion-part aria-hidden="true"></i><span class="ll-moth-envelope" data-moth-envelope data-motion-part aria-hidden="true"><i class="ll-moth-wing left" data-motion-part></i><i class="ll-moth-wing right" data-motion-part></i><i class="ll-moth-body" data-motion-part></i></span></button>`;
+
+livingRenderers.scoutEye = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-eye" data-living-action data-busy="false" aria-expanded="false" aria-label="Search closed"><span class="ll-eye-iris" data-eye-iris data-motion-part aria-hidden="true"><i class="ll-eye-pupil" data-motion-part></i></span><i class="ll-eye-lid" data-motion-part aria-hidden="true"></i></button>`;
+
+livingRenderers.dropBeetle = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-beetle" data-living-action data-busy="false" aria-label="Download file"><span class="ll-beetle-shell" data-beetle-shell data-motion-part aria-hidden="true"><i></i><i></i></span><i class="ll-beetle-legs" data-motion-part aria-hidden="true"></i><i class="ll-beetle-payload" data-motion-part aria-hidden="true"></i></button>`;
+
+livingRenderers.echoJelly = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-jelly" data-living-action data-busy="false" aria-label="Share page"><i class="ll-jelly-ring" data-motion-part aria-hidden="true"></i><i class="ll-jelly-ring" data-motion-part aria-hidden="true"></i><span class="ll-jelly-body" data-jelly-body data-motion-part aria-hidden="true"><i></i><i></i></span></button>`;
+
+livingRenderers.linkTwins = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-link" data-living-action data-busy="false" aria-label="Copy link"><span class="ll-link-twin a" data-link-twin data-motion-part aria-hidden="true"></span><i class="ll-link-bridge" data-motion-part aria-hidden="true"></i><span class="ll-link-twin b" data-motion-part aria-hidden="true"></span><b class="ll-link-label" data-link-label>Copy link</b></button>`;
+
+livingRenderers.keyCrab = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-crab" data-living-action data-busy="false" aria-label="Open command menu"><span class="ll-crab-body" data-crab-body data-motion-part aria-hidden="true"><i></i><i></i></span><i class="ll-crab-claw left" data-motion-part aria-hidden="true"></i><i class="ll-crab-claw right" data-motion-part aria-hidden="true"></i><span class="ll-crab-keys" aria-hidden="true"><i class="ll-crab-key" data-crab-key data-pressed="false">⌘</i><i class="ll-crab-key" data-crab-key data-pressed="false">K</i><i class="ll-crab-key" data-crab-key data-pressed="false">↵</i></span></button>`;
+
+livingRenderers.compassPup = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-pup" data-living-action data-busy="false" aria-label="Open external link"><i class="ll-pup-shadow" data-motion-part aria-hidden="true"></i><span class="ll-pup-body" data-pup-body data-motion-part aria-hidden="true"><i class="ll-pup-arrow" data-motion-part>↗</i></span></button>`;
+
+livingControllers.courierMoth = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const envelope = control.querySelector('[data-moth-envelope]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 1050,
+    target: envelope,
+    onAct: () => control.setAttribute('aria-label', 'Sending email'),
+    onSettle: () => {
+      control.dataset.sent = 'true';
+      control.setAttribute('aria-label', 'Email sent');
+    },
+  }));
+};
+
+livingControllers.scoutEye = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const iris = control.querySelector('[data-eye-iris]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 650,
+    target: iris,
+    onAct: () => {
+      const open = control.getAttribute('aria-expanded') !== 'true';
+      control.setAttribute('aria-expanded', String(open));
+      control.setAttribute('aria-label', open ? 'Search open' : 'Search closed');
+    },
+  }));
+};
+
+livingControllers.dropBeetle = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const shell = control.querySelector('[data-beetle-shell]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 780,
+    target: shell,
+    onAct: () => {
+      control.dataset.delivered = 'false';
+      control.setAttribute('aria-label', 'Downloading file');
+    },
+    onSettle: () => {
+      control.dataset.delivered = 'true';
+      control.setAttribute('aria-label', 'Download complete');
+    },
+  }));
+};
+
+livingControllers.echoJelly = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const body = control.querySelector('[data-jelly-body]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 720,
+    target: body,
+    onAct: () => control.setAttribute('aria-label', 'Sharing page'),
+    onSettle: () => {
+      control.dataset.shared = 'true';
+      control.setAttribute('aria-label', 'Page shared');
+    },
+  }));
+};
+
+livingControllers.linkTwins = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const twin = control.querySelector('[data-link-twin]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 680,
+    target: twin,
+    onSettle: () => {
+      control.dataset.connected = 'true';
+      control.querySelector('[data-link-label]').textContent = 'Copied';
+      control.setAttribute('aria-label', 'Copied');
+    },
+  }));
+};
+
+livingControllers.keyCrab = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const body = control.querySelector('[data-crab-body]');
+  const keys = Array.from(control.querySelectorAll('[data-crab-key]'));
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 820,
+    target: body,
+    onAct: () => {
+      if (reduceMotion.matches) return;
+      keys.forEach((key, index) => {
+        window.setTimeout(() => { key.dataset.pressed = 'true'; }, index * 210);
+        window.setTimeout(() => { key.dataset.pressed = 'false'; }, index * 210 + 200);
+      });
+    },
+    onSettle: () => {
+      control.dataset.opened = 'true';
+      control.setAttribute('aria-label', 'Command menu opened');
+    },
+  }));
+};
+
+livingControllers.compassPup = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const body = control.querySelector('[data-pup-body]');
+  const reset = () => {
+    control.style.setProperty('--px', '0px');
+    control.style.setProperty('--py', '0px');
+  };
+  reset();
+  control.addEventListener('pointermove', (event) => {
+    if (reduceMotion.matches) return;
+    const box = control.getBoundingClientRect();
+    const clamp = (value) => Math.max(-9, Math.min(9, value));
+    control.style.setProperty('--px', `${clamp((event.clientX - box.left - box.width / 2) / 3).toFixed(2)}px`);
+    control.style.setProperty('--py', `${clamp((event.clientY - box.top - box.height / 2) / 3).toFixed(2)}px`);
+  });
+  control.addEventListener('pointerleave', reset);
+  control.addEventListener('blur', reset);
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 620,
+    target: body,
+    onSettle: () => {
+      control.dataset.opened = 'true';
+      control.setAttribute('aria-label', 'External link opened');
+    },
+  }));
+};
+
 function mountLivingLibrary() {
   if (!root) return;
   renderLibrary();
