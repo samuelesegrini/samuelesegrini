@@ -54,3 +54,14 @@ test('original creature controls expose visible and accessible state', async ({ 
 	await mood.click();
 	await expect(mood).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('Pixel Guest switches its visible sprite for a finite celebration', async ({ page }) => {
+	const pixel = page.locator('[data-living-id="original-pixel-guest"] [data-living-action]');
+	const sprite = pixel.locator('[data-pixel-sprite]');
+	await expect(sprite).toHaveAttribute('data-pixel-sprite', 'idle');
+
+	await pixel.click();
+	await expect(sprite).toHaveAttribute('data-pixel-sprite', 'celebrate');
+	await expect(pixel).toHaveAttribute('data-busy', 'false');
+	await expect(sprite).toHaveAttribute('data-pixel-sprite', 'idle');
+});

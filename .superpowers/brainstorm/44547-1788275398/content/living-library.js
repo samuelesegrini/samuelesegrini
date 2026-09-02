@@ -83,7 +83,7 @@ livingRenderers.progress = (entry) => `<button class="ll-control ${slotClass(ent
 
 livingRenderers.inbox = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-original-inbox" data-living-action data-busy="false" data-unread="3" style="--blob-scale:1" aria-label="3 unread messages"><span class="ll-original-inbox-copy"><small>Inbox</small><b><span data-unread-label>3</span> unread</b></span><span class="ll-original-inbox-body" data-motion-part><span class="ll-original-inbox-eyes"><i></i><i></i></span><i class="ll-original-inbox-mouth"></i><span class="ll-original-inbox-dots" data-living-dots><i></i><i></i><i></i></span></span></button>`;
 
-livingRenderers.pixel = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-original-pixel" data-living-action data-busy="false" data-reaction="idle" aria-label="Pixel guest is idle"><span class="ll-original-pixel-sprite" data-motion-part aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><b data-pixel-label>Idle</b></button>`;
+livingRenderers.pixel = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-original-pixel" data-living-action data-busy="false" data-reaction="idle" aria-label="Pixel guest is idle"><span class="ll-original-pixel-sprite" data-motion-part data-pixel-sprite="idle" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><b data-pixel-label>Idle</b></button>`;
 
 livingRenderers.mood = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-original-mood" data-living-action data-busy="false" aria-pressed="false" aria-label="Mood tile is neutral"><span class="ll-original-mood-eyes" aria-hidden="true"><i></i><i></i></span><i class="ll-original-mood-mouth" data-motion-part></i></button>`;
 
@@ -131,10 +131,16 @@ livingControllers.pixel = (card) => {
     duration: 700,
     onAct: () => {
       control.dataset.reaction = 'celebrate';
+      control.querySelector('[data-pixel-sprite]').dataset.pixelSprite = 'celebrate';
       control.querySelector('[data-pixel-label]').textContent = 'Celebrate';
       control.setAttribute('aria-label', 'Pixel guest celebrates');
     },
-    onSettle: () => { control.dataset.reaction = 'idle'; },
+    onSettle: () => {
+      control.dataset.reaction = 'idle';
+      control.querySelector('[data-pixel-sprite]').dataset.pixelSprite = 'idle';
+      control.querySelector('[data-pixel-label]').textContent = 'Idle';
+      control.setAttribute('aria-label', 'Pixel guest is idle');
+    },
   }));
 };
 
