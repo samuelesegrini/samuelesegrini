@@ -490,6 +490,166 @@ livingControllers.shellKnock = (card) => {
   }));
 };
 
+const navigationCreatures = [
+  { id:'project-caterpillar', sourceId:'conveyor-pager', sourceName:'Conveyor Pager', name:'Project Caterpillar', kind:'alternative', category:'navigation', slots:4, accent:'#c7ff9f', verb:'Carry', description:'Carries the current project away and brings the next one in.', renderer:'projectCaterpillar', controller:'projectCaterpillar' },
+  { id:'stepper-bug', sourceId:'section-checkpoints', sourceName:'Section Checkpoints', name:'Stepper Bug', kind:'alternative', category:'navigation', slots:2, accent:'#ffd4b8', verb:'Hop', description:'Hops between article sections in reading order.', renderer:'stepperBug', controller:'stepperBug' },
+  { id:'trail-snail', sourceId:'breadcrumb-cards', sourceName:'Breadcrumb Cards', name:'Trail Snail', kind:'alternative', category:'navigation', slots:3, accent:'#cdefff', verb:'Trail', description:'Leaves and retrieves breadcrumbs as hierarchy changes.', renderer:'trailSnail', controller:'trailSnail' },
+  { id:'turnover-turtle', sourceId:'view-flip', sourceName:'View Flip', name:'Turnover Turtle', kind:'alternative', category:'navigation', slots:1, accent:'#ded1ff', verb:'Turn', description:'Turns its shell to expose grid or list view.', renderer:'turnoverTurtle', controller:'turnoverTurtle' },
+  { id:'fan-bird', sourceId:'filter-deck', sourceName:'Filter Deck', name:'Fan Bird', kind:'alternative', category:'navigation', slots:2, accent:'#ffd4b8', verb:'Fan', description:'Spreads labelled feathers to reveal filters.', renderer:'fanBird', controller:'fanBird' },
+  { id:'dial-snail', sourceId:'twist-dial', sourceName:'Twist Dial', name:'Dial Snail', kind:'alternative', category:'navigation', slots:1, accent:'#c7ff9f', verb:'Twist', description:'Rotates its shell between language detents.', renderer:'dialSnail', controller:'dialSnail' },
+  { id:'shy-sticker', sourceId:'peel-tab', sourceName:'Peel Tab', name:'Shy Sticker', kind:'alternative', category:'navigation', slots:1, accent:'#cdefff', verb:'Peel', description:'Peels back its cover to reveal the selected route.', renderer:'shySticker', controller:'shySticker' },
+  { id:'label-chameleon', sourceId:'card-shuffle-label', sourceName:'Card-shuffle Label', name:'Label Chameleon', kind:'alternative', category:'navigation', slots:2, accent:'#ded1ff', verb:'Change', description:'Exchanges stacked labels through a changing skin.', renderer:'labelChameleon', controller:'labelChameleon' },
+];
+livingCatalog.push(...navigationCreatures);
+
+const livingProjects = ['EasyManager', 'Galaxy Trucker', 'SpinGO', 'Service Pulse'];
+const projectSlug = (position) => `<small>Project ${String(position + 1).padStart(2, '0')} / 04</small><b>${livingProjects[position]}</b>`;
+
+livingRenderers.projectCaterpillar = (entry) => `<div class="ll-control ${slotClass(entry.slots)} ll-project" data-project-group data-busy="false" data-direction="forward" role="group" aria-label="Project 1 of 4: EasyManager" style="--direction:1"><button class="ll-project-arrow" data-project-dir="-1" aria-label="Previous project">←</button><span class="ll-project-window"><span class="ll-project-copy ll-project-current">${projectSlug(0)}</span><span class="ll-project-copy ll-project-next" aria-hidden="true">${projectSlug(1)}</span></span><button class="ll-project-arrow" data-project-dir="1" aria-label="Next project">→</button><span class="ll-project-creature" data-motion-part aria-hidden="true"><i class="ll-project-seg"></i><i class="ll-project-seg"></i><i class="ll-project-seg"></i><i class="ll-project-head"><i></i><i></i></i></span></div>`;
+
+livingRenderers.stepperBug = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-stepper" data-living-action data-busy="false" data-step="1" style="--step:1" aria-label="Section 1 of 5"><span class="ll-stepper-track" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><i class="ll-stepper-bug" data-stepper-bug data-motion-part aria-hidden="true"><i></i><i></i></i><small class="ll-stepper-tag" data-stepper-tag aria-hidden="true">Section 1 of 5</small></button>`;
+
+livingRenderers.trailSnail = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-trail" data-living-action data-busy="false" data-depth="2" aria-label="Location: Work, EasyManager"><span class="ll-trail-crumbs" aria-hidden="true"><i class="ll-trail-crumb">Work</i><i class="ll-trail-crumb deep">EasyManager</i></span><span class="ll-trail-snail" data-trail-body data-motion-part aria-hidden="true"><i class="ll-trail-shell"></i><i class="ll-trail-foot"></i><i class="ll-trail-horn"></i></span><span class="ll-trail-dots" aria-hidden="true"><i></i><i></i><i></i></span></button>`;
+
+livingRenderers.turnoverTurtle = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-turtle" data-living-action data-busy="false" aria-pressed="false" aria-label="Grid view"><span class="ll-turtle-shell" data-turtle-shell data-motion-part aria-hidden="true"><i class="ll-turtle-side front">Grid</i><i class="ll-turtle-side back">List</i></span><i class="ll-turtle-head" aria-hidden="true"><i></i><i></i></i></button>`;
+
+livingRenderers.fanBird = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-bird" data-living-action data-busy="false" aria-expanded="false" aria-label="Show filters"><span class="ll-bird-feathers" aria-hidden="true"><i class="ll-bird-feather">Swift</i><i class="ll-bird-feather">Design</i><i class="ll-bird-feather">All</i></span><span class="ll-bird-body" data-bird-body data-motion-part aria-hidden="true"><i class="ll-bird-beak"></i><i class="ll-bird-eye"></i></span></button>`;
+
+livingRenderers.dialSnail = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-dial" data-living-action data-busy="false" role="switch" aria-checked="false" aria-label="Language: Italian"><i class="ll-dial-foot" aria-hidden="true"></i><span class="ll-dial-shell" data-dial-shell data-motion-part aria-hidden="true"><i class="ll-dial-pointer"></i></span><span class="ll-dial-value">IT</span></button>`;
+
+livingRenderers.shySticker = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-sticker" data-living-action data-busy="false" aria-pressed="false" aria-label="Projects route hidden"><span class="ll-sticker-reveal" aria-hidden="true"><i class="ll-sticker-eye"></i><i class="ll-sticker-eye"></i><b>Projects</b></span><span class="ll-sticker-cover" data-sticker-cover data-motion-part aria-hidden="true"><b>Current</b><i class="ll-sticker-corner"></i></span></button>`;
+
+livingRenderers.labelChameleon = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-chameleon" data-living-action data-busy="false" aria-pressed="false" aria-label="Filter: All projects"><span class="ll-chameleon-body" data-chameleon-body data-motion-part aria-hidden="true"><span class="ll-chameleon-skin a"><small>Filter active</small><b>All projects</b></span><span class="ll-chameleon-skin b"><small>Filter active</small><b>Swift / iOS</b></span><i class="ll-chameleon-eye"></i></span></button>`;
+
+livingControllers.projectCaterpillar = (card) => {
+  const group = card.querySelector('[data-project-group]');
+  const current = group.querySelector('.ll-project-current');
+  const next = group.querySelector('.ll-project-next');
+  let index = 0;
+  group.querySelectorAll('[data-project-dir]').forEach((button) => button.addEventListener('click', () => {
+    const direction = Number(button.dataset.projectDir);
+    const destination = (index + direction + livingProjects.length) % livingProjects.length;
+    runFiniteMotion(group, {
+      duration: 900,
+      target: current,
+      onAct: () => {
+        group.dataset.direction = direction > 0 ? 'forward' : 'backward';
+        group.style.setProperty('--direction', String(direction));
+        next.innerHTML = projectSlug(destination);
+      },
+      onSettle: () => {
+        index = destination;
+        current.innerHTML = projectSlug(index);
+        next.innerHTML = projectSlug((index + 1) % livingProjects.length);
+        group.setAttribute('aria-label', `Project ${index + 1} of 4: ${livingProjects[index]}`);
+      },
+    });
+  }));
+};
+
+livingControllers.stepperBug = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const bug = control.querySelector('[data-stepper-bug]');
+  const tag = control.querySelector('[data-stepper-tag]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 620,
+    target: bug,
+    onAct: () => {
+      const step = (Number(control.dataset.step) % 5) + 1;
+      control.dataset.step = String(step);
+      control.style.setProperty('--step', String(step));
+      control.setAttribute('aria-label', `Section ${step} of 5`);
+      tag.textContent = `Section ${step} of 5`;
+    },
+  }));
+};
+
+livingControllers.trailSnail = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const body = control.querySelector('[data-trail-body]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 760,
+    target: body,
+    onAct: () => {
+      const depth = control.dataset.depth === '2' ? 1 : 2;
+      control.dataset.depth = String(depth);
+      control.setAttribute('aria-label', depth === 2 ? 'Location: Work, EasyManager' : 'Location: Work');
+    },
+  }));
+};
+
+livingControllers.turnoverTurtle = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const shell = control.querySelector('[data-turtle-shell]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 680,
+    target: shell,
+    onAct: () => {
+      const list = control.getAttribute('aria-pressed') !== 'true';
+      control.setAttribute('aria-pressed', String(list));
+      control.setAttribute('aria-label', list ? 'List view' : 'Grid view');
+    },
+  }));
+};
+
+livingControllers.fanBird = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const body = control.querySelector('[data-bird-body]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 760,
+    target: body,
+    onAct: () => {
+      const expanded = control.getAttribute('aria-expanded') !== 'true';
+      control.setAttribute('aria-expanded', String(expanded));
+      control.setAttribute('aria-label', expanded ? 'Hide filters' : 'Show filters');
+    },
+  }));
+};
+
+livingControllers.dialSnail = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const shell = control.querySelector('[data-dial-shell]');
+  const value = control.querySelector('.ll-dial-value');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 660,
+    target: shell,
+    onAct: () => {
+      const english = control.getAttribute('aria-checked') !== 'true';
+      control.setAttribute('aria-checked', String(english));
+      control.setAttribute('aria-label', english ? 'Language: English' : 'Language: Italian');
+      value.textContent = english ? 'EN' : 'IT';
+    },
+  }));
+};
+
+livingControllers.shySticker = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const cover = control.querySelector('[data-sticker-cover]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 700,
+    target: cover,
+    onAct: () => {
+      const revealed = control.getAttribute('aria-pressed') !== 'true';
+      control.setAttribute('aria-pressed', String(revealed));
+      control.setAttribute('aria-label', revealed ? 'Projects route selected' : 'Projects route hidden');
+    },
+  }));
+};
+
+livingControllers.labelChameleon = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const body = control.querySelector('[data-chameleon-body]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 720,
+    target: body,
+    onAct: () => {
+      const swift = control.getAttribute('aria-pressed') !== 'true';
+      control.setAttribute('aria-pressed', String(swift));
+      control.setAttribute('aria-label', swift ? 'Filter: Swift / iOS' : 'Filter: All projects');
+    },
+  }));
+};
+
 function mountLivingLibrary() {
   if (!root) return;
   renderLibrary();

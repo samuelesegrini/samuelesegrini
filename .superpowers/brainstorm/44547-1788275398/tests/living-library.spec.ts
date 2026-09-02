@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
 
 test('living library starts with four independently rendered original creatures', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: 'A toolbar that feels alive.' })).toBeVisible();
-	await expect(page.locator('.ll-summary')).toHaveText('15 alternatives · 4 original creatures');
+	await expect(page.locator('.ll-summary')).toHaveText('23 alternatives · 4 original creatures');
 	await expect(page.locator('[data-living-kind="original"]')).toHaveCount(4);
 	await expect(page.locator('[data-living-id="original-progress-creature"]')).toHaveCount(1);
 	await expect(page.locator('[data-living-id="original-inbox-blob"]')).toHaveCount(1);
@@ -120,4 +120,42 @@ test('number owl preserves the unchanged tens eye', async ({ page }) => {
 	await expect(control).toHaveAttribute('data-value', '25');
 	expect(await tens.innerHTML()).toBe(before);
 	await expect(control.locator('.ll-owl-eye[data-changing="true"]')).toHaveCount(1);
+});
+
+const navigationIds = ['project-caterpillar', 'stepper-bug', 'trail-snail', 'turnover-turtle', 'fan-bird', 'dial-snail', 'shy-sticker', 'label-chameleon'];
+
+test('navigation family exposes eight distinct living alternatives', async ({ page }) => {
+	await page.getByRole('button', { name: 'Navigation' }).click();
+	await expect(page.locator('.ll-card:visible')).toHaveCount(8);
+	for (const id of navigationIds) await expect(page.locator(`[data-living-id="${id}"]`)).toHaveCount(1);
+});
+
+test('project caterpillar carries the old project away in the selected direction', async ({ page }) => {
+	const card = page.locator('[data-living-id="project-caterpillar"]');
+	await expect(card.locator('.ll-project-current')).toContainText('EasyManager');
+	await card.getByRole('button', { name: 'Next project' }).click();
+	await expect(card.locator('[data-direction]')).toHaveAttribute('data-direction', 'forward');
+	await expect(card.locator('.ll-project-current')).toContainText('Galaxy Trucker', { timeout: 1400 });
+	await card.getByRole('button', { name: 'Previous project' }).click();
+	await expect(card.locator('.ll-project-current')).toContainText('EasyManager', { timeout: 1400 });
+});
+
+test('dial snail changes language and accessible switch state together', async ({ page }) => {
+	const control = page.locator('[data-living-id="dial-snail"] [data-living-action]');
+	await control.focus();
+	await page.keyboard.press('Enter');
+	await expect(control).toHaveAttribute('aria-checked', 'true');
+	await expect(control).toHaveAttribute('aria-label', 'Language: English');
+	await expect(control.locator('.ll-dial-value')).toHaveText('EN');
+});
+
+test('turnover turtle keeps a real 3D shell so its labels are never mirrored', async ({ page }) => {
+	const control = page.locator('[data-living-id="turnover-turtle"] [data-living-action]');
+	// will-change:opacity is a grouping property: it flattens transform-style and would
+	// disable backface-visibility, leaving the front face visible and mirrored.
+	const willChange = await control.locator('.ll-turtle-shell').evaluate((node) => getComputedStyle(node).willChange);
+	expect(willChange).not.toContain('opacity');
+	await control.click();
+	await expect(control).toHaveAttribute('aria-label', 'List view');
+	await expect(control.locator('.ll-turtle-side.back')).toHaveText('List');
 });
