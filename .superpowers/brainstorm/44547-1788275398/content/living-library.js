@@ -781,3 +781,21 @@ function mountLivingLibrary() {
 }
 
 mountLivingLibrary();
+
+// --- Reuse outside the catalogue page -------------------------------------
+// The catalogue mounts itself above when #living-library-root exists. These exports let
+// another page (the toolbar page maps) place individual creatures into its own layout.
+
+// Renders one creature into `host` and wires its controller. `host` supplies the box; the
+// creature keeps its own anatomy, accent, states and accessible labels.
+function mountLivingComponent(host, id, accent) {
+  const entry = livingCatalog.find((item) => item.id === id);
+  if (!entry) throw new Error(`Unknown living component: ${id}`);
+  host.dataset.livingId = entry.id;
+  host.style.setProperty('--accent', accent || entry.accent);
+  host.innerHTML = livingRenderers[entry.renderer](entry);
+  mountController(host, entry);
+  return entry;
+}
+
+export { livingCatalog, livingRenderers, livingControllers, runFiniteMotion, mountController, mountLivingComponent };
