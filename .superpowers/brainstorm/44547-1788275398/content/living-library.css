@@ -207,7 +207,7 @@
 .ll-puff-label{position:absolute;left:0;right:0;bottom:8px;color:#9fc0cd;font:7px var(--mono);letter-spacing:.08em;text-transform:uppercase;text-align:center}
 
 .ll-sprout{display:grid;place-items:center;background:#1d2a17}
-.ll-sprout-bed{position:absolute;left:0;right:0;bottom:26px;height:44px;overflow:hidden}
+.ll-sprout-bed{position:absolute;left:0;right:0;bottom:32px;height:44px;overflow:hidden}
 .ll-sprout-stem{position:absolute;left:50%;bottom:0;width:11px;height:32px;margin-left:-5px;border-radius:7px;background:var(--accent,#c7ff9f);transform-origin:50% 100%;translate:0 38px;transition:translate .45s var(--ease)}
 .ll-sprout-stem:before{content:'';position:absolute;left:-5px;top:-5px;width:21px;height:21px;border-radius:50%;background:var(--accent,#c7ff9f)}
 .ll-sprout[aria-pressed="true"] .ll-sprout-stem{translate:0 0}
@@ -411,3 +411,14 @@
 .ll-no-script p{max-width:620px;margin:0 0 26px;color:var(--muted);font-size:16px;line-height:1.5}
 .ll-no-script h2{margin:24px 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-family:var(--mono);color:#566056}
 .ll-no-script ul{margin:0;padding-left:19px;color:#2c332c;font-size:14px;line-height:1.75}
+
+/* --- Responsive geometry: constrain, never clip the anatomy --- */
+.ll-card,.ll-card *{min-width:0}
+.ll-stage{max-width:100%}
+@media(max-width:420px){
+  /* the shared .variant rule drops to 14px gutters at 850px; the living cards want 16px */
+  #variant-living{padding-left:16px;padding-right:16px}
+  .ll-card{padding:13px}
+  .ll-stage{padding:10px}
+  .ll-control.four{width:100%}
+}

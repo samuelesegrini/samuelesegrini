@@ -298,3 +298,92 @@ test.describe('without JavaScript', () => {
 		await expect(page.locator('#variant-living button')).toHaveCount(0);
 	});
 });
+
+test('living grid does not overflow a narrow viewport', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(page.locator('.ll-grid').first()).toBeVisible();
+	const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+	expect(overflow).toBeLessThanOrEqual(0);
+	for (const id of ['project-caterpillar', 'counter-caterpillar', 'courier-moth']) {
+		const card = page.locator(`[data-living-id="${id}"]`);
+		expect((await card.boundingBox())!.width, id).toBeLessThanOrEqual(358);
+	}
+});
+
+test('representative motion envelopes contain anatomy before it intentionally fades', async ({ page }) => {
+	for (const id of ['courier-moth', 'counter-caterpillar', 'project-caterpillar', 'dice-armadillo']) {
+		const card = page.locator(`[data-living-id="${id}"]`);
+		const safe = card.locator('.ll-safe-area');
+		const control = card.locator('[data-living-action]').first();
+		await control.click();
+		const peakMs = Number(await control.getAttribute('data-peak-ms'));
+		expect(peakMs, `${id} has no measured peak`).toBeGreaterThan(0);
+		await page.waitForTimeout(peakMs);
+		const escaped = await safe.evaluate((area) => {
+			const box = area.getBoundingClientRect();
+			return [...area.querySelectorAll('[data-motion-part]')]
+				.filter((part) => Number(getComputedStyle(part).opacity) > 0.15)
+				.filter((part) => {
+					const rect = part.getBoundingClientRect();
+					return !(rect.left >= box.left - 1 && rect.right <= box.right + 1 && rect.top >= box.top - 1 && rect.bottom <= box.bottom + 1);
+				})
+				.map((part) => {
+					const rect = part.getBoundingClientRect();
+					return `${part.className} top:${(box.top - rect.top).toFixed(1)} bottom:${(rect.bottom - box.bottom).toFixed(1)} left:${(box.left - rect.left).toFixed(1)} right:${(rect.right - box.right).toFixed(1)}`;
+				});
+		});
+		expect(escaped, `${id} escaped its visible safe area`).toEqual([]);
+		await expect(control).toHaveAttribute('data-busy', 'false', { timeout: 1800 });
+	}
+});
+
+test('keyboard focus is visibly outlined on controls, filters, and source links', async ({ page }) => {
+	const targets = [
+		page.getByRole('button', { name: 'Actions' }),
+		page.locator('[data-living-id="courier-moth"] [data-living-action]'),
+		page.locator('[data-living-id="courier-moth"] .ll-source-link'),
+	];
+	for (const target of targets) {
+		await target.focus();
+		const outlineWidth = await target.evaluate((element) => parseFloat(getComputedStyle(element).outlineWidth));
+		expect(outlineWidth).toBeGreaterThanOrEqual(2);
+	}
+});
+
+test('no resting anatomy escapes its safe area on any of the thirty-one cards', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 1000 });
+	const escaped = await page.evaluate(() => {
+		const out: string[] = [];
+		document.querySelectorAll('.ll-card').forEach((card) => {
+			const box = card.querySelector('.ll-safe-area')!.getBoundingClientRect();
+			card.querySelectorAll('[data-motion-part]').forEach((part) => {
+				if (Number(getComputedStyle(part).opacity) <= 0.15) return;
+				const rect = part.getBoundingClientRect();
+				const over = Math.max(box.top - rect.top, rect.bottom - box.bottom, box.left - rect.left, rect.right - box.right);
+				if (over > 1) out.push(`${card.getAttribute('data-living-id')} overflows by ${over.toFixed(1)}px`);
+			});
+		});
+		return out;
+	});
+	expect(escaped).toEqual([]);
+});
+
+test('every control fits inside its own stage at desktop and on a phone', async ({ page }) => {
+	for (const width of [1280, 390]) {
+		await page.setViewportSize({ width, height: 900 });
+		const escaped = await page.evaluate(() => {
+			const out: string[] = [];
+			document.querySelectorAll('.ll-card').forEach((card) => {
+				const stage = card.querySelector('.ll-stage')!.getBoundingClientRect();
+				card.querySelectorAll('.ll-control').forEach((control) => {
+					const rect = control.getBoundingClientRect();
+					if (rect.left < stage.left - 1 || rect.right > stage.right + 1) {
+						out.push(`${card.getAttribute('data-living-id')} control ${rect.width.toFixed(0)}px in ${stage.width.toFixed(0)}px stage`);
+					}
+				});
+			});
+			return out;
+		});
+		expect(escaped, `viewport ${width}`).toEqual([]);
+	}
+});

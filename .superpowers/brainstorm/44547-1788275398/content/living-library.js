@@ -744,10 +744,14 @@ livingControllers.diceArmadillo = (card) => {
 
 const forcedFailure = new URL(location.href).searchParams.get('failLiving');
 
+// Measured moments of peak anatomical travel, used by the safe-area regression test.
+const livingPeakMs = { 'courier-moth': 400, 'counter-caterpillar': 250, 'project-caterpillar': 420, 'dice-armadillo': 390 };
+
 function mountController(card, entry) {
   card.querySelectorAll('[data-living-action]').forEach((node) => {
     if (!node.dataset.state) node.dataset.state = 'idle';
     if (!node.dataset.busy) node.dataset.busy = 'false';
+    if (livingPeakMs[entry.id]) node.dataset.peakMs = String(livingPeakMs[entry.id]);
   });
   try {
     if (entry.id === forcedFailure) throw new Error(`Forced controller failure: ${entry.id}`);
