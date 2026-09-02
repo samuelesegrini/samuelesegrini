@@ -650,6 +650,85 @@ livingControllers.labelChameleon = (card) => {
   }));
 };
 
+const personalityCreatures = [
+  { id:'letter-worm', sourceId:'magnetic-word', sourceName:'Magnetic Word', name:'Letter Worm', kind:'alternative', category:'personality', slots:2, accent:'#c7ff9f', verb:'Reconnect', description:'Letter segments resist, scatter, and reconnect in order.', renderer:'letterWorm', controller:'letterWorm' },
+  { id:'orbit-pet', sourceId:'timezone-orbit', sourceName:'Timezone Orbit', name:'Orbit Pet', kind:'alternative', category:'personality', slots:1, accent:'#cdefff', verb:'Orbit', description:'A satellite circles a body representing place and local time.', renderer:'orbitPet', controller:'orbitPet' },
+  { id:'sticker-slug', sourceId:'pasted-tag', sourceName:'Pasted Tag', name:'Sticker Slug', kind:'alternative', category:'personality', slots:2, accent:'#ffd4b8', verb:'Lift', description:'Lifts and peels the selected-work label carried on its back.', renderer:'stickerSlug', controller:'stickerSlug' },
+  { id:'dice-armadillo', sourceId:'discovery-die', sourceName:'Discovery Die', name:'Dice Armadillo', kind:'alternative', category:'personality', slots:1, accent:'#ded1ff', verb:'Roll', description:'Curls into a die, rolls, and unfolds on a new route.', renderer:'diceArmadillo', controller:'diceArmadillo' },
+];
+livingCatalog.push(...personalityCreatures);
+
+// Deterministic per-segment scatter, bounded so the worm stays inside its two-slot safe area.
+const wormScatter = [[-11, -13, -14], [9, 12, 11], [-7, 14, -9], [12, -11, 13], [0, 9, 0], [-12, 11, -12], [8, -14, 10], [-9, 13, -8]];
+
+livingRenderers.letterWorm = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-worm" data-living-action data-busy="false" aria-label="Status: Open now"><span class="ll-worm-body" aria-hidden="true">${Array.from('OPEN NOW').map((letter, index) => `<i class="ll-worm-seg${letter === ' ' ? ' gap' : ''}" data-worm-seg style="--scatter-x:${wormScatter[index][0]}px;--scatter-y:${wormScatter[index][1]}px;--scatter-r:${wormScatter[index][2]}deg">${letter === ' ' ? '' : letter}</i>`).join('')}</span><small class="ll-worm-tag" data-worm-tag aria-hidden="true">Status</small></button>`;
+
+livingRenderers.orbitPet = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-orbit" data-living-action data-busy="false" aria-label="Italy, CET local system"><i class="ll-orbit-ring" aria-hidden="true"></i><span class="ll-orbit-body" aria-hidden="true"><i></i><i></i><i class="ll-orbit-mouth"></i></span><span class="ll-orbit-track" data-orbit-track data-motion-part aria-hidden="true"><i class="ll-orbit-satellite"></i></span><small class="ll-orbit-zone" aria-hidden="true">Italy · CET</small></button>`;
+
+livingRenderers.stickerSlug = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-slug" data-living-action data-busy="false" aria-pressed="false" aria-label="Selected work label lowered"><span class="ll-slug-body" data-slug-body data-motion-part aria-hidden="true"><i class="ll-slug-stalk left"></i><i class="ll-slug-stalk right"></i></span><span class="ll-slug-label" aria-hidden="true">Selected work</span></button>`;
+
+livingRenderers.diceArmadillo = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-armadillo" data-living-action data-busy="false" data-face="5" aria-label="Random project 5"><i class="ll-armadillo-head" aria-hidden="true"><i></i><i></i></i><i class="ll-armadillo-feet" aria-hidden="true"></i><span class="ll-armadillo-shell" data-armadillo-shell data-motion-part aria-hidden="true">${'<i class="ll-armadillo-pip"></i>'.repeat(9)}</span></button>`;
+
+livingControllers.letterWorm = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const segments = Array.from(control.querySelectorAll('[data-worm-seg]'));
+  const tag = control.querySelector('[data-worm-tag]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 820,
+    target: segments[segments.length - 1],
+    onAct: () => {
+      control.dataset.scattered = 'true';
+      control.setAttribute('aria-label', 'Status scattering');
+    },
+    onSettle: () => {
+      control.dataset.scattered = 'false';
+      tag.textContent = 'Reassembled';
+      control.setAttribute('aria-label', 'Status reassembled');
+    },
+  }));
+};
+
+livingControllers.orbitPet = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const track = control.querySelector('[data-orbit-track]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 900,
+    target: track,
+    onAct: () => control.setAttribute('aria-label', 'Italy, CET local system orbiting'),
+    onSettle: () => control.setAttribute('aria-label', 'Italy, CET local system'),
+  }));
+};
+
+livingControllers.stickerSlug = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const body = control.querySelector('[data-slug-body]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 720,
+    target: body,
+    onAct: () => {
+      const raised = control.getAttribute('aria-pressed') !== 'true';
+      control.setAttribute('aria-pressed', String(raised));
+      control.setAttribute('aria-label', raised ? 'Selected work label raised' : 'Selected work label lowered');
+    },
+  }));
+};
+
+livingControllers.diceArmadillo = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const shell = control.querySelector('[data-armadillo-shell]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 880,
+    target: shell,
+    onAct: () => {
+      const current = Number(control.dataset.face);
+      const roll = 1 + Math.floor(Math.random() * 5);
+      const next = roll >= current ? roll + 1 : roll;
+      control.dataset.face = String(next);
+      control.setAttribute('aria-label', `Random project ${next}`);
+    },
+  }));
+};
+
 function mountLivingLibrary() {
   if (!root) return;
   renderLibrary();

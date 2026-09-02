@@ -355,3 +355,53 @@
 @keyframes ll-dial-turn{0%,100%{transform:none}45%{transform:scale(1.08)}}
 @keyframes ll-sticker-peel{0%,100%{transform:none}40%{transform:translateY(-3px) rotate(-2deg)}}
 @keyframes ll-chameleon-change{0%,100%{transform:none}32%{transform:scaleX(1.05) scaleY(.9)}66%{transform:scaleX(.97) scaleY(1.04)}}
+
+/* --- Personality family --- */
+.ll-worm{display:grid;place-items:center;background:#1d2a17}
+.ll-worm-body{display:flex;align-items:center;gap:2px;margin-top:-7px}
+.ll-worm-seg{display:grid;width:17px;height:21px;place-items:center;border-radius:8px;background:var(--accent,#c7ff9f);color:#12200e;font:700 10px/1 var(--sans);font-style:normal}
+.ll-worm-seg.gap{width:7px;background:#3d5233}
+.ll-worm[data-state="act"] .ll-worm-seg{animation:ll-worm-scatter 820ms cubic-bezier(.22,1,.36,1)}
+.ll-worm-tag{position:absolute;left:0;right:0;bottom:9px;color:#8a9a82;font:7px var(--mono);letter-spacing:.08em;text-transform:uppercase;text-align:center}
+
+.ll-orbit{display:grid;place-items:center;background:#1b2b33}
+.ll-orbit-ring{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-31px 0 0 -25px;border:1px dashed #3d6070;border-radius:50%}
+.ll-orbit-body{position:relative;display:block;width:26px;height:26px;margin-top:-6px;border-radius:50%;background:var(--accent,#cdefff)}
+.ll-orbit-body i{position:absolute;top:9px;width:3px;height:4px;border-radius:50%;background:#12222a}
+.ll-orbit-body i:first-child{left:7px}.ll-orbit-body i:nth-child(2){right:7px}
+.ll-orbit-body .ll-orbit-mouth{left:50%;top:16px;width:7px;height:3px;margin-left:-3px;border-radius:0 0 7px 7px}
+.ll-orbit-track{position:absolute;left:50%;top:50%;width:0;height:0;margin-top:-6px}
+.ll-orbit-satellite{position:absolute;left:-4px;top:-25px;width:9px;height:9px;border-radius:50%;background:#fff}
+.ll-orbit[data-state="act"] .ll-orbit-track{animation:ll-orbit-lap 900ms cubic-bezier(.5,0,.3,1)}
+.ll-orbit-zone{position:absolute;left:0;right:0;bottom:7px;color:#9fc0cd;font:7px var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+
+.ll-slug{display:grid;place-items:center;background:#33241c}
+.ll-slug-body{position:absolute;left:24px;bottom:18px;width:98px;height:26px;border-radius:15px 15px 13px 13px;background:var(--accent,#ffd4b8)}
+.ll-slug-stalk{position:absolute;top:-13px;width:3px;height:15px;border-radius:3px;background:var(--accent,#ffd4b8)}
+.ll-slug-stalk:before{content:'';position:absolute;left:-2px;top:-6px;width:7px;height:7px;border-radius:50%;background:var(--accent,#ffd4b8)}
+.ll-slug-stalk:after{content:'';position:absolute;left:0;top:-4px;width:3px;height:3px;border-radius:50%;background:#241812}
+.ll-slug-stalk.left{right:21px}.ll-slug-stalk.right{right:9px}
+.ll-slug-label{position:absolute;left:32px;bottom:32px;padding:6px 10px;border-radius:4px;background:#fff;color:#33241c;font:700 8px var(--mono);letter-spacing:.08em;text-transform:uppercase;box-shadow:0 3px 8px #0004;transform-origin:0 100%;rotate:-3deg;translate:0 0;transition:rotate .42s var(--ease),translate .42s var(--ease)}
+.ll-slug[aria-pressed="true"] .ll-slug-label{rotate:-11deg;translate:7px -13px}
+.ll-slug[data-state="act"] .ll-slug-body{animation:ll-slug-lift 720ms cubic-bezier(.22,1,.36,1)}
+
+.ll-armadillo{display:grid;place-items:center;background:#2b2440}
+.ll-armadillo-shell{position:relative;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);width:44px;height:44px;padding:7px;gap:2px;border-radius:13px;background:var(--accent,#ded1ff)}
+.ll-armadillo-pip{place-self:center;width:6px;height:6px;border-radius:50%;background:#241d36;opacity:0;transition:opacity .2s ease}
+.ll-armadillo[data-face="1"] .ll-armadillo-pip:nth-child(5),
+.ll-armadillo[data-face="2"] .ll-armadillo-pip:nth-child(1),.ll-armadillo[data-face="2"] .ll-armadillo-pip:nth-child(9),
+.ll-armadillo[data-face="3"] .ll-armadillo-pip:nth-child(1),.ll-armadillo[data-face="3"] .ll-armadillo-pip:nth-child(5),.ll-armadillo[data-face="3"] .ll-armadillo-pip:nth-child(9),
+.ll-armadillo[data-face="4"] .ll-armadillo-pip:nth-child(1),.ll-armadillo[data-face="4"] .ll-armadillo-pip:nth-child(3),.ll-armadillo[data-face="4"] .ll-armadillo-pip:nth-child(7),.ll-armadillo[data-face="4"] .ll-armadillo-pip:nth-child(9),
+.ll-armadillo[data-face="5"] .ll-armadillo-pip:nth-child(1),.ll-armadillo[data-face="5"] .ll-armadillo-pip:nth-child(3),.ll-armadillo[data-face="5"] .ll-armadillo-pip:nth-child(5),.ll-armadillo[data-face="5"] .ll-armadillo-pip:nth-child(7),.ll-armadillo[data-face="5"] .ll-armadillo-pip:nth-child(9),
+.ll-armadillo[data-face="6"] .ll-armadillo-pip:nth-child(1),.ll-armadillo[data-face="6"] .ll-armadillo-pip:nth-child(3),.ll-armadillo[data-face="6"] .ll-armadillo-pip:nth-child(4),.ll-armadillo[data-face="6"] .ll-armadillo-pip:nth-child(6),.ll-armadillo[data-face="6"] .ll-armadillo-pip:nth-child(7),.ll-armadillo[data-face="6"] .ll-armadillo-pip:nth-child(9){opacity:1}
+.ll-armadillo-head{position:absolute;left:50%;top:50%;width:15px;height:14px;margin:-34px 0 0 -7px;border-radius:50% 50% 42% 42%;background:#efe8ff;transition:opacity .2s ease,transform .3s var(--ease)}
+.ll-armadillo-head i{position:absolute;top:4px;width:2px;height:3px;border-radius:50%;background:#241d36}
+.ll-armadillo-head i:first-child{left:4px}.ll-armadillo-head i:last-child{right:4px}
+.ll-armadillo-feet{position:absolute;left:50%;top:50%;width:34px;height:7px;margin:20px 0 0 -17px;border-radius:0 0 9px 9px;background:#efe8ff;transition:opacity .2s ease,transform .3s var(--ease)}
+.ll-armadillo[data-state="anticipate"] .ll-armadillo-head,.ll-armadillo[data-state="act"] .ll-armadillo-head,.ll-armadillo[data-state="anticipate"] .ll-armadillo-feet,.ll-armadillo[data-state="act"] .ll-armadillo-feet{opacity:0;transform:scale(.35)}
+.ll-armadillo[data-state="act"] .ll-armadillo-shell{animation:ll-armadillo-roll 880ms cubic-bezier(.5,0,.4,1)}
+
+@keyframes ll-worm-scatter{0%,100%{transform:none}40%{transform:translate(var(--scatter-x),var(--scatter-y)) rotate(var(--scatter-r))}72%{transform:translate(calc(var(--scatter-x) * .26),calc(var(--scatter-y) * .26)) rotate(calc(var(--scatter-r) * .26))}}
+@keyframes ll-orbit-lap{from{rotate:0deg}to{rotate:360deg}}
+@keyframes ll-slug-lift{0%,100%{transform:none}34%{transform:translateY(-5px) scaleX(.95) scaleY(1.08)}68%{transform:translateY(1px) scaleX(1.03) scaleY(.97)}}
+@keyframes ll-armadillo-roll{0%{transform:none}30%{transform:translateX(-14px) rotate(-120deg)}70%{transform:translateX(14px) rotate(160deg)}100%{transform:none}}

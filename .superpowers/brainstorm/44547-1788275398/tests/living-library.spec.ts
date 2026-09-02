@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
 
 test('living library starts with four independently rendered original creatures', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: 'A toolbar that feels alive.' })).toBeVisible();
-	await expect(page.locator('.ll-summary')).toHaveText('23 alternatives · 4 original creatures');
+	await expect(page.locator('.ll-summary')).toHaveText('27 alternatives · 4 original creatures');
 	await expect(page.locator('[data-living-kind="original"]')).toHaveCount(4);
 	await expect(page.locator('[data-living-id="original-progress-creature"]')).toHaveCount(1);
 	await expect(page.locator('[data-living-id="original-inbox-blob"]')).toHaveCount(1);
@@ -158,4 +158,69 @@ test('turnover turtle keeps a real 3D shell so its labels are never mirrored', a
 	await control.click();
 	await expect(control).toHaveAttribute('aria-label', 'List view');
 	await expect(control.locator('.ll-turtle-side.back')).toHaveText('List');
+});
+
+const personalityIds = ['letter-worm', 'orbit-pet', 'sticker-slug', 'dice-armadillo'];
+
+test('personality family exposes four distinct living alternatives', async ({ page }) => {
+	await page.getByRole('button', { name: 'Personality' }).click();
+	await expect(page.locator('.ll-card:visible')).toHaveCount(4);
+	for (const id of personalityIds) await expect(page.locator(`[data-living-id="${id}"]`)).toHaveCount(1);
+});
+
+test('complete living catalogue has twenty-seven alternatives plus four originals', async ({ page }) => {
+	await expect(page.locator('.ll-summary')).toHaveText('27 alternatives · 4 original creatures');
+	await expect(page.getByRole('button', { name: 'All 31' })).toBeVisible();
+	await expect(page.locator('.ll-card')).toHaveCount(31);
+	await expect(page.locator('[data-living-kind="alternative"]')).toHaveCount(27);
+	await expect(page.locator('[data-living-kind="original"]')).toHaveCount(4);
+});
+
+test('every alternative has a unique id, valid source, matching footprint, and accent', async ({ page }) => {
+	const expectedSlots: Record<string, string> = {
+		'courier-moth':'1','scout-eye':'1','drop-beetle':'1','echo-jelly':'1','link-twins':'2','key-crab':'2','compass-pup':'1',
+		'counter-caterpillar':'1','number-owl':'2','clock-bug':'2','pulse-eel':'1','radar-snail':'1','weather-puff':'1','peek-sprout':'1','shell-knock':'1',
+		'project-caterpillar':'4','stepper-bug':'2','trail-snail':'3','turnover-turtle':'1','fan-bird':'2','dial-snail':'1','shy-sticker':'1','label-chameleon':'2',
+		'letter-worm':'2','orbit-pet':'1','sticker-slug':'2','dice-armadillo':'1',
+	};
+	const cards = page.locator('[data-living-kind="alternative"]');
+	const ids = await cards.evaluateAll((items) => items.map((item) => item.getAttribute('data-living-id')));
+	expect(new Set(ids).size).toBe(27);
+	for (const [id, slots] of Object.entries(expectedSlots)) {
+		const card = page.locator(`[data-living-id="${id}"]`);
+		await expect(card).toHaveAttribute('data-living-slots', slots);
+		await expect(card).toHaveAttribute('style', /--accent:/);
+		const sourceId = await card.locator('.ll-source-link').getAttribute('data-source-id');
+		await expect(page.locator(`#variant-library [data-component="${sourceId}"]`)).toHaveCount(1);
+	}
+});
+
+test('dice armadillo rolls to a different face and unfolds', async ({ page }) => {
+	const control = page.locator('[data-living-id="dice-armadillo"] [data-living-action]');
+	const before = await control.getAttribute('data-face');
+	await control.click();
+	await expect(control).not.toHaveAttribute('data-face', before!);
+	await expect(control).toHaveAttribute('data-busy', 'false', { timeout: 1400 });
+	await expect(control).toHaveAttribute('data-state', 'idle');
+});
+
+test('dice armadillo guarantees a different face on every roll and reaches all six', async ({ page }) => {
+	// emulateMedia, not test.use({reducedMotion}): the fixture form does not take effect in
+	// this setup, and each roll would otherwise cost its full 880 ms.
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto(livingUrl);
+	const control = page.locator('[data-living-id="dice-armadillo"] [data-living-action]');
+	let previous = Number(await control.getAttribute('data-face'));
+	const seen = new Set<number>([previous]);
+	for (let roll = 0; roll < 40; roll += 1) {
+		await expect(control).toHaveAttribute('data-busy', 'false');
+		await control.click();
+		const face = Number(await control.getAttribute('data-face'));
+		expect(face, `roll ${roll} repeated ${previous}`).not.toBe(previous);
+		expect(face).toBeGreaterThanOrEqual(1);
+		expect(face).toBeLessThanOrEqual(6);
+		seen.add(face);
+		previous = face;
+	}
+	expect(seen.size).toBe(6);
 });
