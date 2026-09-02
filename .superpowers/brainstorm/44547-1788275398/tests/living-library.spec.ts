@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
 
 test('living library starts with four independently rendered original creatures', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: 'A toolbar that feels alive.' })).toBeVisible();
-	await expect(page.locator('.ll-summary')).toHaveText('7 alternatives · 4 original creatures');
+	await expect(page.locator('.ll-summary')).toHaveText('15 alternatives · 4 original creatures');
 	await expect(page.locator('[data-living-kind="original"]')).toHaveCount(4);
 	await expect(page.locator('[data-living-id="original-progress-creature"]')).toHaveCount(1);
 	await expect(page.locator('[data-living-id="original-inbox-blob"]')).toHaveCount(1);
@@ -92,4 +92,32 @@ test('an alternative links to and focuses its exact source card', async ({ page 
 	await expect(source).toBeFocused();
 	await expect(source.locator('button')).toHaveAttribute('data-phase', phaseBefore!);
 	await expect(page.locator('#variant-library').getByRole('button', { name: 'All 31' })).toHaveClass(/active/);
+});
+
+const dataIds = ['counter-caterpillar', 'number-owl', 'clock-bug', 'pulse-eel', 'radar-snail', 'weather-puff', 'peek-sprout', 'shell-knock'];
+
+test('data family exposes eight distinct living alternatives', async ({ page }) => {
+	await page.getByRole('button', { name: 'Data' }).click();
+	await expect(page.locator('.ll-card:visible')).toHaveCount(8);
+	for (const id of dataIds) await expect(page.locator(`[data-living-id="${id}"]`)).toHaveCount(1);
+});
+
+test('counter caterpillar animates only the segment whose digit changes', async ({ page }) => {
+	const control = page.locator('[data-living-id="counter-caterpillar"] [data-living-action]');
+	await expect(control).toHaveAttribute('data-value', '12');
+	await control.click();
+	await expect(control).toHaveAttribute('data-value', '13');
+	await expect(control.locator('[data-changing="true"]')).toHaveCount(1);
+	await expect(control).toHaveAttribute('aria-label', '13 published posts');
+	await expect(control).toHaveAttribute('data-busy', 'false', { timeout: 1200 });
+});
+
+test('number owl preserves the unchanged tens eye', async ({ page }) => {
+	const control = page.locator('[data-living-id="number-owl"] [data-living-action]');
+	const tens = control.locator('.ll-owl-eye').first();
+	const before = await tens.innerHTML();
+	await control.click();
+	await expect(control).toHaveAttribute('data-value', '25');
+	expect(await tens.innerHTML()).toBe(before);
+	await expect(control.locator('.ll-owl-eye[data-changing="true"]')).toHaveCount(1);
 });

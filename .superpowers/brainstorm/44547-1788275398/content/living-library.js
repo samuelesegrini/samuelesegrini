@@ -302,6 +302,194 @@ livingControllers.compassPup = (card) => {
   }));
 };
 
+const dataCreatures = [
+  { id:'counter-caterpillar', sourceId:'split-metric', sourceName:'Split Metric', name:'Counter Caterpillar', kind:'alternative', category:'data', slots:1, accent:'#c7ff9f', verb:'Count', description:'Digit segments form its body; only the changed segment travels.', renderer:'counterCaterpillar', controller:'counterCaterpillar' },
+  { id:'number-owl', sourceId:'departure-metric', sourceName:'Departure Metric', name:'Number Owl', kind:'alternative', category:'data', slots:2, accent:'#ded1ff', verb:'Blink', description:'Split-flap eyes turn only when their digit changes.', renderer:'numberOwl', controller:'numberOwl' },
+  { id:'clock-bug', sourceId:'local-clock', sourceName:'Local Clock', name:'Clock Bug', kind:'alternative', category:'data', slots:2, accent:'#cdefff', verb:'Tick', description:'Carries local time while an antenna marks the blinking colon.', renderer:'clockBug', controller:'clockBug' },
+  { id:'pulse-eel', sourceId:'activity-signal', sourceName:'Activity Signal', name:'Pulse Eel', kind:'alternative', category:'data', slots:1, accent:'#c7ff9f', verb:'Pulse', description:'Recent activity travels along a waveform spine.', renderer:'pulseEel', controller:'pulseEel' },
+  { id:'radar-snail', sourceId:'availability-sensor', sourceName:'Availability Sensor', name:'Radar Snail', kind:'alternative', category:'data', slots:1, accent:'#ded1ff', verb:'Scan', description:'A feeler emits a radar pulse and reports availability.', renderer:'radarSnail', controller:'radarSnail' },
+  { id:'weather-puff', sourceId:'pixel-weather', sourceName:'Pixel Weather', name:'Weather Puff', kind:'alternative', category:'data', slots:1, accent:'#cdefff', verb:'Forecast', description:'Its body becomes sun, cloud, or rain with the conditions.', renderer:'weatherPuff', controller:'weatherPuff' },
+  { id:'peek-sprout', sourceId:'signal-peg', sourceName:'Signal Peg', name:'Peek Sprout', kind:'alternative', category:'data', slots:1, accent:'#c7ff9f', verb:'Emerge', description:'Emerges, wobbles, and settles to show availability.', renderer:'peekSprout', controller:'peekSprout' },
+  { id:'shell-knock', sourceId:'knock-notice', sourceName:'Knock Notice', name:'Shell Knock', kind:'alternative', category:'data', slots:1, accent:'#ffd4b8', verb:'Knock', description:'A notification taps the shell before it is revealed or cleared.', renderer:'shellKnock', controller:'shellKnock' },
+];
+livingCatalog.push(...dataCreatures);
+
+livingRenderers.counterCaterpillar = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-caterpillar" data-living-action data-busy="false" data-value="12" aria-label="12 published posts"><span class="ll-caterpillar-body" aria-hidden="true"><i class="ll-caterpillar-segment" data-segment><b class="ll-caterpillar-glyph">1</b></i><i class="ll-caterpillar-segment" data-segment><b class="ll-caterpillar-glyph">2</b></i><i class="ll-caterpillar-head" data-motion-part><i></i><i></i></i></span><small class="ll-caterpillar-tag" aria-hidden="true">Posts</small></button>`;
+
+livingRenderers.numberOwl = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-owl" data-living-action data-busy="false" data-value="24" aria-label="24 case studies"><span class="ll-owl-face" aria-hidden="true"><i class="ll-owl-eye" data-owl-eye><b class="ll-owl-digit">2</b></i><i class="ll-owl-beak" data-motion-part></i><i class="ll-owl-eye" data-owl-eye><b class="ll-owl-digit">4</b></i></span><small class="ll-owl-tag" aria-hidden="true">Case studies</small></button>`;
+
+livingRenderers.clockBug = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-clock" data-living-action data-busy="false" aria-label="Local time"><i class="ll-clock-antenna" data-clock-antenna data-motion-part aria-hidden="true"></i><span class="ll-clock-body" aria-hidden="true"><strong class="ll-clock-value" data-clock-value>--<i>:</i>--</strong><small class="ll-clock-zone" data-clock-zone>Local</small></span></button>`;
+
+livingRenderers.pulseEel = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-eel" data-living-action data-busy="false" data-level="1" aria-label="Activity level 1"><span class="ll-eel-spine" data-eel-spine aria-hidden="true"><i style="--h:30%"></i><i style="--h:52%"></i><i style="--h:38%"></i><i style="--h:64%"></i></span><i class="ll-eel-head" data-motion-part aria-hidden="true"></i></button>`;
+
+livingRenderers.radarSnail = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-snail" data-living-action data-busy="false" aria-pressed="false" aria-label="Availability: away"><i class="ll-snail-ring" data-motion-part aria-hidden="true"></i><i class="ll-snail-ring" data-motion-part aria-hidden="true"></i><span class="ll-snail-shell" data-motion-part aria-hidden="true"></span><i class="ll-snail-feeler" data-snail-feeler data-motion-part aria-hidden="true"></i><small class="ll-snail-state" data-snail-state aria-hidden="true">Away</small></button>`;
+
+livingRenderers.weatherPuff = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-puff" data-living-action data-busy="false" data-weather="sun" aria-label="Weather: sun"><span class="ll-puff-body" data-puff-body aria-hidden="true"><i class="ll-puff-sun" data-motion-part></i><i class="ll-puff-cloud" data-motion-part></i><span class="ll-puff-rain" data-motion-part><i></i><i></i><i></i></span></span><small class="ll-puff-label" data-puff-label aria-hidden="true">Sun</small></button>`;
+
+livingRenderers.peekSprout = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-sprout" data-living-action data-busy="false" aria-pressed="false" aria-label="Sprout is hidden in its pot"><span class="ll-sprout-bed" aria-hidden="true"><span class="ll-sprout-stem" data-sprout-stem data-motion-part><i class="ll-sprout-leaf left"></i><i class="ll-sprout-leaf right"></i><span class="ll-sprout-eyes"><i></i><i></i></span></span></span><i class="ll-sprout-pot" aria-hidden="true"></i><small class="ll-sprout-state" data-sprout-state aria-hidden="true">Away</small></button>`;
+
+livingRenderers.shellKnock = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-knock" data-living-action data-busy="false" data-notices="2" aria-label="2 unread notices"><span class="ll-knock-shell" data-knock-shell aria-hidden="true"><i class="ll-knock-inner"><i></i><i></i></i></span><i class="ll-knock-count" data-knock-count aria-hidden="true">2</i></button>`;
+
+livingControllers.counterCaterpillar = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const segments = Array.from(control.querySelectorAll('[data-segment]'));
+  control.addEventListener('click', () => {
+    const previous = control.dataset.value;
+    const next = String((Number(previous) + 1) % 100).padStart(2, '0');
+    const changed = segments.filter((segment, index) => previous[index] !== next[index]);
+    runFiniteMotion(control, {
+      duration: 520,
+      target: changed[changed.length - 1],
+      onAct: () => {
+        control.dataset.value = next;
+        control.setAttribute('aria-label', `${Number(next)} published posts`);
+        changed.forEach((segment, index) => {
+          const position = segments.indexOf(segment);
+          segment.dataset.changing = 'true';
+          segment.innerHTML = `<b class="ll-caterpillar-glyph"><span>${previous[position]}</span><span>${next[position]}</span></b>`;
+        });
+      },
+      onSettle: () => changed.forEach((segment) => {
+        const position = segments.indexOf(segment);
+        segment.removeAttribute('data-changing');
+        segment.innerHTML = `<b class="ll-caterpillar-glyph">${next[position]}</b>`;
+      }),
+    });
+  });
+};
+
+livingControllers.numberOwl = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const eyes = Array.from(control.querySelectorAll('[data-owl-eye]'));
+  const setDigit = (eye, digit) => { eye.querySelector('.ll-owl-digit').textContent = digit; };
+  control.addEventListener('click', () => {
+    const previous = control.dataset.value;
+    const next = String((Number(previous) + 1) % 100).padStart(2, '0');
+    const changed = eyes.filter((eye, index) => previous[index] !== next[index]);
+    runFiniteMotion(control, {
+      duration: 640,
+      target: changed[changed.length - 1],
+      onAct: () => {
+        control.dataset.value = next;
+        control.setAttribute('aria-label', `${Number(next)} case studies`);
+        changed.forEach((eye) => { eye.dataset.changing = 'true'; });
+        const swap = () => changed.forEach((eye) => setDigit(eye, next[eyes.indexOf(eye)]));
+        if (reduceMotion.matches) swap();
+        else window.setTimeout(swap, 300);
+      },
+      onSettle: () => changed.forEach((eye) => eye.removeAttribute('data-changing')),
+    });
+  });
+};
+
+let clockBugTimer = null;
+
+livingControllers.clockBug = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const value = control.querySelector('[data-clock-value]');
+  const antenna = control.querySelector('[data-clock-antenna]');
+  const zone = (Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local').split('/').pop().replace(/_/g, ' ');
+  control.querySelector('[data-clock-zone]').textContent = zone;
+  const render = () => {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    value.innerHTML = `${hours}<i>:</i>${minutes}`;
+    control.setAttribute('aria-label', `Local time ${hours}:${minutes} in ${zone}`);
+  };
+  render();
+  if (clockBugTimer) window.clearInterval(clockBugTimer);
+  clockBugTimer = window.setInterval(render, 30000);
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 480,
+    target: antenna,
+    onAct: render,
+  }));
+};
+
+livingControllers.pulseEel = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const spine = control.querySelector('[data-eel-spine]');
+  const nodes = Array.from(spine.children);
+  const levels = { 1: [30, 52, 38, 64], 2: [54, 74, 60, 86], 3: [72, 92, 80, 98] };
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 680,
+    target: spine,
+    onAct: () => {
+      const level = (Number(control.dataset.level) % 3) + 1;
+      control.dataset.level = String(level);
+      levels[level].forEach((height, index) => nodes[index].style.setProperty('--h', `${height}%`));
+      control.setAttribute('aria-label', `Activity level ${level}`);
+    },
+  }));
+};
+
+livingControllers.radarSnail = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const feeler = control.querySelector('[data-snail-feeler]');
+  const state = control.querySelector('[data-snail-state]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 720,
+    target: feeler,
+    onAct: () => {
+      const available = control.getAttribute('aria-pressed') !== 'true';
+      control.setAttribute('aria-pressed', String(available));
+      control.setAttribute('aria-label', available ? 'Availability: available' : 'Availability: away');
+      state.textContent = available ? 'Available' : 'Away';
+    },
+  }));
+};
+
+livingControllers.weatherPuff = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const body = control.querySelector('[data-puff-body]');
+  const label = control.querySelector('[data-puff-label]');
+  const order = ['sun', 'rain', 'cloud'];
+  const names = { sun: 'Sun', rain: 'Rain', cloud: 'Cloud' };
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 780,
+    target: body,
+    onAct: () => {
+      const weather = order[(order.indexOf(control.dataset.weather) + 1) % order.length];
+      control.dataset.weather = weather;
+      label.textContent = names[weather];
+      control.setAttribute('aria-label', `Weather: ${weather}`);
+    },
+  }));
+};
+
+livingControllers.peekSprout = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const stem = control.querySelector('[data-sprout-stem]');
+  const state = control.querySelector('[data-sprout-state]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 660,
+    target: stem,
+    onAct: () => {
+      const emerged = control.getAttribute('aria-pressed') !== 'true';
+      control.setAttribute('aria-pressed', String(emerged));
+      control.setAttribute('aria-label', emerged ? 'Sprout has emerged and is available' : 'Sprout is hidden in its pot');
+      state.textContent = emerged ? 'Available' : 'Away';
+    },
+  }));
+};
+
+livingControllers.shellKnock = (card) => {
+  const control = card.querySelector('[data-living-action]');
+  const shell = control.querySelector('[data-knock-shell]');
+  const count = control.querySelector('[data-knock-count]');
+  control.addEventListener('click', () => runFiniteMotion(control, {
+    duration: 740,
+    target: shell,
+    onSettle: () => {
+      const notices = control.dataset.notices === '0' ? 2 : 0;
+      control.dataset.notices = String(notices);
+      count.textContent = String(notices);
+      control.setAttribute('aria-label', notices ? `${notices} unread notices` : 'No unread notices');
+    },
+  }));
+};
+
 function mountLivingLibrary() {
   if (!root) return;
   renderLibrary();
