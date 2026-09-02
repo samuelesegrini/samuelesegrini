@@ -12,8 +12,29 @@ const livingRenderers = Object.create(null);
 const livingControllers = Object.create(null);
 const root = document.querySelector('#living-library-root');
 
-function runFiniteMotion(control, { duration, target = control, eventName = 'animationend', onAct, onSettle }) {
+function setLivingPhase(nodes, state, busy) {
+  nodes.forEach((node) => {
+    node.dataset.state = state;
+    if (busy !== undefined) node.dataset.busy = busy;
+  });
+}
+
+// `mirror` carries the phase onto sibling controls that share one lock, such as the pager arrows.
+function runFiniteMotion(control, { duration, target = control, eventName = 'animationend', mirror = [], onAct, onSettle }) {
   if (control.dataset.busy === 'true') return false;
+  const phase = [control, ...mirror];
+  const runCount = String(Number(control.dataset.runCount || 0) + 1);
+  phase.forEach((node) => { node.dataset.runCount = runCount; });
+  setLivingPhase(phase, 'anticipate', 'true');
+  onAct?.();
+  if (reduceMotion.matches) {
+    // Complete synchronously: no CSS or Web Animations start, and the final visible and
+    // accessible state is in place before this handler returns.
+    setLivingPhase(phase, 'settle');
+    onSettle?.();
+    setLivingPhase(phase, 'idle', 'false');
+    return true;
+  }
   let finished = false;
   let fallback;
   const finish = () => {
@@ -21,23 +42,13 @@ function runFiniteMotion(control, { duration, target = control, eventName = 'ani
     finished = true;
     clearTimeout(fallback);
     target.removeEventListener(eventName, finish);
-    control.dataset.state = 'settle';
+    setLivingPhase(phase, 'settle');
     onSettle?.();
-    requestAnimationFrame(() => {
-      control.dataset.state = 'idle';
-      control.dataset.busy = 'false';
-    });
+    requestAnimationFrame(() => setLivingPhase(phase, 'idle', 'false'));
   };
-  control.dataset.busy = 'true';
-  control.dataset.state = 'anticipate';
-  onAct?.();
-  if (reduceMotion.matches) {
-    finish();
-    return true;
-  }
   target.addEventListener(eventName, finish, { once: true });
   fallback = setTimeout(finish, duration + 100);
-  requestAnimationFrame(() => { control.dataset.state = 'act'; });
+  requestAnimationFrame(() => setLivingPhase(phase, 'act'));
   return true;
 }
 
@@ -505,7 +516,7 @@ livingCatalog.push(...navigationCreatures);
 const livingProjects = ['EasyManager', 'Galaxy Trucker', 'SpinGO', 'Service Pulse'];
 const projectSlug = (position) => `<small>Project ${String(position + 1).padStart(2, '0')} / 04</small><b>${livingProjects[position]}</b>`;
 
-livingRenderers.projectCaterpillar = (entry) => `<div class="ll-control ${slotClass(entry.slots)} ll-project" data-project-group data-busy="false" data-direction="forward" role="group" aria-label="Project 1 of 4: EasyManager" style="--direction:1"><button class="ll-project-arrow" data-project-dir="-1" aria-label="Previous project">←</button><span class="ll-project-window"><span class="ll-project-copy ll-project-current">${projectSlug(0)}</span><span class="ll-project-copy ll-project-next" aria-hidden="true">${projectSlug(1)}</span></span><button class="ll-project-arrow" data-project-dir="1" aria-label="Next project">→</button><span class="ll-project-creature" data-motion-part aria-hidden="true"><i class="ll-project-seg"></i><i class="ll-project-seg"></i><i class="ll-project-seg"></i><i class="ll-project-head"><i></i><i></i></i></span></div>`;
+livingRenderers.projectCaterpillar = (entry) => `<div class="ll-control ${slotClass(entry.slots)} ll-project" data-project-group data-busy="false" data-state="idle" data-direction="forward" role="group" aria-label="Project 1 of 4: EasyManager" style="--direction:1"><button class="ll-project-arrow" data-living-action data-busy="false" data-state="idle" data-project-dir="-1" aria-label="Previous project">←</button><span class="ll-project-window"><span class="ll-project-copy ll-project-current">${projectSlug(0)}</span><span class="ll-project-copy ll-project-next" aria-hidden="true">${projectSlug(1)}</span></span><button class="ll-project-arrow" data-living-action data-busy="false" data-state="idle" data-project-dir="1" aria-label="Next project">→</button><span class="ll-project-creature" data-motion-part aria-hidden="true"><i class="ll-project-seg"></i><i class="ll-project-seg"></i><i class="ll-project-seg"></i><i class="ll-project-head"><i></i><i></i></i></span></div>`;
 
 livingRenderers.stepperBug = (entry) => `<button class="ll-control ${slotClass(entry.slots)} ll-stepper" data-living-action data-busy="false" data-step="1" style="--step:1" aria-label="Section 1 of 5"><span class="ll-stepper-track" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><i class="ll-stepper-bug" data-stepper-bug data-motion-part aria-hidden="true"><i></i><i></i></i><small class="ll-stepper-tag" data-stepper-tag aria-hidden="true">Section 1 of 5</small></button>`;
 
@@ -525,13 +536,15 @@ livingControllers.projectCaterpillar = (card) => {
   const group = card.querySelector('[data-project-group]');
   const current = group.querySelector('.ll-project-current');
   const next = group.querySelector('.ll-project-next');
+  const arrows = Array.from(group.querySelectorAll('[data-project-dir]'));
   let index = 0;
-  group.querySelectorAll('[data-project-dir]').forEach((button) => button.addEventListener('click', () => {
+  arrows.forEach((button) => button.addEventListener('click', () => {
     const direction = Number(button.dataset.projectDir);
     const destination = (index + direction + livingProjects.length) % livingProjects.length;
     runFiniteMotion(group, {
       duration: 900,
       target: current,
+      mirror: arrows,
       onAct: () => {
         group.dataset.direction = direction > 0 ? 'forward' : 'backward';
         group.style.setProperty('--direction', String(direction));
@@ -729,6 +742,23 @@ livingControllers.diceArmadillo = (card) => {
   }));
 };
 
+const forcedFailure = new URL(location.href).searchParams.get('failLiving');
+
+function mountController(card, entry) {
+  card.querySelectorAll('[data-living-action]').forEach((node) => {
+    if (!node.dataset.state) node.dataset.state = 'idle';
+    if (!node.dataset.busy) node.dataset.busy = 'false';
+  });
+  try {
+    if (entry.id === forcedFailure) throw new Error(`Forced controller failure: ${entry.id}`);
+    livingControllers[entry.controller]?.(card, entry);
+  } catch (error) {
+    card.dataset.controllerError = 'true';
+    card.querySelector('[data-living-action]')?.setAttribute('aria-disabled', 'true');
+    console.warn('[Living Library] controller failed', entry.id, error);
+  }
+}
+
 function mountLivingLibrary() {
   if (!root) return;
   renderLibrary();
@@ -743,10 +773,7 @@ function mountLivingLibrary() {
     });
   }));
   root.querySelectorAll('.ll-source-link').forEach((button) => button.addEventListener('click', () => openSource(button.dataset.sourceId)));
-  livingCatalog.forEach((entry) => {
-    const card = root.querySelector(`[data-living-id="${entry.id}"]`);
-    livingControllers[entry.controller]?.(card, entry);
-  });
+  livingCatalog.forEach((entry) => mountController(root.querySelector(`[data-living-id="${entry.id}"]`), entry));
 }
 
 mountLivingLibrary();

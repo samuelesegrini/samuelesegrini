@@ -224,3 +224,77 @@ test('dice armadillo guarantees a different face on every roll and reaches all s
 	}
 	expect(seen.size).toBe(6);
 });
+
+const alternativeIds = [...actionIds, ...dataIds, ...navigationIds, ...personalityIds];
+
+test('every living alternative activates once and returns to a stable state', async ({ page }) => {
+	test.setTimeout(60_000);
+	for (const id of alternativeIds) {
+		const control = page.locator(`[data-living-id="${id}"] [data-living-action]`).first();
+		await control.click();
+		await expect(control, id).toHaveAttribute('data-busy', 'false', { timeout: 1800 });
+		await expect(control, id).toHaveAttribute('data-state', 'idle');
+	}
+});
+
+test('the complete living smoke run emits no uncaught page errors', async ({ page }) => {
+	test.setTimeout(60_000);
+	const errors: string[] = [];
+	page.on('pageerror', (error) => errors.push(error.message));
+	for (const id of alternativeIds) {
+		const control = page.locator(`[data-living-id="${id}"] [data-living-action]`).first();
+		await control.click();
+		await expect(control, id).toHaveAttribute('data-busy', 'false', { timeout: 1800 });
+	}
+	expect(errors).toEqual([]);
+});
+
+test('rapid activation never queues multiple runs', async ({ page }) => {
+	const control = page.locator('[data-living-id="key-crab"] [data-living-action]');
+	await control.click();
+	await control.click({ force: true });
+	await control.click({ force: true });
+	await expect(control).toHaveAttribute('data-run-count', '1');
+	await expect(control).toHaveAttribute('data-busy', 'false', { timeout: 1400 });
+});
+
+test('one forced controller failure does not block later cards', async ({ page }) => {
+	await page.goto(`${livingUrl}&failLiving=counter-caterpillar`);
+	await expect(page.locator('[data-living-id="counter-caterpillar"]')).toHaveAttribute('data-controller-error', 'true');
+	const later = page.locator('[data-living-id="dice-armadillo"] [data-living-action]');
+	await later.click();
+	await expect(later).toHaveAttribute('data-busy', 'false', { timeout: 1400 });
+});
+
+test.describe('living reduced motion', () => {
+	// emulateMedia, not test.use({reducedMotion}): the fixture form silently fails to apply in
+	// this setup, which would leave every assertion below running on the full-motion path.
+	test('representative controls apply final state without theatrical travel', async ({ page }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+		await page.goto(livingUrl);
+		expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
+		for (const id of ['courier-moth', 'counter-caterpillar', 'dial-snail', 'dice-armadillo']) {
+			const control = page.locator(`[data-living-id="${id}"] [data-living-action]`).first();
+			await control.focus();
+			await page.keyboard.press('Enter');
+			await expect(control, id).toHaveAttribute('data-busy', 'false');
+			await expect(control, id).toHaveAttribute('data-state', 'idle');
+			expect(await control.locator('[data-motion-part]').evaluateAll((parts) => parts.flatMap((part) => part.getAnimations()).length), id).toBe(0);
+		}
+	});
+});
+
+test.describe('without JavaScript', () => {
+	test.use({ javaScriptEnabled: false });
+	test('living route exposes a truthful static mapping instead of inert controls', async ({ page }) => {
+		await page.goto(livingUrl);
+		await expect(page.getByRole('heading', { name: 'A toolbar that feels alive.' })).toBeVisible();
+		// getByText cannot see inside a <noscript> subtree even when the browser renders it, so
+		// the mapping is asserted through list items instead.
+		const mapping = (text: string) => page.locator('#variant-living li').filter({ hasText: text });
+		await expect(mapping('Courier Moth → Plane Send')).toBeVisible();
+		await expect(mapping('Dice Armadillo → Discovery Die')).toBeVisible();
+		await expect(page.locator('#variant-living li')).toHaveCount(31);
+		await expect(page.locator('#variant-living button')).toHaveCount(0);
+	});
+});

@@ -405,3 +405,9 @@
 @keyframes ll-orbit-lap{from{rotate:0deg}to{rotate:360deg}}
 @keyframes ll-slug-lift{0%,100%{transform:none}34%{transform:translateY(-5px) scaleX(.95) scaleY(1.08)}68%{transform:translateY(1px) scaleX(1.03) scaleY(.97)}}
 @keyframes ll-armadillo-roll{0%{transform:none}30%{transform:translateX(-14px) rotate(-120deg)}70%{transform:translateX(14px) rotate(160deg)}100%{transform:none}}
+
+/* --- No-JavaScript fallback: the truthful mapping, text only --- */
+.ll-no-script{max-width:760px}
+.ll-no-script p{max-width:620px;margin:0 0 26px;color:var(--muted);font-size:16px;line-height:1.5}
+.ll-no-script h2{margin:24px 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-family:var(--mono);color:#566056}
+.ll-no-script ul{margin:0;padding-left:19px;color:#2c332c;font-size:14px;line-height:1.75}
