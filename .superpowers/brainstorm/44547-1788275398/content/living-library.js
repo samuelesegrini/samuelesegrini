@@ -652,13 +652,39 @@ livingControllers.shySticker = (card) => {
 livingControllers.labelChameleon = (card) => {
   const control = card.querySelector('[data-living-action]');
   const body = control.querySelector('[data-chameleon-body]');
+  // Two skins can carry any number of entries: the hidden one is always loaded with the next,
+  // so the creature cycles a list while keeping its two-skin anatomy.
+  const skins = Array.from(control.querySelectorAll('.ll-chameleon-skin'));
+  const vocabulary = control.dataset.vocabulary ? JSON.parse(control.dataset.vocabulary) : null;
+  const write = (skin, entry) => {
+    skin.querySelector('small').textContent = entry.kicker;
+    skin.querySelector('b').textContent = entry.value;
+  };
+  const announce = (entry) => control.setAttribute('aria-label', `${entry.kicker}: ${entry.value}`);
+  let index = 0;
+  if (vocabulary) {
+    write(skins[0], vocabulary[0]);
+    write(skins[1], vocabulary[1 % vocabulary.length]);
+    announce(vocabulary[0]);
+  }
   control.addEventListener('click', () => runFiniteMotion(control, {
     duration: 720,
     target: body,
     onAct: () => {
       const swift = control.getAttribute('aria-pressed') !== 'true';
       control.setAttribute('aria-pressed', String(swift));
-      control.setAttribute('aria-label', swift ? 'Filter: Swift / iOS' : 'Filter: All projects');
+      if (!vocabulary) {
+        control.setAttribute('aria-label', swift ? 'Filter: Swift / iOS' : 'Filter: All projects');
+        return;
+      }
+      index = (index + 1) % vocabulary.length;
+      announce(vocabulary[index]);
+    },
+    onSettle: () => {
+      if (!vocabulary) return;
+      // aria-pressed true shows skin B, so the other one is free to load the next entry
+      const hidden = control.getAttribute('aria-pressed') === 'true' ? skins[0] : skins[1];
+      write(hidden, vocabulary[(index + 1) % vocabulary.length]);
     },
   }));
 };
@@ -829,6 +855,11 @@ function mountLivingComponent(host, id, options = {}) {
   host.dataset.livingId = entry.id;
   host.style.setProperty('--accent', options.accent || entry.accent);
   host.innerHTML = livingRenderers[entry.renderer](entry);
+  // set before mounting: a controller reads its vocabulary while wiring itself
+  if (options.vocabulary) {
+    const action = host.querySelector('[data-living-action]');
+    if (action) action.dataset.vocabulary = JSON.stringify(options.vocabulary);
+  }
   mountController(host, entry);
   if (options.copy) applyLivingCopy(host, entry, options.copy);
   if (options.label) host.querySelector('[data-living-action]')?.setAttribute('aria-label', options.label);
