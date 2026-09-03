@@ -78,10 +78,13 @@
     .cv-slot .corto{display:none}
     .cv-slot i{display:grid;flex:none;width:34px;height:34px;place-items:center;border-radius:50%;background:#11111a14;font-style:normal;font-size:15px;transition:transform .3s var(--ease)}
     .cv-slot:hover i{transform:translateY(3px)}
-    .top-slot{display:grid;place-items:center;border:0;border-radius:14px;background:#242424;color:#fff;cursor:pointer;font:inherit;transition:background .2s ease}
+    .top-slot{display:grid;align-content:center;justify-items:center;gap:7px;border:0;border-radius:14px;background:#242424;color:#fff;cursor:pointer;font:inherit;transition:background .2s ease}
     .top-slot:hover{background:#2f2f2f}
-    .top-slot i{font-style:normal;font-size:26px;line-height:1;transition:transform .3s var(--ease)}
-    .top-slot:hover i{transform:translateY(-3px)}
+    /* chevron largo e basso invece di una freccia lunga */
+    .top-chevron{width:26px;height:13px;transition:transform .3s var(--ease)}
+    .top-chevron path{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+    .top-slot:hover .top-chevron{transform:translateY(-3px)}
+    .top-slot small{color:#8f8f8f;font:6px var(--mono);letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
     .widget[data-detail]>div{transition:opacity .16s ease,transform .22s var(--ease)}
     .widget[data-detail][data-swap="true"]>div{opacity:0;transform:translateY(-5px)}
     .priority:after{content:'P1';position:absolute;right:7px;top:6px;color:#466033;font:6px var(--mono)}
@@ -172,7 +175,7 @@
             <div class="mode-group" data-when="index">
               <button class="slot two shuffle-slot" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;, &quot;value&quot;: &quot;7 pubblicati&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;, &quot;value&quot;: &quot;4 pubblicati&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Esperienza&quot;, &quot;value&quot;: &quot;4 anni&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Risposta&quot;, &quot;value&quot;: &quot;Entro 24 ore&quot;}}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-index" aria-hidden="true"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-index" aria-hidden="true"></i></span></button>
               <div class="widget" data-detail><div><small>Progetti</small><b>7 pubblicati</b></div></div>
-              <button class="top-slot" data-top type="button" aria-label="Torna all'inizio"><i aria-hidden="true">↑</i></button>
+              <button class="top-slot" data-top type="button" aria-label="Torna all'inizio"><svg class="top-chevron" viewBox="0 0 24 12" aria-hidden="true"><path d="M3 9 12 3 21 9"/></svg><small>Su, dai</small></button>
             </div>
           </div>
           <button class="slot one plane-slot span-1 keep-mobile" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button>
