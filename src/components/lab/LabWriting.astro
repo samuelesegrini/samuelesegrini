@@ -3,11 +3,11 @@
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import { getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
+import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labPostPath, type LabLocale } from './chrome';
 
 interface Props { lang: LabLocale }
 const { lang } = Astro.props;
-const isIt = lang === 'it';
 const { posts } = await getPortfolioContent();
 const pubblicati = getPublishedPosts(posts, lang);
 
@@ -17,15 +17,9 @@ pubblicati.forEach((post) => post.tags.forEach((tag) => frequenza.set(tag, (freq
 const temi = [...frequenza.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 4).map(([tag]) => tag);
 
 const maiuscola = (testo: string) => testo.charAt(0).toUpperCase() + testo.slice(1);
-const conta = (n: number) => isIt ? `${n} ${n === 1 ? 'articolo' : 'articoli'}` : `${n} ${n === 1 ? 'article' : 'articles'}`;
-
-const t = isIt
-	? { title: 'Banco di prova — archivio articoli', kicker: 'Tema', eyebrow: 'Archivio', headline: 'Scrittura,', em: 'per argomento.',
-		intro: 'pubblicati, raccolti attorno ai temi che tornano più spesso. Un articolo può comparire in più temi: sono etichette, non cartelle.',
-		hint: 'Scorri, oppure usa la barra', on: 'su questo tema.' }
-	: { title: 'Experiment — writing archive', kicker: 'Topic', eyebrow: 'Archive', headline: 'Writing,', em: 'by topic.',
-		intro: 'published, gathered around the topics that come back most often. An article can appear under several: these are labels, not folders.',
-		hint: 'Scroll, or use the bar', on: 'on this topic.' };
+const copy = await getLabCopy(lang);
+const t = { ...copy.writing, kicker: copy.writing.topic, em: copy.writing.emphasis, hint: copy.common.hint };
+const conta = (n: number) => `${n} ${n === 1 ? copy.writing.one : copy.writing.many}`;
 
 const sezioni = temi.map((tema) => {
 	const dentro = pubblicati.filter((post) => post.tags.includes(tema));

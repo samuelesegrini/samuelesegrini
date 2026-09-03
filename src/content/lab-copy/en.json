@@ -1,0 +1,151 @@
+{
+	"locale": "en",
+	"ticker": "Software engineer · Swift & iOS · Product engineering · Reliable systems ·",
+	"nav": [
+		{
+			"label": "Home",
+			"kicker": "01 · Start"
+		},
+		{
+			"label": "Projects",
+			"kicker": "02 · Selected work"
+		},
+		{
+			"label": "Writing",
+			"kicker": "03 · Technical notes"
+		},
+		{
+			"label": "About",
+			"kicker": "04 · Profile and CV"
+		}
+	],
+	"toolbar": {
+		"top": "Back to the top",
+		"topCaption": "Turna sü",
+		"mail": "Email me at {email}",
+		"mailSending": "Opening your mail client",
+		"mailSent": "Mail client opened",
+		"mailCaption": "Scrìvum",
+		"language": "Language",
+		"openMenu": "Open menu"
+	},
+	"cv": {
+		"kicker": "Résumé",
+		"long": "Download the PDF",
+		"short": "PDF",
+		"aria": "Download the résumé as PDF"
+	},
+	"common": {
+		"section": "Section",
+		"hint": "Scroll, or use the bar",
+		"one": "published",
+		"many": "published"
+	},
+	"home": {
+		"title": "Experiment — new home",
+		"headline": "Software engineer,",
+		"emphasis": "Swift and reliable systems.",
+		"intro": "I design and build iOS products where the logic holds up as well as the interface. This bar is the menu prototype: it navigates the page and tells you where you are.",
+		"work": "Work",
+		"workText": "Selected projects, with the reasoning behind them rather than the final screen alone.",
+		"allWork": "All projects →",
+		"writing": "Writing",
+		"writingText": "Technical notes on what I actually had to understand: systems, constraints, useful mistakes.",
+		"allWriting": "All articles →",
+		"path": "Path",
+		"pathText": "How I got here — the tools, the people and the problems that shaped me.",
+		"aboutLink": "About me →",
+		"contact": "Contact",
+		"contactText": "Open to opportunities. Reply within 24 hours, Italian time zone.",
+		"mailLink": "Email me →",
+		"projects": "Projects",
+		"articles": "Articles",
+		"experience": "Experience",
+		"years": "4 years",
+		"reply": "Reply",
+		"within": "Within 24 hours"
+	},
+	"work": {
+		"title": "Experiment — project archive",
+		"eyebrow": "Archive",
+		"headline": "Projects,",
+		"emphasis": "by how they came about.",
+		"intro": "in the archive, grouped by the kind of work they were: products to ship, code to reuse, contributions, probes. Use the bar to jump between groups.",
+		"one": "project",
+		"many": "projects",
+		"kinds": {
+			"app": {
+				"label": "Apps",
+				"text": "Finished products, with real users and shipping constraints."
+			},
+			"package": {
+				"label": "Packages",
+				"text": "Reusable code, extracted from a problem that kept recurring."
+			},
+			"open-source": {
+				"label": "Open source",
+				"text": "Contributions to other people’s projects, where the code is defended in public."
+			},
+			"experiment": {
+				"label": "Experiments",
+				"text": "Probes meant to answer a question, not to ship."
+			}
+		}
+	},
+	"writing": {
+		"title": "Experiment — writing archive",
+		"eyebrow": "Archive",
+		"topic": "Topic",
+		"headline": "Writing,",
+		"emphasis": "by topic.",
+		"intro": "published, gathered around the topics that come back most often. An article can appear under several: these are labels, not folders.",
+		"on": "on this topic.",
+		"one": "article",
+		"many": "articles"
+	},
+	"about": {
+		"title": "Experiment — about",
+		"fallbackTitle": "About",
+		"fallbackExcerpt": "Profile in preparation.",
+		"mailLink": "Email me →",
+		"sections": [
+			{
+				"id": "path",
+				"label": "Path",
+				"text": "From distributed systems to iOS development: explicit constraints, concrete checks, attention to the product.",
+				"detailKicker": "Experience",
+				"detailValue": "4 years"
+			},
+			{
+				"id": "tools",
+				"label": "Tools",
+				"text": "Swift and iOS as the anchor, plus whatever it takes for a system to stay correct when the network stops cooperating.",
+				"detailKicker": "Projects",
+				"detailValue": "{projects} in the archive"
+			},
+			{
+				"id": "contact",
+				"label": "Contact",
+				"text": "Open to opportunities. Reply within 24 hours, Italian time zone.",
+				"detailKicker": "Reply",
+				"detailValue": "Within 24 hours"
+			}
+		]
+	},
+	"projectDetail": {
+		"eyebrow": "Project",
+		"body": "Case study",
+		"results": "Outcomes",
+		"tech": "Technologies",
+		"role": "Role",
+		"year": "Year",
+		"back": "← All projects"
+	},
+	"postDetail": {
+		"eyebrow": "Article",
+		"body": "Article",
+		"topics": "Topics",
+		"published": "Published",
+		"back": "← All articles"
+	}
+}

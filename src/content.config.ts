@@ -100,4 +100,66 @@ const pages = defineCollection({
 	}),
 });
 
-export const collections = { projects, posts, pages };
+/**
+ * Testi del banco di prova. Stanno in una collection e non nei componenti, così la copy si
+ * modifica dove sta il resto dei contenuti e le due lingue restano allineate per costruzione:
+ * lo schema vale per entrambe, quindi una chiave dimenticata da un lato non compila.
+ */
+const labCopy = defineCollection({
+	loader: glob({ base: './src/content/lab-copy', pattern: '*.json' }),
+	schema: z.object({
+		locale,
+		ticker: z.string().min(1),
+		nav: z.array(z.object({ label: z.string().min(1), kicker: z.string().min(1) })).length(4),
+		toolbar: z.object({
+			top: z.string().min(1),
+			topCaption: z.string().min(1),
+			/** Contiene {email}, sostituito con l'indirizzo di siteConfig. */
+			mail: z.string().min(1),
+			mailSending: z.string().min(1),
+			mailSent: z.string().min(1),
+			mailCaption: z.string().min(1),
+			language: z.string().min(1),
+			openMenu: z.string().min(1),
+		}),
+		cv: z.object({ kicker: z.string().min(1), long: z.string().min(1), short: z.string().min(1), aria: z.string().min(1) }),
+		common: z.object({ section: z.string().min(1), hint: z.string().min(1), one: z.string().min(1), many: z.string().min(1) }),
+		home: z.object({
+			title: z.string().min(1), headline: z.string().min(1), emphasis: z.string().min(1), intro: z.string().min(1),
+			work: z.string().min(1), workText: z.string().min(1), allWork: z.string().min(1),
+			writing: z.string().min(1), writingText: z.string().min(1), allWriting: z.string().min(1),
+			path: z.string().min(1), pathText: z.string().min(1), aboutLink: z.string().min(1),
+			contact: z.string().min(1), contactText: z.string().min(1), mailLink: z.string().min(1),
+			projects: z.string().min(1), articles: z.string().min(1), experience: z.string().min(1),
+			years: z.string().min(1), reply: z.string().min(1), within: z.string().min(1),
+		}),
+		work: z.object({
+			title: z.string().min(1), eyebrow: z.string().min(1), headline: z.string().min(1), emphasis: z.string().min(1),
+			intro: z.string().min(1), one: z.string().min(1), many: z.string().min(1),
+			kinds: z.record(z.enum(['app', 'package', 'open-source', 'experiment']), z.object({ label: z.string().min(1), text: z.string().min(1) })),
+		}),
+		writing: z.object({
+			title: z.string().min(1), eyebrow: z.string().min(1), topic: z.string().min(1), headline: z.string().min(1),
+			emphasis: z.string().min(1), intro: z.string().min(1), on: z.string().min(1), one: z.string().min(1), many: z.string().min(1),
+		}),
+		about: z.object({
+			title: z.string().min(1), fallbackTitle: z.string().min(1), fallbackExcerpt: z.string().min(1), mailLink: z.string().min(1),
+			sections: z.array(z.object({
+				id: z.string().min(1), label: z.string().min(1), text: z.string().min(1),
+				detailKicker: z.string().min(1),
+				/** Può contenere {projects}, sostituito con il numero in archivio. */
+				detailValue: z.string().min(1),
+			})).length(3),
+		}),
+		projectDetail: z.object({
+			eyebrow: z.string().min(1), body: z.string().min(1), results: z.string().min(1),
+			tech: z.string().min(1), role: z.string().min(1), year: z.string().min(1), back: z.string().min(1),
+		}),
+		postDetail: z.object({
+			eyebrow: z.string().min(1), body: z.string().min(1), topics: z.string().min(1),
+			published: z.string().min(1), back: z.string().min(1),
+		}),
+	}),
+});
+
+export const collections = { projects, posts, pages, labCopy };

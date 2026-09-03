@@ -3,36 +3,20 @@ import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import { getFeaturedProjects, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { siteConfig } from '../../config/site';
+import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labPostPath, labProjectPath, type LabLocale } from './chrome';
 
 interface Props { lang: LabLocale }
 const { lang } = Astro.props;
-const isIt = lang === 'it';
 const { projects, posts } = await getPortfolioContent();
 const featured = getFeaturedProjects(projects, lang);
 const published = getPublishedPosts(posts, lang);
 const inArchivio = projects.filter((p) => p.locale === lang && !p.draft);
 const conta = (n: number, uno: string, molti: string) => `${n} ${n === 1 ? uno : molti}`;
 
-const t = isIt
-	? { title: 'Banco di prova — nuova home', kicker: 'Sezione', headline: 'Software engineer,', em: 'Swift e sistemi affidabili.',
-		intro: 'Progetto e costruisco prodotti iOS in cui la logica regge quanto l’interfaccia. Questa barra è il prototipo del menu: naviga la pagina e racconta dove sei.',
-		hint: 'Scorri, oppure usa la barra',
-		work: 'Lavoro', workText: 'I progetti selezionati, con il ragionamento che c’è dietro invece della sola schermata finale.', allWork: 'Tutti i progetti →',
-		writing: 'Scrittura', writingText: 'Note tecniche su ciò che ho dovuto capire davvero: sistemi, vincoli, errori utili.', allWriting: 'Tutti gli articoli →',
-		path: 'Percorso', pathText: 'Come ci sono arrivato — gli strumenti, le persone e i problemi che mi hanno formato.', aboutLink: 'Chi sono →',
-		contact: 'Contatto', contactText: 'Aperto a opportunità. Risposta entro 24 ore, fuso orario italiano.', mail: 'Scrivimi →',
-		projects: 'Progetti', articles: 'Articoli', experience: 'Esperienza', years: '4 anni', reply: 'Risposta', within: 'Entro 24 ore',
-		one: 'pubblicato', many: 'pubblicati' }
-	: { title: 'Experiment — new home', kicker: 'Section', headline: 'Software engineer,', em: 'Swift and reliable systems.',
-		intro: 'I design and build iOS products where the logic holds up as well as the interface. This bar is the menu prototype: it navigates the page and tells you where you are.',
-		hint: 'Scroll, or use the bar',
-		work: 'Work', workText: 'Selected projects, with the reasoning behind them rather than the final screen alone.', allWork: 'All projects →',
-		writing: 'Writing', writingText: 'Technical notes on what I actually had to understand: systems, constraints, useful mistakes.', allWriting: 'All articles →',
-		path: 'Path', pathText: 'How I got here — the tools, the people and the problems that shaped me.', aboutLink: 'About me →',
-		contact: 'Contact', contactText: 'Open to opportunities. Reply within 24 hours, Italian time zone.', mail: 'Email me →',
-		projects: 'Projects', articles: 'Articles', experience: 'Experience', years: '4 years', reply: 'Reply', within: 'Within 24 hours',
-		one: 'published', many: 'published' };
+const copy = await getLabCopy(lang);
+const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis, hint: copy.common.hint,
+	mail: copy.home.mailLink, one: copy.common.one, many: copy.common.many };
 
 const sezioni = [
 	{ kicker: t.kicker, value: t.work, detail: { kicker: t.projects, value: conta(inArchivio.length, t.one, t.many) } },

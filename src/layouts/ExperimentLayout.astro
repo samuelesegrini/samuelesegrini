@@ -7,14 +7,8 @@ import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
 import type { LabLocale, ToolbarSection } from '../components/lab/chrome';
-import {
-	experimentCv,
-	experimentLabels,
-	experimentLanguages,
-	experimentRoutes,
-	experimentTicker,
-	mailHref,
-} from '../components/lab/chrome';
+import { experimentLanguages, experimentRoutes, labPaths, mailHref } from '../components/lab/chrome';
+import { getLabCopy, riempi } from '../lib/lab-copy';
 import { siteConfig } from '../config/site';
 
 interface Props {
@@ -28,6 +22,10 @@ interface Props {
 }
 
 const { lang, title, currentHref, sections, itHref, enHref } = Astro.props;
+const copy = await getLabCopy(lang);
+const labels = { ...copy.toolbar, mail: riempi(copy.toolbar.mail) };
+// finché non esiste un PDF nel repo, il curriculum porta alla pagina profilo
+const labPathsAbout = labPaths[lang].about;
 ---
 
 <!doctype html>
@@ -47,12 +45,12 @@ const { lang, title, currentHref, sections, itHref, enHref } = Astro.props;
 			<slot />
 			<ExperimentToolbar
 				name={siteConfig.name}
-				ticker={experimentTicker[lang]}
-				routes={experimentRoutes(lang, currentHref)}
+				ticker={copy.ticker}
+				routes={experimentRoutes(lang, currentHref, copy.nav)}
 				sections={sections}
 				languages={experimentLanguages(lang, itHref, enHref)}
-				cv={experimentCv(lang)}
-				labels={experimentLabels(lang)}
+				cv={{ ...copy.cv, href: labPathsAbout }}
+				labels={labels}
 				mailHref={mailHref}
 			/>
 		</main>

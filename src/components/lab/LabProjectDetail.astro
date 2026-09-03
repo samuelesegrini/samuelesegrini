@@ -4,11 +4,11 @@ import { render } from 'astro:content';
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import { getTranslationPair } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
+import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labProjectPath, type LabLocale } from './chrome';
 
 interface Props { lang: LabLocale; slug: string }
 const { lang, slug } = Astro.props;
-const isIt = lang === 'it';
 const { projects, projectDocuments } = await getPortfolioContent();
 const progetto = projects.find((p) => p.locale === lang && p.slug === slug)!;
 const documento = projectDocuments.find((d) => d.data.locale === lang && d.data.slug === slug)!;
@@ -20,11 +20,8 @@ const gemello = (altra: LabLocale) => {
 	return pari ? labProjectPath(altra, pari.slug) : labPaths[altra].work;
 };
 
-const t = isIt
-	? { kicker: 'Sezione', eyebrow: 'Progetto', hint: 'Scorri, oppure usa la barra',
-		body: 'Case study', results: 'Risultati', tech: 'Tecnologie', role: 'Ruolo', year: 'Anno', back: '← Tutti i progetti' }
-	: { kicker: 'Section', eyebrow: 'Project', hint: 'Scroll, or use the bar',
-		body: 'Case study', results: 'Outcomes', tech: 'Technologies', role: 'Role', year: 'Year', back: '← All projects' };
+const copy = await getLabCopy(lang);
+const t = { ...copy.projectDetail, kicker: copy.common.section };
 
 const sezioni = [
 	{ id: 'caso', value: t.body, detail: { kicker: t.role, value: progetto.role } },

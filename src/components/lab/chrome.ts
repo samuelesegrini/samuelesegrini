@@ -34,34 +34,29 @@ export const labPostPath = (lang: LabLocale, slug: string) => `${labPaths[lang].
 
 export const mailHref = `mailto:${siteConfig.email}`;
 
-export const experimentTicker: Record<LabLocale, string> = {
-	it: 'Software engineer · Swift & iOS · Product engineering · Sistemi affidabili ·',
-	en: 'Software engineer · Swift & iOS · Product engineering · Reliable systems ·',
-};
-
-const voci: Record<LabLocale, ChromeRoute[]> = {
-	it: [
-		{ href: labPaths.it.home, label: 'Home', kicker: '01 · Inizio', preview: 'preview-home', previewHtml: 'SS' },
-		{ href: labPaths.it.work, label: 'Progetti', kicker: '02 · Lavori selezionati', preview: 'preview-projects', previewHtml: '<i></i><i></i><i></i>' },
-		{ href: labPaths.it.writing, label: 'Articoli', kicker: '03 · Note tecniche', preview: 'preview-writing', previewHtml: '<b>Aa</b><i></i><i></i>' },
-		{ href: labPaths.it.about, label: 'Chi sono', kicker: '04 · Profilo e CV', preview: 'preview-about', previewHtml: '' },
-	],
-	en: [
-		{ href: labPaths.en.home, label: 'Home', kicker: '01 · Start', preview: 'preview-home', previewHtml: 'SS' },
-		{ href: labPaths.en.work, label: 'Projects', kicker: '02 · Selected work', preview: 'preview-projects', previewHtml: '<i></i><i></i><i></i>' },
-		{ href: labPaths.en.writing, label: 'Writing', kicker: '03 · Technical notes', preview: 'preview-writing', previewHtml: '<b>Aa</b><i></i><i></i>' },
-		{ href: labPaths.en.about, label: 'About', kicker: '04 · Profile and CV', preview: 'preview-about', previewHtml: '' },
-	],
-};
-
 /**
  * Le rotte della lingua, con quella corrente marcata. Un dettaglio non coincide con nessuna
  * voce: `sezione` permette di evidenziare comunque l'archivio da cui proviene.
  */
-export function experimentRoutes(lang: LabLocale, currentHref: string): ChromeRoute[] {
-	return voci[lang].map((route) => ({ ...route, current: currentHref.startsWith(route.href) && route.href !== labPaths[lang].home
-		? true
-		: route.href === currentHref }));
+/** Struttura e ordine stanno qui; le etichette arrivano dalla collection dei testi. */
+const anatomia = [
+	{ chiave: 'home', preview: 'preview-home', previewHtml: 'SS' },
+	{ chiave: 'work', preview: 'preview-projects', previewHtml: '<i></i><i></i><i></i>' },
+	{ chiave: 'writing', preview: 'preview-writing', previewHtml: '<b>Aa</b><i></i><i></i>' },
+	{ chiave: 'about', preview: 'preview-about', previewHtml: '' },
+] as const;
+
+export function experimentRoutes(
+	lang: LabLocale,
+	currentHref: string,
+	nav: readonly { label: string; kicker: string }[],
+): ChromeRoute[] {
+	return anatomia.map((voce, i) => {
+		const href = labPaths[lang][voce.chiave];
+		// un dettaglio non coincide con nessuna voce: evidenzia comunque il suo archivio
+		const current = href === labPaths[lang].home ? currentHref === href : currentHref.startsWith(href);
+		return { href, label: nav[i].label, kicker: nav[i].kicker, preview: voce.preview, previewHtml: voce.previewHtml, current };
+	});
 }
 
 /** L'altra lingua punta alla pagina corrispondente, non alla sua home. */
@@ -72,29 +67,3 @@ export function experimentLanguages(lang: LabLocale, itHref: string, enHref: str
 	] as const;
 }
 
-// Nel repo non esiste ancora un PDF: finché non c'è, il curriculum porta alla pagina profilo.
-export const experimentCv = (lang: LabLocale) => lang === 'it'
-	? { kicker: 'Curriculum', long: 'Scarica il PDF', short: 'PDF', aria: 'Scarica il curriculum in PDF', href: labPaths.it.about }
-	: { kicker: 'Résumé', long: 'Download the PDF', short: 'PDF', aria: 'Download the résumé as PDF', href: labPaths.en.about };
-
-export const experimentLabels = (lang: LabLocale) => lang === 'it'
-	? {
-		top: 'Torna all’inizio',
-		topCaption: 'Turna sü',
-		mail: `Scrivimi a ${siteConfig.email}`,
-		mailSending: 'Apertura del client di posta',
-		mailSent: 'Client di posta aperto',
-		mailCaption: 'Scrìvum',
-		language: 'Lingua',
-		openMenu: 'Apri menu',
-	}
-	: {
-		top: 'Back to the top',
-		topCaption: 'Turna sü',
-		mail: `Email me at ${siteConfig.email}`,
-		mailSending: 'Opening your mail client',
-		mailSent: 'Mail client opened',
-		mailCaption: 'Scrìvum',
-		language: 'Language',
-		openMenu: 'Open menu',
-	};

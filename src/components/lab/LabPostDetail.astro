@@ -4,10 +4,12 @@ import { render } from 'astro:content';
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import { getTranslationPair } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
+import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labPostPath, type LabLocale } from './chrome';
 
 interface Props { lang: LabLocale; slug: string }
 const { lang, slug } = Astro.props;
+// la lingua qui serve solo a formattare la data: il testo viene dalla collection
 const isIt = lang === 'it';
 const { posts, postDocuments } = await getPortfolioContent();
 const articolo = posts.find((p) => p.locale === lang && p.slug === slug)!;
@@ -20,9 +22,8 @@ const gemello = (altra: LabLocale) => {
 };
 
 const data = articolo.publishedAt.toLocaleDateString(isIt ? 'it-IT' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-const t = isIt
-	? { kicker: 'Sezione', eyebrow: 'Articolo', body: 'Articolo', topics: 'Argomenti', published: 'Pubblicato', back: '← Tutti gli articoli' }
-	: { kicker: 'Section', eyebrow: 'Article', body: 'Article', topics: 'Topics', published: 'Published', back: '← All articles' };
+const copy = await getLabCopy(lang);
+const t = { ...copy.postDetail, kicker: copy.common.section };
 
 const sezioni = [
 	{ id: 'articolo', value: t.body, detail: { kicker: t.published, value: data } },
