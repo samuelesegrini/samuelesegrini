@@ -51,6 +51,12 @@
     .tuner output{color:#111;font:700 13px var(--mono)}
     .tuner input{width:100%;margin:0;accent-color:#5f8d3f}
     .tuner small{color:#8b877f;font:8px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+    .tuner hr{width:100%;height:1px;margin:3px 0 1px;border:0;background:#e6e3dc}
+    .stepper{display:flex;align-items:center;gap:6px}
+    .stepper button{display:grid;width:26px;height:26px;place-items:center;border:1px solid #d9d6cf;border-radius:8px;background:#f7f5f0;color:#3c392f;font:700 14px var(--sans);line-height:1;cursor:pointer;transition:background .15s ease}
+    .stepper button:hover{background:#eeebe3}
+    .stepper button:disabled{color:#c0bcb2;cursor:default}
+    .stepper output{flex:1;color:#111;font:700 13px var(--mono);text-align:center}
     .home-section{display:grid;min-height:132vh;align-content:center;padding:0 max(24px,7vw);scroll-margin-top:0}
     .home-section:last-of-type{min-height:100vh;padding-bottom:200px}
     .section-kicker{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#8b877f}
@@ -94,7 +100,7 @@
     /* bordo sulle celle "strumento": aereo, torna su, e le due lingue ciascuna per conto suo.
        Restano senza SS, curriculum, menu, la carta della sezione e il dettaglio.
        Il colore segue la rotta attiva; sulla lingua scelta l'indicatore bianco lo copre. */
-    .plane-slot,.top-slot,.segment-bed{border:2px solid color-mix(in srgb,var(--active-highlight) var(--tool-border-mix,100%),#242424)}
+    .plane-slot,.top-slot,.segment-bed{border:var(--tool-border-width,1.5px) solid color-mix(in srgb,var(--active-highlight) var(--tool-border-mix,45%),#242424)}
     .top-slot small,.plane-slot small{position:absolute;z-index:2;left:0;right:0;bottom:15px;color:#8f8f8f;font:7px var(--mono);letter-spacing:.09em;text-transform:uppercase;text-align:center;white-space:nowrap}
     /* la didascalia sta davanti: l'aereo le vola dietro invece che sopra */
     .plane-slot .plane-stage{z-index:1;margin-bottom:17px}
@@ -132,8 +138,15 @@
 </head>
 <body>
     <aside class="tuner" aria-label="Regolazione temporanea del bordo">
-      <div class="tuner-riga"><label for="tool-border">Bordo strumenti</label><output id="tool-border-value" for="tool-border">100%</output></div>
-      <input id="tool-border" type="range" min="0" max="100" step="1" value="100" />
+      <div class="tuner-riga"><label for="tool-border">Bordo strumenti</label><output id="tool-border-value" for="tool-border">45%</output></div>
+      <input id="tool-border" type="range" min="0" max="100" step="1" value="45" />
+      <hr />
+      <div class="tuner-riga"><label for="tool-width-value">Spessore</label></div>
+      <div class="stepper">
+        <button type="button" data-width-step="-1" aria-label="Riduci lo spessore del bordo">−</button>
+        <output id="tool-width-value" aria-live="polite">1.5px</output>
+        <button type="button" data-width-step="1" aria-label="Aumenta lo spessore del bordo">+</button>
+      </div>
       <small>Provvisorio · non fa parte della barra</small>
     </aside>
   <main class="stage" aria-label="Home di prova con la toolbar">
@@ -225,10 +238,31 @@
     const applicaBordo = valore => {
       document.documentElement.style.setProperty('--tool-border-mix', `${valore}%`)
       bordoValore.textContent = `${valore}%`
-      try { localStorage.setItem('bordoStrumenti', valore) } catch (errore) { /* modalità privata */ }
+      try { localStorage.setItem('bordoStrumenti2', valore) } catch (errore) { /* modalità privata */ }
     }
+    // spessore del bordo, da 0 a 6px
+    const LARGHEZZA_MIN = 0, LARGHEZZA_MAX = 6, LARGHEZZA_PASSO = 0.5
+    const larghezzaValore = document.querySelector('#tool-width-value')
+    const larghezzaBottoni = [...document.querySelectorAll('[data-width-step]')]
+    let larghezzaBordo = 1.5
+    const applicaLarghezza = px => {
+      larghezzaBordo = Math.min(LARGHEZZA_MAX, Math.max(LARGHEZZA_MIN, px))
+      document.documentElement.style.setProperty('--tool-border-width', `${larghezzaBordo}px`)
+      larghezzaValore.textContent = `${larghezzaBordo}px`
+      larghezzaBottoni.forEach(bottone => {
+        const passo = Number(bottone.dataset.widthStep)
+        const prossimo = larghezzaBordo + passo * LARGHEZZA_PASSO
+        bottone.disabled = prossimo < LARGHEZZA_MIN || prossimo > LARGHEZZA_MAX
+      })
+      try { localStorage.setItem('spessoreStrumenti2', larghezzaBordo) } catch (errore) { /* modalità privata */ }
+    }
+    let larghezzaSalvata = null
+    try { larghezzaSalvata = localStorage.getItem('spessoreStrumenti2') } catch (errore) { /* modalità privata */ }
+    applicaLarghezza(larghezzaSalvata === null ? 1.5 : Number(larghezzaSalvata))
+    larghezzaBottoni.forEach(bottone => bottone.addEventListener('click', () => applicaLarghezza(larghezzaBordo + Number(bottone.dataset.widthStep) * LARGHEZZA_PASSO)))
+
     let bordoSalvato = null
-    try { bordoSalvato = localStorage.getItem('bordoStrumenti') } catch (errore) { /* modalità privata */ }
+    try { bordoSalvato = localStorage.getItem('bordoStrumenti2') } catch (errore) { /* modalità privata */ }
     if (bordoSalvato !== null) bordoSlider.value = bordoSalvato
     applicaBordo(bordoSlider.value)
     bordoSlider.addEventListener('input', () => applicaBordo(bordoSlider.value))
