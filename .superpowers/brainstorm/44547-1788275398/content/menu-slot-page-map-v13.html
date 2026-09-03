@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Modular toolbar — home v13</title>
+  <link rel="stylesheet" href="./living-library.css" />
+  <style>
+    @font-face{font-family:Manrope;src:url('./manrope.woff2')}@font-face{font-family:Newsreader;src:url('./newsreader.woff2')}@font-face{font-family:Plex;src:url('./plex-mono.woff2')}
+    :root{--ink:#111;--paper:#f4f1e9;--acid:#c7ff9f;--blue:#cdefff;--violet:#ded1ff;--orange:#ffd4b8;--sans:Manrope,system-ui,sans-serif;--serif:Newsreader,serif;--mono:Plex,monospace;--ease:cubic-bezier(.22,1,.36,1)}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans)}button{font:inherit}main{max-width:1200px;margin:auto;padding:58px 28px 110px}.eyebrow{font:10px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:#69665f}h1{max-width:970px;margin:15px 0 18px;font-size:clamp(45px,7vw,86px);line-height:.9;letter-spacing:-.07em}h1 em{font-family:var(--serif);font-weight:430;color:#5f8d3f}.lead{max-width:780px;margin:0;color:#66625b;font-size:17px;line-height:1.5}
+    .thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:42px 0 56px}.thesis article{padding:16px;border:1px solid #0002;border-radius:18px;background:#fff}.thesis span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#777}.thesis b{display:block;margin-top:10px;font-size:17px;letter-spacing:-.035em}.thesis p{margin:5px 0 0;color:#77736c;font-size:12px;line-height:1.45}
+    .route-list{display:grid;gap:52px}.route{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:start}.route-label{position:sticky;top:24px}.route-label span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#777}.route-label h2{margin:6px 0 3px;font-size:26px;letter-spacing:-.05em}.route-label p{margin:0;color:#777;font-size:12px}
+    .variants{display:grid;gap:16px}.variant{padding:13px;border:1px solid #0002;border-radius:26px;background:#fff;transition:box-shadow .2s ease,border-color .2s ease}.variant.selected{border-color:#0000;box-shadow:0 0 0 3px var(--acid),0 12px 30px #0001}
+    .variant-head{display:flex;align-items:start;justify-content:space-between;gap:18px;margin:3px 4px 11px}.variant-head b{font-size:13px;letter-spacing:-.02em}.variant-head p{max-width:620px;margin:3px 0 0;color:#77736c;font-size:12px;line-height:1.45}
+    .variant-pick{flex:none;padding:7px 13px;border:1px solid #0002;border-radius:999px;background:#f4f1e9;color:#56534d;font:8px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.variant-pick[aria-pressed="true"]{border-color:#0000;background:var(--acid);color:#20301a}.variant-pick:focus-visible{outline:2px solid #111;outline-offset:2px}
+    .roster{margin:9px 5px 2px;color:#a09b93;font:7px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+    .toolbar{display:grid;grid-template-columns:82px repeat(8,minmax(0,1fr)) 62px;gap:6px;min-height:98px;padding:8px;border-radius:23px;background:#111;color:#fff;box-shadow:0 18px 50px #0002}
+    .fixed{display:grid;place-items:center;border-radius:15px;background:#242424}.identity{background:#fff;color:#111;font-size:19px;font-weight:800}.menu{position:relative}.menu:before,.menu:after,.menu i{content:'';position:absolute;left:20px;width:22px;height:2px;background:#fff}.menu:before{top:34px}.menu i{top:42px}.menu:after{top:50px}
+    .widget{position:relative;display:flex;min-width:0;align-items:center;gap:9px;padding:10px 12px;overflow:hidden;border-radius:14px;background:#242424}.widget small{display:block;color:#8b8b8b;font:7px var(--mono);letter-spacing:.06em;text-transform:uppercase}.widget b{display:block;margin-top:4px;overflow:hidden;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.widget.icon{justify-content:center;padding:0;font-size:17px}.widget.color{color:#111}.widget.color small{color:#526246}.green{background:var(--acid)}.blue{background:var(--blue)}.violet{background:var(--violet)}.orange{background:var(--orange)}
+    .span-1{grid-column:span 1}.span-2{grid-column:span 2}.span-3{grid-column:span 3}.span-4{grid-column:span 4}
+    .priority:after{content:'P1';position:absolute;right:7px;top:6px;color:#466033;font:6px var(--mono)}.progress{width:100%;height:4px;margin-top:7px;overflow:hidden;border-radius:5px;background:#0002}.progress i{display:block;height:100%;background:#111}.widget:not(.color) .progress{background:#ffffff26}.widget:not(.color) .progress i{background:#fff}
+    .toggle-square{justify-content:center;padding:1px;background:transparent}.segmented{position:relative;display:grid;width:100%;height:100%;grid-template-rows:1fr 1fr;gap:1px}.segment-bed{position:absolute;z-index:0;inset:0 0 auto;height:calc(50% - .5px);border-radius:13px;background:#242424}.segment-bed.bottom{inset:auto 0 0}.segmented:before{content:'';position:absolute;z-index:2;inset:0 0 auto;height:calc(50% - .5px);border-radius:13px;background:#fff;pointer-events:none;transition:transform .42s var(--ease)}.segmented[data-active="1"]:before{transform:translateY(calc(100% + 1px))}.segmented button{position:relative;z-index:3;display:grid;min-width:0;padding:0;place-items:center;border:0;border-radius:13px;background:transparent;color:#888;font:6px var(--mono);text-align:center;cursor:pointer;transition:color .22s ease}.segmented[data-active="0"] button:first-of-type,.segmented[data-active="1"] button:last-child{color:#111}.segmented button:focus-visible{outline:1px solid #fff;outline-offset:-3px}
+    /* the single living element: the creature keeps its anatomy, the grid hands it a box */
+    .slot-host{display:grid;min-width:0}.toolbar .ll-control{width:100%;height:82px;border-radius:14px}.toolbar .ll-slug-body{left:12%;width:76%}
+    .chosen{margin-top:56px;padding:22px;border:1px solid #0002;border-radius:24px;background:#fff}.chosen b{font-size:16px}.chosen ol{margin:14px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.chosen li{padding:11px 13px;border-radius:14px;background:#f4f1e9;font:9px var(--mono);text-transform:uppercase;color:#77736c}.chosen li strong{display:block;margin-top:5px;color:#111;font:700 13px var(--sans);text-transform:none;letter-spacing:-.02em}
+    .note{display:grid;grid-template-columns:180px 1fr;gap:24px;margin-top:44px;padding-top:25px;border-top:1px solid #0002}.note b{font-size:16px}.note p{max-width:760px;margin:0 0 10px;color:#66625b;font-size:14px}
+    @media(prefers-reduced-motion:reduce){.segmented:before,.segmented button,.variant{transition:none}}
+    @media(max-width:860px){main{padding:38px 15px 90px}.thesis{grid-template-columns:1fr;margin:32px 0 44px}.route-list{gap:38px}.route{grid-template-columns:1fr;gap:12px}.route-label{position:static}.variant-head{flex-direction:column;gap:10px}.toolbar{grid-template-columns:62px repeat(4,minmax(0,1fr)) 52px;min-height:98px}
+      /* mobile tiene esattamente due elementi: il widget P1 e l'unico elemento vivo */
+      .route .toolbar>*:not(.fixed):not(.keep-mobile){display:none}.route .toolbar .keep-mobile{grid-column:span 2}
+      /* un elemento vivo da 3 o 4 slot non sta in due colonne: su mobile prende la barra da solo */
+      .route .toolbar[data-mobile="solo"]>*:not(.fixed):not(.slot-host){display:none}.route .toolbar[data-mobile="solo"] .slot-host{grid-column:span 4}
+      /* recupera larghezza per il nome del progetto: chrome del pager più stretto su mobile */
+      .route .toolbar[data-mobile="solo"] .ll-project{gap:6px;padding:0 8px 18px}
+      .route .toolbar[data-mobile="solo"] .ll-project{grid-template-columns:28px 1fr 28px}
+      .route .toolbar[data-mobile="solo"] .ll-project-arrow{width:28px;height:28px}
+      .route .toolbar[data-mobile="solo"] .ll-project-copy{padding:0 6px}
+      .route .toolbar[data-mobile="solo"] .ll-project-copy b{overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap}
+      .identity{font-size:16px}.menu:before,.menu:after,.menu i{left:16px;width:20px}.chosen ol{grid-template-columns:1fr}.note{grid-template-columns:1fr}}
+
+    .diagnosis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:42px 0 22px}.diagnosis article{padding:16px;border:1px solid #0002;border-radius:18px;background:#fff}.diagnosis span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#b0553f}.diagnosis b{display:block;margin-top:10px;font-size:16px;letter-spacing:-.035em}.diagnosis p{margin:5px 0 0;color:#77736c;font-size:12px;line-height:1.45}
+    .band{margin:0 0 20px;font:9px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#8b8780}
+    .current{display:grid;gap:12px;margin-bottom:66px;padding:20px;border-radius:28px;background:#e9e6dd}
+    .variant.muted{opacity:.62}.variant.muted .toolbar{box-shadow:none}
+    .proposals{display:grid;gap:18px}.proposal{padding:15px;border:1px solid #0002;border-radius:28px;background:#fff;transition:box-shadow .2s ease,border-color .2s ease}.proposal.selected{border-color:#0000;box-shadow:0 0 0 3px var(--acid),0 12px 30px #0001}
+    .proposal-head{display:flex;align-items:start;justify-content:space-between;gap:20px;margin:4px 5px 13px}.proposal-head span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#777}.proposal-head h3{margin:5px 0 0;font-size:21px;letter-spacing:-.045em}.proposal-head p{max-width:640px;margin:5px 0 0;color:#77736c;font-size:13px;line-height:1.5}
+    @media(max-width:860px){.diagnosis{grid-template-columns:1fr}.current{padding:14px}.proposal-head{flex-direction:column;gap:10px}}
+    .toolbar .ll-chameleon-skin b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    /* --- macchine 02 e 05, prese dal motion playground senza modifiche --- */
+    .slot{position:relative;height:92px;border:0;border-radius:16px;background:var(--slot);color:#fff;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.shuffle-slot{perspective:500px;text-align:left}.shuffle-card{position:absolute;inset:1px;padding:13px 14px;border-radius:15px;background:var(--blue);color:#111;transform-origin:50% 100%;transition:transform .55s var(--ease),opacity .25s}.shuffle-card.alt{background:var(--violet);transform:translateY(110%) rotateX(-35deg);opacity:0}.shuffle-slot.swapped .shuffle-card{transform:translateY(-110%) rotateX(40deg);opacity:0}.shuffle-slot.swapped .shuffle-card.alt{transform:none;opacity:1}.shuffle-card small{display:block;font:7px var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.55}.shuffle-card b{position:absolute;left:14px;bottom:14px;font-size:18px;letter-spacing:-.045em}.shuffle-notch{position:absolute;right:12px;top:12px;width:8px;height:8px;border-radius:2px;background:#111;box-shadow:0 12px #1118}
+.plane-slot{display:grid;place-items:center}.plane-stage{position:relative;width:48px;height:48px}.plane-icon{position:absolute;left:7px;top:5px;width:34px;height:30px;overflow:visible;transform-origin:50% 65%;will-change:transform,opacity}.plane-body{fill:white}.plane-fold{fill:none;stroke:#242424;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}.plane-shadow{position:absolute;left:13px;right:13px;bottom:6px;height:5px;border-radius:50%;background:#0009;filter:blur(2px);will-change:transform,opacity}
+    /* nella barra la macchina riceve la sua cella dalla griglia */
+    .toolbar .slot{width:100%;height:82px;border-radius:14px}
+    .toolbar .shuffle-card b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 28px)}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Modular menu system · section 2g</div>
+    <h1>Le macchine, <em>non le creature.</em></h1>
+    <p class="lead">Cinque barre per la home costruite sulle macchine originali del motion playground: la <b>02 · Card shuffle</b>, che cambia contesto sostituendo fisicamente una carta impilata con un’altra, e la <b>05 · Paper-plane email</b>, che decolla, esce di scena e torna al suo posto. Più il cambio lingua. Il resto dei quattro slot cambia a ogni combinazione.</p>
+    <section class="diagnosis" aria-label="Le macchine usate">
+      <article><span>Macchina 02 · 2 slot</span><b>Card shuffle</b><p>La carta corrente sale, ruota e sparisce; quella nuova arriva dal basso e si assesta. Qui porta quattro sezioni della home: Lavoro, Scrittura, Percorso, Contatto — la carta nascosta viene caricata ogni volta con la successiva.</p></article>
+      <article><span>Macchina 05 · 1 slot</span><b>Paper-plane email</b><p>L’aereo decolla, esce dal bordo dello slot, rientra dal basso e torna al suo posto. Al termine dichiara “Email sent”. Sotto reduced motion salta il volo e va direttamente allo stato finale.</p></article>
+      <article><span>Fisso · 1 slot</span><b>Cambio lingua</b><p>Il toggle segmentato verticale della v8: due fermi, IT ed EN, con l’indicatore bianco che scorre. Nessuna creatura, nessun movimento continuo.</p></article>
+    </section>
+    <p class="band">Le cinque combinazioni</p>
+    <section class="proposals" aria-label="Combinazioni">
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>01 · Essenziale</span><h3>Le due macchine e una sola dichiarazione</h3><p>Card shuffle naviga le sezioni, Paper-plane manda la mail, il toggle cambia lingua. Tutto lo spazio restante va a una sola frase, larga quattro slot.</p></div>
+            <button type="button" class="variant-pick" data-pick="Le due macchine e una sola dichiarazione" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><button class="slot two shuffle-slot span-2 keep-mobile" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-notch"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-notch"></i></span></button><div class="widget green color span-4 priority keep-mobile"><div><small>Disponibilità</small><b>Aperto a opportunità</b></div></div><button class="slot one plane-slot span-1" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">4 elementi · macchine 02 e 05 · nessuna creatura</p>
+        </article>
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>02 · Con prova</span><h3>Le macchine con la prova dietro</h3><p>Accanto alla sezione, quanti pezzi contiene e di cosa si tratta. La barra naviga e qualifica insieme, restando interamente statica tra un’attivazione e l’altra.</p></div>
+            <button type="button" class="variant-pick" data-pick="Le macchine con la prova dietro" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><button class="slot two shuffle-slot span-2 keep-mobile" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-notch"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-notch"></i></span></button><div class="widget span-2"><div><small>Progetti</small><b>7 pubblicati</b></div></div><div class="widget blue color span-2 priority keep-mobile"><div><small>Focus</small><b>Swift / iOS</b></div></div><button class="slot one plane-slot span-1" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">5 elementi · macchine 02 e 05 · nessuna creatura</p>
+        </article>
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>03 · Con posizione</span><h3>Le macchine con disponibilità e fuso</h3><p>Le due informazioni che un datore di lavoro cerca per prime — è libero, e in che fuso — affiancate al navigatore.</p></div>
+            <button type="button" class="variant-pick" data-pick="Le macchine con disponibilità e fuso" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><button class="slot two shuffle-slot span-2 keep-mobile" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-notch"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-notch"></i></span></button><div class="widget green color span-2 priority keep-mobile"><div><small>Disponibilità</small><b>Aperto</b></div></div><div class="widget span-2"><div><small>Posizione</small><b>Italia · CET</b></div></div><button class="slot one plane-slot span-1" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">5 elementi · macchine 02 e 05 · nessuna creatura</p>
+        </article>
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>04 · Con vetrina</span><h3>Le macchine accanto all’ultimo lavoro</h3><p>La home smette di descriversi: il pezzo più recente prende quattro slot e la sezione corrente lo accompagna.</p></div>
+            <button type="button" class="variant-pick" data-pick="Le macchine accanto all’ultimo lavoro" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><button class="slot two shuffle-slot span-2 keep-mobile" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-notch"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-notch"></i></span></button><div class="widget blue color span-4 priority keep-mobile"><div><small>Ultimo lavoro</small><b>SpinGO →</b></div></div><button class="slot one plane-slot span-1" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">4 elementi · macchine 02 e 05 · nessuna creatura</p>
+        </article>
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>05 · Con un accento vivo</span><h3>Le macchine più una sola creatura</h3><p>Identica alla 03, ma il fuso orario è il Clock Bug della Living Library: l’unico elemento che si muove da solo. Serve a misurare quanto aggiunge — o quanto distrae — una creatura sola in una barra di macchine.</p></div>
+            <button type="button" class="variant-pick" data-pick="Le macchine più una sola creatura" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><button class="slot two shuffle-slot span-2 keep-mobile" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-notch"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-notch"></i></span></button><div class="widget green color span-2 priority keep-mobile"><div><small>Disponibilità</small><b>Aperto</b></div></div><div class="slot-host span-2" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><button class="slot one plane-slot span-1" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">5 elementi · macchine 02 e 05 · 1 creatura: clock-bug</p>
+        </article>
+    </section>
+    <aside class="chosen" aria-live="polite">
+      <b>Combinazione scelta</b>
+      <ol id="chosen-list"></ol>
+    </aside>
+    <aside class="note"><b>Note</b>
+      <p>Il CSS e il volo dell’aereo sono presi dal motion playground senza modifiche: stessi keyframe, stessa durata di 1350 ms, stesso comportamento sotto reduced motion. La Card shuffle usa la stessa transizione di .55s; l’unica aggiunta è il vocabolario delle sezioni, perché la macchina nasce con due carte e la home ne ha quattro.</p>
+      <p>Quattro combinazioni su cinque non contengono nessuna creatura. La 05 ne contiene una sola — il Clock Bug al posto del widget “Posizione” della 03 — ed è lì apposta per il confronto diretto: stessa barra, un solo elemento che si muove da solo.</p>
+      <p>Tutte le barre restano a 8 slot, con Card shuffle da 2, Paper-plane da 1 e lingua da 1 sempre presenti. Il generatore rifiuta una barra a cui manchi uno dei tre.</p>
+    </aside>
+  </main>
+  <script type="module">
+    import { mountLivingComponent } from './living-library.js'
+    document.querySelectorAll('[data-mount]').forEach(host => {
+      try { mountLivingComponent(host, host.dataset.mount, JSON.parse(host.dataset.options || '{}')) }
+      catch (error) { host.dataset.mountError = 'true'; console.warn('[home machines] mount failed', host.dataset.mount, error) }
+    })
+  </script>
+  <script>
+    // macchina 02: la carta nascosta viene caricata con la sezione successiva, così due carte
+    // ne percorrono quante ne servono
+    document.querySelectorAll('[data-sections]').forEach(button => {
+      const sections = JSON.parse(button.dataset.sections)
+      const cards = button.querySelectorAll('.shuffle-card')
+      const write = (card, entry) => {
+        card.querySelector('small').textContent = entry.kicker
+        card.querySelector('b').textContent = entry.value
+      }
+      let index = 0, pending
+      write(cards[0], sections[0])
+      write(cards[1], sections[1 % sections.length])
+      button.addEventListener('click', () => {
+        const swapped = button.classList.toggle('swapped')
+        index = (index + 1) % sections.length
+        button.setAttribute('aria-label', `${sections[index].kicker}: ${sections[index].value}`)
+        clearTimeout(pending)
+        const hidden = swapped ? cards[0] : cards[1]
+        pending = setTimeout(() => write(hidden, sections[(index + 1) % sections.length]), 600)
+      })
+    })
+
+    // macchina 05: volo dell'aereo, identico al motion playground
+    const planeFlightFrames=[
+      {offset:0,transform:'translate3d(0,0,0) rotate(0deg) scale(1)',opacity:1},
+      {offset:.073,transform:'translate3d(.55px,-.3px,0) rotate(-.05deg) scale(.997)',opacity:1},
+      {offset:.146,transform:'translate3d(3px,-1.7px,0) rotate(-.3deg) scale(.983)',opacity:1},
+      {offset:.219,transform:'translate3d(8.4px,-4.7px,0) rotate(-.8deg) scale(.953)',opacity:1},
+      {offset:.292,transform:'translate3d(17.2px,-9.6px,0) rotate(-1.6deg) scale(.904)',opacity:1},
+      {offset:.364,transform:'translate3d(29.8px,-16.6px,0) rotate(-2.8deg) scale(.834)',opacity:1},
+      {offset:.425,transform:'translate3d(44px,-24.5px,0) rotate(-4.1deg) scale(.756)',opacity:1},
+      {offset:.462,transform:'translate3d(54px,-30px,0) rotate(-5deg) scale(.7)',opacity:0},
+      {offset:.565,transform:'translate3d(-54px,31px,0) rotate(-4.5deg) scale(.68)',opacity:0},
+      {offset:.59,transform:'translate3d(-50px,28px,0) rotate(-4deg) scale(.72)',opacity:1},
+      {offset:.68,transform:'translate3d(-30px,17px,0) rotate(-3deg) scale(.82)',opacity:1},
+      {offset:.8,transform:'translate3d(-13px,7px,0) rotate(-1.5deg) scale(.92)',opacity:1},
+      {offset:.91,transform:'translate3d(-4px,2px,0) rotate(-.5deg) scale(.98)',opacity:1},
+      {offset:1,transform:'translate3d(0,0,0) rotate(0deg) scale(1)',opacity:1}
+    ]
+    const planeShadowFrames=[
+      {offset:0,transform:'translate(0,0) scale(1)',opacity:.65},
+      {offset:.073,transform:'translate(-.15px,.05px) scaleX(1.01) scaleY(.995)',opacity:.645},
+      {offset:.146,transform:'translate(-.8px,.3px) scaleX(1.03) scaleY(.97)',opacity:.62},
+      {offset:.219,transform:'translate(-2px,.8px) scaleX(1.08) scaleY(.9)',opacity:.57},
+      {offset:.292,transform:'translate(-4px,1.5px) scaleX(1.16) scaleY(.79)',opacity:.49},
+      {offset:.364,transform:'translate(-7.5px,2.8px) scaleX(1.32) scaleY(.59)',opacity:.34},
+      {offset:.425,transform:'translate(-11px,4px) scaleX(1.5) scaleY(.4)',opacity:.16},
+      {offset:.462,transform:'translate(-14px,5px) scaleX(1.65) scaleY(.28)',opacity:0},
+      {offset:.8,transform:'translate(-8px,3px) scaleX(1.4) scaleY(.5)',opacity:.08},
+      {offset:.91,transform:'translate(-3px,1px) scaleX(1.15) scaleY(.8)',opacity:.38},
+      {offset:1,transform:'translate(0,0) scale(1)',opacity:.65}
+    ]
+    document.querySelectorAll('.plane-slot').forEach(button=>button.addEventListener('click',()=>{
+      button.planeFlight?.cancel();button.planeShadowMotion?.cancel()
+      button.dataset.phase='sending';button.setAttribute('aria-label','Sending email')
+      if(matchMedia('(prefers-reduced-motion: reduce)').matches){button.dataset.phase='sent';button.setAttribute('aria-label','Email sent');return}
+      const plane=button.querySelector('.plane-icon'),shadow=button.querySelector('.plane-shadow')
+      const flight=plane.animate(planeFlightFrames,{duration:1350,fill:'none',easing:'linear'}),shadowMotion=shadow.animate(planeShadowFrames,{duration:1350,fill:'none',easing:'linear'})
+      button.planeFlight=flight;button.planeShadowMotion=shadowMotion
+      flight.finished.then(()=>{if(button.planeFlight===flight){button.dataset.phase='sent';button.setAttribute('aria-label','Email sent')}}).catch(()=>{})
+    }))
+
+    document.querySelectorAll('.segmented').forEach(toggle => {
+      toggle.querySelectorAll('button').forEach((button, index) => {
+        button.addEventListener('click', () => {
+          toggle.dataset.active = String(index)
+          toggle.querySelectorAll('button').forEach((item, i) => item.setAttribute('aria-pressed', String(i === index)))
+        })
+      })
+    })
+
+    const list = document.querySelector('#chosen-list')
+    let chosen = null
+    function render(){ list.innerHTML = `<li>Home<strong>${chosen || '— nessuna scelta'}</strong></li>` }
+    document.querySelectorAll('.variant-pick').forEach(pick => pick.addEventListener('click', () => {
+      document.querySelectorAll('.variant-pick').forEach(o => o.setAttribute('aria-pressed', String(o === pick)))
+      document.querySelectorAll('.proposal').forEach(p => p.classList.toggle('selected', p.contains(pick)))
+      chosen = pick.dataset.pick
+      render()
+    }))
+    render()
+  </script>
+</body>
+</html>
