@@ -1,0 +1,177 @@
+---
+/**
+ * Banco di prova per la nuova home. Vive sotto /lab/ finché non sostituirà it/index.astro.
+ * La barra è un componente a sé: legge le `.home-section` di questa pagina per l'indice.
+ */
+import '../../styles/global.css';
+import { getFeaturedProjects, getPublishedPosts } from '../../lib/content';
+import { getPortfolioContent, postPath, projectPath } from '../../lib/portfolio';
+import { siteConfig } from '../../config/site';
+import ExperimentToolbar from '../../components/lab/ExperimentToolbar.astro';
+
+const lang = 'it' as const;
+const { projects, posts } = await getPortfolioContent();
+const featured = getFeaturedProjects(projects, lang);
+const published = getPublishedPosts(posts, lang);
+const latest = published.slice(0, 3);
+const tuttiProgetti = projects.filter((project) => project.locale === lang && !project.draft);
+
+const plurale = (n: number, uno: string, molti: string) => `${n} ${n === 1 ? uno : molti}`;
+
+const sezioni = [
+	{
+		id: 'lavoro',
+		kicker: 'Sezione',
+		value: 'Lavoro',
+		titolo: 'Lavoro',
+		occhiello: 'Sezione 01',
+		testo: 'I progetti selezionati, con il ragionamento che c’è dietro invece della sola schermata finale.',
+		detail: { kicker: 'Progetti', value: plurale(tuttiProgetti.length, 'pubblicato', 'pubblicati') },
+	},
+	{
+		id: 'scrittura',
+		kicker: 'Sezione',
+		value: 'Scrittura',
+		titolo: 'Scrittura',
+		occhiello: 'Sezione 02',
+		testo: 'Note tecniche su ciò che ho dovuto capire davvero: sistemi, vincoli, errori utili.',
+		detail: { kicker: 'Articoli', value: plurale(published.length, 'pubblicato', 'pubblicati') },
+	},
+	{
+		id: 'percorso',
+		kicker: 'Sezione',
+		value: 'Percorso',
+		titolo: 'Percorso',
+		occhiello: 'Sezione 03',
+		testo: 'Come ci sono arrivato — gli strumenti, le persone e i problemi che mi hanno formato.',
+		detail: { kicker: 'Esperienza', value: '4 anni' },
+	},
+	{
+		id: 'contatto',
+		kicker: 'Sezione',
+		value: 'Contatto',
+		titolo: 'Contatto',
+		occhiello: 'Sezione 04',
+		testo: 'Aperto a opportunità. Risposta entro 24 ore, fuso orario italiano.',
+		detail: { kicker: 'Risposta', value: 'Entro 24 ore' },
+	},
+];
+
+const rotte = [
+	{ href: '/lab/index-experiment/', label: 'Home', kicker: '01 · Inizio', preview: 'preview-home', previewHtml: 'SS' },
+	{ href: '/it/progetti/', label: 'Progetti', kicker: '02 · Lavori selezionati', preview: 'preview-projects', previewHtml: '<i></i><i></i><i></i>' },
+	{ href: '/it/articoli/', label: 'Articoli', kicker: '03 · Note tecniche', preview: 'preview-writing', previewHtml: '<b>Aa</b><i></i><i></i>' },
+	{ href: '/it/chi-sono/', label: 'Chi sono', kicker: '04 · Profilo e CV', preview: 'preview-about', previewHtml: '' },
+];
+---
+
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Banco di prova — nuova home</title>
+	</head>
+	<body>
+		<main class="stage" aria-label="Banco di prova della nuova home">
+			<header class="home-section hero" id="inizio" data-section="0">
+				<span class="section-kicker">{siteConfig.name}</span>
+				<h1>Software engineer, <em>Swift e sistemi affidabili.</em></h1>
+				<p>Progetto e costruisco prodotti iOS in cui la logica regge quanto l’interfaccia. Questa barra è il prototipo del menu: naviga la pagina e racconta dove sei.</p>
+				<span class="hero-hint" aria-hidden="true">Scorri, oppure usa la barra</span>
+				<i class="section-rule" aria-hidden="true"></i>
+			</header>
+
+			<section class="home-section" id="lavoro" data-section="1">
+				<span class="section-kicker">{sezioni[0].occhiello}</span>
+				<h1>{sezioni[0].titolo}</h1>
+				<p>{sezioni[0].testo}</p>
+				<ul class="elenco">
+					{featured.map((project) => (
+						<li><a href={projectPath(project)}><strong>{project.title}</strong><span>{project.excerpt}</span></a></li>
+					))}
+				</ul>
+				<i class="section-rule" aria-hidden="true"></i>
+			</section>
+
+			<section class="home-section" id="scrittura" data-section="2">
+				<span class="section-kicker">{sezioni[1].occhiello}</span>
+				<h1>{sezioni[1].titolo}</h1>
+				<p>{sezioni[1].testo}</p>
+				<ul class="elenco">
+					{latest.map((post) => (
+						<li><a href={postPath(post)}><strong>{post.title}</strong><span>{post.excerpt}</span></a></li>
+					))}
+				</ul>
+				<i class="section-rule" aria-hidden="true"></i>
+			</section>
+
+			<section class="home-section" id="percorso" data-section="3">
+				<span class="section-kicker">{sezioni[2].occhiello}</span>
+				<h1>{sezioni[2].titolo}</h1>
+				<p>{sezioni[2].testo}</p>
+				<a class="collegamento" href="/it/chi-sono/">Chi sono →</a>
+				<i class="section-rule" aria-hidden="true"></i>
+			</section>
+
+			<section class="home-section" id="contatto" data-section="4">
+				<span class="section-kicker">{sezioni[3].occhiello}</span>
+				<h1>{sezioni[3].titolo}</h1>
+				<p>{sezioni[3].testo}</p>
+				<a class="collegamento" href={`mailto:${siteConfig.email}`}>Scrivimi →</a>
+				<i class="section-rule" aria-hidden="true"></i>
+			</section>
+
+			<ExperimentToolbar
+				name={siteConfig.name}
+				ticker="Software engineer · Swift &amp; iOS · Product engineering · Sistemi affidabili ·"
+				routes={rotte}
+				sections={sezioni.map(({ kicker, value, detail }) => ({ kicker, value, detail }))}
+				languages={[
+					{ href: '/lab/index-experiment/', label: 'IT', current: true },
+					{ href: '/en/', label: 'EN', current: false },
+				]}
+				cv={{ kicker: 'Curriculum', long: 'Scarica il PDF', short: 'PDF', aria: 'Scarica il curriculum in PDF', href: '/it/chi-sono/' }}
+				labels={{
+					top: 'Torna all’inizio',
+					topCaption: 'Turna sü',
+					mail: 'Invia una email',
+					mailCaption: 'Scrìvum',
+					language: 'Lingua',
+					openMenu: 'Apri menu',
+				}}
+			/>
+		</main>
+
+		<style is:global>
+			:root { --slot: #242424; --ease: cubic-bezier(.22,1,.36,1); }
+			body { overflow-x: hidden; }
+			.stage { position: relative; width: 100%; min-height: 100%; }
+			.stage:after { content: ''; position: fixed; z-index: -2; inset: 0; background: radial-gradient(circle at 50% 110%, #ffffff 0, transparent 42%), var(--paper); }
+			.stage:before { content: ''; position: fixed; z-index: -1; inset: 0; background-image: linear-gradient(#0808080a 1px, transparent 1px), linear-gradient(90deg, #0808080a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, transparent 0, #000 100%); opacity: .3; }
+			.home-section { display: grid; min-height: 132vh; align-content: center; padding: 0 max(24px, 7vw); }
+			.home-section:last-of-type { min-height: 100vh; padding-bottom: 200px; }
+			.home-section.hero { min-height: 100vh; }
+			.section-kicker { font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #8b877f; }
+			.home-section h1 { max-width: 14ch; margin: 16px 0 0; font-size: clamp(56px, 11vw, 132px); line-height: .86; letter-spacing: -.075em; }
+			.home-section.hero h1 { max-width: 19ch; font-size: clamp(46px, 6.6vw, 96px); }
+			.home-section.hero h1 em { font-family: var(--serif); font-weight: 430; font-style: italic; color: #5f8d3f; }
+			.home-section p { max-width: 52ch; margin: 26px 0 0; color: #6b6760; font-size: clamp(16px, 2vw, 20px); line-height: 1.55; }
+			.hero-hint { display: inline-flex; align-items: center; gap: 9px; width: max-content; margin-top: 38px; padding: 9px 14px; border: 1px solid #d3d1ca; border-radius: 999px; color: #6b6760; font: 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+			.hero-hint:before { content: '↓'; font-size: 12px; }
+			.section-rule { width: 96px; height: 10px; margin-top: 34px; border-radius: 6px; }
+			#inizio .section-rule { background: #111; }
+			#lavoro .section-rule { background: var(--blue); }
+			#scrittura .section-rule { background: var(--violet); }
+			#percorso .section-rule { background: var(--acid); }
+			#contatto .section-rule { background: var(--orange); }
+			.elenco { display: grid; gap: 10px; max-width: 62ch; margin: 30px 0 0; padding: 0; list-style: none; }
+			.elenco a { display: grid; gap: 4px; padding: 15px 17px; border: 1px solid #d3d1ca; border-radius: 16px; background: #fffefb; }
+			.elenco strong { font-size: 17px; letter-spacing: -.03em; }
+			.elenco span { color: #6b6760; font-size: 13px; line-height: 1.45; }
+			.collegamento { display: inline-flex; width: max-content; margin-top: 28px; padding: 12px 18px; border-radius: 999px; background: #111; color: #fffef9; font-size: 14px; font-weight: 700; }
+			@media (max-width: 620px) { .home-section { min-height: 118vh; } .home-section:last-of-type { padding-bottom: 170px; } }
+		</style>
+	</body>
+</html>
