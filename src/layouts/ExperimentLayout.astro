@@ -62,8 +62,19 @@ const labPathsAbout = labPaths[lang].about;
 			.stage { position: relative; width: 100%; min-height: 100%; }
 			.stage:after { content: ''; position: fixed; z-index: -2; inset: 0; background: radial-gradient(circle at 50% 110%, #ffffff 0, transparent 42%), var(--paper); }
 			.stage:before { content: ''; position: fixed; z-index: -1; inset: 0; background-image: linear-gradient(#0808080a 1px, transparent 1px), linear-gradient(90deg, #0808080a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, transparent 0, #000 100%); opacity: .3; }
-			.home-section { display: grid; min-height: 132vh; align-content: center; padding: 0 max(24px, 7vw); }
-			.home-section:last-of-type { min-height: 100vh; padding-bottom: 200px; }
+			.home-section { display: grid; min-height: 108vh; align-content: center; gap: 44px; padding: 12vh max(24px, 7vw); }
+			/* la barra copre la parte bassa della viewport: l'ultima sezione le lascia spazio */
+			.home-section:last-of-type { min-height: 100vh; padding-bottom: 190px; }
+			/* su schermi larghi il testo tiene la colonna sinistra e le voci occupano la destra,
+			   invece di lasciare vuota metà pagina */
+			@media (min-width: 1040px) {
+				.home-section:has(> .sezione-testo) { padding-bottom: max(12vh, 150px); grid-template-columns: minmax(0, 34ch) minmax(0, 1fr); gap: clamp(48px, 6vw, 96px); align-items: start; }
+				.sezione-testo { position: sticky; top: 22vh; }
+				.home-section .sezione-testo h1 { font-size: clamp(44px, 5.2vw, 74px); }
+				.home-section .sezione-testo p { font-size: 16.5px; }
+			}
+			.sezione-testo { display: grid; align-content: start; gap: 0; }
+			.sezione-testo h1 { max-width: none; }
 			.home-section.hero { min-height: 100vh; }
 			.section-kicker { font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #8b877f; }
 			.home-section h1 { max-width: 14ch; margin: 16px 0 0; font-size: clamp(56px, 11vw, 132px); line-height: .86; letter-spacing: -.075em; }
@@ -78,10 +89,15 @@ const labPathsAbout = labPaths[lang].about;
 			#scrittura .section-rule { background: var(--violet); }
 			#percorso .section-rule { background: var(--acid); }
 			#contatto .section-rule { background: var(--orange); }
-			.elenco { display: grid; gap: 10px; max-width: 62ch; margin: 30px 0 0; padding: 0; list-style: none; }
-			.elenco a { display: grid; gap: 4px; padding: 15px 17px; border: 1px solid #d3d1ca; border-radius: 16px; background: #fffefb; }
-			.elenco strong { font-size: 17px; letter-spacing: -.03em; }
-			.elenco span { color: #6b6760; font-size: 13px; line-height: 1.45; }
+			.elenco { display: grid; gap: 10px; max-width: 62ch; margin: 0; padding: 0; list-style: none; }
+			.elenco a { display: grid; gap: 7px; padding: 18px 20px; border: 1px solid #d3d1ca; border-radius: 18px; background: #fffefb; transition: border-color 180ms ease, transform 180ms ease; }
+			.elenco a:hover { border-color: #b4b0a6; transform: translateY(-2px); }
+			.elenco strong { font-size: 19px; letter-spacing: -.035em; }
+			.elenco span { color: #6b6760; font-size: 13.5px; line-height: 1.5; }
+			/* la riga di contesto: quello che il progetto o l'articolo dichiara di sé */
+			.voce-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px; }
+			.voce-meta i { padding: 4px 9px; border-radius: 999px; background: #efece4; color: #56534b; font: 9px var(--mono); font-style: normal; letter-spacing: .06em; text-transform: uppercase; }
+			.voce-meta i:first-child { background: #14140f; color: #f7f5ee; }
 			.prosa { max-width: 64ch; margin-top: 28px; color: #3b3830; font-size: clamp(15px, 1.7vw, 18px); line-height: 1.65; }
 			.prosa :is(h2, h3) { margin: 34px 0 10px; font-size: clamp(20px, 2.4vw, 27px); letter-spacing: -.03em; line-height: 1.15; }
 			.prosa p { max-width: none; margin: 14px 0 0; color: inherit; font-size: inherit; }
@@ -91,7 +107,20 @@ const labPathsAbout = labPaths[lang].about;
 			.prosa :is(pre, code) { font-family: var(--mono); font-size: .88em; }
 			.prosa pre { overflow-x: auto; margin: 18px 0 0; padding: 15px 17px; border-radius: 14px; background: #14140f; color: #f3f1ea; }
 			.prosa blockquote { margin: 20px 0 0; padding-left: 16px; border-left: 3px solid var(--acid); color: #55524b; }
-			.collegamento { display: inline-flex; width: max-content; margin-top: 28px; padding: 12px 18px; border-radius: 999px; background: #111; color: #fffef9; font-size: 14px; font-weight: 700; }
+			.tappe { display: grid; gap: 0; max-width: 62ch; margin: 0; padding: 0; list-style: none; }
+			.tappe li { border-top: 1px solid #ddd9d0; }
+			.tappe li:last-child { border-bottom: 1px solid #ddd9d0; }
+			.tappe a { display: grid; grid-template-columns: 3ch minmax(0, 1fr); gap: 20px; padding: 20px 2px; transition: background-color 180ms ease; }
+			.tappe a:hover { background: #f1eee6; }
+			.tappe b { color: #97938a; font: 11px var(--mono); font-weight: 400; letter-spacing: .06em; }
+			.tappe strong { display: block; font-size: 17px; letter-spacing: -.03em; }
+			.tappe em { display: block; margin-top: 6px; max-width: 46ch; color: #6b6760; font-size: 13.5px; font-style: normal; line-height: 1.5; }
+			.canali { display: grid; gap: 10px; max-width: 62ch; margin: 0; padding: 0; list-style: none; }
+			.canali a { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding: 17px 20px; border: 1px solid #d3d1ca; border-radius: 18px; background: #fffefb; transition: border-color 180ms ease, transform 180ms ease; }
+			.canali a:hover { border-color: #b4b0a6; transform: translateY(-2px); }
+			.canali b { font: 10px var(--mono); font-weight: 400; letter-spacing: .07em; text-transform: uppercase; color: #97938a; }
+			.canali span { color: #14140f; font-size: 15px; letter-spacing: -.02em; overflow-wrap: anywhere; }
+			.collegamento { display: inline-flex; width: max-content; margin-top: 26px; padding: 12px 18px; border-radius: 999px; background: #111; color: #fffef9; font-size: 14px; font-weight: 700; }
 			@media (max-width: 620px) { .home-section { min-height: 118vh; } .home-section:last-of-type { padding-bottom: 170px; } }
 		</style>
 	</body>

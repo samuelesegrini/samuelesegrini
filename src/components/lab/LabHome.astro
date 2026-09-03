@@ -12,9 +12,11 @@ const { projects, posts } = await getPortfolioContent();
 const featured = getFeaturedProjects(projects, lang);
 const published = getPublishedPosts(posts, lang);
 const inArchivio = projects.filter((p) => p.locale === lang && !p.draft);
+const dataBreve = (quando: Date) => quando.toLocaleDateString(lang === 'it' ? 'it-IT' : 'en-GB', { year: 'numeric', month: 'short' });
 const conta = (n: number, uno: string, molti: string) => `${n} ${n === 1 ? uno : molti}`;
 
 const copy = await getLabCopy(lang);
+const domande = copy.about.sections.filter((sezione) => sezione.text !== copy.home.contactText);
 const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis, hint: copy.common.hint,
 	mail: copy.home.mailLink, one: copy.common.one, many: copy.common.many };
 
@@ -37,44 +39,85 @@ const sezioni = [
 	</header>
 
 	<section class="home-section" id="lavoro" data-section="1">
-		<span class="section-kicker">{t.kicker} 01</span>
-		<h1>{t.work}</h1>
-		<p>{t.workText}</p>
+		<div class="sezione-testo">
+			<span class="section-kicker">{t.kicker} 01</span>
+			<h1>{t.work}</h1>
+			<p>{t.workText}</p>
+			<a class="collegamento" href={labPaths[lang].work}>{t.allWork}</a>
+			<i class="section-rule" aria-hidden="true"></i>
+		</div>
 		<ul class="elenco">
 			{featured.map((project) => (
-				<li><a href={labProjectPath(lang, project.slug)}><strong>{project.title}</strong><span>{project.excerpt}</span></a></li>
+				<li>
+					<a href={labProjectPath(lang, project.slug)}>
+						<strong>{project.title}</strong>
+						<span>{project.excerpt}</span>
+						<span class="voce-meta">
+							<i>{project.year}</i>
+							{project.technologies.slice(0, 3).map((tecnologia) => <i>{tecnologia}</i>)}
+						</span>
+					</a>
+				</li>
 			))}
 		</ul>
-		<a class="collegamento" href={labPaths[lang].work}>{t.allWork}</a>
-		<i class="section-rule" aria-hidden="true"></i>
 	</section>
 
 	<section class="home-section" id="scrittura" data-section="2">
-		<span class="section-kicker">{t.kicker} 02</span>
-		<h1>{t.writing}</h1>
-		<p>{t.writingText}</p>
+		<div class="sezione-testo">
+			<span class="section-kicker">{t.kicker} 02</span>
+			<h1>{t.writing}</h1>
+			<p>{t.writingText}</p>
+			<a class="collegamento" href={labPaths[lang].writing}>{t.allWriting}</a>
+			<i class="section-rule" aria-hidden="true"></i>
+		</div>
 		<ul class="elenco">
 			{published.slice(0, 3).map((post) => (
-				<li><a href={labPostPath(lang, post.slug)}><strong>{post.title}</strong><span>{post.excerpt}</span></a></li>
+				<li>
+					<a href={labPostPath(lang, post.slug)}>
+						<strong>{post.title}</strong>
+						<span>{post.excerpt}</span>
+						<span class="voce-meta">
+							<i>{dataBreve(post.publishedAt)}</i>
+							{post.tags.slice(0, 3).map((tag) => <i>{tag}</i>)}
+						</span>
+					</a>
+				</li>
 			))}
 		</ul>
-		<a class="collegamento" href={labPaths[lang].writing}>{t.allWriting}</a>
-		<i class="section-rule" aria-hidden="true"></i>
 	</section>
 
 	<section class="home-section" id="percorso" data-section="3">
-		<span class="section-kicker">{t.kicker} 03</span>
-		<h1>{t.path}</h1>
-		<p>{t.pathText}</p>
-		<a class="collegamento" href={labPaths[lang].about}>{t.aboutLink}</a>
-		<i class="section-rule" aria-hidden="true"></i>
+		<div class="sezione-testo">
+			<span class="section-kicker">{t.kicker} 03</span>
+			<h1>{t.path}</h1>
+			<p>{t.pathText}</p>
+			<a class="collegamento" href={labPaths[lang].about}>{t.aboutLink}</a>
+			<i class="section-rule" aria-hidden="true"></i>
+		</div>
+		<ul class="tappe">
+			{domande.map((domanda, i) => (
+				<li>
+					<a href={`${labPaths[lang].about}#${domanda.id}`}>
+						<b>{String(i + 1).padStart(2, '0')}</b>
+						<span><strong>{domanda.label}</strong><em>{domanda.text}</em></span>
+					</a>
+				</li>
+			))}
+		</ul>
 	</section>
 
 	<section class="home-section" id="contatto" data-section="4">
-		<span class="section-kicker">{t.kicker} 04</span>
-		<h1>{t.contact}</h1>
-		<p>{t.contactText}</p>
-		<a class="collegamento" href={`mailto:${siteConfig.email}`}>{t.mail}</a>
-		<i class="section-rule" aria-hidden="true"></i>
+		<div class="sezione-testo">
+			<span class="section-kicker">{t.kicker} 04</span>
+			<h1>{t.contact}</h1>
+			<p>{t.contactText}</p>
+			<a class="collegamento" href={`mailto:${siteConfig.email}`}>{t.mail}</a>
+			<i class="section-rule" aria-hidden="true"></i>
+		</div>
+		<ul class="canali">
+			<li><a href={`mailto:${siteConfig.email}`}><b>Email</b><span>{siteConfig.email}</span></a></li>
+			<li><a href={siteConfig.github} rel="me noopener"><b>GitHub</b><span>{siteConfig.github.replace('https://', '')}</span></a></li>
+			<li><a href={siteConfig.linkedin} rel="me noopener"><b>LinkedIn</b><span>{siteConfig.linkedin.replace('https://www.', '').replace(/\/$/, '')}</span></a></li>
+		</ul>
 	</section>
 </ExperimentLayout>
