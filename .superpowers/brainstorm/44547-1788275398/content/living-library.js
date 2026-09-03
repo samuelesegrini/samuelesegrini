@@ -786,16 +786,53 @@ mountLivingLibrary();
 // The catalogue mounts itself above when #living-library-root exists. These exports let
 // another page (the toolbar page maps) place individual creatures into its own layout.
 
+// Overridable copy slots, by semantic role. Only text a creature does NOT rewrite at runtime
+// appears here: anything a controller owns (project names, unread counts, section numbers,
+// availability wording, IT/EN, weather) stays the creature's own vocabulary by design.
+const livingCopy = {
+  'original-progress-creature': { kicker: '.ll-original-progress-tag' },
+  'original-inbox-blob': { kicker: '.ll-original-inbox-copy small' },
+  'link-twins': { value: '[data-link-label]' },
+  'key-crab': { options: '[data-crab-key]' },
+  'counter-caterpillar': { kicker: '.ll-caterpillar-tag' },
+  'number-owl': { kicker: '.ll-owl-tag' },
+  'clock-bug': { kicker: '[data-clock-zone]' },
+  'trail-snail': { options: '.ll-trail-crumb' },
+  'turnover-turtle': { options: '.ll-turtle-side' },
+  'fan-bird': { options: '.ll-bird-feather' },
+  'shy-sticker': { value: '.ll-sticker-cover b', alt: '.ll-sticker-reveal b' },
+  'label-chameleon': { kicker: '.ll-chameleon-skin.a small', value: '.ll-chameleon-skin.a b', altKicker: '.ll-chameleon-skin.b small', alt: '.ll-chameleon-skin.b b' },
+  'orbit-pet': { kicker: '.ll-orbit-zone' },
+  'sticker-slug': { value: '.ll-slug-label' },
+  'letter-worm': { options: '[data-worm-seg]' },
+};
+
+function applyLivingCopy(host, entry, copy) {
+  const slots = livingCopy[entry.id];
+  Object.entries(copy).forEach(([role, text]) => {
+    const selector = slots?.[role];
+    if (!selector) throw new Error(`${entry.id} has no overridable copy slot "${role}"`);
+    const nodes = host.querySelectorAll(selector);
+    if (!nodes.length) throw new Error(`${entry.id} copy slot "${role}" matched no element`);
+    if (Array.isArray(text)) text.forEach((value, index) => { if (nodes[index]) nodes[index].textContent = value; });
+    else nodes[0].textContent = text;
+  });
+}
+
 // Renders one creature into `host` and wires its controller. `host` supplies the box; the
-// creature keeps its own anatomy, accent, states and accessible labels.
-function mountLivingComponent(host, id, accent) {
+// creature keeps its own anatomy, states and motion. `copy` retitles its static text slots
+// and `label` sets the resting accessible name — both applied after the controller mounts,
+// so they win over any copy the controller writes on mount.
+function mountLivingComponent(host, id, options = {}) {
   const entry = livingCatalog.find((item) => item.id === id);
   if (!entry) throw new Error(`Unknown living component: ${id}`);
   host.dataset.livingId = entry.id;
-  host.style.setProperty('--accent', accent || entry.accent);
+  host.style.setProperty('--accent', options.accent || entry.accent);
   host.innerHTML = livingRenderers[entry.renderer](entry);
   mountController(host, entry);
+  if (options.copy) applyLivingCopy(host, entry, options.copy);
+  if (options.label) host.querySelector('[data-living-action]')?.setAttribute('aria-label', options.label);
   return entry;
 }
 
-export { livingCatalog, livingRenderers, livingControllers, runFiniteMotion, mountController, mountLivingComponent };
+export { livingCatalog, livingCopy, livingRenderers, livingControllers, runFiniteMotion, mountController, mountLivingComponent };

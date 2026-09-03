@@ -32,7 +32,7 @@
   <main>
     <div class="eyebrow">Modular menu system · section 2c</div>
     <h1>Le stesse pagine, <em>composte con le creature.</em></h1>
-    <p class="lead">Le tre tesi della sezione precedente, questa volta costruite con la Living Library invece che con i widget statici. Ogni creatura mantiene la sua impronta di slot, la sua anatomia e il suo stato accessibile: la barra cambia funzione senza aggiungere componenti nuovi. Le creature sono vive — provale.</p>
+    <p class="lead">Le tre tesi della sezione precedente, questa volta costruite con la Living Library invece che con i widget statici. Ogni creatura mantiene la sua impronta di slot, la sua anatomia e il suo stato accessibile: la barra cambia funzione senza aggiungere componenti nuovi. Ogni slot porta il testo della sua rotta; le creature restano vive — provale.</p>
     <section class="thesis" aria-label="Le tre tesi di composizione">
       <article><span>Variante A</span><b>Azione</b><p>Aprono creature d’azione: Courier Moth, Drop Beetle, Echo Jelly. La barra chiede.</p></article>
       <article><span>Variante B</span><b>Contesto</b><p>Aprono creature di stato: Peek Sprout, Letter Worm, Label Chameleon. La barra descrive.</p></article>
@@ -47,7 +47,7 @@
               <div><b>A · Azione</b><p>Tre creature d’azione aprono la barra: la home chiede di scrivere, condividere, scaricare.</p></div>
               <button type="button" class="variant-pick" data-route="r1" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="courier-moth"></div><div class="slot-host span-1" data-mount="echo-jelly"></div><div class="slot-host span-1" data-mount="drop-beetle"></div><div class="slot-host span-2" data-mount="letter-worm"></div><div class="slot-host span-2" data-mount="clock-bug"></div><div class="slot-host span-1" data-mount="dial-snail"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="courier-moth" data-options="{&quot;label&quot;: &quot;Scrivimi&quot;}"></div><div class="slot-host span-1" data-mount="echo-jelly" data-options="{&quot;label&quot;: &quot;Condividi il profilo&quot;}"></div><div class="slot-host span-1" data-mount="drop-beetle" data-options="{&quot;label&quot;: &quot;Scarica il CV&quot;}"></div><div class="slot-host span-2" data-mount="letter-worm"></div><div class="slot-host span-2" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><div class="slot-host span-1" data-mount="dial-snail"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">courier-moth · echo-jelly · drop-beetle · letter-worm · clock-bug · dial-snail</p>
           </div>
           <div class="variant">
@@ -55,7 +55,7 @@
               <div><b>B · Contesto</b><p>Solo creature di stato: la barra descrive chi sei e dove sei, senza chiedere niente.</p></div>
               <button type="button" class="variant-pick" data-route="r1" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="peek-sprout"></div><div class="slot-host span-2" data-mount="letter-worm"></div><div class="slot-host span-2" data-mount="label-chameleon"></div><div class="slot-host span-1" data-mount="orbit-pet"></div><div class="slot-host span-2" data-mount="clock-bug"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="peek-sprout"></div><div class="slot-host span-2" data-mount="letter-worm"></div><div class="slot-host span-2" data-mount="label-chameleon" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Focus&quot;, &quot;value&quot;: &quot;Swift / iOS&quot;, &quot;altKicker&quot;: &quot;Focus&quot;, &quot;alt&quot;: &quot;Design di sistema&quot;}}"></div><div class="slot-host span-1" data-mount="orbit-pet" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><div class="slot-host span-2" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Ora locale&quot;}}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">peek-sprout · letter-worm · label-chameleon · orbit-pet · clock-bug</p>
           </div>
           <div class="variant">
@@ -63,7 +63,7 @@
               <div><b>C · Orientamento</b><p>Creature di navigazione: la barra indica dove andare, dall’archivio al progetto casuale.</p></div>
               <button type="button" class="variant-pick" data-route="r1" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="shy-sticker"></div><div class="slot-host span-3" data-mount="trail-snail"></div><div class="slot-host span-2" data-mount="number-owl"></div><div class="slot-host span-1" data-mount="counter-caterpillar"></div><div class="slot-host span-1" data-mount="dice-armadillo"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="shy-sticker" data-options="{&quot;copy&quot;: {&quot;value&quot;: &quot;Vai a&quot;, &quot;alt&quot;: &quot;Progetti&quot;}}"></div><div class="slot-host span-3" data-mount="trail-snail" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Home&quot;, &quot;Progetti&quot;]}}"></div><div class="slot-host span-2" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="slot-host span-1" data-mount="counter-caterpillar" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;}}"></div><div class="slot-host span-1" data-mount="dice-armadillo" data-options="{&quot;label&quot;: &quot;Progetto casuale&quot;}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">shy-sticker · trail-snail · number-owl · counter-caterpillar · dice-armadillo</p>
           </div>
         </div>
@@ -76,7 +76,7 @@
               <div><b>A · Azione</b><p>Scout Eye e Key Crab in testa: si cerca e si lancia un comando prima di leggere l’elenco.</p></div>
               <button type="button" class="variant-pick" data-route="r2" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="scout-eye"></div><div class="slot-host span-2" data-mount="key-crab"></div><div class="slot-host span-2" data-mount="label-chameleon"></div><div class="slot-host span-2" data-mount="number-owl"></div><div class="slot-host span-1" data-mount="turnover-turtle"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="scout-eye" data-options="{&quot;label&quot;: &quot;Cerca progetti&quot;}"></div><div class="slot-host span-2" data-mount="key-crab" data-options="{&quot;label&quot;: &quot;Apri i comandi&quot;}"></div><div class="slot-host span-2" data-mount="label-chameleon" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Filtro&quot;, &quot;value&quot;: &quot;Tutti i progetti&quot;, &quot;altKicker&quot;: &quot;Filtro&quot;, &quot;alt&quot;: &quot;Swift / iOS&quot;}}"></div><div class="slot-host span-2" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="slot-host span-1" data-mount="turnover-turtle"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">scout-eye · key-crab · label-chameleon · number-owl · turnover-turtle</p>
           </div>
           <div class="variant">
@@ -84,7 +84,7 @@
               <div><b>B · Contesto</b><p>Label Chameleon dichiara il filtro e Number Owl il conteggio: la barra spiega l’elenco sotto.</p></div>
               <button type="button" class="variant-pick" data-route="r2" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-2" data-mount="label-chameleon"></div><div class="slot-host span-2" data-mount="number-owl"></div><div class="slot-host span-2" data-mount="fan-bird"></div><div class="slot-host span-1" data-mount="turnover-turtle"></div><div class="slot-host span-1" data-mount="scout-eye"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-2" data-mount="label-chameleon" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Filtro&quot;, &quot;value&quot;: &quot;Tutti i progetti&quot;, &quot;altKicker&quot;: &quot;Filtro&quot;, &quot;alt&quot;: &quot;Swift / iOS&quot;}}"></div><div class="slot-host span-2" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="slot-host span-2" data-mount="fan-bird" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Swift&quot;, &quot;Design&quot;, &quot;Tutti&quot;]}, &quot;label&quot;: &quot;Mostra i filtri&quot;}"></div><div class="slot-host span-1" data-mount="turnover-turtle"></div><div class="slot-host span-1" data-mount="scout-eye" data-options="{&quot;label&quot;: &quot;Cerca progetti&quot;}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">label-chameleon · number-owl · fan-bird · turnover-turtle · scout-eye</p>
           </div>
           <div class="variant">
@@ -92,7 +92,7 @@
               <div><b>C · Orientamento</b><p>Trail Snail porta la gerarchia in barra; il dado propone un progetto quando non sai da dove iniziare.</p></div>
               <button type="button" class="variant-pick" data-route="r2" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="trail-snail"></div><div class="slot-host span-2" data-mount="label-chameleon"></div><div class="slot-host span-2" data-mount="number-owl"></div><div class="slot-host span-1" data-mount="dice-armadillo"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="trail-snail" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Home&quot;, &quot;Progetti&quot;]}}"></div><div class="slot-host span-2" data-mount="label-chameleon" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Filtro&quot;, &quot;value&quot;: &quot;Tutti i progetti&quot;, &quot;altKicker&quot;: &quot;Filtro&quot;, &quot;alt&quot;: &quot;Swift / iOS&quot;}}"></div><div class="slot-host span-2" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="slot-host span-1" data-mount="dice-armadillo" data-options="{&quot;label&quot;: &quot;Progetto casuale&quot;}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">trail-snail · label-chameleon · number-owl · dice-armadillo</p>
           </div>
         </div>
@@ -105,7 +105,7 @@
               <div><b>A · Azione</b><p>Il pager occupa metà barra e il resto sono azioni sul progetto: comando, condivisione, download.</p></div>
               <button type="button" class="variant-pick" data-route="r3" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-4" data-mount="project-caterpillar"></div><div class="slot-host span-2" data-mount="key-crab"></div><div class="slot-host span-1" data-mount="echo-jelly"></div><div class="slot-host span-1" data-mount="drop-beetle"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-4" data-mount="project-caterpillar"></div><div class="slot-host span-2" data-mount="key-crab" data-options="{&quot;label&quot;: &quot;Apri i comandi&quot;}"></div><div class="slot-host span-1" data-mount="echo-jelly" data-options="{&quot;label&quot;: &quot;Condividi il progetto&quot;}"></div><div class="slot-host span-1" data-mount="drop-beetle" data-options="{&quot;label&quot;: &quot;Scarica il case study&quot;}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">project-caterpillar · key-crab · echo-jelly · drop-beetle</p>
           </div>
           <div class="variant">
@@ -113,7 +113,7 @@
               <div><b>B · Contesto</b><p>Nessun pager. Briciole, avanzamento di lettura e posizione nella serie: solo dove sei.</p></div>
               <button type="button" class="variant-pick" data-route="r3" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="trail-snail"></div><div class="slot-host span-3" data-mount="original-progress-creature"></div><div class="slot-host span-2" data-mount="number-owl"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="trail-snail" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Progetti&quot;, &quot;EasyManager&quot;]}}"></div><div class="slot-host span-3" data-mount="original-progress-creature" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Case study&quot;}}"></div><div class="slot-host span-2" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">trail-snail · original-progress-creature · number-owl</p>
           </div>
           <div class="variant">
@@ -121,7 +121,7 @@
               <div><b>C · Orientamento</b><p>Avanzamento in testa, pager in coda e la destinazione successiva rivelata dallo Shy Sticker.</p></div>
               <button type="button" class="variant-pick" data-route="r3" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="original-progress-creature"></div><div class="slot-host span-4" data-mount="project-caterpillar"></div><div class="slot-host span-1" data-mount="shy-sticker"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="original-progress-creature" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Case study&quot;}}"></div><div class="slot-host span-4" data-mount="project-caterpillar"></div><div class="slot-host span-1" data-mount="shy-sticker" data-options="{&quot;copy&quot;: {&quot;value&quot;: &quot;Prossimo&quot;, &quot;alt&quot;: &quot;SpinGO&quot;}}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">original-progress-creature · project-caterpillar · shy-sticker</p>
           </div>
         </div>
@@ -134,7 +134,7 @@
               <div><b>A · Azione</b><p>Ricerca e condivisione aprono la barra; il ventaglio dei filtri resta pronto a destra.</p></div>
               <button type="button" class="variant-pick" data-route="r4" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="scout-eye"></div><div class="slot-host span-1" data-mount="echo-jelly"></div><div class="slot-host span-2" data-mount="label-chameleon"></div><div class="slot-host span-1" data-mount="counter-caterpillar"></div><div class="slot-host span-2" data-mount="fan-bird"></div><div class="slot-host span-1" data-mount="compass-pup"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="scout-eye" data-options="{&quot;label&quot;: &quot;Cerca articoli&quot;}"></div><div class="slot-host span-1" data-mount="echo-jelly" data-options="{&quot;label&quot;: &quot;Condividi l’archivio&quot;}"></div><div class="slot-host span-2" data-mount="label-chameleon" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Argomento&quot;, &quot;value&quot;: &quot;Tutti gli articoli&quot;, &quot;altKicker&quot;: &quot;Argomento&quot;, &quot;alt&quot;: &quot;Swift / iOS&quot;}}"></div><div class="slot-host span-1" data-mount="counter-caterpillar" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;}}"></div><div class="slot-host span-2" data-mount="fan-bird" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Swift&quot;, &quot;Design&quot;, &quot;Tutti&quot;]}, &quot;label&quot;: &quot;Mostra i filtri&quot;}"></div><div class="slot-host span-1" data-mount="compass-pup" data-options="{&quot;label&quot;: &quot;Feed RSS&quot;}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">scout-eye · echo-jelly · label-chameleon · counter-caterpillar · fan-bird · compass-pup</p>
           </div>
           <div class="variant">
@@ -142,7 +142,7 @@
               <div><b>B · Contesto</b><p>Argomento, conteggio e freschezza dell’archivio: la barra qualifica ciò che stai per leggere.</p></div>
               <button type="button" class="variant-pick" data-route="r4" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-2" data-mount="label-chameleon"></div><div class="slot-host span-1" data-mount="counter-caterpillar"></div><div class="slot-host span-2" data-mount="clock-bug"></div><div class="slot-host span-1" data-mount="turnover-turtle"></div><div class="slot-host span-2" data-mount="fan-bird"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-2" data-mount="label-chameleon" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Argomento&quot;, &quot;value&quot;: &quot;Tutti gli articoli&quot;, &quot;altKicker&quot;: &quot;Argomento&quot;, &quot;alt&quot;: &quot;Swift / iOS&quot;}}"></div><div class="slot-host span-1" data-mount="counter-caterpillar" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;}}"></div><div class="slot-host span-2" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Ultimo · 12 gg&quot;}}"></div><div class="slot-host span-1" data-mount="turnover-turtle"></div><div class="slot-host span-2" data-mount="fan-bird" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Swift&quot;, &quot;Design&quot;, &quot;Tutti&quot;]}, &quot;label&quot;: &quot;Mostra i filtri&quot;}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">label-chameleon · counter-caterpillar · clock-bug · turnover-turtle · fan-bird</p>
           </div>
           <div class="variant">
@@ -150,7 +150,7 @@
               <div><b>C · Orientamento</b><p>Gerarchia e sezioni insieme: la barra funziona da indice dell’archivio, non da filtro.</p></div>
               <button type="button" class="variant-pick" data-route="r4" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="trail-snail"></div><div class="slot-host span-1" data-mount="counter-caterpillar"></div><div class="slot-host span-2" data-mount="stepper-bug"></div><div class="slot-host span-2" data-mount="number-owl"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="trail-snail" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Home&quot;, &quot;Articoli&quot;]}}"></div><div class="slot-host span-1" data-mount="counter-caterpillar" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;}}"></div><div class="slot-host span-2" data-mount="stepper-bug"></div><div class="slot-host span-2" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Argomenti&quot;}}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">trail-snail · counter-caterpillar · stepper-bug · number-owl</p>
           </div>
         </div>
@@ -163,7 +163,7 @@
               <div><b>A · Azione</b><p>Condivisione e copia link prima dell’avanzamento: l’articolo è pensato per circolare.</p></div>
               <button type="button" class="variant-pick" data-route="r5" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="echo-jelly"></div><div class="slot-host span-2" data-mount="link-twins"></div><div class="slot-host span-3" data-mount="original-progress-creature"></div><div class="slot-host span-1" data-mount="drop-beetle"></div><div class="slot-host span-1" data-mount="counter-caterpillar"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="echo-jelly" data-options="{&quot;label&quot;: &quot;Condividi l’articolo&quot;}"></div><div class="slot-host span-2" data-mount="link-twins" data-options="{&quot;copy&quot;: {&quot;value&quot;: &quot;Copia link&quot;}}"></div><div class="slot-host span-3" data-mount="original-progress-creature" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Lettura&quot;}}"></div><div class="slot-host span-1" data-mount="drop-beetle" data-options="{&quot;label&quot;: &quot;Salva come PDF&quot;}"></div><div class="slot-host span-1" data-mount="counter-caterpillar" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Min rimasti&quot;}}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">echo-jelly · link-twins · original-progress-creature · drop-beetle · counter-caterpillar</p>
           </div>
           <div class="variant">
@@ -171,7 +171,7 @@
               <div><b>B · Contesto</b><p>Progress Creature per metà barra, Stepper Bug per la sezione, Clock Bug per il tempo residuo.</p></div>
               <button type="button" class="variant-pick" data-route="r5" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="original-progress-creature"></div><div class="slot-host span-2" data-mount="stepper-bug"></div><div class="slot-host span-2" data-mount="clock-bug"></div><div class="slot-host span-1" data-mount="echo-jelly"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="original-progress-creature" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Lettura&quot;}}"></div><div class="slot-host span-2" data-mount="stepper-bug"></div><div class="slot-host span-2" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;8 min rimasti&quot;}}"></div><div class="slot-host span-1" data-mount="echo-jelly" data-options="{&quot;label&quot;: &quot;Condividi l’articolo&quot;}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">original-progress-creature · stepper-bug · clock-bug · echo-jelly</p>
           </div>
           <div class="variant">
@@ -179,7 +179,7 @@
               <div><b>C · Orientamento</b><p>Chiude il ciclo: avanzamento, sezione corrente e il prossimo articolo già dichiarato.</p></div>
               <button type="button" class="variant-pick" data-route="r5" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="original-progress-creature"></div><div class="slot-host span-2" data-mount="stepper-bug"></div><div class="slot-host span-1" data-mount="shy-sticker"></div><div class="slot-host span-2" data-mount="number-owl"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-3" data-mount="original-progress-creature" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Lettura&quot;}}"></div><div class="slot-host span-2" data-mount="stepper-bug"></div><div class="slot-host span-1" data-mount="shy-sticker" data-options="{&quot;copy&quot;: {&quot;value&quot;: &quot;Prossimo&quot;, &quot;alt&quot;: &quot;Pixel art&quot;}}"></div><div class="slot-host span-2" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;}}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">original-progress-creature · stepper-bug · shy-sticker · number-owl</p>
           </div>
         </div>
@@ -192,7 +192,7 @@
               <div><b>A · Azione</b><p>Drop Beetle e Courier Moth aprono: scarica il CV oppure scrivi, subito.</p></div>
               <button type="button" class="variant-pick" data-route="r6" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="drop-beetle"></div><div class="slot-host span-1" data-mount="courier-moth"></div><div class="slot-host span-2" data-mount="link-twins"></div><div class="slot-host span-2" data-mount="letter-worm"></div><div class="slot-host span-1" data-mount="peek-sprout"></div><div class="slot-host span-1" data-mount="dial-snail"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="drop-beetle" data-options="{&quot;label&quot;: &quot;Scarica il CV&quot;}"></div><div class="slot-host span-1" data-mount="courier-moth" data-options="{&quot;label&quot;: &quot;Scrivimi&quot;}"></div><div class="slot-host span-2" data-mount="link-twins" data-options="{&quot;copy&quot;: {&quot;value&quot;: &quot;Copia email&quot;}}"></div><div class="slot-host span-2" data-mount="letter-worm"></div><div class="slot-host span-1" data-mount="peek-sprout"></div><div class="slot-host span-1" data-mount="dial-snail"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">drop-beetle · courier-moth · link-twins · letter-worm · peek-sprout · dial-snail</p>
           </div>
           <div class="variant">
@@ -200,7 +200,7 @@
               <div><b>B · Contesto</b><p>Letter Worm e Peek Sprout rispondono a “è disponibile?” prima di elencare le credenziali.</p></div>
               <button type="button" class="variant-pick" data-route="r6" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-2" data-mount="letter-worm"></div><div class="slot-host span-1" data-mount="peek-sprout"></div><div class="slot-host span-2" data-mount="sticker-slug"></div><div class="slot-host span-2" data-mount="clock-bug"></div><div class="slot-host span-1" data-mount="counter-caterpillar"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-2" data-mount="letter-worm"></div><div class="slot-host span-1" data-mount="peek-sprout"></div><div class="slot-host span-2" data-mount="sticker-slug" data-options="{&quot;copy&quot;: {&quot;value&quot;: &quot;Lavori scelti&quot;}}"></div><div class="slot-host span-2" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><div class="slot-host span-1" data-mount="counter-caterpillar" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Anni&quot;}}"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">letter-worm · peek-sprout · sticker-slug · clock-bug · counter-caterpillar</p>
           </div>
           <div class="variant">
@@ -208,7 +208,7 @@
               <div><b>C · Orientamento</b><p>Contatto e fuso orario accanto alle briciole: rende esplicito quando aspettarsi risposta.</p></div>
               <button type="button" class="variant-pick" data-route="r6" aria-pressed="false">Scegli</button>
             </div>
-            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="courier-moth"></div><div class="slot-host span-2" data-mount="clock-bug"></div><div class="slot-host span-3" data-mount="trail-snail"></div><div class="slot-host span-1" data-mount="drop-beetle"></div><div class="slot-host span-1" data-mount="dial-snail"></div><div class="fixed menu"><i></i></div></div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1" data-mount="courier-moth" data-options="{&quot;label&quot;: &quot;Scrivimi&quot;}"></div><div class="slot-host span-2" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><div class="slot-host span-3" data-mount="trail-snail" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Home&quot;, &quot;Chi sono&quot;]}}"></div><div class="slot-host span-1" data-mount="drop-beetle" data-options="{&quot;label&quot;: &quot;Scarica il CV&quot;}"></div><div class="slot-host span-1" data-mount="dial-snail"></div><div class="fixed menu"><i></i></div></div>
             <p class="roster">courier-moth · clock-bug · trail-snail · drop-beetle · dial-snail</p>
           </div>
         </div>
@@ -220,6 +220,7 @@
     </aside>
     <aside class="note"><b>Note</b>
       <p>Ogni creatura occupa esattamente l’impronta dichiarata nella Living Library: Project Caterpillar vale 4 slot, Trail Snail 3, Number Owl 2, Courier Moth 1. Tutte e diciotto le composizioni sommano a 8 slot esatti.</p>
+      <p>Il testo di ogni slot è riscritto per la rotta: “Focus / Swift / iOS” invece di “Filter active / All projects”. L’override raggiunge solo il testo statico della creatura — occhiello, etichette, opzioni. I valori che la creatura calcola da sé restano suoi: nomi dei progetti, cifre, ora locale, numero di sezione, disponibilità, IT/EN. Li riscrive il suo controller quando lo stato cambia, e sovrascriverli renderebbe il testo visibile diverso da quello annunciato.</p>
       <p>Sette creature non trovano posto in nessuna di queste sei pagine: Pulse Eel, Radar Snail, Shell Knock, Weather Puff, Inbox Blob, Mood Tile, Pixel Guest. Sono creature ambientali: o servono una pagina che non esiste ancora, oppure vivono altrove nel sito.</p>
       <p>Regola mobile: restano le prime due creature della composizione; le altre non si comprimono, semplicemente non vengono renderizzate nella barra chiusa.</p>
     </aside>
@@ -229,7 +230,7 @@
 
     document.querySelectorAll('[data-mount]').forEach(host => {
       try {
-        mountLivingComponent(host, host.dataset.mount)
+        mountLivingComponent(host, host.dataset.mount, JSON.parse(host.dataset.options || '{}'))
       } catch (error) {
         host.dataset.mountError = 'true'
         console.warn('[page map] could not mount', host.dataset.mount, error)
