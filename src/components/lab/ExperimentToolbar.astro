@@ -3,16 +3,14 @@
  * Barra sperimentale: guscio apribile, indice delle sezioni della pagina e strumenti.
  * Il mazzo delle carte e lo scroll spy sono guidati dalle `.home-section` che la pagina espone.
  */
-export interface ToolbarRoute { href: string; label: string; kicker: string; preview: string; mark?: string; previewHtml?: string }
-export interface ToolbarSection { kicker: string; value: string; detail: { kicker: string; value: string } }
-export interface ToolbarLanguage { href: string; label: string; current: boolean }
+import type { ChromeRoute, ToolbarLanguage, ToolbarSection } from './chrome';
 
 interface Props {
 	name: string;
 	ticker: string;
-	routes: ToolbarRoute[];
+	routes: ChromeRoute[];
 	sections: ToolbarSection[];
-	languages: [ToolbarLanguage, ToolbarLanguage];
+	languages: readonly [ToolbarLanguage, ToolbarLanguage];
 	cv: { kicker: string; long: string; short: string; aria: string; href: string };
 	labels: { top: string; topCaption: string; mail: string; mailCaption: string; language: string; openMenu: string };
 }
@@ -23,16 +21,16 @@ const { name, ticker, routes, sections, languages, cv, labels } = Astro.props;
     <section class="toolbar-shell" id="toolbar">
       <nav class="nav-panel" aria-label="Navigazione principale">
         <div class="panel-identity">
-          <div class="identity-name">{name} <span id="active-route">{routes[0].label}</span></div>
+          <div class="identity-name">{name} <span id="active-route">{(routes.find((route) => route.current) ?? routes[0]).label}</span></div>
           <div class="ticker" aria-label="Software engineer, Swift e iOS, product engineering, sistemi affidabili">
             <div class="ticker-track"><span>{ticker}</span><span aria-hidden="true">{ticker}</span></div>
           </div>
         </div>
         <ul class="nav-list">
-          {routes.map((route, i) => (
+          {routes.map((route) => (
             <li>
-              <a class:list={['nav-item', i === 0 && 'active']} href={route.href} data-page={route.label}>
-                <span class:list={['nav-preview', route.preview]} set:html={route.previewHtml ?? route.mark} />
+              <a class:list={['nav-item', route.current && 'active']} href={route.href} data-page={route.label}>
+                <span class:list={['nav-preview', route.preview]} set:html={route.previewHtml ?? ""} />
                 <span class="nav-copy"><small>{route.kicker}</small><strong>{route.label}</strong></span>
                 <span class="nav-arrow">↗</span>
               </a>

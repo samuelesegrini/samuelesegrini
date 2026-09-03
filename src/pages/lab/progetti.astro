@@ -1,0 +1,73 @@
+---
+/** Archivio progetti: le sezioni sono i tipi di lavoro, così la barra naviga l'archivio. */
+import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
+import { getProjectKinds } from '../../lib/content';
+import { getPortfolioContent, projectPath } from '../../lib/portfolio';
+
+const lang = 'it' as const;
+const { projects } = await getPortfolioContent();
+const pubblicati = projects.filter((project) => project.locale === lang && !project.draft);
+// getProjectKinds restituisce i tipi nell'ordine dei file: qui conta la scala del lavoro
+const ordine = ['app', 'package', 'open-source', 'experiment'];
+const tipi = getProjectKinds(projects, lang).sort((a, b) => ordine.indexOf(a) - ordine.indexOf(b));
+
+const nomeTipo: Record<string, string> = {
+	app: 'App',
+	package: 'Pacchetti',
+	'open-source': 'Open source',
+	experiment: 'Esperimenti',
+};
+const testoTipo: Record<string, string> = {
+	app: 'Prodotti finiti, con utenti veri e vincoli di rilascio.',
+	package: 'Codice riusabile, estratto da un problema che si ripeteva.',
+	'open-source': 'Contributi a progetti di altri, dove il codice va difeso in pubblico.',
+	experiment: 'Prove che servivano a rispondere a una domanda, non a essere spedite.',
+};
+const conta = (n: number) => `${n} ${n === 1 ? 'progetto' : 'progetti'}`;
+
+const sezioni = tipi.map((tipo, i) => {
+	const dentro = pubblicati.filter((project) => project.kind === tipo);
+	return {
+		id: tipo,
+		occhiello: `Sezione ${String(i + 1).padStart(2, '0')}`,
+		kicker: 'Sezione',
+		value: nomeTipo[tipo] ?? tipo,
+		testo: testoTipo[tipo] ?? '',
+		progetti: dentro,
+		detail: { kicker: nomeTipo[tipo] ?? tipo, value: conta(dentro.length) },
+	};
+});
+---
+
+<ExperimentLayout
+	title="Banco di prova — archivio progetti"
+	currentHref="/lab/progetti/"
+	sections={sezioni.map(({ kicker, value, detail }) => ({ kicker, value, detail }))}
+>
+	<header class="home-section hero" id="inizio" data-section="0">
+		<span class="section-kicker">Archivio</span>
+		<h1>Progetti, <em>per come sono nati.</em></h1>
+		<p>{conta(pubblicati.length)} in archivio, divisi per il tipo di lavoro che sono stati: prodotti da rilasciare, codice da riusare, contributi, prove. Usa la barra per saltare da un gruppo all’altro.</p>
+		<span class="hero-hint" aria-hidden="true">Scorri, oppure usa la barra</span>
+		<i class="section-rule" aria-hidden="true"></i>
+	</header>
+
+	{sezioni.map((sezione, i) => (
+		<section class="home-section" id={sezione.id} data-section={i + 1}>
+			<span class="section-kicker">{sezione.occhiello}</span>
+			<h1>{sezione.value}</h1>
+			<p>{sezione.testo}</p>
+			<ul class="elenco">
+				{sezione.progetti.map((project) => (
+					<li>
+						<a href={projectPath(project)}>
+							<strong>{project.title}</strong>
+							<span>{project.excerpt}</span>
+						</a>
+					</li>
+				))}
+			</ul>
+			<i class="section-rule" aria-hidden="true"></i>
+		</section>
+	))}
+</ExperimentLayout>

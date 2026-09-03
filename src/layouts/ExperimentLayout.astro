@@ -1,0 +1,79 @@
+---
+/**
+ * Guscio condiviso dalle pagine del banco di prova: documento, stili di pagina e barra.
+ * Ogni pagina passa le proprie sezioni; la barra le usa come indice.
+ */
+import '../styles/global.css';
+import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
+import type { ToolbarSection } from '../components/lab/chrome';
+import {
+	experimentCv,
+	experimentLabels,
+	experimentLanguages,
+	experimentRoutes,
+	experimentTicker,
+} from '../components/lab/chrome';
+import { siteConfig } from '../config/site';
+
+interface Props {
+	title: string;
+	currentHref: string;
+	sections: ToolbarSection[];
+}
+
+const { title, currentHref, sections } = Astro.props;
+---
+
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>{title}</title>
+	</head>
+	<body>
+		<main class="stage" aria-label={title}>
+			<slot />
+			<ExperimentToolbar
+				name={siteConfig.name}
+				ticker={experimentTicker}
+				routes={experimentRoutes(currentHref)}
+				sections={sections}
+				languages={experimentLanguages(currentHref)}
+				cv={experimentCv}
+				labels={experimentLabels}
+			/>
+		</main>
+
+		<style is:global>
+			:root { --slot: #242424; --ease: cubic-bezier(.22,1,.36,1); }
+			body { overflow-x: hidden; }
+			.stage { position: relative; width: 100%; min-height: 100%; }
+			.stage:after { content: ''; position: fixed; z-index: -2; inset: 0; background: radial-gradient(circle at 50% 110%, #ffffff 0, transparent 42%), var(--paper); }
+			.stage:before { content: ''; position: fixed; z-index: -1; inset: 0; background-image: linear-gradient(#0808080a 1px, transparent 1px), linear-gradient(90deg, #0808080a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, transparent 0, #000 100%); opacity: .3; }
+			.home-section { display: grid; min-height: 132vh; align-content: center; padding: 0 max(24px, 7vw); }
+			.home-section:last-of-type { min-height: 100vh; padding-bottom: 200px; }
+			.home-section.hero { min-height: 100vh; }
+			.section-kicker { font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #8b877f; }
+			.home-section h1 { max-width: 14ch; margin: 16px 0 0; font-size: clamp(56px, 11vw, 132px); line-height: .86; letter-spacing: -.075em; }
+			.home-section.hero h1 { max-width: 19ch; font-size: clamp(46px, 6.6vw, 96px); }
+			.home-section.hero h1 em { font-family: var(--serif); font-weight: 430; font-style: italic; color: #5f8d3f; }
+			.home-section p { max-width: 52ch; margin: 26px 0 0; color: #6b6760; font-size: clamp(16px, 2vw, 20px); line-height: 1.55; }
+			.hero-hint { display: inline-flex; align-items: center; gap: 9px; width: max-content; margin-top: 38px; padding: 9px 14px; border: 1px solid #d3d1ca; border-radius: 999px; color: #6b6760; font: 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+			.hero-hint:before { content: '↓'; font-size: 12px; }
+			.section-rule { width: 96px; height: 10px; margin-top: 34px; border-radius: 6px; }
+			#inizio .section-rule { background: #111; }
+			#lavoro .section-rule { background: var(--blue); }
+			#scrittura .section-rule { background: var(--violet); }
+			#percorso .section-rule { background: var(--acid); }
+			#contatto .section-rule { background: var(--orange); }
+			.elenco { display: grid; gap: 10px; max-width: 62ch; margin: 30px 0 0; padding: 0; list-style: none; }
+			.elenco a { display: grid; gap: 4px; padding: 15px 17px; border: 1px solid #d3d1ca; border-radius: 16px; background: #fffefb; }
+			.elenco strong { font-size: 17px; letter-spacing: -.03em; }
+			.elenco span { color: #6b6760; font-size: 13px; line-height: 1.45; }
+			.collegamento { display: inline-flex; width: max-content; margin-top: 28px; padding: 12px 18px; border-radius: 999px; background: #111; color: #fffef9; font-size: 14px; font-weight: 700; }
+			@media (max-width: 620px) { .home-section { min-height: 118vh; } .home-section:last-of-type { padding-bottom: 170px; } }
+		</style>
+	</body>
+</html>
