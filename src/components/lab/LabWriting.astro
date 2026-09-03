@@ -1,0 +1,66 @@
+---
+/** Archivio articoli: le sezioni sono i temi ricorrenti, presi dai tag dei post. */
+import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
+import { getPublishedPosts } from '../../lib/content';
+import { getPortfolioContent } from '../../lib/portfolio';
+import { labPaths, labPostPath, type LabLocale } from './chrome';
+
+interface Props { lang: LabLocale }
+const { lang } = Astro.props;
+const isIt = lang === 'it';
+const { posts } = await getPortfolioContent();
+const pubblicati = getPublishedPosts(posts, lang);
+
+// I temi sono i tag che ricorrono, dal più frequente. Un articolo può stare in più temi.
+const frequenza = new Map<string, number>();
+pubblicati.forEach((post) => post.tags.forEach((tag) => frequenza.set(tag, (frequenza.get(tag) ?? 0) + 1)));
+const temi = [...frequenza.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 4).map(([tag]) => tag);
+
+const maiuscola = (testo: string) => testo.charAt(0).toUpperCase() + testo.slice(1);
+const conta = (n: number) => isIt ? `${n} ${n === 1 ? 'articolo' : 'articoli'}` : `${n} ${n === 1 ? 'article' : 'articles'}`;
+
+const t = isIt
+	? { title: 'Banco di prova — archivio articoli', kicker: 'Tema', eyebrow: 'Archivio', headline: 'Scrittura,', em: 'per argomento.',
+		intro: 'pubblicati, raccolti attorno ai temi che tornano più spesso. Un articolo può comparire in più temi: sono etichette, non cartelle.',
+		hint: 'Scorri, oppure usa la barra', on: 'su questo tema.' }
+	: { title: 'Experiment — writing archive', kicker: 'Topic', eyebrow: 'Archive', headline: 'Writing,', em: 'by topic.',
+		intro: 'published, gathered around the topics that come back most often. An article can appear under several: these are labels, not folders.',
+		hint: 'Scroll, or use the bar', on: 'on this topic.' };
+
+const sezioni = temi.map((tema) => {
+	const dentro = pubblicati.filter((post) => post.tags.includes(tema));
+	return {
+		id: tema.replace(/[^a-z0-9]+/gi, '-').toLowerCase(),
+		kicker: t.kicker,
+		value: maiuscola(tema),
+		articoli: dentro,
+		detail: { kicker: maiuscola(tema), value: conta(dentro.length) },
+	};
+});
+---
+
+<ExperimentLayout lang={lang} title={t.title} currentHref={labPaths[lang].writing}
+	sections={sezioni.map(({ kicker, value, detail }) => ({ kicker, value, detail }))}
+	itHref={labPaths.it.writing} enHref={labPaths.en.writing}>
+	<header class="home-section hero" id="inizio" data-section="0">
+		<span class="section-kicker">{t.eyebrow}</span>
+		<h1>{t.headline} <em>{t.em}</em></h1>
+		<p>{conta(pubblicati.length)} {t.intro}</p>
+		<span class="hero-hint" aria-hidden="true">{t.hint}</span>
+		<i class="section-rule" aria-hidden="true"></i>
+	</header>
+
+	{sezioni.map((sezione, i) => (
+		<section class="home-section" id={sezione.id} data-section={i + 1}>
+			<span class="section-kicker">{t.kicker} {String(i + 1).padStart(2, '0')}</span>
+			<h1>{sezione.value}</h1>
+			<p>{conta(sezione.articoli.length)} {t.on}</p>
+			<ul class="elenco">
+				{sezione.articoli.map((post) => (
+					<li><a href={labPostPath(lang, post.slug)}><strong>{post.title}</strong><span>{post.excerpt}</span></a></li>
+				))}
+			</ul>
+			<i class="section-rule" aria-hidden="true"></i>
+		</section>
+	))}
+</ExperimentLayout>

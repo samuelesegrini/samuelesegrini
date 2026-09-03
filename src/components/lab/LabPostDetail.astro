@@ -1,0 +1,57 @@
+---
+/** Dettaglio articolo: il corpo e i suoi argomenti. */
+import { render } from 'astro:content';
+import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
+import { getTranslationPair } from '../../lib/content';
+import { getPortfolioContent } from '../../lib/portfolio';
+import { labPaths, labPostPath, type LabLocale } from './chrome';
+
+interface Props { lang: LabLocale; slug: string }
+const { lang, slug } = Astro.props;
+const isIt = lang === 'it';
+const { posts, postDocuments } = await getPortfolioContent();
+const articolo = posts.find((p) => p.locale === lang && p.slug === slug)!;
+const documento = postDocuments.find((d) => d.data.locale === lang && d.data.slug === slug)!;
+const { Content } = await render(documento);
+
+const gemello = (altra: LabLocale) => {
+	const pari = getTranslationPair(posts, articolo.translationKey, altra);
+	return pari ? labPostPath(altra, pari.slug) : labPaths[altra].writing;
+};
+
+const data = articolo.publishedAt.toLocaleDateString(isIt ? 'it-IT' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+const t = isIt
+	? { kicker: 'Sezione', eyebrow: 'Articolo', body: 'Articolo', topics: 'Argomenti', published: 'Pubblicato', back: '← Tutti gli articoli' }
+	: { kicker: 'Section', eyebrow: 'Article', body: 'Article', topics: 'Topics', published: 'Published', back: '← All articles' };
+
+const sezioni = [
+	{ id: 'articolo', value: t.body, detail: { kicker: t.published, value: data } },
+	{ id: 'argomenti', value: t.topics, detail: { kicker: t.topics, value: String(articolo.tags.length) } },
+];
+---
+
+<ExperimentLayout lang={lang} title={`${articolo.title} — ${t.eyebrow}`} currentHref={labPostPath(lang, slug)}
+	sections={sezioni.map((s) => ({ kicker: t.kicker, value: s.value, detail: s.detail }))}
+	itHref={gemello('it')} enHref={gemello('en')}>
+	<header class="home-section hero" id="inizio" data-section="0">
+		<span class="section-kicker">{t.eyebrow} · {data}</span>
+		<h1>{articolo.title}</h1>
+		<p>{articolo.excerpt}</p>
+		<a class="collegamento" href={labPaths[lang].writing}>{t.back}</a>
+		<i class="section-rule" aria-hidden="true"></i>
+	</header>
+
+	<section class="home-section" id="articolo" data-section="1">
+		<span class="section-kicker">{t.kicker} 01</span>
+		<h1>{t.body}</h1>
+		<div class="prosa"><Content /></div>
+		<i class="section-rule" aria-hidden="true"></i>
+	</section>
+
+	<section class="home-section" id="argomenti" data-section="2">
+		<span class="section-kicker">{t.kicker} 02</span>
+		<h1>{t.topics}</h1>
+		<p>{articolo.tags.join(' · ')}</p>
+		<i class="section-rule" aria-hidden="true"></i>
+	</section>
+</ExperimentLayout>

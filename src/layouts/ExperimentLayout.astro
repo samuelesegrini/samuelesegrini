@@ -6,7 +6,7 @@
 import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
-import type { ToolbarSection } from '../components/lab/chrome';
+import type { LabLocale, ToolbarSection } from '../components/lab/chrome';
 import {
 	experimentCv,
 	experimentLabels,
@@ -18,16 +18,20 @@ import {
 import { siteConfig } from '../config/site';
 
 interface Props {
+	lang: LabLocale;
 	title: string;
 	currentHref: string;
 	sections: ToolbarSection[];
+	/** La stessa pagina nell'altra lingua: il selettore ci porta lì, non alla home. */
+	itHref: string;
+	enHref: string;
 }
 
-const { title, currentHref, sections } = Astro.props;
+const { lang, title, currentHref, sections, itHref, enHref } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="it">
+<html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -43,12 +47,12 @@ const { title, currentHref, sections } = Astro.props;
 			<slot />
 			<ExperimentToolbar
 				name={siteConfig.name}
-				ticker={experimentTicker}
-				routes={experimentRoutes(currentHref)}
+				ticker={experimentTicker[lang]}
+				routes={experimentRoutes(lang, currentHref)}
 				sections={sections}
-				languages={experimentLanguages(currentHref)}
-				cv={experimentCv}
-				labels={experimentLabels}
+				languages={experimentLanguages(lang, itHref, enHref)}
+				cv={experimentCv(lang)}
+				labels={experimentLabels(lang)}
 				mailHref={mailHref}
 			/>
 		</main>
@@ -79,6 +83,15 @@ const { title, currentHref, sections } = Astro.props;
 			.elenco a { display: grid; gap: 4px; padding: 15px 17px; border: 1px solid #d3d1ca; border-radius: 16px; background: #fffefb; }
 			.elenco strong { font-size: 17px; letter-spacing: -.03em; }
 			.elenco span { color: #6b6760; font-size: 13px; line-height: 1.45; }
+			.prosa { max-width: 64ch; margin-top: 28px; color: #3b3830; font-size: clamp(15px, 1.7vw, 18px); line-height: 1.65; }
+			.prosa :is(h2, h3) { margin: 34px 0 10px; font-size: clamp(20px, 2.4vw, 27px); letter-spacing: -.03em; line-height: 1.15; }
+			.prosa p { max-width: none; margin: 14px 0 0; color: inherit; font-size: inherit; }
+			.prosa :is(ul, ol) { margin: 14px 0 0; padding-left: 20px; }
+			.prosa li { margin-top: 6px; }
+			.prosa a { text-decoration: underline; text-underline-offset: 3px; }
+			.prosa :is(pre, code) { font-family: var(--mono); font-size: .88em; }
+			.prosa pre { overflow-x: auto; margin: 18px 0 0; padding: 15px 17px; border-radius: 14px; background: #14140f; color: #f3f1ea; }
+			.prosa blockquote { margin: 20px 0 0; padding-left: 16px; border-left: 3px solid var(--acid); color: #55524b; }
 			.collegamento { display: inline-flex; width: max-content; margin-top: 28px; padding: 12px 18px; border-radius: 999px; background: #111; color: #fffef9; font-size: 14px; font-weight: 700; }
 			@media (max-width: 620px) { .home-section { min-height: 118vh; } .home-section:last-of-type { padding-bottom: 170px; } }
 		</style>

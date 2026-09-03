@@ -1,0 +1,15 @@
+---
+import LabPostDetail from '../../../../components/lab/LabPostDetail.astro';
+import { getPortfolioContent } from '../../../../lib/portfolio';
+
+export async function getStaticPaths() {
+	const { posts } = await getPortfolioContent();
+	return posts
+		.filter((entry) => entry.locale === 'en' && !entry.draft)
+		.map((entry) => ({ params: { slug: entry.slug } }));
+}
+
+const { slug } = Astro.params;
+---
+
+<LabPostDetail lang="en" slug={slug!} />

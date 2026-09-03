@@ -1,0 +1,52 @@
+---
+/** Profilo: la barra indicizza le tre domande a cui la pagina risponde. */
+import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
+import { getPortfolioContent } from '../../lib/portfolio';
+import { siteConfig } from '../../config/site';
+import { labPaths, type LabLocale } from './chrome';
+
+interface Props { lang: LabLocale }
+const { lang } = Astro.props;
+const isIt = lang === 'it';
+const { projects, aboutDocuments } = await getPortfolioContent();
+const profilo = aboutDocuments.find((page) => page.data.locale === lang && !page.data.draft);
+const pubblicati = projects.filter((p) => p.locale === lang && !p.draft);
+
+const t = isIt
+	? { title: 'Banco di prova — chi sono', kicker: 'Sezione', fallbackTitle: 'Chi sono', fallbackExcerpt: 'Profilo in preparazione.',
+		hint: 'Scorri, oppure usa la barra', mail: 'Scrivimi →',
+		s: [
+			{ id: 'percorso', value: 'Percorso', testo: 'Dai sistemi distribuiti allo sviluppo iOS: vincoli espliciti, verifiche concrete, attenzione al prodotto.', dk: 'Esperienza', dv: '4 anni' },
+			{ id: 'strumenti', value: 'Strumenti', testo: 'Swift e iOS come ancoraggio, più tutto quello che serve perché un sistema resti corretto quando la rete non collabora.', dk: 'Progetti', dv: `${pubblicati.length} in archivio` },
+			{ id: 'contatto', value: 'Contatto', testo: 'Aperto a opportunità. Risposta entro 24 ore, fuso orario italiano.', dk: 'Risposta', dv: 'Entro 24 ore' },
+		] }
+	: { title: 'Experiment — about', kicker: 'Section', fallbackTitle: 'About', fallbackExcerpt: 'Profile in preparation.',
+		hint: 'Scroll, or use the bar', mail: 'Email me →',
+		s: [
+			{ id: 'path', value: 'Path', testo: 'From distributed systems to iOS development: explicit constraints, concrete checks, attention to the product.', dk: 'Experience', dv: '4 years' },
+			{ id: 'tools', value: 'Tools', testo: 'Swift and iOS as the anchor, plus whatever it takes for a system to stay correct when the network stops cooperating.', dk: 'Projects', dv: `${pubblicati.length} in the archive` },
+			{ id: 'contact', value: 'Contact', testo: 'Open to opportunities. Reply within 24 hours, Italian time zone.', dk: 'Reply', dv: 'Within 24 hours' },
+		] };
+---
+
+<ExperimentLayout lang={lang} title={t.title} currentHref={labPaths[lang].about}
+	sections={t.s.map((s) => ({ kicker: t.kicker, value: s.value, detail: { kicker: s.dk, value: s.dv } }))}
+	itHref={labPaths.it.about} enHref={labPaths.en.about}>
+	<header class="home-section hero" id="inizio" data-section="0">
+		<span class="section-kicker">{siteConfig.name}</span>
+		<h1>{profilo?.data.title ?? t.fallbackTitle}</h1>
+		<p>{profilo?.data.excerpt ?? t.fallbackExcerpt}</p>
+		<span class="hero-hint" aria-hidden="true">{t.hint}</span>
+		<i class="section-rule" aria-hidden="true"></i>
+	</header>
+
+	{t.s.map((sezione, i) => (
+		<section class="home-section" id={sezione.id} data-section={i + 1}>
+			<span class="section-kicker">{t.kicker} {String(i + 1).padStart(2, '0')}</span>
+			<h1>{sezione.value}</h1>
+			<p>{sezione.testo}</p>
+			{i === 2 && <a class="collegamento" href={`mailto:${siteConfig.email}`}>{t.mail}</a>}
+			<i class="section-rule" aria-hidden="true"></i>
+		</section>
+	))}
+</ExperimentLayout>
