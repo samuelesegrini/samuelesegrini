@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Modular toolbar — page map v10</title>
+  <link rel="stylesheet" href="./living-library.css" />
+  <style>
+    @font-face{font-family:Manrope;src:url('./manrope.woff2')}@font-face{font-family:Newsreader;src:url('./newsreader.woff2')}@font-face{font-family:Plex;src:url('./plex-mono.woff2')}
+    :root{--ink:#111;--paper:#f4f1e9;--acid:#c7ff9f;--blue:#cdefff;--violet:#ded1ff;--orange:#ffd4b8;--sans:Manrope,system-ui,sans-serif;--serif:Newsreader,serif;--mono:Plex,monospace;--ease:cubic-bezier(.22,1,.36,1)}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans)}button{font:inherit}main{max-width:1200px;margin:auto;padding:58px 28px 110px}.eyebrow{font:10px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:#69665f}h1{max-width:970px;margin:15px 0 18px;font-size:clamp(45px,7vw,86px);line-height:.9;letter-spacing:-.07em}h1 em{font-family:var(--serif);font-weight:430;color:#5f8d3f}.lead{max-width:780px;margin:0;color:#66625b;font-size:17px;line-height:1.5}
+    .thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:42px 0 56px}.thesis article{padding:16px;border:1px solid #0002;border-radius:18px;background:#fff}.thesis span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#777}.thesis b{display:block;margin-top:10px;font-size:17px;letter-spacing:-.035em}.thesis p{margin:5px 0 0;color:#77736c;font-size:12px;line-height:1.45}
+    .route-list{display:grid;gap:52px}.route{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:start}.route-label{position:sticky;top:24px}.route-label span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#777}.route-label h2{margin:6px 0 3px;font-size:26px;letter-spacing:-.05em}.route-label p{margin:0;color:#777;font-size:12px}
+    .variants{display:grid;gap:16px}.variant{padding:13px;border:1px solid #0002;border-radius:26px;background:#fff;transition:box-shadow .2s ease,border-color .2s ease}.variant.selected{border-color:#0000;box-shadow:0 0 0 3px var(--acid),0 12px 30px #0001}
+    .variant-head{display:flex;align-items:start;justify-content:space-between;gap:18px;margin:3px 4px 11px}.variant-head b{font-size:13px;letter-spacing:-.02em}.variant-head p{max-width:620px;margin:3px 0 0;color:#77736c;font-size:12px;line-height:1.45}
+    .variant-pick{flex:none;padding:7px 13px;border:1px solid #0002;border-radius:999px;background:#f4f1e9;color:#56534d;font:8px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.variant-pick[aria-pressed="true"]{border-color:#0000;background:var(--acid);color:#20301a}.variant-pick:focus-visible{outline:2px solid #111;outline-offset:2px}
+    .roster{margin:9px 5px 2px;color:#a09b93;font:7px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+    .toolbar{display:grid;grid-template-columns:82px repeat(8,minmax(0,1fr)) 62px;gap:6px;min-height:98px;padding:8px;border-radius:23px;background:#111;color:#fff;box-shadow:0 18px 50px #0002}
+    .fixed{display:grid;place-items:center;border-radius:15px;background:#242424}.identity{background:#fff;color:#111;font-size:19px;font-weight:800}.menu{position:relative}.menu:before,.menu:after,.menu i{content:'';position:absolute;left:20px;width:22px;height:2px;background:#fff}.menu:before{top:34px}.menu i{top:42px}.menu:after{top:50px}
+    .widget{position:relative;display:flex;min-width:0;align-items:center;gap:9px;padding:10px 12px;overflow:hidden;border-radius:14px;background:#242424}.widget small{display:block;color:#8b8b8b;font:7px var(--mono);letter-spacing:.06em;text-transform:uppercase}.widget b{display:block;margin-top:4px;overflow:hidden;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.widget.icon{justify-content:center;padding:0;font-size:17px}.widget.color{color:#111}.widget.color small{color:#526246}.green{background:var(--acid)}.blue{background:var(--blue)}.violet{background:var(--violet)}.orange{background:var(--orange)}
+    .span-1{grid-column:span 1}.span-2{grid-column:span 2}.span-3{grid-column:span 3}.span-4{grid-column:span 4}
+    .priority:after{content:'P1';position:absolute;right:7px;top:6px;color:#466033;font:6px var(--mono)}.progress{width:100%;height:4px;margin-top:7px;overflow:hidden;border-radius:5px;background:#0002}.progress i{display:block;height:100%;background:#111}.widget:not(.color) .progress{background:#ffffff26}.widget:not(.color) .progress i{background:#fff}
+    .toggle-square{justify-content:center;padding:1px;background:transparent}.segmented{position:relative;display:grid;width:100%;height:100%;grid-template-rows:1fr 1fr;gap:1px}.segment-bed{position:absolute;z-index:0;inset:0 0 auto;height:calc(50% - .5px);border-radius:13px;background:#242424}.segment-bed.bottom{inset:auto 0 0}.segmented:before{content:'';position:absolute;z-index:2;inset:0 0 auto;height:calc(50% - .5px);border-radius:13px;background:#fff;pointer-events:none;transition:transform .42s var(--ease)}.segmented[data-active="1"]:before{transform:translateY(calc(100% + 1px))}.segmented button{position:relative;z-index:3;display:grid;min-width:0;padding:0;place-items:center;border:0;border-radius:13px;background:transparent;color:#888;font:6px var(--mono);text-align:center;cursor:pointer;transition:color .22s ease}.segmented[data-active="0"] button:first-of-type,.segmented[data-active="1"] button:last-child{color:#111}.segmented button:focus-visible{outline:1px solid #fff;outline-offset:-3px}
+    /* the single living element: the creature keeps its anatomy, the grid hands it a box */
+    .slot-host{display:grid;min-width:0}.toolbar .ll-control{width:100%;height:82px;border-radius:14px}.toolbar .ll-slug-body{left:12%;width:76%}
+    .chosen{margin-top:56px;padding:22px;border:1px solid #0002;border-radius:24px;background:#fff}.chosen b{font-size:16px}.chosen ol{margin:14px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.chosen li{padding:11px 13px;border-radius:14px;background:#f4f1e9;font:9px var(--mono);text-transform:uppercase;color:#77736c}.chosen li strong{display:block;margin-top:5px;color:#111;font:700 13px var(--sans);text-transform:none;letter-spacing:-.02em}
+    .note{display:grid;grid-template-columns:180px 1fr;gap:24px;margin-top:44px;padding-top:25px;border-top:1px solid #0002}.note b{font-size:16px}.note p{max-width:760px;margin:0 0 10px;color:#66625b;font-size:14px}
+    @media(prefers-reduced-motion:reduce){.segmented:before,.segmented button,.variant{transition:none}}
+    @media(max-width:860px){main{padding:38px 15px 90px}.thesis{grid-template-columns:1fr;margin:32px 0 44px}.route-list{gap:38px}.route{grid-template-columns:1fr;gap:12px}.route-label{position:static}.variant-head{flex-direction:column;gap:10px}.toolbar{grid-template-columns:62px repeat(4,minmax(0,1fr)) 52px;min-height:98px}
+      /* mobile tiene esattamente due elementi: il widget P1 e l'unico elemento vivo */
+      .route .toolbar>*:not(.fixed):not(.keep-mobile){display:none}.route .toolbar .keep-mobile{grid-column:span 2}
+      /* un elemento vivo da 3 o 4 slot non sta in due colonne: su mobile prende la barra da solo */
+      .route .toolbar[data-mobile="solo"]>*:not(.fixed):not(.slot-host){display:none}.route .toolbar[data-mobile="solo"] .slot-host{grid-column:span 4}
+      /* recupera larghezza per il nome del progetto: chrome del pager più stretto su mobile */
+      .route .toolbar[data-mobile="solo"] .ll-project{gap:6px;padding:0 8px 18px}
+      .route .toolbar[data-mobile="solo"] .ll-project{grid-template-columns:28px 1fr 28px}
+      .route .toolbar[data-mobile="solo"] .ll-project-arrow{width:28px;height:28px}
+      .route .toolbar[data-mobile="solo"] .ll-project-copy{padding:0 6px}
+      .route .toolbar[data-mobile="solo"] .ll-project-copy b{overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap}
+      .identity{font-size:16px}.menu:before,.menu:after,.menu i{left:16px;width:20px}.chosen ol{grid-template-columns:1fr}.note{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Modular menu system · section 2d</div>
+    <h1>Una barra ferma, <em>un solo elemento vivo.</em></h1>
+    <p class="lead">La composizione pulita della v8, con una sola eccezione per pagina: un componente della Living Library al posto del widget statico corrispondente. Non è la barra a essere viva, è il dato che lo merita. Tutto il resto resta immobile — ed è proprio questo a far notare l’unico elemento che si muove.</p>
+    <section class="thesis" aria-label="Le tre tesi di composizione">
+      <article><span>Variante A</span><b>Azione</b><p>Vive l’azione: la falena parte, lo scarabeo lascia cadere, la medusa conferma.</p></article>
+      <article><span>Variante B</span><b>Contesto</b><p>Vive il dato che cambia da solo: l’ora, l’avanzamento, il conteggio.</p></article>
+      <article><span>Variante C</span><b>Orientamento</b><p>Vive il passaggio: le briciole, il pager, il dado, il copia-link.</p></article>
+    </section>
+    <section class="route-list">
+      <article class="route">
+        <div class="route-label"><span>01 · Landing</span><h2>Home</h2><p>Profilo e contatto immediato</p></div>
+        <div class="variants" data-route-group="r1">
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>A · Azione</b><p>Il contatto è l’unica cosa che si muove: una falena che parte quando scrivi.</p></div>
+              <button type="button" class="variant-pick" data-route="r1" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1 keep-mobile" data-mount="courier-moth" data-options="{&quot;label&quot;: &quot;Scrivimi&quot;}"></div><div class="widget green color span-3 priority keep-mobile"><div><small>Disponibilità</small><b>Aperto a opportunità</b></div></div><div class="widget blue color span-2"><div><small>Focus</small><b>Swift / iOS</b></div></div><div class="widget span-2"><div><small>Posizione</small><b>Italia · CET</b></div></div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · courier-moth</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>B · Contesto</b><p>L’ora locale è viva perché è l’unico dato che cambia da solo.</p></div>
+              <button type="button" class="variant-pick" data-route="r1" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget blue color span-3 priority keep-mobile"><div><small>Focus</small><b>Swift / iOS</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><div class="widget green color span-2"><div><small>Disponibilità</small><b>Aperto a opportunità</b></div></div><div class="widget icon span-1" aria-hidden="true">✉</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · clock-bug</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>C · Orientamento</b><p>Il conteggio dei progetti è vivo: gira quando l’archivio cresce.</p></div>
+              <button type="button" class="variant-pick" data-route="r1" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget blue color span-3 priority keep-mobile"><div><small>Inizia da</small><b>Progetti →</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="widget span-2"><div><small>Archivio</small><b>4 articoli</b></div></div><div class="widget icon span-1" aria-hidden="true">✉</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · number-owl</p>
+          </div>
+        </div>
+      </article>
+      <article class="route">
+        <div class="route-label"><span>02 · Directory</span><h2>Archivio progetti</h2><p>Esplorazione e filtri</p></div>
+        <div class="variants" data-route-group="r2">
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>A · Azione</b><p>Solo la vista è viva: la tartaruga gira il guscio tra griglia e lista.</p></div>
+              <button type="button" class="variant-pick" data-route="r2" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget blue color span-3 priority keep-mobile"><div><small>Cerca</small><b>Cerca progetti ⌕</b></div></div><div class="widget span-3"><div><small>Risultati</small><b>7 progetti</b></div></div><div class="slot-host span-1 keep-mobile" data-mount="turnover-turtle"></div><div class="widget icon span-1" aria-hidden="true">⚙</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · turnover-turtle</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>B · Contesto</b><p>Il conteggio è vivo perché è la cosa che il filtro fa cambiare.</p></div>
+              <button type="button" class="variant-pick" data-route="r2" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget blue color span-3 priority keep-mobile"><div><small>Filtro attivo</small><b>Tutti i progetti</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="widget span-2"><div><small>Ordine</small><b>Più recenti</b></div></div><div class="widget icon span-1" aria-hidden="true">⌕</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · number-owl</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>C · Orientamento</b><p>Le briciole sono vive: la lumaca lascia e riprende il percorso.</p></div>
+              <button type="button" class="variant-pick" data-route="r2" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar" data-mobile="solo"><div class="fixed identity">SS</div><div class="slot-host span-3 keep-mobile" data-mount="trail-snail" data-options="{&quot;copy&quot;: {&quot;options&quot;: [&quot;Home&quot;, &quot;Progetti&quot;]}}"></div><div class="widget blue color span-2 priority keep-mobile"><div><small>Filtro</small><b>Tutti</b></div></div><div class="widget span-2"><div><small>Risultati</small><b>7 progetti</b></div></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Vista progetti"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">Grid</button><button type="button" aria-pressed="false">List</button></div></div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · trail-snail</p>
+          </div>
+        </div>
+      </article>
+      <article class="route">
+        <div class="route-label"><span>03 · Case study</span><h2>Dettaglio progetto</h2><p>Orientamento nel progetto</p></div>
+        <div class="variants" data-route-group="r3">
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>A · Azione</b><p>Il pager è l’unico elemento vivo: porta via un progetto e ne consegna un altro.</p></div>
+              <button type="button" class="variant-pick" data-route="r3" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar" data-mobile="solo"><div class="fixed identity">SS</div><div class="slot-host span-4 keep-mobile" data-mount="project-caterpillar"></div><div class="widget span-2 priority keep-mobile"><div style="width:100%"><small>Case study</small><b>40% letto</b><div class="progress"><i style="width:40%"></i></div></div></div><div class="widget icon span-1" aria-hidden="true">⌘</div><div class="widget icon span-1" aria-hidden="true">↗</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · project-caterpillar</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>B · Contesto</b><p>L’avanzamento è vivo: è l’unica cosa che cambia mentre leggi.</p></div>
+              <button type="button" class="variant-pick" data-route="r3" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar" data-mobile="solo"><div class="fixed identity">SS</div><div class="widget green color span-3 priority keep-mobile"><div><small>Progetto</small><b>EasyManager</b></div></div><div class="slot-host span-3 keep-mobile" data-mount="original-progress-creature" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Case study&quot;}}"></div><div class="widget span-2"><div><small>Serie</small><b>01 / 03</b></div></div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · original-progress-creature</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>C · Orientamento</b><p>Il dado è vivo: l’unico invito a lasciare il percorso previsto.</p></div>
+              <button type="button" class="variant-pick" data-route="r3" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget green color span-3 priority keep-mobile"><div style="width:100%"><small>Case study</small><b>40% letto</b><div class="progress"><i style="width:40%"></i></div></div></div><div class="widget span-3"><div><small>Prossimo</small><b>SpinGO →</b></div></div><div class="slot-host span-1 keep-mobile" data-mount="dice-armadillo" data-options="{&quot;label&quot;: &quot;Progetto casuale&quot;}"></div><div class="widget icon span-1" aria-hidden="true">⌘</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · dice-armadillo</p>
+          </div>
+        </div>
+      </article>
+      <article class="route">
+        <div class="route-label"><span>04 · Directory</span><h2>Archivio articoli</h2><p>Scoperta per argomento</p></div>
+        <div class="variants" data-route-group="r4">
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>A · Azione</b><p>La ricerca è viva: l’occhio si apre solo quando serve.</p></div>
+              <button type="button" class="variant-pick" data-route="r4" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget violet color span-3 priority keep-mobile"><div><small>Argomento</small><b>Tutti gli articoli</b></div></div><div class="widget span-3"><div><small>Pubblicati</small><b>4 articoli</b></div></div><div class="slot-host span-1 keep-mobile" data-mount="scout-eye" data-options="{&quot;label&quot;: &quot;Cerca articoli&quot;}"></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Ordine articoli"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">Recenti</button><button type="button" aria-pressed="false">Temi</button></div></div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · scout-eye</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>B · Contesto</b><p>Il conteggio è vivo: il bruco avanza di un segmento a ogni pubblicazione.</p></div>
+              <button type="button" class="variant-pick" data-route="r4" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget violet color span-3 priority keep-mobile"><div><small>Argomento</small><b>Tutti gli articoli</b></div></div><div class="slot-host span-1 keep-mobile" data-mount="counter-caterpillar" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;}}"></div><div class="widget span-2"><div><small>Ultimo</small><b>12 giorni fa</b></div></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Ordine articoli"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">Recenti</button><button type="button" aria-pressed="false">Temi</button></div></div><div class="widget icon span-1" aria-hidden="true">RSS</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · counter-caterpillar</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>C · Orientamento</b><p>Le sezioni sono vive: l’insetto salta da un argomento all’altro.</p></div>
+              <button type="button" class="variant-pick" data-route="r4" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget violet color span-3 priority keep-mobile"><div><small>Argomento</small><b>Tutti gli articoli</b></div></div><div class="widget span-2"><div><small>Pubblicati</small><b>4 articoli</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="stepper-bug"></div><div class="widget icon span-1" aria-hidden="true">RSS</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · stepper-bug</p>
+          </div>
+        </div>
+      </article>
+      <article class="route">
+        <div class="route-label"><span>05 · Reading</span><h2>Dettaglio articolo</h2><p>Orientamento nella lettura</p></div>
+        <div class="variants" data-route-group="r5">
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>A · Azione</b><p>La condivisione è viva: la medusa manda due anelli di conferma.</p></div>
+              <button type="button" class="variant-pick" data-route="r5" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1 keep-mobile" data-mount="echo-jelly" data-options="{&quot;label&quot;: &quot;Condividi l’articolo&quot;}"></div><div class="widget violet color span-4 priority keep-mobile"><div style="width:100%"><small>Avanzamento</small><b>62% completato</b><div class="progress"><i style="width:62%"></i></div></div></div><div class="widget orange color span-2"><div><small>Tempo</small><b>8 min rimasti</b></div></div><div class="widget icon span-1" aria-hidden="true">☷</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · echo-jelly</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>B · Contesto</b><p>L’avanzamento è vivo: si allunga mentre scendi nella pagina.</p></div>
+              <button type="button" class="variant-pick" data-route="r5" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar" data-mobile="solo"><div class="fixed identity">SS</div><div class="slot-host span-3 keep-mobile" data-mount="original-progress-creature" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Lettura&quot;}}"></div><div class="widget orange color span-2 priority keep-mobile"><div><small>Tempo</small><b>8 min rimasti</b></div></div><div class="widget span-2"><div><small>Sezione</small><b>2 di 5</b></div></div><div class="widget icon span-1" aria-hidden="true">↗</div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · original-progress-creature</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>C · Orientamento</b><p>Il copia-link è vivo: i due anelli si agganciano quando l’indirizzo è copiato.</p></div>
+              <button type="button" class="variant-pick" data-route="r5" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget violet color span-3 priority keep-mobile"><div style="width:100%"><small>Avanzamento</small><b>62% completato</b><div class="progress"><i style="width:62%"></i></div></div></div><div class="widget span-3"><div><small>Prossimo</small><b>Perché il pixel art →</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="link-twins" data-options="{&quot;copy&quot;: {&quot;value&quot;: &quot;Copia link&quot;}}"></div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · link-twins</p>
+          </div>
+        </div>
+      </article>
+      <article class="route">
+        <div class="route-label"><span>06 · Profile</span><h2>Chi sono</h2><p>Conversione e credenziali</p></div>
+        <div class="variants" data-route-group="r6">
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>A · Azione</b><p>Il download è vivo: lo scarabeo lascia cadere il CV da sotto il guscio.</p></div>
+              <button type="button" class="variant-pick" data-route="r6" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1 keep-mobile" data-mount="drop-beetle" data-options="{&quot;label&quot;: &quot;Scarica il CV&quot;}"></div><div class="widget green color span-3 priority keep-mobile"><div><small>Disponibilità</small><b>Aperto a opportunità</b></div></div><div class="widget span-2"><div><small>Esperienza</small><b>4 anni</b></div></div><div class="widget span-2"><div><small>Posizione</small><b>Italia · CET</b></div></div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · drop-beetle</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>B · Contesto</b><p>L’etichetta è viva: la lumaca solleva i lavori scelti dalla barra.</p></div>
+              <button type="button" class="variant-pick" data-route="r6" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget green color span-3 priority keep-mobile"><div><small>Disponibilità</small><b>Aperto a opportunità</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="sticker-slug" data-options="{&quot;copy&quot;: {&quot;value&quot;: &quot;Lavori scelti&quot;}}"></div><div class="widget span-2"><div><small>Esperienza</small><b>4 anni</b></div></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · sticker-slug</p>
+          </div>
+          <div class="variant">
+            <div class="variant-head">
+              <div><b>C · Orientamento</b><p>L’ora locale è viva: dice quando aspettarsi una risposta.</p></div>
+              <button type="button" class="variant-pick" data-route="r6" aria-pressed="false">Scegli</button>
+            </div>
+            <div class="toolbar"><div class="fixed identity">SS</div><div class="widget orange color span-3 priority keep-mobile"><div><small>Contatto</small><b>Scrivimi ✉</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><div class="widget span-2"><div><small>Curriculum</small><b>PDF ↓</b></div></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+            <p class="roster">Elemento vivo · clock-bug</p>
+          </div>
+        </div>
+      </article>
+    </section>
+    <aside class="chosen" aria-live="polite">
+      <b>Composizioni scelte</b>
+      <ol id="chosen-list"></ol>
+    </aside>
+    <aside class="note"><b>Note</b>
+      <p>Ogni composizione contiene esattamente una creatura e sedici widget statici in totale sulle diciotto barre. La creatura occupa l’impronta che le spetta — Project Caterpillar 4 slot, Trail Snail 3, Number Owl 2, Courier Moth 1 — e ogni barra somma a 8 slot esatti.</p>
+      <p>Regola mobile: restano due elementi, il widget P1 e l’elemento vivo, in qualunque posizione si trovino nella barra estesa. È una regola diversa dalla v8 e dalla v9, dove restavano semplicemente i primi due. Quando l’elemento vivo occupa 3 o 4 slot — Project Caterpillar, Trail Snail, Progress Creature — in due colonne perderebbe il suo contenuto: in quel caso prende la barra chiusa da solo.</p>
+      <p>Quindici creature diverse su ventisette trovano posto qui. Se una pagina non ha un dato che cambia da solo, non ha bisogno di una creatura: è un esito valido, non una casella da riempire.</p>
+    </aside>
+  </main>
+  <script type="module">
+    import { mountLivingComponent } from './living-library.js'
+
+    document.querySelectorAll('[data-mount]').forEach(host => {
+      try {
+        mountLivingComponent(host, host.dataset.mount, JSON.parse(host.dataset.options || '{}'))
+      } catch (error) {
+        host.dataset.mountError = 'true'
+        console.warn('[page map] could not mount', host.dataset.mount, error)
+      }
+    })
+
+    document.querySelectorAll('.segmented').forEach(toggle => {
+      toggle.querySelectorAll('button').forEach((button, index) => {
+        button.addEventListener('click', () => {
+          toggle.dataset.active = String(index)
+          toggle.querySelectorAll('button').forEach((item, itemIndex) => item.setAttribute('aria-pressed', String(itemIndex === index)))
+        })
+      })
+    })
+
+    const chosen = new Map()
+    const list = document.querySelector('#chosen-list')
+
+    function renderChosen(){
+      list.innerHTML = [...document.querySelectorAll('.route')].map(route => {
+        const title = route.querySelector('.route-label h2').textContent
+        const group = route.querySelector('[data-route-group]').dataset.routeGroup
+        return `<li>${title}<strong>${chosen.get(group) || '— nessuna scelta'}</strong></li>`
+      }).join('')
+    }
+
+    document.querySelectorAll('.variant-pick').forEach(pick => pick.addEventListener('click', () => {
+      const group = document.querySelector(`[data-route-group="${pick.dataset.route}"]`)
+      group.querySelectorAll('.variant-pick').forEach(other => other.setAttribute('aria-pressed', String(other === pick)))
+      group.querySelectorAll('.variant').forEach(variant => variant.classList.toggle('selected', variant.contains(pick)))
+      chosen.set(pick.dataset.route, pick.closest('.variant').querySelector('.variant-head b').textContent)
+      renderChosen()
+    }))
+
+    renderChosen()
+  </script>
+</body>
+</html>
