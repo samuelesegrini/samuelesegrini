@@ -44,6 +44,13 @@
     .hero-hint{display:inline-flex;align-items:center;gap:9px;width:max-content;margin-top:38px;padding:9px 14px;border:1px solid #d3d1ca;border-radius:999px;color:#6b6760;font:9px var(--mono);letter-spacing:.1em;text-transform:uppercase}
     .hero-hint:before{content:'↓';font-size:12px}
     #inizio .section-rule{background:#111}
+    /* pannello di regolazione temporaneo, fuori dalla barra */
+    .tuner{position:fixed;z-index:20;top:18px;right:18px;display:grid;gap:7px;width:216px;padding:14px 15px;border:1px solid #d9d6cf;border-radius:16px;background:#fffefb;box-shadow:0 10px 30px #0000000f}
+    .tuner-riga{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+    .tuner label{color:#4a463f;font:9px var(--mono);letter-spacing:.09em;text-transform:uppercase}
+    .tuner output{color:#111;font:700 13px var(--mono)}
+    .tuner input{width:100%;margin:0;accent-color:#5f8d3f}
+    .tuner small{color:#8b877f;font:8px var(--mono);letter-spacing:.06em;text-transform:uppercase}
     .home-section{display:grid;min-height:132vh;align-content:center;padding:0 max(24px,7vw);scroll-margin-top:0}
     .home-section:last-of-type{min-height:100vh;padding-bottom:200px}
     .section-kicker{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#8b877f}
@@ -87,7 +94,7 @@
     /* bordo sulle celle "strumento": aereo, torna su, e le due lingue ciascuna per conto suo.
        Restano senza SS, curriculum, menu, la carta della sezione e il dettaglio.
        Il colore segue la rotta attiva; sulla lingua scelta l'indicatore bianco lo copre. */
-    .plane-slot,.top-slot,.segment-bed{border:2px solid var(--active-highlight)}
+    .plane-slot,.top-slot,.segment-bed{border:2px solid color-mix(in srgb,var(--active-highlight) var(--tool-border-mix,100%),#242424)}
     .top-slot small,.plane-slot small{position:absolute;z-index:2;left:0;right:0;bottom:15px;color:#8f8f8f;font:7px var(--mono);letter-spacing:.09em;text-transform:uppercase;text-align:center;white-space:nowrap}
     /* la didascalia sta davanti: l'aereo le vola dietro invece che sopra */
     .plane-slot .plane-stage{z-index:1;margin-bottom:17px}
@@ -124,6 +131,11 @@
   </style>
 </head>
 <body>
+    <aside class="tuner" aria-label="Regolazione temporanea del bordo">
+      <div class="tuner-riga"><label for="tool-border">Bordo strumenti</label><output id="tool-border-value" for="tool-border">100%</output></div>
+      <input id="tool-border" type="range" min="0" max="100" step="1" value="100" />
+      <small>Provvisorio · non fa parte della barra</small>
+    </aside>
   <main class="stage" aria-label="Home di prova con la toolbar">
     <header class="home-section hero" id="inizio" data-section="0">
       <span class="section-kicker">Samuele Segrini</span>
@@ -206,7 +218,22 @@
           <i class="shuffle-index" aria-hidden="true">${sections.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</i>
         </span>`).join('')
       const cards = [...button.querySelectorAll('.shuffle-card')]
-      // targets[0] è la hero e non è una voce dell'indice: le carte coprono targets[1..n]
+      // regolazione dal vivo del bordo: la percentuale è quanta tinta della rotta resta
+    // rispetto al fondo della cella, non un canale alfa
+    const bordoSlider = document.querySelector('#tool-border')
+    const bordoValore = document.querySelector('#tool-border-value')
+    const applicaBordo = valore => {
+      document.documentElement.style.setProperty('--tool-border-mix', `${valore}%`)
+      bordoValore.textContent = `${valore}%`
+      try { localStorage.setItem('bordoStrumenti', valore) } catch (errore) { /* modalità privata */ }
+    }
+    let bordoSalvato = null
+    try { bordoSalvato = localStorage.getItem('bordoStrumenti') } catch (errore) { /* modalità privata */ }
+    if (bordoSalvato !== null) bordoSlider.value = bordoSalvato
+    applicaBordo(bordoSlider.value)
+    bordoSlider.addEventListener('input', () => applicaBordo(bordoSlider.value))
+
+    // targets[0] è la hero e non è una voce dell'indice: le carte coprono targets[1..n]
       const targets = [...document.querySelectorAll('.home-section')]
       const shell = document.querySelector('.toolbar-shell')
       const setMode = mode => { if (shell) shell.dataset.mode = mode }
