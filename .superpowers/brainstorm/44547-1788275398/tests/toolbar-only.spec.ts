@@ -60,33 +60,33 @@ test('nessun bordo trasparente con il menu aperto, su ogni rotta', async ({ page
 	}
 });
 
-test('il bordo degli strumenti prende il colore della rotta e resta opaco', async ({ page }) => {
+test('nessuna cella della barra porta un bordo', async ({ page }) => {
 	await page.evaluate(() => document.querySelector('#lavoro')!.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior }));
 	await page.waitForTimeout(600);
-	const bordo = () => page.locator('.plane-slot').evaluate((e) => getComputedStyle(e).borderTopColor);
-	const visti = new Set<string>();
-	for (const rotta of ['Home', 'Progetti', 'Articoli', 'Chi sono']) {
-		await page.locator('#menu-toggle').click();
-		await page.locator(`.nav-item[data-page="${rotta}"]`).click();
-		await page.waitForTimeout(600);
-		const colore = await bordo();
-		visti.add(colore);
-		// aereo, torna su e le due metà della lingua devono concordare
-		for (const sel of ['.top-slot', '.segment-bed']) {
-			expect(await page.locator(sel).first().evaluate((e) => getComputedStyle(e).borderTopColor), `${sel} su ${rotta}`).toBe(colore);
-		}
-	}
-	expect(visti.size, 'ogni rotta ha il suo colore').toBe(4);
-	expect(await bordiConAlfa(page)).toEqual([]);
+	const conBordo = await page.evaluate(() => {
+		const celle = '.identity-mark,.shuffle-slot,[data-detail],.menu-toggle,.plane-slot,.top-slot,.segment-bed,.cv-slot,.toggle-square';
+		const fuori: string[] = [];
+		document.querySelectorAll(celle).forEach((el) => {
+			const cs = getComputedStyle(el);
+			(['Top', 'Right', 'Bottom', 'Left'] as const).forEach((lato) => {
+				if (parseFloat(cs[`border${lato}Width` as 'borderTopWidth'])) {
+					fuori.push(`${(el as HTMLElement).className || el.tagName} border-${lato.toLowerCase()}`);
+				}
+			});
+		});
+		return [...new Set(fuori)];
+	});
+	console.log('CELLE CON BORDO:', JSON.stringify(conBordo));
+	expect(conBordo).toEqual([]);
 });
 
-test('le celle escluse restano senza bordo', async ({ page }) => {
-	await page.evaluate(() => document.querySelector('#lavoro')!.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior }));
-	await page.waitForTimeout(600);
-	for (const sel of ['.identity-mark', '.shuffle-slot', '[data-detail]', '.menu-toggle']) {
-		expect(parseFloat(await page.locator(sel).first().evaluate((e) => getComputedStyle(e).borderTopWidth)), sel).toBe(0);
-	}
-	for (const sel of ['.plane-slot', '.top-slot', '.segment-bed']) {
-		expect(parseFloat(await page.locator(sel).first().evaluate((e) => getComputedStyle(e).borderTopWidth)), sel).toBeGreaterThan(0);
-	}
+test('il pannello di regolazione non esiste piu', async ({ page }) => {
+	expect(await page.locator('.tuner, #tool-border, [data-width-step]').count()).toBe(0);
+	// e non resta nessuna variabile appesa
+	const variabili = await page.evaluate(() => {
+		const root = getComputedStyle(document.documentElement);
+		return [root.getPropertyValue('--tool-border-mix').trim(), root.getPropertyValue('--tool-border-width').trim()];
+	});
+	console.log('VARIABILI RESIDUE:', JSON.stringify(variabili));
+	expect(variabili).toEqual(['', '']);
 });
