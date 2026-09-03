@@ -18,7 +18,7 @@ interface Props {
 const { name, ticker, routes, sections, languages, cv, labels } = Astro.props;
 ---
 
-    <section class="toolbar-shell" id="toolbar">
+    <section class="toolbar-shell" id="toolbar" transition:persist="barra">
       <nav class="nav-panel" aria-label="Navigazione principale">
         <div class="panel-identity">
           <div class="identity-name">{name} <span id="active-route">{(routes.find((route) => route.current) ?? routes[0]).label}</span></div>
@@ -46,7 +46,7 @@ const { name, ticker, routes, sections, languages, cv, labels } = Astro.props;
               <a class="cv-slot" data-when="hero" type="button" aria-label={cv.aria} href={cv.href} download><span><small>{cv.kicker}</small><b><span class="lungo">{cv.long}</span><span class="corto">{cv.short}</span></b></span><i aria-hidden="true">↓</i></a>
             </div>
             <div class="mode-group" data-when="index">
-              <button class="slot two shuffle-slot" data-sections={JSON.stringify(sections)} aria-label={`${sections[0].kicker}: ${sections[0].value}`}></button>
+              <button class="slot two shuffle-slot" aria-label={`${sections[0].kicker}: ${sections[0].value}`}></button>
               <div class="widget" data-detail><div><small>{sections[0].detail.kicker}</small><b>{sections[0].detail.value}</b></div></div>
               <button class="top-slot" data-top type="button" aria-label={labels.top}><svg class="top-chevron" viewBox="0 0 24 12" aria-hidden="true"><path d="M3 9 12 3 21 9"/></svg><small>{labels.topCaption}</small></button>
             </div>
@@ -153,164 +153,215 @@ const { name, ticker, routes, sections, languages, cv, labels } = Astro.props;
     @media(prefers-reduced-motion:reduce){.toolbar-shell,.nav-panel,.menu-icon i{transition:none}.ticker-track{animation:none}}
 </style>
 
-<!-- portato dal prototipo così com'è: JS puro, non processato -->
+<!-- portato dal prototipo: JS puro, non processato -->
 <script is:inline>
-// Con il routing lato client il documento non viene ricaricato e questo script non viene
-// rieseguito: il montaggio va agganciato al ciclo di vita di Astro. `astro:page-load` scatta
-// anche al primo caricamento, e il listener sopravvive alle navigazioni perché sta su document.
-function montaBarraSperimentale() {
+// La barra sopravvive alle navigazioni (transition:persist), quindi la sua animazione di
+// apertura e chiusura continua mentre il contenuto dietro viene sostituito. Di conseguenza il
+// montaggio è in due fasi: ciò che si lega alla barra si lega una volta sola, ciò che dipende
+// dalla pagina si rimonta a ogni `astro:page-load`.
 
+const FRAMES_AEREO = [
+  {offset:0,transform:'translate3d(0,0,0) rotate(0deg) scale(1)',opacity:1},
+  {offset:.073,transform:'translate3d(.55px,-.3px,0) rotate(-.05deg) scale(.997)',opacity:1},
+  {offset:.146,transform:'translate3d(3px,-1.7px,0) rotate(-.3deg) scale(.983)',opacity:1},
+  {offset:.219,transform:'translate3d(8.4px,-4.7px,0) rotate(-.8deg) scale(.953)',opacity:1},
+  {offset:.292,transform:'translate3d(17.2px,-9.6px,0) rotate(-1.6deg) scale(.904)',opacity:1},
+  {offset:.364,transform:'translate3d(29.8px,-16.6px,0) rotate(-2.8deg) scale(.834)',opacity:1},
+  {offset:.425,transform:'translate3d(44px,-24.5px,0) rotate(-4.1deg) scale(.756)',opacity:1},
+  {offset:.462,transform:'translate3d(54px,-30px,0) rotate(-5deg) scale(.7)',opacity:0},
+  {offset:.565,transform:'translate3d(-54px,31px,0) rotate(-4.5deg) scale(.68)',opacity:0},
+  {offset:.59,transform:'translate3d(-50px,28px,0) rotate(-4deg) scale(.72)',opacity:1},
+  {offset:.68,transform:'translate3d(-30px,17px,0) rotate(-3deg) scale(.82)',opacity:1},
+  {offset:.8,transform:'translate3d(-13px,7px,0) rotate(-1.5deg) scale(.92)',opacity:1},
+  {offset:.91,transform:'translate3d(-4px,2px,0) rotate(-.5deg) scale(.98)',opacity:1},
+  {offset:1,transform:'translate3d(0,0,0) rotate(0deg) scale(1)',opacity:1}
+]
+const FRAMES_OMBRA = [
+  {offset:0,transform:'translate(0,0) scale(1)',opacity:.65},
+  {offset:.073,transform:'translate(-.15px,.05px) scaleX(1.01) scaleY(.995)',opacity:.645},
+  {offset:.146,transform:'translate(-.8px,.3px) scaleX(1.03) scaleY(.97)',opacity:.62},
+  {offset:.219,transform:'translate(-2px,.8px) scaleX(1.08) scaleY(.9)',opacity:.57},
+  {offset:.292,transform:'translate(-4px,1.5px) scaleX(1.16) scaleY(.79)',opacity:.49},
+  {offset:.364,transform:'translate(-7.5px,2.8px) scaleX(1.32) scaleY(.59)',opacity:.34},
+  {offset:.425,transform:'translate(-11px,4px) scaleX(1.5) scaleY(.4)',opacity:.16},
+  {offset:.462,transform:'translate(-14px,5px) scaleX(1.65) scaleY(.28)',opacity:0},
+  {offset:.8,transform:'translate(-8px,3px) scaleX(1.4) scaleY(.5)',opacity:.08},
+  {offset:.91,transform:'translate(-3px,1px) scaleX(1.15) scaleY(.8)',opacity:.38},
+  {offset:1,transform:'translate(0,0) scale(1)',opacity:.65}
+]
 
-    // macchina 02: la carta nascosta viene caricata con la sezione successiva
-    document.querySelectorAll('[data-sections]').forEach(button => {
-      const sections = JSON.parse(button.dataset.sections)
-      // una carta per sezione, ognuna con la sua identità: niente riscrittura del testo,
-      // così la carta che esce e quella che entra non sono mai lo stesso nodo
-      const accents = ['var(--blue)', 'var(--violet)', 'var(--acid)', 'var(--orange)']
-      button.innerHTML = sections.map((section, i) => `
-        <span class="shuffle-card" data-section="${i}" data-pos="${i === 0 ? 'in' : 'below'}" style="background:${accents[i % accents.length]}">
-          <small>${section.kicker}</small><b>${section.value}</b>
-          <i class="shuffle-index" aria-hidden="true">${sections.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</i>
-        </span>`).join('')
-      const cards = [...button.querySelectorAll('.shuffle-card')]
-    // targets[0] è la hero e non è una voce dell'indice: le carte coprono targets[1..n]
-      const targets = [...document.querySelectorAll('.home-section')]
-      const shell = document.querySelector('.toolbar-shell')
-      const setMode = mode => { if (shell) shell.dataset.mode = mode }
-      setMode('hero')
-      let index = 0, previous = null, lock = 0
-      // sposta una carta senza animarla: serve a portarla sul lato da cui deve entrare
-      const park = (card, pos) => {
-        card.style.transition = 'none'
-        card.dataset.pos = pos
-        void card.offsetWidth
-        card.style.transition = ''
-      }
-      // il verso segue il movimento: in avanti la carta esce in alto, all'indietro esce in basso
-      const place = verso => {
-        const entra = verso > 0 ? 'below' : 'above'
-        const esce = verso > 0 ? 'above' : 'below'
-        cards.forEach((card, i) => {
-          if (i === index || i === previous) return
-          park(card, entra)
-        })
-        if (cards[index].dataset.pos !== entra) park(cards[index], entra)
-        requestAnimationFrame(() => {
-          cards[index].dataset.pos = 'in'
-          if (previous !== null && previous !== index) cards[previous].dataset.pos = esce
-        })
-      }
-      // il widget accanto smette di essere fisso: racconta la sezione corrente
-      const detail = document.querySelector('[data-detail]')
-      let detailTimer
-      const writeDetail = at => {
-        const entry = sections[at]?.detail
-        if (!detail || !entry) return false
-        detail.querySelector('small').textContent = entry.kicker
-        detail.querySelector('b').textContent = entry.value
-        return true
-      }
-      const setDetail = at => {
-        if (!detail || !sections[at]?.detail) return
-        detail.dataset.swap = 'true'
-        clearTimeout(detailTimer)
-        detailTimer = setTimeout(() => {
-          writeDetail(at)
-          detail.dataset.swap = 'false'
-        }, 170)
-      }
-      // senza questo il dettaglio resta quello scritto a mano nell'HTML finché non si tocca la carta
-      writeDetail(0)
-      const show = (at, verso) => {
-        if (at === index) return
-        const direzione = verso ?? (at > index ? 1 : -1)
-        previous = index
-        index = at
-        place(direzione)
-        setDetail(at)
-        button.setAttribute('aria-label', `${sections[index].kicker}: ${sections[index].value}`)
-      }
-      button.setAttribute('aria-label', `${sections[0].kicker}: ${sections[0].value}`)
-      button.addEventListener('click', () => {
-        const next = (index + 1) % cards.length
-        show(next, 1)
-        setMode('index')
-        // lo scroll programmato attraversa le sezioni intermedie: senza questa pausa
-        // l'osservatore farebbe sfogliare il mazzo lungo il tragitto
-        lock = Date.now() + 1200
-        targets[next + 1]?.scrollIntoView({ block: 'start' })
-      })
-      document.querySelector('[data-top]')?.addEventListener('click', () => {
-        lock = Date.now() + 1200
-        setMode('hero')
-        window.scrollTo({ top: 0 })
-      })
-      // la carta segue lo scroll, non solo il contrario
-      if (targets.length) {
-        const ratios = new Map()
-        const spy = new IntersectionObserver(entries => {
-          entries.forEach(entry => ratios.set(entry.target, entry.intersectionRatio))
-          if (Date.now() < lock) return
-          let best = null, top = 0
-          ratios.forEach((ratio, node) => { if (ratio > top) { top = ratio; best = node } })
-          if (!best || top <= 0.25) return
-          const at = Number(best.dataset.section)
-          setMode(at === 0 ? 'hero' : 'index')
-          if (at > 0) show(at - 1)
-        }, { threshold: [0, 0.25, 0.5, 0.75, 1] })
-        targets.forEach(target => spy.observe(target))
-      }
+const ACCENTI = ['var(--blue)', 'var(--violet)', 'var(--acid)', 'var(--orange)']
+
+/** Si lega una volta sola: questi nodi sopravvivono a ogni navigazione. */
+function legaBarra(shell) {
+  if (shell.dataset.legata === 'true') return
+  shell.dataset.legata = 'true'
+
+  const toggle = shell.querySelector('#menu-toggle')
+  const apri = aperta => {
+    shell.classList.toggle('open', aperta)
+    toggle.setAttribute('aria-expanded', String(aperta))
+    toggle.setAttribute('aria-label', aperta ? 'Chiudi menu' : 'Apri menu')
+  }
+  shell.__apri = apri
+  toggle.addEventListener('click', () => apri(!shell.classList.contains('open')))
+  document.addEventListener('keydown', evento => { if (evento.key === 'Escape') apri(false) })
+  document.addEventListener('pointerdown', evento => {
+    if (shell.classList.contains('open') && !shell.contains(evento.target)) apri(false)
+  })
+
+  // La voce di menu è un link vero: non lo blocchiamo. Chiudere qui non funzionerebbe: spostare
+  // un nodo nel documento nuovo annulla le transizioni in corso, e la chiusura verrebbe troncata.
+  // Quindi la barra resta aperta durante lo scambio e si chiude dopo, sul contenuto già nuovo.
+  shell.querySelectorAll('.nav-item').forEach(voce => voce.addEventListener('click', () => {
+    shell.style.setProperty('--active-highlight', getComputedStyle(voce).getPropertyValue('--highlight'))
+    shell.__chiudiDopo = true
+  }))
+
+  // macchina 05: volo dell'aereo, identico al motion playground
+  shell.querySelectorAll('.plane-slot').forEach(bottone => bottone.addEventListener('click', () => {
+    bottone.planeFlight?.cancel(); bottone.planeShadowMotion?.cancel()
+    bottone.dataset.phase = 'sending'; bottone.setAttribute('aria-label', 'Sending email')
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      bottone.dataset.phase = 'sent'; bottone.setAttribute('aria-label', 'Email sent'); return
+    }
+    const aereo = bottone.querySelector('.plane-icon'), ombra = bottone.querySelector('.plane-shadow')
+    const volo = aereo.animate(FRAMES_AEREO, { duration: 1350, fill: 'none', easing: 'linear' })
+    const moto = ombra.animate(FRAMES_OMBRA, { duration: 1350, fill: 'none', easing: 'linear' })
+    bottone.planeFlight = volo; bottone.planeShadowMotion = moto
+    volo.finished.then(() => {
+      if (bottone.planeFlight === volo) { bottone.dataset.phase = 'sent'; bottone.setAttribute('aria-label', 'Email sent') }
+    }).catch(() => {})
+  }))
+
+  shell.querySelector('[data-top]')?.addEventListener('click', () => {
+    shell.__blocco = Date.now() + 1200
+    shell.dataset.mode = 'hero'
+    window.scrollTo({ top: 0 })
+  })
+}
+
+/** Si rimonta a ogni pagina: le sezioni, e quindi il mazzo e il dettaglio, cambiano. */
+function montaIndice(shell) {
+  const dati = document.querySelector('#lab-sections')
+  const sezioni = dati ? JSON.parse(dati.textContent) : []
+  const bersagli = [...document.querySelectorAll('.home-section')]
+  const carta = shell.querySelector('.shuffle-slot')
+  const dettaglio = shell.querySelector('[data-detail]')
+  if (!carta || sezioni.length === 0) return
+
+  // i listener della pagina precedente vanno sciolti: la barra è la stessa, la pagina no
+  shell.__perPagina?.abort()
+  shell.__spia?.disconnect()
+  const perPagina = new AbortController()
+  shell.__perPagina = perPagina
+  const { signal } = perPagina
+
+  // arrivati da una voce di menu: ora che il contenuto è quello nuovo, la barra si richiude
+  if (shell.__chiudiDopo) {
+    shell.__chiudiDopo = false
+    requestAnimationFrame(() => shell.__apri?.(false))
+  }
+
+  // la rotta attiva la decide l'indirizzo, perché il menu sopravvive alla navigazione
+  const percorso = location.pathname
+  shell.querySelectorAll('.nav-item').forEach(voce => {
+    const attiva = voce.getAttribute('href') === percorso
+    voce.classList.toggle('active', attiva)
+    if (attiva) {
+      shell.querySelector('#active-route').textContent = voce.dataset.page
+      shell.style.setProperty('--active-highlight', getComputedStyle(voce).getPropertyValue('--highlight'))
+    }
+  })
+
+  // una carta per sezione, ognuna con la sua identità
+  carta.innerHTML = sezioni.map((sezione, i) => `
+    <span class="shuffle-card" data-section="${i}" data-pos="${i === 0 ? 'in' : 'below'}" style="background:${ACCENTI[i % ACCENTI.length]}">
+      <small>${sezione.kicker}</small><b>${sezione.value}</b>
+      <i class="shuffle-index" aria-hidden="true">${sezioni.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</i>
+    </span>`).join('')
+  const carte = [...carta.querySelectorAll('.shuffle-card')]
+  let indice = 0, precedente = null
+  shell.__blocco = 0
+
+  const parcheggia = (nodo, posizione) => {
+    nodo.style.transition = 'none'
+    nodo.dataset.pos = posizione
+    void nodo.offsetWidth
+    nodo.style.transition = ''
+  }
+  // il verso segue il movimento: in avanti la carta esce in alto, all'indietro esce in basso
+  const disponi = verso => {
+    const entra = verso > 0 ? 'below' : 'above'
+    const esce = verso > 0 ? 'above' : 'below'
+    carte.forEach((nodo, i) => { if (i !== indice && i !== precedente) parcheggia(nodo, entra) })
+    if (carte[indice].dataset.pos !== entra) parcheggia(carte[indice], entra)
+    requestAnimationFrame(() => {
+      carte[indice].dataset.pos = 'in'
+      if (precedente !== null && precedente !== indice) carte[precedente].dataset.pos = esce
     })
+  }
 
-    // macchina 05: volo dell'aereo, identico al motion playground
-    const planeFlightFrames=[
-      {offset:0,transform:'translate3d(0,0,0) rotate(0deg) scale(1)',opacity:1},
-      {offset:.073,transform:'translate3d(.55px,-.3px,0) rotate(-.05deg) scale(.997)',opacity:1},
-      {offset:.146,transform:'translate3d(3px,-1.7px,0) rotate(-.3deg) scale(.983)',opacity:1},
-      {offset:.219,transform:'translate3d(8.4px,-4.7px,0) rotate(-.8deg) scale(.953)',opacity:1},
-      {offset:.292,transform:'translate3d(17.2px,-9.6px,0) rotate(-1.6deg) scale(.904)',opacity:1},
-      {offset:.364,transform:'translate3d(29.8px,-16.6px,0) rotate(-2.8deg) scale(.834)',opacity:1},
-      {offset:.425,transform:'translate3d(44px,-24.5px,0) rotate(-4.1deg) scale(.756)',opacity:1},
-      {offset:.462,transform:'translate3d(54px,-30px,0) rotate(-5deg) scale(.7)',opacity:0},
-      {offset:.565,transform:'translate3d(-54px,31px,0) rotate(-4.5deg) scale(.68)',opacity:0},
-      {offset:.59,transform:'translate3d(-50px,28px,0) rotate(-4deg) scale(.72)',opacity:1},
-      {offset:.68,transform:'translate3d(-30px,17px,0) rotate(-3deg) scale(.82)',opacity:1},
-      {offset:.8,transform:'translate3d(-13px,7px,0) rotate(-1.5deg) scale(.92)',opacity:1},
-      {offset:.91,transform:'translate3d(-4px,2px,0) rotate(-.5deg) scale(.98)',opacity:1},
-      {offset:1,transform:'translate3d(0,0,0) rotate(0deg) scale(1)',opacity:1}
-    ]
-    const planeShadowFrames=[
-      {offset:0,transform:'translate(0,0) scale(1)',opacity:.65},
-      {offset:.073,transform:'translate(-.15px,.05px) scaleX(1.01) scaleY(.995)',opacity:.645},
-      {offset:.146,transform:'translate(-.8px,.3px) scaleX(1.03) scaleY(.97)',opacity:.62},
-      {offset:.219,transform:'translate(-2px,.8px) scaleX(1.08) scaleY(.9)',opacity:.57},
-      {offset:.292,transform:'translate(-4px,1.5px) scaleX(1.16) scaleY(.79)',opacity:.49},
-      {offset:.364,transform:'translate(-7.5px,2.8px) scaleX(1.32) scaleY(.59)',opacity:.34},
-      {offset:.425,transform:'translate(-11px,4px) scaleX(1.5) scaleY(.4)',opacity:.16},
-      {offset:.462,transform:'translate(-14px,5px) scaleX(1.65) scaleY(.28)',opacity:0},
-      {offset:.8,transform:'translate(-8px,3px) scaleX(1.4) scaleY(.5)',opacity:.08},
-      {offset:.91,transform:'translate(-3px,1px) scaleX(1.15) scaleY(.8)',opacity:.38},
-      {offset:1,transform:'translate(0,0) scale(1)',opacity:.65}
-    ]
-    document.querySelectorAll('.plane-slot').forEach(button=>button.addEventListener('click',()=>{
-      button.planeFlight?.cancel();button.planeShadowMotion?.cancel()
-      button.dataset.phase='sending';button.setAttribute('aria-label','Sending email')
-      if(matchMedia('(prefers-reduced-motion: reduce)').matches){button.dataset.phase='sent';button.setAttribute('aria-label','Email sent');return}
-      const plane=button.querySelector('.plane-icon'),shadow=button.querySelector('.plane-shadow')
-      const flight=plane.animate(planeFlightFrames,{duration:1350,fill:'none',easing:'linear'}),shadowMotion=shadow.animate(planeShadowFrames,{duration:1350,fill:'none',easing:'linear'})
-      button.planeFlight=flight;button.planeShadowMotion=shadowMotion
-      flight.finished.then(()=>{if(button.planeFlight===flight){button.dataset.phase='sent';button.setAttribute('aria-label','Email sent')}}).catch(()=>{})
-    }))
+  let attesa
+  const scriviDettaglio = a => {
+    const voce = sezioni[a]?.detail
+    if (!dettaglio || !voce) return
+    dettaglio.querySelector('small').textContent = voce.kicker
+    dettaglio.querySelector('b').textContent = voce.value
+  }
+  const cambiaDettaglio = a => {
+    if (!dettaglio || !sezioni[a]?.detail) return
+    dettaglio.dataset.swap = 'true'
+    clearTimeout(attesa)
+    attesa = setTimeout(() => { scriviDettaglio(a); dettaglio.dataset.swap = 'false' }, 170)
+  }
+  scriviDettaglio(0)
 
+  const mostra = (a, verso) => {
+    if (a === indice) return
+    const direzione = verso ?? (a > indice ? 1 : -1)
+    precedente = indice
+    indice = a
+    disponi(direzione)
+    cambiaDettaglio(a)
+    carta.setAttribute('aria-label', `${sezioni[indice].kicker}: ${sezioni[indice].value}`)
+  }
+  carta.setAttribute('aria-label', `${sezioni[0].kicker}: ${sezioni[0].value}`)
 
-    const toolbar=document.getElementById('toolbar');
-    const toggle=document.getElementById('menu-toggle');
-    const activeRoute=document.getElementById('active-route');
-    function setOpen(open){toolbar.classList.toggle('open',open);toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Chiudi menu':'Apri menu')}
-    toggle.addEventListener('click',()=>setOpen(!toolbar.classList.contains('open')));
-    document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>{document.querySelectorAll('.nav-item').forEach(other=>other.classList.toggle('active',other===item));activeRoute.textContent=item.dataset.page;toolbar.style.setProperty('--active-highlight',getComputedStyle(item).getPropertyValue('--highlight'));setTimeout(()=>setOpen(false),180)}));
-    document.addEventListener('keydown',event=>{if(event.key==='Escape')setOpen(false)});
-    document.addEventListener('pointerdown',event=>{if(toolbar.classList.contains('open')&&!toolbar.contains(event.target))setOpen(false)});
+  carta.addEventListener('click', () => {
+    const prossima = (indice + 1) % carte.length
+    mostra(prossima, 1)
+    shell.dataset.mode = 'index'
+    // lo scroll programmato attraversa le sezioni intermedie: senza questa pausa
+    // l'osservatore farebbe sfogliare il mazzo lungo il tragitto
+    shell.__blocco = Date.now() + 1200
+    bersagli[prossima + 1]?.scrollIntoView({ block: 'start' })
+  }, { signal })
+
+  // la carta segue lo scroll, non solo il contrario
+  shell.dataset.mode = 'hero'
+  if (bersagli.length) {
+    const quote = new Map()
+    const spia = new IntersectionObserver(voci => {
+      voci.forEach(voce => quote.set(voce.target, voce.intersectionRatio))
+      if (Date.now() < shell.__blocco) return
+      let migliore = null, massimo = 0
+      quote.forEach((quota, nodo) => { if (quota > massimo) { massimo = quota; migliore = nodo } })
+      if (!migliore || massimo <= 0.25) return
+      const a = Number(migliore.dataset.section)
+      shell.dataset.mode = a === 0 ? 'hero' : 'index'
+      if (a > 0) mostra(a - 1)
+    }, { threshold: [0, 0.25, 0.5, 0.75, 1] })
+    bersagli.forEach(bersaglio => spia.observe(bersaglio))
+    shell.__spia = spia
+  }
+}
+
+function montaBarraSperimentale() {
+  const shell = document.querySelector('.toolbar-shell')
+  if (!shell) return
+  legaBarra(shell)
+  montaIndice(shell)
 }
 
 if (!window.__barraSperimentale) {

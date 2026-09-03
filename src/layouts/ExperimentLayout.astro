@@ -37,6 +37,8 @@ const { title, currentHref, sections } = Astro.props;
 	</head>
 	<body>
 		<main class="stage" aria-label={title}>
+			<!-- le sezioni viaggiano con la pagina: la barra sopravvive allo scambio e le rilegge qui -->
+			<script type="application/json" id="lab-sections" is:inline set:html={JSON.stringify(sections)}></script>
 			<slot />
 			<ExperimentToolbar
 				name={siteConfig.name}
