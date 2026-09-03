@@ -7,9 +7,11 @@
   <style>
     @font-face{font-family:Manrope;src:url('./manrope.woff2')}@font-face{font-family:Newsreader;src:url('./newsreader.woff2')}@font-face{font-family:Plex;src:url('./plex-mono.woff2')}
     :root{--ink:#111;--paper:#f4f1e9;--acid:#c7ff9f;--blue:#cdefff;--violet:#ded1ff;--orange:#ffd4b8;--white:#fffef9;--slot:#242424;--ease:cubic-bezier(.22,1,.36,1);--sans:Manrope,system-ui,sans-serif;--serif:Newsreader,Georgia,serif;--mono:Plex,monospace}
-    *{box-sizing:border-box}html,body{height:100%}body{margin:0;overflow:hidden;background:var(--paper);font-family:var(--sans);color:var(--ink)}
-    .stage{position:relative;width:100%;height:100%;background:radial-gradient(circle at 50% 110%,#ffffff 0,transparent 42%),var(--paper)}
-    .stage:before{content:'';position:absolute;inset:0;background-image:linear-gradient(#0808080a 1px,transparent 1px),linear-gradient(90deg,#0808080a 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,transparent 0,#000 100%);opacity:.3}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);font-family:var(--sans);color:var(--ink)}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    .stage{position:relative;width:100%;min-height:100%}
+    .stage:after{content:'';position:fixed;z-index:-2;inset:0;background:radial-gradient(circle at 50% 110%,#ffffff 0,transparent 42%),var(--paper)}
+    .stage:before{content:'';position:fixed;z-index:-1;inset:0;background-image:linear-gradient(#0808080a 1px,transparent 1px),linear-gradient(90deg,#0808080a 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,transparent 0,#000 100%);opacity:.3}
     .toolbar-shell{--active-highlight:var(--acid);position:fixed;z-index:10;left:50%;bottom:24px;width:min(720px,calc(100vw - 36px));height:98px;transform:translateX(-50%);overflow:hidden;border:1px solid #ffffff20;border-radius:27px;background:#121212;color:white;box-shadow:0 28px 85px #0005;transition:height 520ms cubic-bezier(.2,.8,.2,1),border-radius 360ms ease}
     .toolbar-shell.open{height:min(590px,calc(100svh - 48px));border-radius:30px}
     .nav-panel{height:calc(100% - 98px);padding:14px 14px 0;opacity:0;transform:translateY(22px);pointer-events:none;transition:opacity 180ms ease,transform 420ms cubic-bezier(.2,.8,.2,1)}
@@ -33,6 +35,16 @@
     @keyframes ticker{to{transform:translateX(-50%)}}
     @media(max-width:620px){.toolbar-shell{bottom:12px;width:calc(100vw - 24px);height:86px;border-radius:23px}.toolbar-shell.open{height:min(548px,calc(100svh - 24px));border-radius:25px}.nav-panel{height:calc(100% - 86px);padding:10px 10px 0}.nav-list{gap:5px}.nav-item{grid-template-columns:64px 1fr 34px;gap:14px;min-height:79px;padding:6px 9px 6px 6px;border-radius:16px}.nav-preview{width:64px;height:64px;border-radius:12px}.nav-copy small{font-size:8px}.nav-copy strong{font-size:21px}.nav-arrow{width:32px;height:32px}.identity-row{grid-template-columns:64px minmax(0,1fr) 54px;gap:6px;height:86px;padding:9px}.identity-mark{width:64px;height:66px;border-radius:13px;font-size:19px}.identity-name{font-size:15px}.identity-name span{display:none}.ticker{font-size:11px}.menu-toggle{width:50px;height:50px;border-radius:14px}}
 
+
+    /* --- schermata home: sezioni molto alte, per lavorare su ancore e scroll --- */
+    .home-section{display:grid;min-height:132vh;align-content:center;padding:0 max(24px,7vw);scroll-margin-top:0}
+    .home-section:last-of-type{min-height:100vh;padding-bottom:200px}
+    .section-kicker{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#8b877f}
+    .home-section h1{max-width:14ch;margin:16px 0 0;font-size:clamp(56px,11vw,132px);line-height:.86;letter-spacing:-.075em}
+    .home-section p{max-width:52ch;margin:26px 0 0;color:#6b6760;font-size:clamp(16px,2vw,20px);line-height:1.55}
+    .section-rule{width:96px;height:10px;margin-top:34px;border-radius:6px}
+    #lavoro .section-rule{background:var(--blue)}#scrittura .section-rule{background:var(--violet)}#percorso .section-rule{background:var(--acid)}#contatto .section-rule{background:var(--orange)}
+    @media(max-width:620px){.home-section{min-height:118vh}.home-section:last-of-type{padding-bottom:170px}}
     /* --- composizione 02: macchine 02 e 05, widget statici, cambio lingua --- */
     .slot{position:relative;height:92px;border:0;border-radius:16px;background:var(--slot);color:#fff;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .shuffle-slot{perspective:500px;text-align:left}.shuffle-card{position:absolute;inset:1px;padding:13px 14px;border-radius:15px;background:var(--blue);color:#111;transform-origin:50% 100%;transition:transform .55s var(--ease),opacity .25s}.shuffle-card.alt{background:var(--violet);transform:translateY(110%) rotateX(-35deg);opacity:0}.shuffle-slot.swapped .shuffle-card{transform:translateY(-110%) rotateX(40deg);opacity:0}.shuffle-slot.swapped .shuffle-card.alt{transform:none;opacity:1}.shuffle-card small{display:block;font:7px var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.55}.shuffle-card b{position:absolute;left:14px;bottom:14px;font-size:18px;letter-spacing:-.045em}.shuffle-notch{position:absolute;right:12px;top:12px;width:8px;height:8px;border-radius:2px;background:#111;box-shadow:0 12px #1118}
@@ -76,7 +88,31 @@
   </style>
 </head>
 <body>
-  <main class="stage" aria-label="Anteprima isolata della toolbar">
+  <main class="stage" aria-label="Home di prova con la toolbar">
+    <section class="home-section" id="lavoro" data-section="0">
+      <span class="section-kicker">Sezione 01</span>
+      <h1>Lavoro</h1>
+      <p>I progetti selezionati, con il ragionamento che c’è dietro invece della sola schermata finale.</p>
+      <i class="section-rule" aria-hidden="true"></i>
+    </section>
+    <section class="home-section" id="scrittura" data-section="1">
+      <span class="section-kicker">Sezione 02</span>
+      <h1>Scrittura</h1>
+      <p>Note tecniche su ciò che ho dovuto capire davvero: sistemi, vincoli, errori utili.</p>
+      <i class="section-rule" aria-hidden="true"></i>
+    </section>
+    <section class="home-section" id="percorso" data-section="2">
+      <span class="section-kicker">Sezione 03</span>
+      <h1>Percorso</h1>
+      <p>Come ci sono arrivato — gli strumenti, le persone e i problemi che mi hanno formato.</p>
+      <i class="section-rule" aria-hidden="true"></i>
+    </section>
+    <section class="home-section" id="contatto" data-section="3">
+      <span class="section-kicker">Sezione 04</span>
+      <h1>Contatto</h1>
+      <p>Aperto a opportunità. Risposta entro 24 ore, fuso orario italiano.</p>
+      <i class="section-rule" aria-hidden="true"></i>
+    </section>
     <section class="toolbar-shell" id="toolbar">
       <nav class="nav-panel" aria-label="Navigazione principale">
         <div class="panel-identity">
@@ -119,17 +155,39 @@
           <i class="shuffle-index" aria-hidden="true">${sections.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</i>
         </span>`).join('')
       const cards = [...button.querySelectorAll('.shuffle-card')]
-      let index = 0, previous = null
+      const targets = [...document.querySelectorAll('.home-section')]
+      let index = 0, previous = null, lock = 0
       const place = () => cards.forEach((card, i) => {
         card.dataset.pos = i === index ? 'in' : i === previous ? 'above' : 'below'
       })
-      button.setAttribute('aria-label', `${sections[0].kicker}: ${sections[0].value}`)
-      button.addEventListener('click', () => {
+      const show = at => {
+        if (at === index) return
         previous = index
-        index = (index + 1) % cards.length
+        index = at
         place()
         button.setAttribute('aria-label', `${sections[index].kicker}: ${sections[index].value}`)
+      }
+      button.setAttribute('aria-label', `${sections[0].kicker}: ${sections[0].value}`)
+      button.addEventListener('click', () => {
+        const next = (index + 1) % cards.length
+        show(next)
+        // lo scroll programmato attraversa le sezioni intermedie: senza questa pausa
+        // l'osservatore farebbe sfogliare il mazzo lungo il tragitto
+        lock = Date.now() + 1200
+        targets[next]?.scrollIntoView({ block: 'start' })
       })
+      // la carta segue lo scroll, non solo il contrario
+      if (targets.length) {
+        const ratios = new Map()
+        const spy = new IntersectionObserver(entries => {
+          entries.forEach(entry => ratios.set(entry.target, entry.intersectionRatio))
+          if (Date.now() < lock) return
+          let best = null, top = 0
+          ratios.forEach((ratio, node) => { if (ratio > top) { top = ratio; best = node } })
+          if (best && top > 0.25) show(Number(best.dataset.section))
+        }, { threshold: [0, 0.25, 0.5, 0.75, 1] })
+        targets.forEach(target => spy.observe(target))
+      }
     })
 
     // macchina 05: volo dell'aereo, identico al motion playground
