@@ -6,6 +6,7 @@
 import type { ChromeRoute, ToolbarLanguage, ToolbarSection } from './chrome';
 
 interface Props {
+	lang: string;
 	name: string;
 	ticker: string;
 	routes: ChromeRoute[];
@@ -16,10 +17,10 @@ interface Props {
 	mailHref: string;
 }
 
-const { name, ticker, routes, sections, languages, cv, labels, mailHref } = Astro.props;
+const { lang, name, ticker, routes, sections, languages, cv, labels, mailHref } = Astro.props;
 ---
 
-    <section class="toolbar-shell" id="toolbar" transition:persist="barra">
+    <section class="toolbar-shell" id="toolbar" transition:persist={`barra-${lang}`}>
       <nav class="nav-panel" aria-label="Navigazione principale">
         <div class="panel-identity">
           <div class="identity-name">{name} <span id="active-route">{(routes.find((route) => route.current) ?? routes[0]).label}</span></div>
@@ -40,7 +41,7 @@ const { name, ticker, routes, sections, languages, cv, labels, mailHref } = Astr
         </ul>
       </nav>
       <div class="identity-row">
-        <div class="identity-mark" aria-hidden="true">SS</div>
+        <a class="identity-mark" href={routes[0].href} aria-label={routes[0].label}>SS</a>
         <div class="slot-row">
           <div class="mode-area">
             <div class="mode-group" data-when="hero">
@@ -79,7 +80,7 @@ const { name, ticker, routes, sections, languages, cv, labels, mailHref } = Astr
     .preview-about{background:#0c0c0c}.preview-about:before,.preview-about:after{content:'';position:absolute;border:1px solid #637d51;border-radius:50%}.preview-about:before{width:56px;height:56px}.preview-about:after{width:27px;height:27px;background:var(--acid)}
     .nav-copy small{display:block;margin-bottom:4px;color:#8f8f8f;font:10px var(--mono);letter-spacing:.09em;text-transform:uppercase}.nav-item.active .nav-copy small{color:#375b24}.nav-copy strong{display:block;font-size:25px;letter-spacing:-.04em}.nav-arrow{display:grid;width:38px;height:38px;place-items:center;border:1px solid #3f3f3f;border-radius:50%;font-size:16px}.nav-item.active .nav-arrow{visibility:hidden}
     .identity-row{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:78px minmax(0,1fr) 68px;gap:6px;align-items:center;height:98px;padding:10px 12px;border-top:1px solid #262626;background:#121212}
-    .identity-mark{position:relative;display:grid;width:78px;height:76px;place-items:center;border-radius:15px;background:var(--white);color:var(--ink);font:800 22px var(--sans);letter-spacing:-.06em}
+    .identity-mark{position:relative;display:grid;cursor:pointer;text-decoration:none;width:78px;height:76px;place-items:center;border-radius:15px;background:var(--white);color:var(--ink);font:800 22px var(--sans);letter-spacing:-.06em}
     .identity-content{min-width:0;overflow:hidden}.identity-name{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:17px;font-weight:750;letter-spacing:-.035em}.identity-name span{color:var(--active-highlight);font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;transition:color 180ms ease}
     .ticker{position:relative;overflow:hidden;color:#8f8f8f;font:13px var(--mono);letter-spacing:.055em;text-transform:uppercase;white-space:nowrap;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 88%,transparent)}.ticker-track{display:inline-flex;width:max-content;animation:ticker 17s linear infinite}.ticker-track span{padding-right:42px}
     .menu-toggle{display:grid;margin-left:10px;width:58px;height:58px;place-items:center;border:0;border-radius:17px;background:#1d1d1d;color:white;cursor:pointer;transition:background 180ms ease,transform 180ms ease}.menu-toggle:hover{background:#282828}.menu-toggle:active{transform:scale(.96)}

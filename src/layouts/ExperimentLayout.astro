@@ -44,6 +44,7 @@ const labPathsAbout = labPaths[lang].about;
 			<script type="application/json" id="lab-sections" is:inline set:html={JSON.stringify(sections)}></script>
 			<slot />
 			<ExperimentToolbar
+				lang={lang}
 				name={siteConfig.name}
 				ticker={copy.ticker}
 				routes={experimentRoutes(lang, currentHref, copy.nav)}
