@@ -47,6 +47,9 @@
     .widget.color{color:#111}.widget.color small{color:#526246}.widget.blue{background:var(--blue)}
     .priority:after{content:'P1';position:absolute;right:7px;top:6px;color:#466033;font:6px var(--mono)}
     .shuffle-card b{overflow:hidden;max-width:calc(100% - 26px);text-overflow:ellipsis;white-space:nowrap}
+    .shuffle-index{position:absolute;right:11px;top:50%;display:grid;gap:4px;transform:translateY(-50%)}
+    .shuffle-index i{width:6px;height:6px;border-radius:2px;background:#111;opacity:.22;transition:opacity .3s ease,transform .3s ease}
+    .shuffle-index i.on{opacity:1;transform:scale(1.3)}
     .toggle-square{justify-content:center;padding:1px;background:transparent}
     .segmented{position:relative;display:grid;width:100%;height:100%;grid-template-rows:1fr 1fr;gap:1px}
     .segment-bed{position:absolute;z-index:0;inset:0 0 auto;height:calc(50% - .5px);border-radius:13px;background:#242424}.segment-bed.bottom{inset:auto 0 0}
@@ -62,7 +65,7 @@
       .slot-row .shuffle-slot{grid-column:span 2}.slot-row .plane-slot{grid-column:span 1}.slot-row .toggle-square{grid-column:span 1}
       /* la carta rimpicciolisce per stare in due colonne senza troncare il nome della sezione */
       .shuffle-card{padding:9px 10px}.shuffle-card b{left:10px;bottom:10px;font-size:15px;letter-spacing:-.04em}
-      .shuffle-notch{right:9px;top:9px;width:6px;height:6px;box-shadow:0 9px #1118}
+      .shuffle-index{right:8px;gap:3px}.shuffle-index i{width:5px;height:5px}
     }
     @media(prefers-reduced-motion:reduce){.segmented:before{transition:none}}
     @media(prefers-reduced-motion:reduce){.toolbar-shell,.nav-panel,.menu-icon i{transition:none}.ticker-track{animation:none}}
@@ -88,7 +91,7 @@
       <div class="identity-row">
         <div class="identity-mark" aria-hidden="true">SS</div>
         <div class="slot-row">
-          <button class="slot two shuffle-slot span-2 keep-mobile" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-notch"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-notch"></i></span></button>
+          <button class="slot two shuffle-slot span-2 keep-mobile" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-index" aria-hidden="true"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-index" aria-hidden="true"></i></span></button>
           <div class="widget span-2"><div><small>Progetti</small><b>7 pubblicati</b></div></div>
           <button class="slot one plane-slot span-1 keep-mobile" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button>
           <div class="widget toggle-square span-1 keep-mobile"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div>
@@ -104,19 +107,22 @@
     document.querySelectorAll('[data-sections]').forEach(button => {
       const sections = JSON.parse(button.dataset.sections)
       const cards = button.querySelectorAll('.shuffle-card')
-      const write = (card, entry) => {
-        card.querySelector('small').textContent = entry.kicker
-        card.querySelector('b').textContent = entry.value
+      // un quadrato per sezione: l'indice vive su ogni carta, così segue la carta che entra
+      button.querySelectorAll('.shuffle-index').forEach(idx => { idx.innerHTML = sections.map(() => '<i></i>').join('') })
+      const write = (card, at) => {
+        card.querySelector('small').textContent = sections[at].kicker
+        card.querySelector('b').textContent = sections[at].value
+        card.querySelectorAll('.shuffle-index i').forEach((square, i) => square.classList.toggle('on', i === at))
       }
       let index = 0, pending
-      write(cards[0], sections[0]); write(cards[1], sections[1 % sections.length])
+      write(cards[0], 0); write(cards[1], 1 % sections.length)
       button.addEventListener('click', () => {
         const swapped = button.classList.toggle('swapped')
         index = (index + 1) % sections.length
         button.setAttribute('aria-label', `${sections[index].kicker}: ${sections[index].value}`)
         clearTimeout(pending)
         const hidden = swapped ? cards[0] : cards[1]
-        pending = setTimeout(() => write(hidden, sections[(index + 1) % sections.length]), 600)
+        pending = setTimeout(() => write(hidden, (index + 1) % sections.length), 600)
       })
     })
 
