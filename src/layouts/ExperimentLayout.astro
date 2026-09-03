@@ -13,6 +13,7 @@ import {
 	experimentLanguages,
 	experimentRoutes,
 	experimentTicker,
+	mailHref,
 } from '../components/lab/chrome';
 import { siteConfig } from '../config/site';
 
@@ -48,6 +49,7 @@ const { title, currentHref, sections } = Astro.props;
 				languages={experimentLanguages(currentHref)}
 				cv={experimentCv}
 				labels={experimentLabels}
+				mailHref={mailHref}
 			/>
 		</main>
 

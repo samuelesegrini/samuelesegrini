@@ -12,10 +12,11 @@ interface Props {
 	sections: ToolbarSection[];
 	languages: readonly [ToolbarLanguage, ToolbarLanguage];
 	cv: { kicker: string; long: string; short: string; aria: string; href: string };
-	labels: { top: string; topCaption: string; mail: string; mailCaption: string; language: string; openMenu: string };
+	labels: { top: string; topCaption: string; mail: string; mailSending: string; mailSent: string; mailCaption: string; language: string; openMenu: string };
+	mailHref: string;
 }
 
-const { name, ticker, routes, sections, languages, cv, labels } = Astro.props;
+const { name, ticker, routes, sections, languages, cv, labels, mailHref } = Astro.props;
 ---
 
     <section class="toolbar-shell" id="toolbar" transition:persist="barra">
@@ -51,7 +52,7 @@ const { name, ticker, routes, sections, languages, cv, labels } = Astro.props;
               <button class="top-slot" data-top type="button" aria-label={labels.top}><svg class="top-chevron" viewBox="0 0 24 12" aria-hidden="true"><path d="M3 9 12 3 21 9"/></svg><small>{labels.topCaption}</small></button>
             </div>
           </div>
-          <button class="slot one plane-slot span-1 keep-mobile" aria-label={labels.mail} data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span><small>{labels.mailCaption}</small></button>
+          <a class="slot one plane-slot span-1 keep-mobile" href={mailHref} aria-label={labels.mail} data-phase="idle" data-label-sending={labels.mailSending} data-label-sent={labels.mailSent}><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span><small>{labels.mailCaption}</small></a>
           <div class="widget toggle-square span-1 keep-mobile"><div class="segmented" data-active={languages[1].current ? '1' : '0'} role="group" aria-label={labels.language}><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><a href={languages[0].href} aria-current={languages[0].current ? "true" : undefined}>{languages[0].label}</a><a href={languages[1].href} aria-current={languages[1].current ? "true" : undefined}>{languages[1].label}</a></div></div>
         </div>
         <button class="menu-toggle" id="menu-toggle" type="button" aria-label={labels.openMenu} aria-expanded="false">
@@ -221,16 +222,16 @@ function legaBarra(shell) {
   // macchina 05: volo dell'aereo, identico al motion playground
   shell.querySelectorAll('.plane-slot').forEach(bottone => bottone.addEventListener('click', () => {
     bottone.planeFlight?.cancel(); bottone.planeShadowMotion?.cancel()
-    bottone.dataset.phase = 'sending'; bottone.setAttribute('aria-label', 'Sending email')
+    bottone.dataset.phase = 'sending'; bottone.setAttribute('aria-label', bottone.dataset.labelSending ?? 'Sending email')
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      bottone.dataset.phase = 'sent'; bottone.setAttribute('aria-label', 'Email sent'); return
+      bottone.dataset.phase = 'sent'; bottone.setAttribute('aria-label', bottone.dataset.labelSent ?? 'Email sent'); return
     }
     const aereo = bottone.querySelector('.plane-icon'), ombra = bottone.querySelector('.plane-shadow')
     const volo = aereo.animate(FRAMES_AEREO, { duration: 1350, fill: 'none', easing: 'linear' })
     const moto = ombra.animate(FRAMES_OMBRA, { duration: 1350, fill: 'none', easing: 'linear' })
     bottone.planeFlight = volo; bottone.planeShadowMotion = moto
     volo.finished.then(() => {
-      if (bottone.planeFlight === volo) { bottone.dataset.phase = 'sent'; bottone.setAttribute('aria-label', 'Email sent') }
+      if (bottone.planeFlight === volo) { bottone.dataset.phase = 'sent'; bottone.setAttribute('aria-label', bottone.dataset.labelSent ?? 'Email sent') }
     }).catch(() => {})
   }))
 

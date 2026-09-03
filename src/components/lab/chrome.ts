@@ -19,6 +19,11 @@ export interface ChromeRoute {
 	current?: boolean;
 }
 
+import { siteConfig } from '../../config/site';
+
+export const siteEmail = siteConfig.email;
+export const mailHref = `mailto:${siteConfig.email}`;
+
 export const experimentTicker =
 	'Software engineer · Swift & iOS · Product engineering · Sistemi affidabili ·';
 
@@ -52,7 +57,10 @@ export const experimentCv = {
 export const experimentLabels = {
 	top: 'Torna all’inizio',
 	topCaption: 'Turna sü',
-	mail: 'Invia una email',
+	// il volo dell'aereo accompagna l'apertura del client: non spedisce nulla da solo
+	mail: `Scrivimi a ${siteEmail}`,
+	mailSending: 'Apertura del client di posta',
+	mailSent: 'Client di posta aperto',
 	mailCaption: 'Scrìvum',
 	language: 'Lingua',
 	openMenu: 'Apri menu',
