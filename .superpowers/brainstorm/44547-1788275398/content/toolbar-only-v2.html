@@ -84,7 +84,9 @@
     .top-chevron{width:26px;height:13px;transition:transform .3s var(--ease)}
     .top-chevron path{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
     .top-slot:hover .top-chevron{transform:translateY(-3px)}
-    .top-slot small{position:absolute;left:0;right:0;bottom:15px;color:#8f8f8f;font:6px var(--mono);letter-spacing:.09em;text-transform:uppercase;text-align:center;white-space:nowrap}
+    .top-slot small,.plane-slot small{position:absolute;z-index:2;left:0;right:0;bottom:15px;color:#8f8f8f;font:6px var(--mono);letter-spacing:.09em;text-transform:uppercase;text-align:center;white-space:nowrap}
+    /* la didascalia sta davanti: l'aereo le vola dietro invece che sopra */
+    .plane-slot .plane-stage{z-index:1;margin-bottom:17px}
     .widget[data-detail]>div{transition:opacity .16s ease,transform .22s var(--ease)}
     .widget[data-detail][data-swap="true"]>div{opacity:0;transform:translateY(-5px)}
     .priority:after{content:'P1';position:absolute;right:7px;top:6px;color:#466033;font:6px var(--mono)}
@@ -178,7 +180,7 @@
               <button class="top-slot" data-top type="button" aria-label="Torna all'inizio"><svg class="top-chevron" viewBox="0 0 24 12" aria-hidden="true"><path d="M3 9 12 3 21 9"/></svg><small>Turna sü</small></button>
             </div>
           </div>
-          <button class="slot one plane-slot span-1 keep-mobile" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button>
+          <button class="slot one plane-slot span-1 keep-mobile" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span><small>Scrìvum</small></button>
           <div class="widget toggle-square span-1 keep-mobile"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div>
         </div>
         <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Apri menu" aria-expanded="false">
