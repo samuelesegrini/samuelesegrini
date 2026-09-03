@@ -259,6 +259,18 @@ function montaIndice(shell) {
   shell.__perPagina = perPagina
   const { signal } = perPagina
 
+  // Arrivando su una pagina nuova la barra deve TROVARSI già in modalità hero, non animarsi
+  // fin lì: altrimenti il mazzo viene ricostruito mentre l'indice è ancora visibile e si
+  // vedono comparire le carte della pagina nuova un istante prima che il gruppo sfumi.
+  // Il passaggio animato ha senso solo scorrendo dentro una pagina.
+  if (shell.dataset.mode !== 'hero') {
+    const gruppi = [...shell.querySelectorAll('.mode-group')]
+    gruppi.forEach(gruppo => { gruppo.style.transition = 'none' })
+    shell.dataset.mode = 'hero'
+    void shell.offsetWidth
+    requestAnimationFrame(() => gruppi.forEach(gruppo => { gruppo.style.transition = '' }))
+  }
+
   // arrivati da una voce di menu: ora che il contenuto è quello nuovo, la barra si richiude
   if (shell.__chiudiDopo) {
     shell.__chiudiDopo = false
@@ -341,7 +353,6 @@ function montaIndice(shell) {
   }, { signal })
 
   // la carta segue lo scroll, non solo il contrario
-  shell.dataset.mode = 'hero'
   if (bersagli.length) {
     const quote = new Map()
     const spia = new IntersectionObserver(voci => {
