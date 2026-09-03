@@ -37,6 +37,13 @@
 
 
     /* --- schermata home: sezioni molto alte, per lavorare su ancore e scroll --- */
+    .home-section.hero{min-height:100vh;align-content:center}
+    .home-section.hero h1{max-width:19ch;font-size:clamp(46px,6.6vw,96px)}
+    .hero h1 em{font-family:var(--serif);font-weight:430;font-style:italic;color:#5f8d3f}
+    .hero p{max-width:56ch;margin-top:30px}
+    .hero-hint{display:inline-flex;align-items:center;gap:9px;width:max-content;margin-top:38px;padding:9px 14px;border:1px solid #0002;border-radius:999px;color:#6b6760;font:9px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+    .hero-hint:before{content:'↓';font-size:12px}
+    #inizio .section-rule{background:#111}
     .home-section{display:grid;min-height:132vh;align-content:center;padding:0 max(24px,7vw);scroll-margin-top:0}
     .home-section:last-of-type{min-height:100vh;padding-bottom:200px}
     .section-kicker{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#8b877f}
@@ -49,7 +56,7 @@
     .slot{position:relative;height:92px;border:0;border-radius:16px;background:var(--slot);color:#fff;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .shuffle-slot{perspective:500px;text-align:left}.shuffle-card{position:absolute;inset:1px;padding:13px 14px;border-radius:15px;background:var(--blue);color:#111;transform-origin:50% 100%;transition:transform .55s var(--ease),opacity .25s}.shuffle-card.alt{background:var(--violet);transform:translateY(110%) rotateX(-35deg);opacity:0}.shuffle-slot.swapped .shuffle-card{transform:translateY(-110%) rotateX(40deg);opacity:0}.shuffle-slot.swapped .shuffle-card.alt{transform:none;opacity:1}.shuffle-card small{display:block;font:7px var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.55}.shuffle-card b{position:absolute;left:14px;bottom:14px;font-size:18px;letter-spacing:-.045em}.shuffle-notch{position:absolute;right:12px;top:12px;width:8px;height:8px;border-radius:2px;background:#111;box-shadow:0 12px #1118}
 .plane-slot{display:grid;place-items:center}.plane-stage{position:relative;width:48px;height:48px}.plane-icon{position:absolute;left:7px;top:5px;width:34px;height:30px;overflow:visible;transform-origin:50% 65%;will-change:transform,opacity}.plane-body{fill:white}.plane-fold{fill:none;stroke:#242424;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}.plane-shadow{position:absolute;left:13px;right:13px;bottom:6px;height:5px;border-radius:50%;background:#0009;filter:blur(2px);will-change:transform,opacity}
-    .slot-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;height:78px;min-width:0}
+    .slot-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;height:78px;min-width:0}
     .slot-row>*{min-width:0}
     .identity-row .slot{width:100%;height:100%;border-radius:14px}
     .span-1{grid-column:span 1}.span-2{grid-column:span 2}
@@ -57,6 +64,21 @@
     .widget small{display:block;color:#8b8b8b;font:7px var(--mono);letter-spacing:.06em;text-transform:uppercase}
     .widget b{display:block;margin-top:4px;overflow:hidden;font-size:12px;text-overflow:ellipsis;white-space:nowrap}
     .widget.color{color:#111}.widget.color small{color:#526246}.widget.blue{background:var(--blue)}
+    .span-5{grid-column:span 5}
+    /* due modalità: sulla hero il curriculum, più in basso l'indice delle sezioni */
+    .toolbar-shell[data-mode="hero"] [data-when="index"],
+    .toolbar-shell[data-mode="index"] [data-when="hero"]{display:none}
+    .cv-slot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border:0;border-radius:14px;background:var(--acid);color:#111;cursor:pointer;text-align:left;font:inherit}
+    .cv-slot small{display:block;color:#526246;font:7px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+    .cv-slot b{display:block;margin-top:4px;overflow:hidden;font-size:15px;letter-spacing:-.03em;text-overflow:ellipsis;white-space:nowrap}
+    .cv-slot .corto{display:none}
+    .cv-slot i{display:grid;flex:none;width:34px;height:34px;place-items:center;border-radius:50%;background:#11111a14;font-style:normal;font-size:15px;transition:transform .3s var(--ease)}
+    .cv-slot:hover i{transform:translateY(3px)}
+    .top-slot{display:grid;place-items:center;gap:3px;border:0;border-radius:14px;background:#242424;color:#fff;cursor:pointer;font:inherit;transition:background .2s ease}
+    .top-slot:hover{background:#2f2f2f}
+    .top-slot i{font-style:normal;font-size:15px;line-height:1;transition:transform .3s var(--ease)}
+    .top-slot:hover i{transform:translateY(-3px)}
+    .top-slot small{color:#8b8b8b;font:6px var(--mono);letter-spacing:.08em;text-transform:uppercase}
     .widget[data-detail]>div{transition:opacity .16s ease,transform .22s var(--ease)}
     .widget[data-detail][data-swap="true"]>div{opacity:0;transform:translateY(-5px)}
     .priority:after{content:'P1';position:absolute;right:7px;top:6px;color:#466033;font:6px var(--mono)}
@@ -80,7 +102,7 @@
     @media(max-width:620px){
       .slot-row{grid-template-columns:repeat(4,minmax(0,1fr));height:66px}
       .slot-row>*:not(.keep-mobile){display:none}
-      .slot-row .shuffle-slot{grid-column:span 2}.slot-row .plane-slot{grid-column:span 1}.slot-row .toggle-square{grid-column:span 1}
+      .slot-row .shuffle-slot{grid-column:span 2}.slot-row .plane-slot{grid-column:span 1}.slot-row .toggle-square{grid-column:span 1}.slot-row .cv-slot{grid-column:span 2;padding:9px 11px;gap:8px}.slot-row .cv-slot b{font-size:13px}.slot-row .cv-slot i{width:26px;height:26px;font-size:13px}.slot-row .cv-slot .lungo{display:none}.slot-row .cv-slot .corto{display:inline}
       /* la carta rimpicciolisce per stare in due colonne senza troncare il nome della sezione */
       .shuffle-card{padding:9px 10px}.shuffle-card b{left:10px;bottom:10px;font-size:15px;letter-spacing:-.04em}
       .shuffle-index{right:8px;gap:3px}.shuffle-index i{width:5px;height:5px}
@@ -91,25 +113,32 @@
 </head>
 <body>
   <main class="stage" aria-label="Home di prova con la toolbar">
-    <section class="home-section" id="lavoro" data-section="0">
+    <header class="home-section hero" id="inizio" data-section="0">
+      <span class="section-kicker">Samuele Segrini</span>
+      <h1>Software engineer, <em>Swift e sistemi affidabili.</em></h1>
+      <p>Progetto e costruisco prodotti iOS in cui la logica regge quanto l’interfaccia. Questa barra è il prototipo del menu: naviga la pagina e racconta dove sei.</p>
+      <span class="hero-hint" aria-hidden="true">Scorri, oppure usa la barra</span>
+      <i class="section-rule" aria-hidden="true"></i>
+    </header>
+    <section class="home-section" id="lavoro" data-section="1">
       <span class="section-kicker">Sezione 01</span>
       <h1>Lavoro</h1>
       <p>I progetti selezionati, con il ragionamento che c’è dietro invece della sola schermata finale.</p>
       <i class="section-rule" aria-hidden="true"></i>
     </section>
-    <section class="home-section" id="scrittura" data-section="1">
+    <section class="home-section" id="scrittura" data-section="2">
       <span class="section-kicker">Sezione 02</span>
       <h1>Scrittura</h1>
       <p>Note tecniche su ciò che ho dovuto capire davvero: sistemi, vincoli, errori utili.</p>
       <i class="section-rule" aria-hidden="true"></i>
     </section>
-    <section class="home-section" id="percorso" data-section="2">
+    <section class="home-section" id="percorso" data-section="3">
       <span class="section-kicker">Sezione 03</span>
       <h1>Percorso</h1>
       <p>Come ci sono arrivato — gli strumenti, le persone e i problemi che mi hanno formato.</p>
       <i class="section-rule" aria-hidden="true"></i>
     </section>
-    <section class="home-section" id="contatto" data-section="3">
+    <section class="home-section" id="contatto" data-section="4">
       <span class="section-kicker">Sezione 04</span>
       <h1>Contatto</h1>
       <p>Aperto a opportunità. Risposta entro 24 ore, fuso orario italiano.</p>
@@ -133,8 +162,10 @@
       <div class="identity-row">
         <div class="identity-mark" aria-hidden="true">SS</div>
         <div class="slot-row">
-          <button class="slot two shuffle-slot span-2 keep-mobile" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;, &quot;value&quot;: &quot;7 pubblicati&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;, &quot;value&quot;: &quot;4 pubblicati&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Esperienza&quot;, &quot;value&quot;: &quot;4 anni&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Risposta&quot;, &quot;value&quot;: &quot;Entro 24 ore&quot;}}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-index" aria-hidden="true"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-index" aria-hidden="true"></i></span></button>
-          <div class="widget span-2" data-detail><div><small>Progetti</small><b>7 pubblicati</b></div></div>
+          <button class="slot two shuffle-slot span-2 keep-mobile" data-when="index" data-sections="[{&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Lavoro&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;, &quot;value&quot;: &quot;7 pubblicati&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Scrittura&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Articoli&quot;, &quot;value&quot;: &quot;4 pubblicati&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Percorso&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Esperienza&quot;, &quot;value&quot;: &quot;4 anni&quot;}}, {&quot;kicker&quot;: &quot;Sezione&quot;, &quot;value&quot;: &quot;Contatto&quot;, &quot;detail&quot;: {&quot;kicker&quot;: &quot;Risposta&quot;, &quot;value&quot;: &quot;Entro 24 ore&quot;}}]" aria-label="Sezione: Lavoro"><span class="shuffle-card"><small>Sezione</small><b>Lavoro</b><i class="shuffle-index" aria-hidden="true"></i></span><span class="shuffle-card alt"><small>Sezione</small><b>Scrittura</b><i class="shuffle-index" aria-hidden="true"></i></span></button>
+          <button class="cv-slot span-5 keep-mobile" data-when="hero" type="button" aria-label="Scarica il curriculum in PDF"><span><small>Curriculum</small><b><span class="lungo">Scarica il PDF</span><span class="corto">PDF</span></b></span><i aria-hidden="true">↓</i></button>
+          <div class="widget span-2" data-when="index" data-detail><div><small>Progetti</small><b>7 pubblicati</b></div></div>
+          <button class="top-slot span-1" data-when="index" data-top type="button" aria-label="Torna all inizio"><i aria-hidden="true">↑</i><small>Su</small></button>
           <button class="slot one plane-slot span-1 keep-mobile" aria-label="Invia una email" data-phase="idle"><span class="plane-stage"><i class="plane-shadow"></i><svg class="plane-icon" viewBox="0 0 34 30" aria-hidden="true"><path class="plane-body" d="M3 14.6 31 3 22.1 27.2 16.4 19.4 10.1 22.3 11.7 16.2Z"/><path class="plane-fold" d="M11.7 16.2 31 3 16.4 19.4"/></svg></span></button>
           <div class="widget toggle-square span-1 keep-mobile"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div>
         </div>
@@ -157,7 +188,11 @@
           <i class="shuffle-index" aria-hidden="true">${sections.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</i>
         </span>`).join('')
       const cards = [...button.querySelectorAll('.shuffle-card')]
+      // targets[0] è la hero e non è una voce dell'indice: le carte coprono targets[1..n]
       const targets = [...document.querySelectorAll('.home-section')]
+      const shell = document.querySelector('.toolbar-shell')
+      const setMode = mode => { if (shell) shell.dataset.mode = mode }
+      setMode('hero')
       let index = 0, previous = null, lock = 0
       const place = () => cards.forEach((card, i) => {
         card.dataset.pos = i === index ? 'in' : i === previous ? 'above' : 'below'
@@ -165,17 +200,24 @@
       // il widget accanto smette di essere fisso: racconta la sezione corrente
       const detail = document.querySelector('[data-detail]')
       let detailTimer
-      const setDetail = at => {
+      const writeDetail = at => {
         const entry = sections[at]?.detail
-        if (!detail || !entry) return
+        if (!detail || !entry) return false
+        detail.querySelector('small').textContent = entry.kicker
+        detail.querySelector('b').textContent = entry.value
+        return true
+      }
+      const setDetail = at => {
+        if (!detail || !sections[at]?.detail) return
         detail.dataset.swap = 'true'
         clearTimeout(detailTimer)
         detailTimer = setTimeout(() => {
-          detail.querySelector('small').textContent = entry.kicker
-          detail.querySelector('b').textContent = entry.value
+          writeDetail(at)
           detail.dataset.swap = 'false'
         }, 170)
       }
+      // senza questo il dettaglio resta quello scritto a mano nell'HTML finché non si tocca la carta
+      writeDetail(0)
       const show = at => {
         if (at === index) return
         previous = index
@@ -188,10 +230,16 @@
       button.addEventListener('click', () => {
         const next = (index + 1) % cards.length
         show(next)
+        setMode('index')
         // lo scroll programmato attraversa le sezioni intermedie: senza questa pausa
         // l'osservatore farebbe sfogliare il mazzo lungo il tragitto
         lock = Date.now() + 1200
-        targets[next]?.scrollIntoView({ block: 'start' })
+        targets[next + 1]?.scrollIntoView({ block: 'start' })
+      })
+      document.querySelector('[data-top]')?.addEventListener('click', () => {
+        lock = Date.now() + 1200
+        setMode('hero')
+        window.scrollTo({ top: 0 })
       })
       // la carta segue lo scroll, non solo il contrario
       if (targets.length) {
@@ -201,7 +249,10 @@
           if (Date.now() < lock) return
           let best = null, top = 0
           ratios.forEach((ratio, node) => { if (ratio > top) { top = ratio; best = node } })
-          if (best && top > 0.25) show(Number(best.dataset.section))
+          if (!best || top <= 0.25) return
+          const at = Number(best.dataset.section)
+          setMode(at === 0 ? 'hero' : 'index')
+          if (at > 0) show(at - 1)
         }, { threshold: [0, 0.25, 0.5, 0.75, 1] })
         targets.forEach(target => spy.observe(target))
       }
