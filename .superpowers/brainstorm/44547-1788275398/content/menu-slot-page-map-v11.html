@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Modular toolbar — home v11</title>
+  <link rel="stylesheet" href="./living-library.css" />
+  <style>
+    @font-face{font-family:Manrope;src:url('./manrope.woff2')}@font-face{font-family:Newsreader;src:url('./newsreader.woff2')}@font-face{font-family:Plex;src:url('./plex-mono.woff2')}
+    :root{--ink:#111;--paper:#f4f1e9;--acid:#c7ff9f;--blue:#cdefff;--violet:#ded1ff;--orange:#ffd4b8;--sans:Manrope,system-ui,sans-serif;--serif:Newsreader,serif;--mono:Plex,monospace;--ease:cubic-bezier(.22,1,.36,1)}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans)}button{font:inherit}main{max-width:1200px;margin:auto;padding:58px 28px 110px}.eyebrow{font:10px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:#69665f}h1{max-width:970px;margin:15px 0 18px;font-size:clamp(45px,7vw,86px);line-height:.9;letter-spacing:-.07em}h1 em{font-family:var(--serif);font-weight:430;color:#5f8d3f}.lead{max-width:780px;margin:0;color:#66625b;font-size:17px;line-height:1.5}
+    .thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:42px 0 56px}.thesis article{padding:16px;border:1px solid #0002;border-radius:18px;background:#fff}.thesis span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#777}.thesis b{display:block;margin-top:10px;font-size:17px;letter-spacing:-.035em}.thesis p{margin:5px 0 0;color:#77736c;font-size:12px;line-height:1.45}
+    .route-list{display:grid;gap:52px}.route{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:start}.route-label{position:sticky;top:24px}.route-label span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#777}.route-label h2{margin:6px 0 3px;font-size:26px;letter-spacing:-.05em}.route-label p{margin:0;color:#777;font-size:12px}
+    .variants{display:grid;gap:16px}.variant{padding:13px;border:1px solid #0002;border-radius:26px;background:#fff;transition:box-shadow .2s ease,border-color .2s ease}.variant.selected{border-color:#0000;box-shadow:0 0 0 3px var(--acid),0 12px 30px #0001}
+    .variant-head{display:flex;align-items:start;justify-content:space-between;gap:18px;margin:3px 4px 11px}.variant-head b{font-size:13px;letter-spacing:-.02em}.variant-head p{max-width:620px;margin:3px 0 0;color:#77736c;font-size:12px;line-height:1.45}
+    .variant-pick{flex:none;padding:7px 13px;border:1px solid #0002;border-radius:999px;background:#f4f1e9;color:#56534d;font:8px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.variant-pick[aria-pressed="true"]{border-color:#0000;background:var(--acid);color:#20301a}.variant-pick:focus-visible{outline:2px solid #111;outline-offset:2px}
+    .roster{margin:9px 5px 2px;color:#a09b93;font:7px var(--mono);letter-spacing:.07em;text-transform:uppercase}
+    .toolbar{display:grid;grid-template-columns:82px repeat(8,minmax(0,1fr)) 62px;gap:6px;min-height:98px;padding:8px;border-radius:23px;background:#111;color:#fff;box-shadow:0 18px 50px #0002}
+    .fixed{display:grid;place-items:center;border-radius:15px;background:#242424}.identity{background:#fff;color:#111;font-size:19px;font-weight:800}.menu{position:relative}.menu:before,.menu:after,.menu i{content:'';position:absolute;left:20px;width:22px;height:2px;background:#fff}.menu:before{top:34px}.menu i{top:42px}.menu:after{top:50px}
+    .widget{position:relative;display:flex;min-width:0;align-items:center;gap:9px;padding:10px 12px;overflow:hidden;border-radius:14px;background:#242424}.widget small{display:block;color:#8b8b8b;font:7px var(--mono);letter-spacing:.06em;text-transform:uppercase}.widget b{display:block;margin-top:4px;overflow:hidden;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.widget.icon{justify-content:center;padding:0;font-size:17px}.widget.color{color:#111}.widget.color small{color:#526246}.green{background:var(--acid)}.blue{background:var(--blue)}.violet{background:var(--violet)}.orange{background:var(--orange)}
+    .span-1{grid-column:span 1}.span-2{grid-column:span 2}.span-3{grid-column:span 3}.span-4{grid-column:span 4}
+    .priority:after{content:'P1';position:absolute;right:7px;top:6px;color:#466033;font:6px var(--mono)}.progress{width:100%;height:4px;margin-top:7px;overflow:hidden;border-radius:5px;background:#0002}.progress i{display:block;height:100%;background:#111}.widget:not(.color) .progress{background:#ffffff26}.widget:not(.color) .progress i{background:#fff}
+    .toggle-square{justify-content:center;padding:1px;background:transparent}.segmented{position:relative;display:grid;width:100%;height:100%;grid-template-rows:1fr 1fr;gap:1px}.segment-bed{position:absolute;z-index:0;inset:0 0 auto;height:calc(50% - .5px);border-radius:13px;background:#242424}.segment-bed.bottom{inset:auto 0 0}.segmented:before{content:'';position:absolute;z-index:2;inset:0 0 auto;height:calc(50% - .5px);border-radius:13px;background:#fff;pointer-events:none;transition:transform .42s var(--ease)}.segmented[data-active="1"]:before{transform:translateY(calc(100% + 1px))}.segmented button{position:relative;z-index:3;display:grid;min-width:0;padding:0;place-items:center;border:0;border-radius:13px;background:transparent;color:#888;font:6px var(--mono);text-align:center;cursor:pointer;transition:color .22s ease}.segmented[data-active="0"] button:first-of-type,.segmented[data-active="1"] button:last-child{color:#111}.segmented button:focus-visible{outline:1px solid #fff;outline-offset:-3px}
+    /* the single living element: the creature keeps its anatomy, the grid hands it a box */
+    .slot-host{display:grid;min-width:0}.toolbar .ll-control{width:100%;height:82px;border-radius:14px}.toolbar .ll-slug-body{left:12%;width:76%}
+    .chosen{margin-top:56px;padding:22px;border:1px solid #0002;border-radius:24px;background:#fff}.chosen b{font-size:16px}.chosen ol{margin:14px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.chosen li{padding:11px 13px;border-radius:14px;background:#f4f1e9;font:9px var(--mono);text-transform:uppercase;color:#77736c}.chosen li strong{display:block;margin-top:5px;color:#111;font:700 13px var(--sans);text-transform:none;letter-spacing:-.02em}
+    .note{display:grid;grid-template-columns:180px 1fr;gap:24px;margin-top:44px;padding-top:25px;border-top:1px solid #0002}.note b{font-size:16px}.note p{max-width:760px;margin:0 0 10px;color:#66625b;font-size:14px}
+    @media(prefers-reduced-motion:reduce){.segmented:before,.segmented button,.variant{transition:none}}
+    @media(max-width:860px){main{padding:38px 15px 90px}.thesis{grid-template-columns:1fr;margin:32px 0 44px}.route-list{gap:38px}.route{grid-template-columns:1fr;gap:12px}.route-label{position:static}.variant-head{flex-direction:column;gap:10px}.toolbar{grid-template-columns:62px repeat(4,minmax(0,1fr)) 52px;min-height:98px}
+      /* mobile tiene esattamente due elementi: il widget P1 e l'unico elemento vivo */
+      .route .toolbar>*:not(.fixed):not(.keep-mobile){display:none}.route .toolbar .keep-mobile{grid-column:span 2}
+      /* un elemento vivo da 3 o 4 slot non sta in due colonne: su mobile prende la barra da solo */
+      .route .toolbar[data-mobile="solo"]>*:not(.fixed):not(.slot-host){display:none}.route .toolbar[data-mobile="solo"] .slot-host{grid-column:span 4}
+      /* recupera larghezza per il nome del progetto: chrome del pager più stretto su mobile */
+      .route .toolbar[data-mobile="solo"] .ll-project{gap:6px;padding:0 8px 18px}
+      .route .toolbar[data-mobile="solo"] .ll-project{grid-template-columns:28px 1fr 28px}
+      .route .toolbar[data-mobile="solo"] .ll-project-arrow{width:28px;height:28px}
+      .route .toolbar[data-mobile="solo"] .ll-project-copy{padding:0 6px}
+      .route .toolbar[data-mobile="solo"] .ll-project-copy b{overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap}
+      .identity{font-size:16px}.menu:before,.menu:after,.menu i{left:16px;width:20px}.chosen ol{grid-template-columns:1fr}.note{grid-template-columns:1fr}}
+
+    .diagnosis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:42px 0 22px}.diagnosis article{padding:16px;border:1px solid #0002;border-radius:18px;background:#fff}.diagnosis span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#b0553f}.diagnosis b{display:block;margin-top:10px;font-size:16px;letter-spacing:-.035em}.diagnosis p{margin:5px 0 0;color:#77736c;font-size:12px;line-height:1.45}
+    .band{margin:0 0 20px;font:9px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#8b8780}
+    .current{display:grid;gap:12px;margin-bottom:66px;padding:20px;border-radius:28px;background:#e9e6dd}
+    .variant.muted{opacity:.62}.variant.muted .toolbar{box-shadow:none}
+    .proposals{display:grid;gap:18px}.proposal{padding:15px;border:1px solid #0002;border-radius:28px;background:#fff;transition:box-shadow .2s ease,border-color .2s ease}.proposal.selected{border-color:#0000;box-shadow:0 0 0 3px var(--acid),0 12px 30px #0001}
+    .proposal-head{display:flex;align-items:start;justify-content:space-between;gap:20px;margin:4px 5px 13px}.proposal-head span{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#777}.proposal-head h3{margin:5px 0 0;font-size:21px;letter-spacing:-.045em}.proposal-head p{max-width:640px;margin:5px 0 0;color:#77736c;font-size:13px;line-height:1.5}
+    @media(max-width:860px){.diagnosis{grid-template-columns:1fr}.current{padding:14px}.proposal-head{flex-direction:column;gap:10px}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Modular menu system · section 2e</div>
+    <h1>La barra della home, <em>ripensata.</em></h1>
+    <p class="lead">Le tre composizioni della home nella v10 hanno tre problemi, e due sono ripetizioni vere e proprie. Qui sotto: cosa non funziona, com’è adesso, e cinque direzioni alternative. Ogni proposta resta a 8 slot con un solo elemento vivo, come nella v10.</p>
+    <section class="diagnosis" aria-label="Diagnosi">
+      <article><span>Problema 1</span><b>La variante A si ripete</b><p>“Contatto · Scrivimi ✉” accanto al Letter Worm che scrive “OPEN NOW”: due elementi per lo stesso messaggio, in una barra da otto slot.</p></article>
+      <article><span>Problema 2</span><b>La variante C si ripete</b><p>“Inizia da · Progetti →” accanto al Number Owl etichettato “Progetti”. Lo stesso sostantivo occupa cinque slot su otto.</p></article>
+      <article><span>Problema 3</span><b>È densa quanto un archivio</b><p>Quattro elementi, come tutte le altre rotte. Ma è l’unica pagina in cui il contenuto sotto si presenta già da solo: la barra non deve rifarlo.</p></article>
+    </section>
+    <p class="band">Com’è adesso · v10</p>
+    <section class="current" aria-label="Composizioni attuali">
+        <div class="variant muted">
+          <div class="variant-head"><div><b>A · Azione</b><p>Contatto e Letter Worm dicono la stessa cosa: “scrivimi” e “open now”.</p></div></div>
+          <div class="toolbar"><div class="fixed identity">SS</div><div class="widget green color span-3 priority keep-mobile"><div><small>Contatto</small><b>Scrivimi ✉</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="letter-worm"></div><div class="widget blue color span-2"><div><small>Focus</small><b>Swift / iOS</b></div></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">Elemento vivo · letter-worm</p>
+        </div>
+        <div class="variant muted">
+          <div class="variant-head"><div><b>B · Contesto</b><p>L’unica delle tre senza ripetizioni, ma è anche la meno impegnativa.</p></div></div>
+          <div class="toolbar"><div class="fixed identity">SS</div><div class="widget green color span-3 priority keep-mobile"><div><small>Disponibilità</small><b>Aperto a opportunità</b></div></div><div class="widget icon span-1" aria-hidden="true">✉</div><div class="widget blue color span-2"><div><small>Focus</small><b>Swift / iOS</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">Elemento vivo · clock-bug</p>
+        </div>
+        <div class="variant muted">
+          <div class="variant-head"><div><b>C · Orientamento</b><p>“Inizia da: Progetti” e il gufo etichettato “Progetti”: lo stesso sostantivo due volte.</p></div></div>
+          <div class="toolbar"><div class="fixed identity">SS</div><div class="widget blue color span-3 priority keep-mobile"><div><small>Inizia da</small><b>Progetti →</b></div></div><div class="widget green color span-2"><div><small>Disponibilità</small><b>Aperto</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="widget icon span-1" aria-hidden="true">✉</div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">Elemento vivo · number-owl</p>
+        </div>
+    </section>
+    <p class="band">Cinque direzioni</p>
+    <section class="proposals" aria-label="Proposte">
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>01 · Presenza</span><h3>Un biglietto da visita</h3><p>La disponibilità viene dichiarata una volta sola, e la dichiara l’elemento vivo. Il resto è contesto stabile: cosa fai, dove sei, in che lingua.</p></div>
+            <button type="button" class="variant-pick" data-pick="Un biglietto da visita" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><div class="widget blue color span-3 priority keep-mobile"><div><small>Focus</small><b>Swift / iOS</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="letter-worm"></div><div class="widget span-2"><div><small>Posizione</small><b>Italia · CET</b></div></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">Elemento vivo · letter-worm · 4 elementi</p>
+        </article>
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>02 · Invito</span><h3>Una sola azione, larga il doppio</h3><p>La falena è l’azione, il testo accanto è la promessa che la rende credibile. Quattro slot per un solo invito: nessuna altra rotta si permette un widget così largo.</p></div>
+            <button type="button" class="variant-pick" data-pick="Una sola azione, larga il doppio" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><div class="slot-host span-1 keep-mobile" data-mount="courier-moth" data-options="{&quot;label&quot;: &quot;Scrivimi&quot;}"></div><div class="widget green color span-4 priority keep-mobile"><div><small>Contatto</small><b>Risposta entro 24h</b></div></div><div class="widget blue color span-2"><div><small>Focus</small><b>Swift / iOS</b></div></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">Elemento vivo · courier-moth · 4 elementi</p>
+        </article>
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>03 · Indice</span><h3>La barra come indice del sito</h3><p>Tre destinazioni nominate, non una sola. È l’unica rotta in cui la barra può fare da menu: altrove il menu sarebbe ridondante rispetto al contenuto della pagina.</p></div>
+            <button type="button" class="variant-pick" data-pick="La barra come indice del sito" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><div class="widget blue color span-2 priority keep-mobile"><div><small>Vai a</small><b>Progetti →</b></div></div><div class="widget span-2"><div><small>Vai a</small><b>Articoli →</b></div></div><div class="widget span-2"><div><small>Vai a</small><b>Chi sono →</b></div></div><div class="slot-host span-1 keep-mobile" data-mount="courier-moth" data-options="{&quot;label&quot;: &quot;Scrivimi&quot;}"></div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">Elemento vivo · courier-moth · 5 elementi</p>
+        </article>
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>04 · Vetrina</span><h3>L’ultimo lavoro invece della persona</h3><p>La home smette di descriversi e mostra: il pezzo più recente prende quattro slot, il gufo dice quanti ce ne sono dietro.</p></div>
+            <button type="button" class="variant-pick" data-pick="L’ultimo lavoro invece della persona" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><div class="widget blue color span-4 priority keep-mobile"><div><small>Ultimo lavoro</small><b>SpinGO →</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="number-owl" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Progetti&quot;}}"></div><div class="widget icon span-1" aria-hidden="true">✉</div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">Elemento vivo · number-owl · 4 elementi</p>
+        </article>
+        <article class="proposal">
+          <div class="proposal-head">
+            <div><span>05 · Sobria</span><h3>La pagina parla, la barra tace</h3><p>Quattro elementi, una sola azione, nessuna ripetizione. Se il contenuto sotto si presenta già da solo, la barra non deve competere con lui.</p></div>
+            <button type="button" class="variant-pick" data-pick="La pagina parla, la barra tace" aria-pressed="false">Scegli</button>
+          </div>
+          <div class="toolbar"><div class="fixed identity">SS</div><div class="widget green color span-4 priority keep-mobile"><div><small>Disponibilità</small><b>Aperto a opportunità</b></div></div><div class="slot-host span-2 keep-mobile" data-mount="clock-bug" data-options="{&quot;copy&quot;: {&quot;kicker&quot;: &quot;Italia · CET&quot;}}"></div><div class="widget icon span-1" aria-hidden="true">✉</div><div class="widget toggle-square span-1"><div class="segmented" data-active="0" role="group" aria-label="Lingua"><span class="segment-bed" aria-hidden="true"></span><span class="segment-bed bottom" aria-hidden="true"></span><button type="button" aria-pressed="true">IT</button><button type="button" aria-pressed="false">EN</button></div></div><div class="fixed menu"><i></i></div></div>
+          <p class="roster">Elemento vivo · clock-bug · 4 elementi</p>
+        </article>
+    </section>
+    <aside class="chosen" aria-live="polite">
+      <b>Direzione scelta</b>
+      <ol id="chosen-list"></ol>
+    </aside>
+    <aside class="note"><b>Note</b>
+      <p>Tutte e cinque le proposte rispettano i vincoli della v10: otto slot esatti, un solo elemento vivo, impronte native. Nessuna introduce widget nuovi — cambiano solo quali informazioni meritano il posto e quanto largo.</p>
+      <p>La 03 è l’unica che usa la barra come menu. Ha senso solo sulla home: sulle altre rotte duplicherebbe la navigazione già presente nella pagina, ed è per questo che nella mappa non compare altrove.</p>
+      <p>La 02 e la 04 usano un widget da 4 slot, il più largo dell’intero sistema dopo il Project Caterpillar. È una scelta riservata alla home: dove tutto è importante, niente lo è.</p>
+    </aside>
+  </main>
+  <script type="module">
+    import { mountLivingComponent } from './living-library.js'
+
+    document.querySelectorAll('[data-mount]').forEach(host => {
+      try {
+        mountLivingComponent(host, host.dataset.mount, JSON.parse(host.dataset.options || '{}'))
+      } catch (error) {
+        host.dataset.mountError = 'true'
+        console.warn('[home study] could not mount', host.dataset.mount, error)
+      }
+    })
+
+    document.querySelectorAll('.segmented').forEach(toggle => {
+      toggle.querySelectorAll('button').forEach((button, index) => {
+        button.addEventListener('click', () => {
+          toggle.dataset.active = String(index)
+          toggle.querySelectorAll('button').forEach((item, i) => item.setAttribute('aria-pressed', String(i === index)))
+        })
+      })
+    })
+
+    const list = document.querySelector('#chosen-list')
+    let chosen = null
+    function render(){
+      list.innerHTML = `<li>Home<strong>${chosen || '— nessuna scelta'}</strong></li>`
+    }
+    document.querySelectorAll('.variant-pick').forEach(pick => pick.addEventListener('click', () => {
+      document.querySelectorAll('.variant-pick').forEach(o => o.setAttribute('aria-pressed', String(o === pick)))
+      document.querySelectorAll('.proposal').forEach(p => p.classList.toggle('selected', p.contains(pick)))
+      chosen = pick.dataset.pick
+      render()
+    }))
+    render()
+  </script>
+</body>
+</html>
