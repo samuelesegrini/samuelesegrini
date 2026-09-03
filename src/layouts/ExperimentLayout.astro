@@ -3,6 +3,7 @@
  * Guscio condiviso dalle pagine del banco di prova: documento, stili di pagina e barra.
  * Ogni pagina passa le proprie sezioni; la barra le usa come indice.
  */
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
 import type { ToolbarSection } from '../components/lab/chrome';
@@ -31,6 +32,8 @@ const { title, currentHref, sections } = Astro.props;
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<meta name="robots" content="noindex, nofollow" />
 		<title>{title}</title>
+		<!-- navigazione senza ricaricare: il documento viene sostituito, non richiesto da capo -->
+		<ClientRouter />
 	</head>
 	<body>
 		<main class="stage" aria-label={title}>

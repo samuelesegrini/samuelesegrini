@@ -155,6 +155,11 @@ const { name, ticker, routes, sections, languages, cv, labels } = Astro.props;
 
 <!-- portato dal prototipo così com'è: JS puro, non processato -->
 <script is:inline>
+// Con il routing lato client il documento non viene ricaricato e questo script non viene
+// rieseguito: il montaggio va agganciato al ciclo di vita di Astro. `astro:page-load` scatta
+// anche al primo caricamento, e il listener sopravvive alle navigazioni perché sta su document.
+function montaBarraSperimentale() {
+
 
     // macchina 02: la carta nascosta viene caricata con la sezione successiva
     document.querySelectorAll('[data-sections]').forEach(button => {
@@ -306,5 +311,10 @@ const { name, ticker, routes, sections, languages, cv, labels } = Astro.props;
     document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>{document.querySelectorAll('.nav-item').forEach(other=>other.classList.toggle('active',other===item));activeRoute.textContent=item.dataset.page;toolbar.style.setProperty('--active-highlight',getComputedStyle(item).getPropertyValue('--highlight'));setTimeout(()=>setOpen(false),180)}));
     document.addEventListener('keydown',event=>{if(event.key==='Escape')setOpen(false)});
     document.addEventListener('pointerdown',event=>{if(toolbar.classList.contains('open')&&!toolbar.contains(event.target))setOpen(false)});
+}
 
+if (!window.__barraSperimentale) {
+  window.__barraSperimentale = true
+  document.addEventListener('astro:page-load', montaBarraSperimentale)
+}
 </script>
