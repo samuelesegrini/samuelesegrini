@@ -47,6 +47,10 @@
     .widget.color{color:#111}.widget.color small{color:#526246}.widget.blue{background:var(--blue)}
     .priority:after{content:'P1';position:absolute;right:7px;top:6px;color:#466033;font:6px var(--mono)}
     .shuffle-card b{overflow:hidden;max-width:calc(100% - 26px);text-overflow:ellipsis;white-space:nowrap}
+    .shuffle-card[data-pos]{transition:transform .55s var(--ease),opacity .25s}
+    .shuffle-card[data-pos="in"]{z-index:2;transform:none;opacity:1}
+    .shuffle-card[data-pos="above"]{z-index:1;transform:translateY(-110%) rotateX(40deg);opacity:0}
+    .shuffle-card[data-pos="below"]{z-index:0;transform:translateY(110%) rotateX(-35deg);opacity:0}
     .shuffle-index{position:absolute;right:11px;top:50%;display:grid;gap:4px;transform:translateY(-50%)}
     .shuffle-index i{width:6px;height:6px;border-radius:2px;background:#111;opacity:.22;transition:opacity .3s ease,transform .3s ease}
     .shuffle-index i.on{opacity:1;transform:scale(1.3)}
@@ -106,23 +110,25 @@
     // macchina 02: la carta nascosta viene caricata con la sezione successiva
     document.querySelectorAll('[data-sections]').forEach(button => {
       const sections = JSON.parse(button.dataset.sections)
-      const cards = button.querySelectorAll('.shuffle-card')
-      // un quadrato per sezione: l'indice vive su ogni carta, così segue la carta che entra
-      button.querySelectorAll('.shuffle-index').forEach(idx => { idx.innerHTML = sections.map(() => '<i></i>').join('') })
-      const write = (card, at) => {
-        card.querySelector('small').textContent = sections[at].kicker
-        card.querySelector('b').textContent = sections[at].value
-        card.querySelectorAll('.shuffle-index i').forEach((square, i) => square.classList.toggle('on', i === at))
-      }
-      let index = 0, pending
-      write(cards[0], 0); write(cards[1], 1 % sections.length)
+      // una carta per sezione, ognuna con la sua identità: niente riscrittura del testo,
+      // così la carta che esce e quella che entra non sono mai lo stesso nodo
+      const accents = ['var(--blue)', 'var(--violet)', 'var(--acid)', 'var(--orange)']
+      button.innerHTML = sections.map((section, i) => `
+        <span class="shuffle-card" data-section="${i}" data-pos="${i === 0 ? 'in' : 'below'}" style="background:${accents[i % accents.length]}">
+          <small>${section.kicker}</small><b>${section.value}</b>
+          <i class="shuffle-index" aria-hidden="true">${sections.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</i>
+        </span>`).join('')
+      const cards = [...button.querySelectorAll('.shuffle-card')]
+      let index = 0, previous = null
+      const place = () => cards.forEach((card, i) => {
+        card.dataset.pos = i === index ? 'in' : i === previous ? 'above' : 'below'
+      })
+      button.setAttribute('aria-label', `${sections[0].kicker}: ${sections[0].value}`)
       button.addEventListener('click', () => {
-        const swapped = button.classList.toggle('swapped')
-        index = (index + 1) % sections.length
+        previous = index
+        index = (index + 1) % cards.length
+        place()
         button.setAttribute('aria-label', `${sections[index].kicker}: ${sections[index].value}`)
-        clearTimeout(pending)
-        const hidden = swapped ? cards[0] : cards[1]
-        pending = setTimeout(() => write(hidden, (index + 1) % sections.length), 600)
       })
     })
 
