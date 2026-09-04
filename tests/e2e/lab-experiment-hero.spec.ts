@@ -219,6 +219,15 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 	expect(durante.trasformato, 'e a 250ms non è ancora salito').toBe(true);
 	expect(durante.crescita, 'la crescita resta agganciata allo scroll').toBe('cresce');
 
+	// il riquadro è il pezzo più pesante da comporre: non deve partire dentro la transizione
+	const riquadro = await page.evaluate(() => {
+		const stile = getComputedStyle(document.querySelector('.hero-media-fill')!);
+		const durata = getComputedStyle(document.documentElement).getPropertyValue('--transizione').trim();
+		return { ritardo: Number.parseFloat(stile.animationDelay) * 1000, transizione: Number.parseFloat(durata), nome: stile.animationName };
+	});
+	expect(riquadro.nome).toBe('scopre');
+	expect(riquadro.ritardo, 'parte dopo che la transizione ha chiuso').toBeGreaterThan(riquadro.transizione);
+
 	// a transizione finita i pezzi sono al loro posto
 	await page.waitForTimeout(1900);
 	const dopo = await page.evaluate(() => {

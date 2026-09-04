@@ -150,6 +150,11 @@ const labPathsAbout = labPaths[lang].about;
 			.vetrina .mascherina > *,
 			.hero-media-fill { animation-delay: calc(var(--ritardo, 0ms) + var(--attesa, 0ms)); }
 			html[data-lab-client-arrival] { --attesa: calc(var(--transizione) * .55); }
+			/* il riquadro è il pezzo più pesante da comporre: arrivando da un'altra pagina
+			   aspetta che la transizione abbia chiuso del tutto (418 + 460 = 878ms contro i
+			   760 della transizione) invece di partirle dentro. Al caricamento pieno resta
+			   dov'era, subito dopo la riga dei dati. */
+			html[data-lab-client-arrival] .hero-media-fill { --ritardo: 460ms; }
 			@media (prefers-reduced-motion: reduce) {
 				.hero .mascherina > *, .vetrina .mascherina > *, .hero-media-fill { animation: none }
 			}
