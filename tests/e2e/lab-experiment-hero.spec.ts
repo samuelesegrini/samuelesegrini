@@ -237,3 +237,50 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 	);
 	expect(cresciuto, 'e scorrendo cresce davvero').toBeGreaterThan(dopo.riquadro + 200);
 });
+
+test('la crescita del riquadro non porta variabili nei fotogrammi', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1600);
+
+	const lette = await page.evaluate(() => {
+		// getKeyframes() restituisce sempre valori risolti, anche quando la regola contiene
+		// var(): per sapere com'è scritta davvero si legge il testo della regola
+		let testo: string | null = null;
+		for (const foglio of [...document.styleSheets]) {
+			let regole: CSSRuleList;
+			try { regole = foglio.cssRules } catch { continue }
+			const cerca = (lista: CSSRuleList) => {
+				for (const regola of [...lista] as CSSRule[]) {
+					const gruppo = regola as CSSGroupingRule;
+					if ((regola as CSSKeyframesRule).name === 'cresce') testo = regola.cssText;
+					else if (gruppo.cssRules && regola.constructor.name !== 'CSSStyleRule') cerca(gruppo.cssRules);
+				}
+			};
+			cerca(regole);
+		}
+		const riquadro = document.querySelector('.hero-media')!;
+		const animazione = riquadro
+			.getAnimations()
+			.find((corrente) => (corrente as CSSAnimation).animationName === 'cresce') as CSSAnimation | undefined;
+		return { testo, agganciata: Boolean(animazione), partenza: getComputedStyle(riquadro).scale };
+	});
+
+	// un'animazione i cui fotogrammi contengono var() resta sul thread principale: la misura
+	// di partenza sta sull'elemento, non dentro la regola
+	expect(lette.agganciata, 'la crescita è agganciata').toBe(true);
+	expect(lette.testo, 'la regola dei fotogrammi si trova').not.toBeNull();
+	expect(lette.testo, 'niente variabili da risolvere a ogni fotogramma').not.toContain('var(');
+	expect(lette.partenza, 'la partenza è sull-elemento').toMatch(/^0\.\d+$/);
+
+	// e i ripieghi restano corretti: dove l'animazione non c'è, il riquadro è a grandezza piena
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1400);
+	const telefono = await page.evaluate(() => {
+		const stile = getComputedStyle(document.querySelector('.hero-media')!);
+		return { scala: stile.scale, spostamento: stile.translate };
+	});
+	expect(telefono.scala, 'sul telefono non resta rimpicciolito').toBe('none');
+	expect(telefono.spostamento, 'né spostato').toBe('none');
+});
