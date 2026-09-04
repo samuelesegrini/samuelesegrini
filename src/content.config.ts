@@ -123,7 +123,7 @@ const labCopy = defineCollection({
 			openMenu: z.string().min(1),
 		}),
 		cv: z.object({ kicker: z.string().min(1), long: z.string().min(1), short: z.string().min(1), aria: z.string().min(1) }),
-		common: z.object({ section: z.string().min(1), hint: z.string().min(1), one: z.string().min(1), many: z.string().min(1) }),
+		common: z.object({ section: z.string().min(1), hint: z.string().min(1), one: z.string().min(1), many: z.string().min(1), label: z.string().min(1), ready: z.string().min(1) }),
 		home: z.object({
 			title: z.string().min(1), headline: z.string().min(1), emphasis: z.string().min(1), intro: z.string().min(1),
 			work: z.string().min(1), workText: z.string().min(1), allWork: z.string().min(1),

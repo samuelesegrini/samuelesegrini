@@ -18,7 +18,7 @@
 		"openMenu": "Apri menu"
 	},
 	"cv": { "kicker": "Curriculum", "long": "Scarica il PDF", "short": "PDF", "aria": "Scarica il curriculum in PDF" },
-	"common": { "section": "Sezione", "hint": "Scorri, oppure usa la barra", "one": "pubblicato", "many": "pubblicati" },
+	"common": { "section": "Sezione", "hint": "Scorri, oppure usa la barra", "one": "pubblicato", "many": "pubblicati", "label": "Caricamento", "ready": "Pronto" },
 	"home": {
 		"title": "Banco di prova — nuova home",
 		"headline": "Software engineer,",

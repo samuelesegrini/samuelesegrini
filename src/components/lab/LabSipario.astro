@@ -1,0 +1,119 @@
+---
+/**
+ * Il sipario che copre il primo caricamento.
+ *
+ * Non è un'attesa finta: il contatore segue traguardi veri del documento (fogli di
+ * stile, font, immagini) e il sipario se ne va appena l'ultimo arriva. Il minimo
+ * serve solo a non farlo lampeggiare quando la pagina è già pronta.
+ *
+ * Compare una volta per sessione e mai su una navigazione client, dove la
+ * transizione è già il passaggio. Senza JavaScript non compare affatto: il markup
+ * resta nascosto finché lo script non alza `data-caricando`.
+ */
+interface Props {
+	label: string;
+	ready: string;
+	mark: string;
+}
+const { label, ready, mark } = Astro.props;
+---
+
+<div class="sipario" aria-hidden="true">
+	<div class="sipario-alto">
+		<span class="sipario-marchio">{mark}</span>
+		<span class="sipario-voce" data-sipario-voce>{label}</span>
+	</div>
+	<div class="sipario-basso">
+		<span class="sipario-conta" data-sipario-conta>000</span>
+		<i class="sipario-barra"><b data-sipario-barra></b></i>
+	</div>
+	<span hidden data-sipario-pronto>{ready}</span>
+</div>
+
+<script is:inline>
+	(() => {
+		const radice = document.documentElement;
+		const CHIAVE = 'lab-sipario-visto';
+
+		/** Una navigazione client ha già la sua transizione: il sipario starebbe di traverso. */
+		const arrivoClient = radice.hasAttribute('data-lab-client-arrival');
+		let giaVisto = false;
+		try {
+			giaVisto = sessionStorage.getItem(CHIAVE) === '1';
+		} catch {
+			// niente sessionStorage (finestra privata, cookie bloccati): il sipario si vede comunque
+		}
+		if (arrivoClient || giaVisto) return;
+
+		radice.setAttribute('data-caricando', '');
+		try {
+			sessionStorage.setItem(CHIAVE, '1');
+		} catch {
+			// se non si può ricordare, pazienza: al massimo si rivede
+		}
+
+		const ridotto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		// il minimo non è un'attesa finta: è il tempo in cui il numero sale, perché in locale
+		// il documento è pronto prima che si veda qualcosa
+		const MINIMO = ridotto ? 0 : 1150;
+		const apertura = performance.now();
+
+		const sipario = document.querySelector('.sipario');
+		const conta = sipario?.querySelector('[data-sipario-conta]');
+		const barra = sipario?.querySelector('[data-sipario-barra]');
+		const voce = sipario?.querySelector('[data-sipario-voce]');
+		const pronto = sipario?.querySelector('[data-sipario-pronto]')?.textContent ?? '';
+
+		// Traguardi veri, con un peso ciascuno. Nessun timer che finge di caricare.
+		const traguardi = [
+			{ peso: 0.25, fatto: () => document.readyState !== 'loading' },
+			{ peso: 0.35, fatto: () => fontiPronte },
+			{ peso: 0.4, fatto: () => document.readyState === 'complete' },
+		];
+		let fontiPronte = false;
+		document.fonts?.ready.then(() => { fontiPronte = true });
+
+		let mostrato = 0;
+		let fermo = false;
+
+		const quota = () => traguardi.reduce((somma, t) => somma + (t.fatto() ? t.peso : 0), 0);
+
+		const disegna = () => {
+			if (fermo) return;
+			// il numero non può correre più del minimo né superare quello che è davvero pronto
+			const trascorso = MINIMO === 0 ? 1 : (performance.now() - apertura) / MINIMO;
+			const bersaglio = Math.min(quota(), trascorso);
+			mostrato += (bersaglio - mostrato) * 0.14;
+			const percento = Math.min(100, Math.round(mostrato * 100));
+			if (conta) conta.textContent = String(percento).padStart(3, '0');
+			if (barra) barra.style.transform = `scaleX(${Math.max(0.02, mostrato)})`;
+			if (quota() >= 0.999 && trascorso >= 1 && percento >= 99) return chiudi();
+			requestAnimationFrame(disegna);
+		};
+
+		function chiudi() {
+			if (fermo) return;
+			fermo = true;
+			if (conta) conta.textContent = '100';
+			if (voce && pronto) voce.textContent = pronto;
+			if (barra) barra.style.transform = 'scaleX(1)';
+			const via = () => {
+				radice.removeAttribute('data-caricando');
+				radice.setAttribute('data-caricato', '');
+			};
+			const sparisci = () => { sipario?.removeAttribute('data-uscita') };
+			if (ridotto || !sipario) return via();
+			// Il sipario si ritira verso l'alto mentre la hero è già in movimento sotto di lui:
+			// la bandiera cade all'inizio dell'uscita, non alla fine, altrimenti si vedrebbe
+			// una pagina vuota per tutta la ritirata.
+			sipario.setAttribute('data-uscita', '');
+			via();
+			sipario.addEventListener('animationend', sparisci, { once: true });
+			// se l'animazione non parte (scheda in secondo piano, stili non arrivati) il sipario
+			// non resta comunque appeso sopra la pagina
+			setTimeout(sparisci, 1400);
+		}
+
+		requestAnimationFrame(disegna);
+	})();
+</script>

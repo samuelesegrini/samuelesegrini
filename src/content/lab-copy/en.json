@@ -39,7 +39,9 @@
 		"section": "Section",
 		"hint": "Scroll, or use the bar",
 		"one": "published",
-		"many": "published"
+		"many": "published",
+		"label": "Loading",
+		"ready": "Ready"
 	},
 	"home": {
 		"title": "Experiment — new home",
