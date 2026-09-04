@@ -102,7 +102,7 @@ test('le altre pagine tengono la hero classica', async ({ page }) => {
 	}
 });
 
-test('sul telefono la hero è compatta e non eredita il fondo dell\'ultima sezione', async ({ page }) => {
+test('sul telefono la hero è compatta e non prende il ruolo dell\'ultima sezione', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto('/lab/it/');
 	await page.waitForTimeout(1600);
@@ -111,11 +111,12 @@ test('sul telefono la hero è compatta e non eredita il fondo dell\'ultima sezio
 		const hero = document.querySelector('.home-section.hero')!;
 		const pillola = document.querySelector('.hero-hint')!.getBoundingClientRect();
 		const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
-		const ultima = document.querySelector('.home-section:last-child')!;
+		// il piede è l'ultimo figlio del foglio: l'ultima sezione va cercata fra le sezioni
+		const ultima = [...document.querySelectorAll('.home-section')].at(-1)!;
 		return {
 			// :last-of-type prendeva anche la hero, unico <header> fra i fratelli
 			fondoHero: Number.parseFloat(getComputedStyle(hero).paddingBottom),
-			fondoUltima: Number.parseFloat(getComputedStyle(ultima).paddingBottom),
+			altezzaUltima: ultima.getBoundingClientRect().height,
 			ultima: ultima.id,
 			altezzaHero: Math.round(hero.getBoundingClientRect().height),
 			// con tutte le righe auto e align-content: stretch la pillola si gonfiava
@@ -127,7 +128,7 @@ test('sul telefono la hero è compatta e non eredita il fondo dell\'ultima sezio
 
 	expect(misura.ultima, 'l\'ultima sezione è contatto, non la hero').toBe('contatto');
 	expect(misura.fondoHero, 'la hero non porta il fondo dell\'ultima sezione').toBeLessThan(80);
-	expect(misura.fondoUltima, 'che invece resta sull\'ultima').toBeGreaterThan(140);
+	expect(misura.altezzaUltima, 'che invece resta alta una schermata').toBeGreaterThan(700);
 	expect(misura.altezzaPillola, 'la pillola resta una pillola').toBeLessThan(48);
 	expect(misura.altezzaHero, 'la hero sta in una schermata').toBeLessThan(844);
 	expect(misura.stacco, 'il riquadro arriva subito dopo').toBeLessThan(90);

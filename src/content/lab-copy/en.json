@@ -43,6 +43,17 @@
 		"label": "Loading",
 		"ready": "Ready"
 	},
+	"footer": {
+		"invito": "Let's talk",
+		"scrivimi": "Write to me",
+		"navigazione": "Pages",
+		"altrove": "Elsewhere",
+		"colofone": "Colophon",
+		"fattoCon": "Astro, no client-side framework",
+		"caratteri": "Manrope, Newsreader, IBM Plex Mono",
+		"diritti": "All rights reserved",
+		"lingua": "Language"
+	},
 	"home": {
 		"title": "Experiment — new home",
 		"headline": "Software engineer,",

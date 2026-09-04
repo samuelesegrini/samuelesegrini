@@ -1,0 +1,166 @@
+---
+/**
+ * Il piede del banco di prova.
+ *
+ * Chiude ogni pagina con la stessa cosa: un invito grande a scrivere, e sotto le tre
+ * colonne che un piede deve avere — dove andare, dove trovarmi altrove, e di cosa è
+ * fatto il sito. Lascia in fondo lo spazio della barra, che è fissa e coprirebbe
+ * l'ultima riga.
+ */
+import { siteConfig } from '../../config/site';
+import { experimentLanguages, labPaths, mailHref, type LabLocale } from './chrome';
+import type { LabCopy } from '../../lib/lab-copy';
+
+interface Props {
+	lang: LabLocale;
+	copy: LabCopy;
+	itHref: string;
+	enHref: string;
+}
+const { lang, copy, itHref, enHref } = Astro.props;
+const t = copy.footer;
+const percorsi = labPaths[lang];
+const pagine = [percorsi.home, percorsi.work, percorsi.writing, percorsi.about].map((href, i) => ({
+	href,
+	label: copy.nav[i].label,
+}));
+const altrove = [
+	{ label: 'GitHub', href: siteConfig.github },
+	{ label: 'LinkedIn', href: siteConfig.linkedin },
+	{ label: 'Email', href: mailHref },
+];
+const lingue = experimentLanguages(lang, itHref, enHref);
+const anno = new Date().getFullYear();
+---
+
+<footer class="piede">
+	<a class="piede-invito" href={mailHref}>
+		<span class="piede-etichetta">{t.invito}</span>
+		<span class="piede-riga">{t.scrivimi}</span>
+		<span class="piede-mail">{siteConfig.email}</span>
+	</a>
+
+	<div class="piede-colonne">
+		<nav class="piede-colonna" aria-label={t.navigazione}>
+			<span class="piede-etichetta">{t.navigazione}</span>
+			<ul>{pagine.map((pagina) => <li><a href={pagina.href}>{pagina.label}</a></li>)}</ul>
+		</nav>
+
+		<div class="piede-colonna">
+			<span class="piede-etichetta">{t.altrove}</span>
+			<ul>{altrove.map((voce) => <li><a href={voce.href} rel="me noopener">{voce.label}</a></li>)}</ul>
+		</div>
+
+		<div class="piede-colonna">
+			<span class="piede-etichetta">{t.colofone}</span>
+			<ul>
+				<li><span>{t.fattoCon}</span></li>
+				<li><span>{t.caratteri}</span></li>
+			</ul>
+		</div>
+
+		<div class="piede-colonna">
+			<span class="piede-etichetta">{t.lingua}</span>
+			<ul class="piede-lingue">
+				{lingue.map((lingua) => (
+					<li><a href={lingua.href} aria-current={lingua.current ? 'true' : undefined}>{lingua.label}</a></li>
+				))}
+			</ul>
+		</div>
+	</div>
+
+	<div class="piede-chiusura">
+		<span>© {anno} {siteConfig.name}</span>
+		<span>{siteConfig.role} · {t.diritti}</span>
+	</div>
+</footer>
+
+<style>
+	.piede {
+		display: grid;
+		gap: clamp(48px, 7vw, 92px);
+		/* la barra è fissa e alta 122px col suo margine: l'ultima riga le sta sopra */
+		padding: clamp(72px, 10vh, 132px) max(24px, 4vw) 190px;
+		border-top: 1px solid #ddd9d0;
+	}
+
+	.piede-etichetta {
+		color: #8b877f;
+		font: 10px var(--mono);
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.piede-invito {
+		display: grid;
+		gap: 10px;
+		width: max-content;
+		max-width: 100%;
+		color: inherit;
+		text-decoration: none;
+	}
+	.piede-riga {
+		font-size: clamp(46px, 9vw, 132px);
+		font-weight: 700;
+		line-height: 0.9;
+		letter-spacing: -0.055em;
+		text-transform: uppercase;
+	}
+	/* la riga si sottolinea da sola, da sinistra: è l'unico gesto del piede */
+	.piede-mail {
+		position: relative;
+		width: max-content;
+		max-width: 100%;
+		color: #56534b;
+		font: 13px var(--mono);
+		overflow-wrap: anywhere;
+	}
+	.piede-mail::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		bottom: -3px;
+		left: 0;
+		height: 1px;
+		background: currentColor;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 420ms var(--ease);
+	}
+	.piede-invito:hover .piede-mail::after,
+	.piede-invito:focus-visible .piede-mail::after { transform: scaleX(1) }
+
+	.piede-colonne {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+		gap: 34px clamp(24px, 4vw, 64px);
+	}
+	.piede-colonna { display: grid; align-content: start; gap: 14px }
+	.piede-colonna ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none }
+	.piede-colonna a,
+	.piede-colonna span {
+		color: #56534b;
+		font-size: 14.5px;
+		text-decoration: none;
+	}
+	.piede-colonna a { width: max-content; transition: color 180ms ease }
+	.piede-colonna a:hover { color: #14140f }
+
+	.piede-lingue { grid-auto-flow: column; justify-content: start; gap: 14px }
+	.piede-lingue a[aria-current] { color: #14140f; font-weight: 600 }
+
+	.piede-chiusura {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 8px 24px;
+		padding-top: 26px;
+		border-top: 1px solid #ddd9d0;
+		color: #8b877f;
+		font: 11px var(--mono);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.piede-mail::after { transition: none }
+	}
+</style>

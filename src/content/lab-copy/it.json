@@ -19,6 +19,17 @@
 	},
 	"cv": { "kicker": "Curriculum", "long": "Scarica il PDF", "short": "PDF", "aria": "Scarica il curriculum in PDF" },
 	"common": { "section": "Sezione", "hint": "Scorri, oppure usa la barra", "one": "pubblicato", "many": "pubblicati", "label": "Caricamento", "ready": "Pronto" },
+	"footer": {
+		"invito": "Parliamone",
+		"scrivimi": "Scrivimi",
+		"navigazione": "Pagine",
+		"altrove": "Altrove",
+		"colofone": "Colofone",
+		"fattoCon": "Astro, senza framework lato client",
+		"caratteri": "Manrope, Newsreader, IBM Plex Mono",
+		"diritti": "Tutti i diritti riservati",
+		"lingua": "Lingua"
+	},
 	"home": {
 		"title": "Banco di prova — nuova home",
 		"headline": "Software engineer,",
