@@ -18,16 +18,15 @@ interface Props {
 const { label, ready, mark } = Astro.props;
 ---
 
-<div class="sipario" aria-hidden="true">
+<div class="sipario" aria-hidden="true" data-pronto={ready}>
 	<div class="sipario-alto">
 		<span class="sipario-marchio">{mark}</span>
-		<span class="sipario-voce" data-sipario-voce>{label}</span>
+		<span class="section-kicker" data-sipario-voce>{label}</span>
 	</div>
 	<div class="sipario-basso">
 		<span class="sipario-conta" data-sipario-conta>000</span>
 		<i class="sipario-barra"><b data-sipario-barra></b></i>
 	</div>
-	<span hidden data-sipario-pronto>{ready}</span>
 </div>
 
 <script is:inline>
@@ -59,47 +58,51 @@ const { label, ready, mark } = Astro.props;
 		const apertura = performance.now();
 
 		const sipario = document.querySelector('.sipario');
-		const conta = sipario?.querySelector('[data-sipario-conta]');
-		const barra = sipario?.querySelector('[data-sipario-barra]');
-		const voce = sipario?.querySelector('[data-sipario-voce]');
-		const pronto = sipario?.querySelector('[data-sipario-pronto]')?.textContent ?? '';
+		if (!sipario) return;
+		const conta = sipario.querySelector('[data-sipario-conta]');
+		const barra = sipario.querySelector('[data-sipario-barra]');
+		const voce = sipario.querySelector('[data-sipario-voce]');
+		const pronto = sipario.dataset.pronto ?? '';
 
-		// Traguardi veri, con un peso ciascuno. Nessun timer che finge di caricare.
-		const traguardi = [
-			{ peso: 0.25, fatto: () => document.readyState !== 'loading' },
-			{ peso: 0.35, fatto: () => fontiPronte },
-			{ peso: 0.4, fatto: () => document.readyState === 'complete' },
-		];
-		let fontiPronte = false;
-		document.fonts?.ready.then(() => { fontiPronte = true });
+		// Traguardi veri, ognuno col suo peso, e ognuno arriva una volta sola: si sommano quando
+		// accadono invece di essere interrogati a ogni fotogramma. Nessun timer che finge di caricare.
+		let quota = 0;
+		const segna = (peso) => { quota += peso };
+		if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => segna(0.25), { once: true });
+		else segna(0.25);
+		document.fonts?.ready.then(() => segna(0.35));
+		if (document.readyState === 'complete') segna(0.4);
+		else addEventListener('load', () => segna(0.4), { once: true });
 
 		let mostrato = 0;
-		let fermo = false;
 		let ultimo = -1;
-
-		const quota = () => traguardi.reduce((somma, t) => somma + (t.fatto() ? t.peso : 0), 0);
+		let ultimaScala = -1;
 
 		const disegna = () => {
-			if (fermo) return;
 			// il numero non può correre più del minimo né superare quello che è davvero pronto
 			const trascorso = MINIMO === 0 ? 1 : (performance.now() - apertura) / MINIMO;
-			const bersaglio = Math.min(quota(), trascorso);
+			const bersaglio = Math.min(quota, trascorso);
 			mostrato += (bersaglio - mostrato) * 0.14;
+			// l'inseguimento è asintotico: sotto il mezzo per mille si aggancia, invece di far
+			// aspettare la hero altri venti fotogrammi per una differenza che non si vede
+			if (bersaglio - mostrato < 0.005) mostrato = bersaglio;
 			const percento = Math.min(100, Math.round(mostrato * 100));
-			// riscrivere il numero a ogni fotogramma rifà il layout di una cifra enorme anche
-			// quando non è cambiata: si tocca solo quando cambia davvero
+			// riscrivere numero e barra a ogni fotogramma rifà il layout di una cifra enorme e
+			// riparsa un transform anche quando il valore non è cambiato: si tocca solo quando cambia
 			if (conta && percento !== ultimo) {
 				conta.textContent = String(percento).padStart(3, '0');
 				ultimo = percento;
 			}
-			if (barra) barra.style.transform = `scaleX(${Math.max(0.02, mostrato)})`;
-			if (quota() >= 0.999 && trascorso >= 1 && percento >= 99) return chiudi();
+			const scala = Math.max(0.02, Math.round(mostrato * 1000) / 1000);
+			if (barra && scala !== ultimaScala) {
+				barra.style.transform = `scaleX(${scala})`;
+				ultimaScala = scala;
+			}
+			if (quota >= 0.999 && trascorso >= 1 && percento >= 99) return chiudi();
 			requestAnimationFrame(disegna);
 		};
 
 		function chiudi() {
-			if (fermo) return;
-			fermo = true;
 			if (conta) conta.textContent = '100';
 			if (voce && pronto) voce.textContent = pronto;
 			if (barra) barra.style.transform = 'scaleX(1)';
@@ -107,7 +110,7 @@ const { label, ready, mark } = Astro.props;
 				radice.removeAttribute('data-caricando');
 				radice.setAttribute('data-caricato', '');
 			};
-			const sparisci = () => { sipario?.removeAttribute('data-uscita') };
+
 			// la barra sale insieme alla ritirata, e si toglie il segno appena atterrata
 			const barraFissa = document.querySelector('.toolbar-shell');
 			if (barraFissa && !ridotto) {
@@ -117,20 +120,29 @@ const { label, ready, mark } = Astro.props;
 					// e il segno va tolto solo quando finisce l'ingresso della barra stessa
 					if (evento && (evento.target !== barraFissa || evento.animationName !== 'barra-entra')) return;
 					barraFissa.removeAttribute('data-entra');
+					// la barra sopravvive a ogni navigazione: un ascoltatore lasciato addosso
+					// terrebbe in vita tutto questo ambito per il resto della sessione
+					barraFissa.removeEventListener('animationend', posata);
+					clearTimeout(scadenzaBarra);
 				};
 				barraFissa.addEventListener('animationend', posata);
-				setTimeout(posata, 1600);
+				var scadenzaBarra = setTimeout(posata, 1600);
 			}
-			if (ridotto || !sipario) return via();
+
+			if (ridotto) return via();
 			// Il sipario si ritira verso l'alto mentre la hero è già in movimento sotto di lui:
 			// la bandiera cade all'inizio dell'uscita, non alla fine, altrimenti si vedrebbe
 			// una pagina vuota per tutta la ritirata.
+			const sparisci = () => {
+				sipario.removeAttribute('data-uscita');
+				clearTimeout(scadenzaSipario);
+			};
 			sipario.setAttribute('data-uscita', '');
 			via();
 			sipario.addEventListener('animationend', sparisci, { once: true });
 			// se l'animazione non parte (scheda in secondo piano, stili non arrivati) il sipario
 			// non resta comunque appeso sopra la pagina
-			setTimeout(sparisci, 1400);
+			const scadenzaSipario = setTimeout(sparisci, 1400);
 		}
 
 		requestAnimationFrame(disegna);

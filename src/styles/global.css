@@ -1,3 +1,8 @@
+/* i caratteri del sito: qui, accanto ai token che li nominano, invece che in ogni layout */
+@import '@fontsource-variable/manrope';
+@import '@fontsource-variable/newsreader';
+@import '@fontsource/ibm-plex-mono/400.css';
+
 :root {
 	--ink: #080808;
 	--paper: #f4f1e9;

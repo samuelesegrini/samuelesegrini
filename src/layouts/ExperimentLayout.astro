@@ -4,10 +4,6 @@
  * Ogni pagina passa le proprie sezioni; la barra le usa come indice.
  */
 import { ClientRouter } from 'astro:transitions';
-// i caratteri del sito: senza questi il banco di prova cadeva sui font di sistema
-import '@fontsource-variable/manrope';
-import '@fontsource-variable/newsreader';
-import '@fontsource/ibm-plex-mono/400.css';
 import '../styles/global.css';
 import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
 import LabSipario from '../components/lab/LabSipario.astro';
@@ -109,17 +105,21 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 48px; }
 			.vetrina { position: relative; display: grid; align-content: center; gap: 26px; min-height: 100vh; padding: 0 max(24px, 4vw); }
 			@media (max-width: 767px) { .vetrina { min-height: 0; padding-block: 4vh 12vh } }
-			.hero-media { --piccola: .42; --richiamo: calc(-100vh - 15px); width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
-			/* La misura di partenza è una misura, non una proporzione: fra 494 e 624px su
-			   qualsiasi schermo. La scala si ricava dividendola per la larghezza piena —
-			   tan(atan2()) è il modo di dividere due lunghezze in CSS. Il .42 qui sopra
-			   resta per i browser senza funzioni trigonometriche. */
+			/* La misura di partenza è una misura, non una proporzione: fra 494 e 624px su qualsiasi
+			   schermo, ma non più alta della fascia libera fra l'intro e il marchio — 16:9 vuol dire
+			   1.78 volte l'altezza. La scala si ricava dividendo quella misura per la larghezza
+			   piena: tan(atan2()) è il modo di dividere due lunghezze in CSS. */
 			.hero-media {
+				--richiamo: calc(-100vh - 15px);
 				--piena: calc(100vw - 2 * max(24px, 4vw));
-				/* la misura piccola cresce con la larghezza ma si ferma allo spazio verticale
-				   davvero libero fra l'intro e il marchio: 16:9 vuol dire 1.78 volte l'altezza */
 				--misura: min(clamp(494px, 52vw, 624px), calc((100vh - 480px) * 1.7778));
-				--piccola: clamp(.3, tan(atan2(var(--misura), var(--piena))), .78);
+				--piccola: .42;
+				width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform;
+			}
+			/* il ripiego .42 qui sopra non può vincere da solo: una custom property invalida non
+			   ricade sulla dichiarazione precedente, quindi la proporzione va chiesta a parte */
+			@supports (scale: tan(atan2(1px, 1px))) {
+				.hero-media { --piccola: clamp(.3, tan(atan2(var(--misura), var(--piena))), .78) }
 			}
 			.hero-media-fill { width: 100%; height: 100%; background: #dcd8ce; }
 
@@ -136,25 +136,26 @@ const labPathsAbout = labPaths[lang].about;
 			/* la sequenza di ingresso: ogni pezzo sale dalla sua feritoia, il grigio scende nel riquadro */
 			@keyframes sale { from { transform: translateY(105%) } to { transform: translateY(0) } }
 			@keyframes scopre { from { transform: translateY(-100%) } }
-			.hero .mascherina > *,
-			.vetrina .mascherina > * { animation: sale 1000ms cubic-bezier(.165, .84, .44, 1) backwards; }
+			/* Lo sfalsamento è --ritardo e sta dentro la scorciatoia insieme all'attesa: tenerlo in
+			   una regola a parte obbligava a scriverla dopo, o la scorciatoia lo azzerava.
+			   Arrivando da un'altra pagina la transizione copre i primi 760ms, e l'attesa è tarata
+			   perché il marchio parta dopo che ha chiuso (418 + 400 = 818ms): sotto quella soglia
+			   comincia a salire sotto lo snapshot, dove non si vede, e riappare a metà strada. */
+			:is(.hero, .vetrina) .mascherina > * {
+				animation: sale 1000ms cubic-bezier(.165, .84, .44, 1) calc(var(--ritardo, 0ms) + var(--attesa, 0ms)) backwards;
+			}
 			/* la discesa è sul riempimento, la crescita sul riquadro: sono due animazioni con due
 			   vite diverse, e spegnere l'ingresso non deve spegnere lo scroll */
-			.hero-media-fill { animation: scopre 1000ms var(--ease) backwards; --ritardo: 260ms }
+			.hero-media-fill {
+				--ritardo: 260ms;
+				animation: scopre 1000ms var(--ease) calc(var(--ritardo, 0ms) + var(--attesa, 0ms)) backwards;
+			}
 			.hero-meta .mascherina:nth-child(1) > * { --ritardo: 100ms }
 			.hero-meta .mascherina:nth-child(2) > * { --ritardo: 200ms }
 			.hero-marchio > .mascherina:nth-child(1) > * { --ritardo: 400ms }
 			.hero-marchio > .mascherina:nth-child(2) > * { --ritardo: 500ms }
 			.hero-intro .mascherina > * { --ritardo: 600ms }
 			.vetrina .hero-hint > * { --ritardo: 700ms }
-			/* Un solo punto in cui lo sfalsamento diventa un ritardo vero, così l'attesa si
-			   somma a ognuno senza appiattirli. Arrivando da un'altra pagina la transizione
-			   copre i primi 760ms. L'attesa è tarata perché il marchio parta dopo che la
-			   transizione ha chiuso (418 + 400 = 818ms): sotto quella soglia comincia a salire
-			   sotto lo snapshot, dove non si vede, e riappare a metà strada. */
-			.hero .mascherina > *,
-			.vetrina .mascherina > *,
-			.hero-media-fill { animation-delay: calc(var(--ritardo, 0ms) + var(--attesa, 0ms)); }
 			html[data-lab-client-arrival] { --attesa: calc(var(--transizione) * .55); }
 			/* il riquadro è il pezzo più pesante da comporre: arrivando da un'altra pagina
 			   aspetta che la transizione abbia chiuso del tutto (418 + 460 = 878ms contro i
@@ -162,7 +163,7 @@ const labPathsAbout = labPaths[lang].about;
 			   dov'era, subito dopo la riga dei dati. */
 			html[data-lab-client-arrival] .hero-media-fill { --ritardo: 460ms; }
 			@media (prefers-reduced-motion: reduce) {
-				.hero .mascherina > *, .vetrina .mascherina > *, .hero-media-fill { animation: none }
+				:is(.hero, .vetrina) .mascherina > *, .hero-media-fill { animation: none }
 			}
 			/* --- movimento allo scroll: la hero si apre e si allontana mentre esce --- */
 			/* le animazioni d'ingresso usano transform, queste usano translate/scale/opacity:
@@ -198,7 +199,6 @@ const labPathsAbout = labPaths[lang].about;
 			@media (prefers-reduced-motion: reduce) {
 				/* stessa forma dei selettori qui sopra, altrimenti il nome dell'animazione sopravvive */
 				.hero-media, .hero-meta, .hero-intro,
-				.vetrina .hero-hint,
 				.hero-marchio > .mascherina,
 				.hero-marchio > .mascherina:nth-child(1),
 				.hero-marchio > .mascherina:nth-child(2) { animation: none; animation-timeline: auto }
@@ -210,8 +210,8 @@ const labPathsAbout = labPaths[lang].about;
 			@media (max-width: 1039px) {
 				.hero-intro { position: static; max-width: 46ch; margin-top: 22px; text-align: left; }
 				/* una riga sola assorbe lo spazio libero: con tutte auto e align-content: stretch
-				   il gonfiore si spalmava su ogni riga e la pillola diventava un riquadro */
-				.home-section.hero { grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 26px; padding-bottom: 172px; }
+				   il gonfiore si spalmava su ogni riga */
+				.home-section.hero { grid-template-rows: auto auto minmax(0, 1fr); gap: 26px; padding-bottom: 172px; }
 			}
 			/* sul telefono la hero non è una schermata piena: senza il riquadro al centro
 			   resterebbe un vuoto, quindi si accorcia e la vetrina arriva subito dopo */
@@ -270,26 +270,22 @@ const labPathsAbout = labPaths[lang].about;
 			@keyframes barra-entra { from { transform: translateY(150%); opacity: 0 } }
 			.toolbar-shell[data-entra] { animation: barra-entra 820ms var(--ease) 120ms backwards; }
 
-			@media (prefers-reduced-motion: reduce) { .toolbar-shell[data-entra] { animation: none } }
 			/* --- sipario del primo caricamento --- */
-			.sipario { position: fixed; z-index: 100; inset: 0; display: none; grid-template-rows: auto 1fr auto; padding: 84px max(24px, 4vw) 68px; background: var(--paper, #f4f1ea); }
+			.sipario { position: fixed; z-index: 100; inset: 0; display: none; grid-template-rows: auto 1fr; padding: 84px max(24px, 4vw) 68px; background: var(--paper); }
 			html[data-caricando] .sipario,
 			.sipario[data-uscita] { display: grid; }
 			.sipario-alto, .sipario-basso { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
 			.sipario-basso { align-items: end; }
 			.sipario-marchio { font-size: 22px; font-weight: 700; letter-spacing: -.06em; }
-			.sipario-voce { color: #8b877f; font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 			.sipario-conta { font: 600 clamp(64px, 13vw, 168px)/.82 var(--mono); letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
 			.sipario-barra { position: absolute; left: max(24px, 4vw); right: max(24px, 4vw); bottom: 30px; height: 2px; background: #ddd9d0; overflow: hidden; }
 			.sipario-barra b { display: block; height: 100%; background: #14140f; transform-origin: left; transform: scaleX(.02); }
 			/* si ritira verso l'alto, come la tendina del riquadro al contrario */
 			@keyframes sipario-via { to { transform: translateY(-100%) } }
-			.sipario[data-uscita] { animation: sipario-via 760ms var(--ease) forwards; }
+			.sipario[data-uscita] { animation: sipario-via var(--transizione) var(--ease) forwards; }
 			/* l'ingresso della hero resta fermo al primo fotogramma finché il sipario copre */
-			html[data-caricando] .hero .mascherina > *,
-			html[data-caricando] .vetrina .mascherina > *,
+			html[data-caricando] :is(.hero, .vetrina) .mascherina > *,
 			html[data-caricando] .hero-media-fill { animation-play-state: paused; }
-			@media (prefers-reduced-motion: reduce) { .sipario[data-uscita] { animation: none } }
 			@media (max-width: 620px) { .home-section { min-height: 118vh; } .home-section:last-child { padding-bottom: 170px; } }
 		</style>
 	</body>

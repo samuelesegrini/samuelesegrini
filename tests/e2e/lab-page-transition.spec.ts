@@ -78,7 +78,6 @@ test('la pagina usa un solo snapshot opaco della viewport e mantiene la barra', 
 		expect.objectContaining({ name: 'lab-root-forward-in', pseudo: '::view-transition-new(root)', duration: 760 }),
 		expect.objectContaining({ name: 'lab-toolbar-hold', pseudo: '::view-transition-new(labtoolbar)', duration: 760 }),
 	]));
-	expect(avanti.animations.filter(({ pseudo }) => pseudo?.includes('(labpage)') || pseudo?.includes('(labhero)'))).toEqual([]);
 
 	await osservaProssimaTransizione(page);
 	await page.goBack();

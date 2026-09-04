@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { apriMenu, rigaSulGuscio, vaiDalMenu } from './lab-chrome';
+
 /** Sul telefono la barra ha poco spazio: il cambio lingua esce dalla riga e passa nel
  *  pannello del menu, dove c'è margine. Sul desktop resta la cella di sempre. */
 
@@ -63,31 +65,13 @@ test('la riga resta in fondo al guscio in ogni stato', async ({ page }) => {
 	await page.goto('/lab/it/');
 	await page.waitForTimeout(2200);
 
-	const misura = () =>
-		page.evaluate(() => {
-			const guscio = document.querySelector('.toolbar-shell') as HTMLElement;
-			const g = guscio.getBoundingClientRect();
-			const r = document.querySelector('.identity-row')!.getBoundingClientRect();
-			return {
-				// la riga è ancorata in fondo al guscio: il suo fondo coincide con il suo
-				dalFondo: Math.round(r.bottom - g.bottom),
-				dalLato: Math.round(r.left - g.left),
-				// overflow: hidden faceva del guscio un contenitore scorrevole, e il fuoco su
-				// una voce di menu lo faceva scorrere di 195px portandosi via la riga
-				scorrimento: guscio.scrollTop,
-			};
-		});
-
 	const passi: [string, () => Promise<unknown>][] = [
 		['a riposo', async () => {}],
 		['in modo indice', async () => {
 			await page.evaluate(() => document.querySelector('#lavoro')!.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior }));
 			await page.waitForTimeout(800);
 		}],
-		['con il menu aperto', async () => {
-			await page.click('.toolbar-shell .menu-toggle');
-			await page.waitForTimeout(800);
-		}],
+		['con il menu aperto', async () => apriMenu(page)],
 		['dopo il fuoco da tastiera', async () => {
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');
@@ -101,7 +85,7 @@ test('la riga resta in fondo al guscio in ogni stato', async ({ page }) => {
 
 	for (const [dove, azione] of passi) {
 		await azione();
-		const m = await misura();
+		const m = await rigaSulGuscio(page);
 		expect(m.dalFondo, `${dove}: la riga tocca il fondo del guscio`).toBeLessThanOrEqual(2);
 		expect(m.dalLato, `${dove}: e il suo lato`).toBeLessThanOrEqual(2);
 		expect(m.scorrimento, `${dove}: il guscio non scorre dentro di sé`).toBe(0);

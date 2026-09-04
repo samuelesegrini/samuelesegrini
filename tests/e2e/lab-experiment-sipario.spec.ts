@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { attendiCaricato, vaiDalMenu } from './lab-chrome';
+
 /** Il sipario del primo caricamento: compare una volta per sessione, segue traguardi veri
  *  del documento e tiene fermo l'ingresso della hero finché non se ne va. */
 
@@ -23,7 +25,7 @@ test('copre il primo caricamento e passa la mano alla hero', async ({ page }) =>
 	expect(acceso.conta, 'e il numero non parte già a fondo corsa').toMatch(/^0[0-5]\d$/);
 	expect(acceso.heroFerma, 'la hero aspetta il suo turno').toBe('paused');
 
-	await page.waitForFunction(() => document.documentElement.hasAttribute('data-caricato'), null, { timeout: 8000 });
+	await attendiCaricato(page);
 	await page.waitForTimeout(900);
 
 	const spento = await page.evaluate(() => ({
@@ -40,7 +42,7 @@ test('copre il primo caricamento e passa la mano alla hero', async ({ page }) =>
 test('non si ripresenta nella stessa sessione né sulle navigazioni client', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
 	await page.goto('/lab/it/');
-	await page.waitForFunction(() => document.documentElement.hasAttribute('data-caricato'), null, { timeout: 8000 });
+	await attendiCaricato(page);
 
 	// stessa scheda, ricaricando: già visto
 	await page.reload();
@@ -50,10 +52,7 @@ test('non si ripresenta nella stessa sessione né sulle navigazioni client', asy
 	// navigazione client: la transizione è già il passaggio
 	await page.goto('/lab/it/progetti/');
 	await page.waitForTimeout(1200);
-	await page.click('.toolbar-shell .menu-toggle');
-	await page.waitForTimeout(700);
-	await page.click('.toolbar-shell .nav-item[data-page="Home"]');
-	await page.waitForTimeout(900);
+	await vaiDalMenu(page, 'Home', 900);
 	expect(await page.evaluate(() => document.documentElement.hasAttribute('data-caricando')), 'niente sipario sopra la transizione').toBe(false);
 });
 
@@ -74,7 +73,7 @@ test('con movimento ridotto il sipario non trattiene la pagina', async ({ browse
 test('la barra entra una volta sola, quando il sipario si ritira', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
 	await page.goto('/lab/it/');
-	await page.waitForFunction(() => document.documentElement.hasAttribute('data-caricato'), null, { timeout: 8000 });
+	await attendiCaricato(page);
 
 	const scostamento = () =>
 		page.evaluate(() => {
@@ -108,10 +107,7 @@ test('la barra entra una volta sola, quando il sipario si ritira', async ({ page
 	expect(posata.opacita).toBe(1);
 
 	// navigando subito dopo, senza ricaricare: la barra è la stessa e non deve rientrare
-	await page.click('.toolbar-shell .menu-toggle');
-	await page.waitForTimeout(700);
-	await page.click('.toolbar-shell .nav-item[data-page="Progetti"]');
-	await page.waitForTimeout(300);
+	await vaiDalMenu(page, 'Progetti', 300);
 	const durante = await page.evaluate(() => {
 		const barra = document.querySelector('.toolbar-shell')!;
 		const riquadro = barra.getBoundingClientRect();
@@ -139,10 +135,7 @@ test('la barra entra una volta sola, quando il sipario si ritira', async ({ page
 	expect(seconda.nome, 'la barra è già dov-è e ci resta').toBe('none');
 
 	// e nemmeno passando da una pagina all-altra
-	await page.click('.toolbar-shell .menu-toggle');
-	await page.waitForTimeout(700);
-	await page.click('.toolbar-shell .nav-item[data-page="Progetti"]');
-	await page.waitForTimeout(1200);
+	await vaiDalMenu(page, 'Progetti', 1200);
 	expect(
 		await page.evaluate(() => getComputedStyle(document.querySelector('.toolbar-shell')!).animationName),
 		'la barra sopravvive allo scambio senza rientrare',

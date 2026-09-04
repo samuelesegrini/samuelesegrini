@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { vaiDalMenu } from './lab-chrome';
+
 /** La hero si muove con lo scroll: il riquadro affonda e cresce, le due metà del marchio
  *  si allontanano, i testi di contorno sfumano. Tutto in CSS, quindi qui si misurano le
  *  proprietà calcolate a scroll fermo invece di inseguire i fotogrammi. */
@@ -201,10 +203,7 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 	// copre i primi istanti e altrimenti si consumerebbe dove nessuno lo vede
 	await page.goto('/lab/it/progetti/');
 	await page.waitForTimeout(1400);
-	await page.click('.toolbar-shell .menu-toggle');
-	await page.waitForTimeout(700);
-	await page.click('.toolbar-shell .nav-item[data-page="Home"]');
-	await page.waitForTimeout(250);
+	await vaiDalMenu(page, 'Home', 250);
 
 	const durante = await page.evaluate(() => {
 		const riga = document.querySelector('.hero-marchio > .mascherina:nth-child(1) > *')!;
