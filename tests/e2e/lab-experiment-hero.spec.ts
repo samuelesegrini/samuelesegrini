@@ -299,3 +299,31 @@ test('la crescita del riquadro non porta variabili nei fotogrammi', async ({ pag
 	expect(telefono.scala, 'sul telefono non resta rimpicciolito').toBe('none');
 	expect(telefono.spostamento, 'né spostato').toBe('none');
 });
+
+test('la pillola sfuma prima che il riquadro le arrivi addosso', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1800);
+
+	// da fermi si legge
+	expect(
+		await page.evaluate(() => Number(getComputedStyle(document.querySelector('.hero-hint')!).opacity)),
+		'da fermi la pillola si vede',
+	).toBeGreaterThan(0.9);
+
+	// scorrendo, il riquadro cresce fino a passarle sopra: quando succede deve essere già sparita
+	let peggiore = 0;
+	for (let y = 50; y <= 600; y += 50) {
+		await scorriA(page, y);
+		const opacita = await page.evaluate(() => {
+			const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
+			const pillola = document.querySelector('.hero-hint')!;
+			const p = pillola.getBoundingClientRect();
+			const sovrapposta =
+				p.right > riquadro.left && p.left < riquadro.right && p.bottom > riquadro.top && p.top < riquadro.bottom;
+			return sovrapposta ? Number(getComputedStyle(pillola).opacity) : 0;
+		});
+		peggiore = Math.max(peggiore, opacita);
+	}
+	expect(peggiore, 'mai leggibile sopra il grigio').toBeLessThan(0.05);
+});

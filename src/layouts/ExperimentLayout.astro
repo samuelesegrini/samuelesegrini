@@ -174,6 +174,7 @@ const labPathsAbout = labPaths[lang].about;
 			@keyframes sfuma { to { opacity: 0 } }
 			@supports (animation-timeline: scroll()) {
 				.hero-media, .hero-meta, .hero-intro,
+				.vetrina .hero-hint,
 				.hero-marchio > .mascherina {
 					animation-timeline: scroll(root block);
 					animation-range: 0 100vh;
@@ -185,6 +186,11 @@ const labPathsAbout = labPaths[lang].about;
 				   fotogramma: senza var() nei keyframe l'animazione può stare sul compositore */
 				@media (min-width: 768px) {
 					.hero-media { translate: 0 var(--richiamo); scale: var(--piccola); animation-name: cresce }
+					/* La pillola è un invito a scorrere e sta ferma in fondo alla hero, mentre il
+					   riquadro cresce fino a passarci sopra: dopo un quinto di schermata è già
+					   sparita, molto prima che il riquadro la raggiunga. Sul telefono il riquadro
+					   non cresce e la pillola sta sotto di lui, quindi lì non serve. */
+					.vetrina .hero-hint { animation-name: sfuma; animation-range: 0 20vh }
 				}
 				.hero-marchio > .mascherina:nth-child(1) { animation-name: deriva-sinistra; animation-range: 7vh 100vh }
 				.hero-marchio > .mascherina:nth-child(2) { animation-name: deriva-destra; animation-range: 7vh 100vh }
@@ -199,6 +205,7 @@ const labPathsAbout = labPaths[lang].about;
 			@media (prefers-reduced-motion: reduce) {
 				/* stessa forma dei selettori qui sopra, altrimenti il nome dell'animazione sopravvive */
 				.hero-media, .hero-meta, .hero-intro,
+				.vetrina .hero-hint,
 				.hero-marchio > .mascherina,
 				.hero-marchio > .mascherina:nth-child(1),
 				.hero-marchio > .mascherina:nth-child(2) { animation: none; animation-timeline: auto }
