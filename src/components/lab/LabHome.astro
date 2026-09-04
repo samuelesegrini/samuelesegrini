@@ -60,38 +60,38 @@ const sezioni = [
 		<span class="hero-hint mascherina"><span>{t.hint}</span></span>
 	</section>
 
-	<section class="home-section righe" id="progetti" data-section="1">
-		<div class="righe-testa">
-			<div class="righe-titolo">
-				<span class="section-kicker">{t.kicker} 01</span>
-				<h1>{t.work}<i>{arco}</i></h1>
-			</div>
-			<div class="righe-guida">
-				<p>{t.workText}</p>
-				<a class="collegamento" href={labPaths[lang].work}>{t.allWork}</a>
-			</div>
-		</div>
-		<ol class="righe-elenco">
+	<section class="home-section carte" id="progetti" data-section="1">
+		<h1 class="carte-testa"><span>{t.work}</span><i>{arco}</i></h1>
+
+		<ol class="carte-elenco">
 			{featured.map((project, i) => (
-				<li class="righe-feritoia">
+				<li>
 					<a href={labProjectPath(lang, project.slug)} style={`--posto:${i}`}>
-						<i class="righe-lavagna" aria-hidden="true"></i>
-						<b>{String(i + 1).padStart(2, '0')}</b>
-						<strong>{project.title}</strong>
-						<span class="righe-meta"><i>{copy.work.kinds[project.kind].label}</i><i>{project.year}</i></span>
-						<span class="righe-sintesi">{project.excerpt}</span>
-						{/* il nastro scorre con la pagina invece che da solo: fermo non costa niente */}
-						<span class="righe-nastro" aria-hidden="true">
-							<span class="righe-treno">
+						{/* passo 1: il pozzo è un rettangolo grigio, il video arriva dopo */}
+						<span class="carta-pozzo">
+							<i class="carta-fondo"></i>
+							<i class="carta-velo"></i>
+							<i class="carta-anta"></i>
+						</span>
+						<span class="carta-riga">
+							<strong>{project.title}</strong>
+							<span class="carta-meta"><i>{copy.work.kinds[project.kind].label}</i><i>{project.year}</i></span>
+						</span>
+						<span class="carta-nastro" aria-hidden="true">
+							<span class="carta-treno">
 								<i>{project.technologies.join(' · ')} · </i>
 								<i>{project.technologies.join(' · ')} · </i>
 							</span>
 						</span>
-						<span class="righe-freccia" aria-hidden="true">↗</span>
 					</a>
 				</li>
 			))}
 		</ol>
+
+		<div class="carte-coda">
+			<p>{t.workText}</p>
+			<a class="collegamento" href={labPaths[lang].work}>{t.allWork}</a>
+		</div>
 	</section>
 
 	<section class="home-section" id="scrittura" data-section="2">
