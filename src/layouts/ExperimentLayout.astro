@@ -65,13 +65,13 @@ const labPathsAbout = labPaths[lang].about;
 		</script>
 
 		<style is:global>
-			:root { --slot: #242424; --ease: cubic-bezier(.22,1,.36,1); }
+			:root { --slot: #242424; --ease: cubic-bezier(.22,1,.36,1); --transizione: 760ms; }
 			body { overflow-x: hidden; }
 			::view-transition-group(root) { z-index: 0; }
 			::view-transition-group(labtoolbar) { z-index: 50; }
 			::view-transition-old(root), ::view-transition-new(root) { mix-blend-mode: normal; }
-			::view-transition-old(root) { animation: lab-root-forward-out 760ms cubic-bezier(.87,0,.13,1) both; }
-			::view-transition-new(root) { animation: lab-root-forward-in 760ms cubic-bezier(.87,0,.13,1) both; }
+			::view-transition-old(root) { animation: lab-root-forward-out var(--transizione) cubic-bezier(.87,0,.13,1) both; }
+			::view-transition-new(root) { animation: lab-root-forward-in var(--transizione) cubic-bezier(.87,0,.13,1) both; }
 			[data-astro-transition="back"]::view-transition-old(root) { animation-name: lab-root-back-out; }
 			[data-astro-transition="back"]::view-transition-new(root) { animation-name: lab-root-back-in; }
 			@keyframes lab-root-forward-out { to { opacity: .58; transform: translateY(-72px) scale(.975); } }
@@ -125,24 +125,23 @@ const labPathsAbout = labPaths[lang].about;
 			@keyframes apre { from { clip-path: inset(0 0 100% 0) } to { clip-path: inset(0 0 0 0) } }
 			.hero .mascherina > *,
 			.vetrina .mascherina > * { animation: sale 1000ms cubic-bezier(.165, .84, .44, 1) backwards; }
-			.hero-meta .mascherina:nth-child(1) > * { animation-delay: 100ms }
-			.hero-meta .mascherina:nth-child(2) > * { animation-delay: 200ms }
-			.hero-marchio > .mascherina:nth-child(1) > * { animation-delay: 400ms }
-			.hero-marchio > .mascherina:nth-child(2) > * { animation-delay: 500ms }
-			.hero-intro .mascherina > * { animation-delay: 600ms }
-			.vetrina .hero-hint > * { animation-delay: 700ms }
 			/* la tendina è sul riempimento, la crescita sul riquadro: sono due animazioni
 			   con due vite diverse, e spegnere l'ingresso non deve spegnere lo scroll */
-			.hero-media-fill { animation: apre 1000ms var(--ease) 260ms backwards; }
-			/* Il cambio pagina è già il reveal: riavviare anche l'ingresso della hero nel
-			   documento appena scambiato crea un salto fra snapshot e DOM vivo. */
-			html[data-lab-client-arrival] .hero .mascherina > *,
-			html[data-lab-client-arrival] .vetrina .mascherina > *,
-			html[data-lab-client-arrival] .hero-media-fill {
-				animation-name: none;
-				animation-delay: 0s;
-				animation-timeline: auto;
-			}
+			.hero-media-fill { animation: apre 1000ms var(--ease) backwards; --ritardo: 260ms }
+			.hero-meta .mascherina:nth-child(1) > * { --ritardo: 100ms }
+			.hero-meta .mascherina:nth-child(2) > * { --ritardo: 200ms }
+			.hero-marchio > .mascherina:nth-child(1) > * { --ritardo: 400ms }
+			.hero-marchio > .mascherina:nth-child(2) > * { --ritardo: 500ms }
+			.hero-intro .mascherina > * { --ritardo: 600ms }
+			.vetrina .hero-hint > * { --ritardo: 700ms }
+			/* Un solo punto in cui lo sfalsamento diventa un ritardo vero, così l'attesa si
+			   somma a ognuno senza appiattirli. Arrivando da un'altra pagina la transizione
+			   copre i primi 760ms: l'ingresso aspetta un battito (~167ms) e poi parte, così i
+			   pezzi salgono mentre la pagina sta ancora scorrendo, invece di aspettarla ferma. */
+			.hero .mascherina > *,
+			.vetrina .mascherina > *,
+			.hero-media-fill { animation-delay: calc(var(--ritardo, 0ms) + var(--attesa, 0ms)); }
+			html[data-lab-client-arrival] { --attesa: calc(var(--transizione) * .22); }
 			@media (prefers-reduced-motion: reduce) {
 				.hero .mascherina > *, .vetrina .mascherina > *, .hero-media-fill { animation: none }
 			}
