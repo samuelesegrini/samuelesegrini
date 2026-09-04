@@ -70,3 +70,50 @@ test('con movimento ridotto il sipario non trattiene la pagina', async ({ browse
 	expect(misura.uscita, 'nessuna animazione di uscita').toBe('none');
 	await contesto.close();
 });
+
+test('la barra entra una volta sola, quando il sipario si ritira', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/lab/it/');
+	await page.waitForFunction(() => document.documentElement.hasAttribute('data-caricato'), null, { timeout: 8000 });
+
+	const scostamento = () =>
+		page.evaluate(() => {
+			const barra = document.querySelector('.toolbar-shell')!;
+			const stile = getComputedStyle(barra);
+			return {
+				nome: stile.animationName,
+				y: Number.parseFloat(stile.transform.split(',').at(-1) ?? '0') || 0,
+				opacita: Number(stile.opacity),
+			};
+		});
+
+	const appena = await scostamento();
+	expect(appena.nome, 'la barra ha la sua animazione di ingresso').toBe('barra-entra');
+	expect(appena.y, 'e parte da sotto il bordo').toBeGreaterThan(60);
+	expect(appena.opacita).toBeLessThan(1);
+
+	await page.waitForTimeout(1100);
+	const posata = await scostamento();
+	expect(posata.y, 'poi si posa').toBe(0);
+	expect(posata.opacita).toBe(1);
+
+	// ricaricando nella stessa sessione il sipario non torna, quindi nemmeno l'ingresso
+	await page.reload();
+	await page.waitForTimeout(400);
+	const seconda = await page.evaluate(() => ({
+		caricato: document.documentElement.hasAttribute('data-caricato'),
+		nome: getComputedStyle(document.querySelector('.toolbar-shell')!).animationName,
+	}));
+	expect(seconda.caricato).toBe(false);
+	expect(seconda.nome, 'la barra è già dov-è e ci resta').toBe('none');
+
+	// e nemmeno passando da una pagina all-altra
+	await page.click('.toolbar-shell .menu-toggle');
+	await page.waitForTimeout(700);
+	await page.click('.toolbar-shell .nav-item[data-page="Progetti"]');
+	await page.waitForTimeout(1200);
+	expect(
+		await page.evaluate(() => getComputedStyle(document.querySelector('.toolbar-shell')!).animationName),
+		'la barra sopravvive allo scambio senza rientrare',
+	).toBe('none');
+});
