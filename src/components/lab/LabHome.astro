@@ -19,7 +19,6 @@ const copy = await getLabCopy(lang);
 const parole = copy.home.headline.replace(/[,.]$/, '').split(/\s+/);
 const meta = Math.ceil(parole.length / 2);
 const parola = { prima: parole.slice(0, meta).join(' '), seconda: parole.slice(meta).join(' ') };
-const [inEvidenza, ...diSpalla] = featured;
 const anni = inArchivio.map((p) => p.year);
 const arco = anni.length && Math.min(...anni) !== Math.max(...anni)
 	? `’${String(Math.min(...anni)).slice(2)}—’${String(Math.max(...anni)).slice(2)}`
@@ -64,56 +63,29 @@ const sezioni = [
 	<section class="home-section carte" id="progetti" data-section="1">
 		<h1 class="carte-testa"><span>{t.work}</span><i>{arco}</i></h1>
 
-		{/* la prima carta pesa il doppio, le altre le fanno da spalla */}
 		<ol class="carte-elenco">
-			<li class="carta-prima">
-				<a href={labProjectPath(lang, inEvidenza.slug)}>
-					{/* passo 1: il pozzo è un rettangolo grigio, il video arriva dopo */}
-					<span class="carta-pozzo">
-						<i class="carta-fondo"></i>
-						<i class="carta-velo"></i>
-						<i class="carta-anta"></i>
-					</span>
-					<span class="carta-riga">
-						<strong>{inEvidenza.title}</strong>
-						<span class="carta-meta"><i>{copy.work.kinds[inEvidenza.kind].label}</i><i>{inEvidenza.year}</i></span>
-					</span>
-					<p class="carta-sintesi">{inEvidenza.excerpt}</p>
-					<span class="carta-nastro" aria-hidden="true">
-						<span class="carta-treno">
-							<i>{inEvidenza.technologies.join(' · ')} · </i>
-							<i>{inEvidenza.technologies.join(' · ')} · </i>
+			{featured.map((project, i) => (
+				<li>
+					<a href={labProjectPath(lang, project.slug)} style={`--posto:${i}`}>
+						{/* passo 1: il pozzo è un rettangolo grigio, il video arriva dopo */}
+						<span class="carta-pozzo">
+							<i class="carta-fondo"></i>
+							<i class="carta-velo"></i>
+							<i class="carta-anta"></i>
 						</span>
-					</span>
-				</a>
-			</li>
-			<li class="carte-spalla">
-				<ol>
-					{diSpalla.map((project) => (
-						<li>
-							<a href={labProjectPath(lang, project.slug)}>
-								<span class="carta-pozzo">
-									<i class="carta-fondo"></i>
-									<i class="carta-velo"></i>
-									<i class="carta-anta"></i>
-								</span>
-								<span class="carta-corpo">
-									<span class="carta-riga">
-										<strong>{project.title}</strong>
-										<span class="carta-meta"><i>{copy.work.kinds[project.kind].label}</i><i>{project.year}</i></span>
-									</span>
-									<span class="carta-nastro" aria-hidden="true">
-										<span class="carta-treno">
-											<i>{project.technologies.join(' · ')} · </i>
-											<i>{project.technologies.join(' · ')} · </i>
-										</span>
-									</span>
-								</span>
-							</a>
-						</li>
-					))}
-				</ol>
-			</li>
+						<span class="carta-riga">
+							<strong>{project.title}</strong>
+							<span class="carta-meta"><i>{copy.work.kinds[project.kind].label}</i><i>{project.year}</i></span>
+						</span>
+						<span class="carta-nastro" aria-hidden="true">
+							<span class="carta-treno">
+								<i>{project.technologies.join(' · ')} · </i>
+								<i>{project.technologies.join(' · ')} · </i>
+							</span>
+						</span>
+					</a>
+				</li>
+			))}
 		</ol>
 
 		<div class="carte-coda">
