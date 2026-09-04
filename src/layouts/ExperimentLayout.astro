@@ -131,18 +131,20 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-marchio > .mascherina:nth-child(2) > * { animation-delay: 500ms }
 			.hero-intro .mascherina > * { animation-delay: 600ms }
 			.vetrina .hero-hint > * { animation-delay: 700ms }
-			.hero-media { animation: apre 1000ms var(--ease) 260ms backwards; }
+			/* la tendina è sul riempimento, la crescita sul riquadro: sono due animazioni
+			   con due vite diverse, e spegnere l'ingresso non deve spegnere lo scroll */
+			.hero-media-fill { animation: apre 1000ms var(--ease) 260ms backwards; }
 			/* Il cambio pagina è già il reveal: riavviare anche l'ingresso della hero nel
 			   documento appena scambiato crea un salto fra snapshot e DOM vivo. */
 			html[data-lab-client-arrival] .hero .mascherina > *,
 			html[data-lab-client-arrival] .vetrina .mascherina > *,
-			html[data-lab-client-arrival] .hero-media {
+			html[data-lab-client-arrival] .hero-media-fill {
 				animation-name: none;
 				animation-delay: 0s;
 				animation-timeline: auto;
 			}
 			@media (prefers-reduced-motion: reduce) {
-				.hero .mascherina > *, .vetrina .mascherina > *, .hero-media { animation: none }
+				.hero .mascherina > *, .vetrina .mascherina > *, .hero-media-fill { animation: none }
 			}
 			/* --- movimento allo scroll: la hero si apre e si allontana mentre esce --- */
 			/* le animazioni d'ingresso usano transform, queste usano translate/scale/opacity:
@@ -153,7 +155,6 @@ const labPathsAbout = labPaths[lang].about;
 			@keyframes sfuma { to { opacity: 0 } }
 			@supports (animation-timeline: scroll()) {
 				.hero-media, .hero-meta, .hero-intro,
-				.vetrina .hero-hint,
 				.hero-marchio > .mascherina {
 					animation-timeline: scroll(root block);
 					animation-range: 0 100vh;
@@ -161,12 +162,12 @@ const labPathsAbout = labPaths[lang].about;
 					animation-fill-mode: both;
 					animation-duration: auto;
 				}
-				.hero-media { animation-name: apre, cresce; animation-timeline: auto, scroll(root block); animation-range: normal, 0 100vh; animation-duration: 1000ms, auto; animation-timing-function: var(--ease), linear; animation-delay: 260ms, 0s; }
+				.hero-media { animation-name: cresce }
 				.hero-marchio > .mascherina:nth-child(1) { animation-name: deriva-sinistra; animation-range: 7vh 100vh }
 				.hero-marchio > .mascherina:nth-child(2) { animation-name: deriva-destra; animation-range: 7vh 100vh }
 				.hero-meta, .hero-intro { animation-name: sfuma; animation-range: 0 62vh }
 				@media (max-width: 767px) {
-					.hero-media { animation-name: apre; animation-timeline: auto; animation-duration: 1000ms }
+					.hero-media { animation-name: none; animation-timeline: auto }
 					/* il marchio qui va a capo: allontanare due righe impilate non vuol dire niente */
 					.hero-marchio > .mascherina,
 					.hero-marchio > .mascherina:nth-child(1),

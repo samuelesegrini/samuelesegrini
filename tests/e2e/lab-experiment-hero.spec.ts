@@ -172,3 +172,46 @@ test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ 
 		expect(misura.pillolaInSchermo, `${larghezza}: la pillola si vede senza scorrere`).toBe(true);
 	}
 });
+
+test('la transizione spegne l\'ingresso, non il movimento allo scroll', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+
+	// caricamento pieno: la tendina del riquadro parte, e la crescita è già armata
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(400);
+	const carico = await page.evaluate(() => ({
+		tendina: getComputedStyle(document.querySelector('.hero-media-fill')!).animationName,
+		crescita: getComputedStyle(document.querySelector('.hero-media')!).animationName,
+		bandiera: document.documentElement.hasAttribute('data-lab-client-arrival'),
+	}));
+	expect(carico.bandiera, 'un caricamento pieno non è un arrivo client').toBe(false);
+	expect(carico.tendina, 'la tendina parte').toBe('apre');
+	expect(carico.crescita, 'e la crescita è agganciata').toBe('cresce');
+
+	// arrivo dalla navigazione client: la transizione è già il reveal, la tendina no
+	await page.goto('/lab/it/progetti/');
+	await page.waitForTimeout(1400);
+	await page.click('.toolbar-shell .menu-toggle');
+	await page.waitForTimeout(700);
+	await page.click('.toolbar-shell .nav-item[data-page="Home"]');
+	await page.waitForTimeout(1600);
+
+	const arrivo = await page.evaluate(() => ({
+		percorso: location.pathname,
+		bandiera: document.documentElement.hasAttribute('data-lab-client-arrival'),
+		tendina: getComputedStyle(document.querySelector('.hero-media-fill')!).animationName,
+		crescita: getComputedStyle(document.querySelector('.hero-media')!).animationName,
+		marchio: getComputedStyle(document.querySelector('.hero-marchio > .mascherina')!).animationName,
+		larghezza: Math.round(document.querySelector('.hero-media')!.getBoundingClientRect().width),
+	}));
+	expect(arrivo.percorso).toBe('/lab/it/');
+	expect(arrivo.bandiera).toBe(true);
+	expect(arrivo.tendina, 'la tendina non si ripete').toBe('none');
+	expect(arrivo.crescita, 'ma il riquadro resta agganciato allo scroll').toBe('cresce');
+	expect(arrivo.marchio, 'e il marchio pure').toBe('deriva-sinistra');
+	expect(arrivo.larghezza, 'quindi arriva piccolo, non a grandezza piena').toBeLessThan(560);
+
+	await scorriA(page, 500);
+	const dopo = await page.evaluate(() => Math.round(document.querySelector('.hero-media')!.getBoundingClientRect().width));
+	expect(dopo, 'e scorrendo cresce davvero').toBeGreaterThan(arrivo.larghezza + 200);
+});
