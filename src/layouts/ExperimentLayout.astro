@@ -80,7 +80,7 @@ const labPathsAbout = labPaths[lang].about;
 			.page-sheet:before { content: ''; position: fixed; z-index: -1; inset: 0; background-image: linear-gradient(#0808080a 1px, transparent 1px), linear-gradient(90deg, #0808080a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, transparent 0, #000 100%); opacity: .3; }
 			.home-section { display: grid; min-height: 108vh; align-content: center; gap: 44px; padding: 12vh max(24px, 7vw); }
 			/* la barra copre la parte bassa della viewport: l'ultima sezione le lascia spazio */
-			.home-section:last-of-type { min-height: 100vh; padding-bottom: 190px; }
+			.home-section:last-child { min-height: 100vh; padding-bottom: 190px; }
 			/* su schermi larghi il testo tiene la colonna sinistra e le voci occupano la destra,
 			   invece di lasciare vuota metà pagina */
 			@media (min-width: 1040px) {
@@ -115,6 +115,14 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-intro .mascherina > * { animation-delay: 600ms }
 			.home-section.hero .hero-hint > * { animation-delay: 700ms }
 			.hero-media { animation: apre 1000ms var(--ease) 260ms backwards; }
+			/* Il cambio pagina è già il reveal: riavviare anche l'ingresso della hero nel
+			   documento appena scambiato crea un salto fra snapshot e DOM vivo. */
+			html[data-astro-transition] .hero .mascherina > *,
+			html[data-astro-transition] .hero-media {
+				animation-name: none;
+				animation-delay: 0s;
+				animation-timeline: auto;
+			}
 			@media (prefers-reduced-motion: reduce) {
 				.hero .mascherina > *, .hero-media { animation: none }
 			}
@@ -154,7 +162,14 @@ const labPathsAbout = labPaths[lang].about;
 			.mascherina > * { display: block; }
 			@media (max-width: 1039px) {
 				.hero-intro { position: static; max-width: 46ch; margin-top: 22px; text-align: left; }
-				.home-section.hero { grid-template-rows: auto auto auto; gap: 30px; padding-bottom: 172px; }
+				/* una riga sola assorbe lo spazio libero: con tutte auto e align-content: stretch
+				   il gonfiore si spalmava su ogni riga e la pillola diventava un riquadro */
+				.home-section.hero { grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 26px; padding-bottom: 172px; }
+			}
+			/* sul telefono la hero non è una schermata piena: senza il riquadro al centro
+			   resterebbe un vuoto, quindi si accorcia e la vetrina arriva subito dopo */
+			@media (max-width: 767px) {
+				.home-section.hero { min-height: 0; padding-bottom: 44px; }
 				.home-section.hero .hero-hint { position: static; margin-top: 4px; }
 			}
 			.section-kicker { font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #8b877f; }
@@ -202,7 +217,7 @@ const labPathsAbout = labPaths[lang].about;
 			.canali b { font: 10px var(--mono); font-weight: 400; letter-spacing: .07em; text-transform: uppercase; color: #97938a; }
 			.canali span { color: #14140f; font-size: 15px; letter-spacing: -.02em; overflow-wrap: anywhere; }
 			.collegamento { display: inline-flex; width: max-content; margin-top: 26px; padding: 12px 18px; border-radius: 999px; background: #111; color: #fffef9; font-size: 14px; font-weight: 700; }
-			@media (max-width: 620px) { .home-section { min-height: 118vh; } .home-section:last-of-type { padding-bottom: 170px; } }
+			@media (max-width: 620px) { .home-section { min-height: 118vh; } .home-section:last-child { padding-bottom: 170px; } }
 		</style>
 	</body>
 </html>

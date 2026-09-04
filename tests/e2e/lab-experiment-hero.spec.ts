@@ -99,3 +99,33 @@ test('le altre pagine tengono la hero classica', async ({ page }) => {
 		expect(misura.titolo, `${rotta}: il titolo tiene la sua misura`).not.toBe('none');
 	}
 });
+
+test('sul telefono la hero è compatta e non eredita il fondo dell\'ultima sezione', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1600);
+
+	const misura = await page.evaluate(() => {
+		const hero = document.querySelector('.home-section.hero')!;
+		const pillola = document.querySelector('.hero-hint')!.getBoundingClientRect();
+		const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
+		const ultima = document.querySelector('.home-section:last-child')!;
+		return {
+			// :last-of-type prendeva anche la hero, unico <header> fra i fratelli
+			fondoHero: Number.parseFloat(getComputedStyle(hero).paddingBottom),
+			fondoUltima: Number.parseFloat(getComputedStyle(ultima).paddingBottom),
+			ultima: ultima.id,
+			altezzaHero: Math.round(hero.getBoundingClientRect().height),
+			// con tutte le righe auto e align-content: stretch la pillola si gonfiava
+			altezzaPillola: Math.round(pillola.height),
+			stacco: Math.round(riquadro.top - hero.getBoundingClientRect().bottom),
+		};
+	});
+
+	expect(misura.ultima, 'l\'ultima sezione è contatto, non la hero').toBe('contatto');
+	expect(misura.fondoHero, 'la hero non porta il fondo dell\'ultima sezione').toBeLessThan(80);
+	expect(misura.fondoUltima, 'che invece resta sull\'ultima').toBeGreaterThan(140);
+	expect(misura.altezzaPillola, 'la pillola resta una pillola').toBeLessThan(48);
+	expect(misura.altezzaHero, 'la hero sta in una schermata').toBeLessThan(844);
+	expect(misura.stacco, 'il riquadro arriva subito dopo').toBeLessThan(90);
+});
