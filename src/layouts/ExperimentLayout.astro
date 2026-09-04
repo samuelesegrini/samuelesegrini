@@ -238,10 +238,9 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-hint:before { content: '↓'; font-size: 12px; }
 			.section-rule { width: 96px; height: 10px; margin-top: 34px; border-radius: 6px; }
 			#inizio .section-rule { background: #111; }
-			#progetti .section-rule { background: var(--tinta); }
 			#scrittura .section-rule { background: var(--violet); }
 			#percorso .section-rule { background: var(--acid); }
-			#contatto .section-rule { background: var(--orange); }
+			#contatto .section-rule { background: var(--blue); }
 			.elenco { display: grid; gap: 10px; max-width: 62ch; margin: 0; padding: 0; list-style: none; }
 			.elenco a { display: grid; gap: 7px; padding: 18px 20px; border: 1px solid #d3d1ca; border-radius: 18px; background: #fffefb; transition: border-color 180ms ease, transform 180ms ease; }
 			.elenco a:hover { border-color: #b4b0a6; transform: translateY(-2px); }
@@ -283,7 +282,7 @@ const labPathsAbout = labPaths[lang].about;
 			/* --- sezione progetti: tre carte affiancate, come su itsjay.us --- */
 			/* la colonna va vincolata: senza, la traccia si allarga sul contenuto più largo — la
 			   testa — e le carte si dividono uno spazio che sullo schermo non c'è */
-			.home-section.carte { --tinta: var(--blue); grid-template-columns: minmax(0, 1fr); justify-content: stretch; align-content: start; gap: clamp(24px, 3vw, 40px); padding-inline: max(24px, 4vw); padding-bottom: max(16vh, 170px); }
+			.home-section.carte { --tinta: var(--orange); grid-template-columns: minmax(0, 1fr); justify-content: stretch; align-content: start; gap: clamp(24px, 3vw, 40px); padding-inline: max(24px, 4vw); padding-bottom: max(16vh, 170px); }
 			/* titolo a sinistra e arco degli anni a destra, alla stessa misura */
 			.carte-testa { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 16px; max-width: none; margin: 0; font-size: clamp(48px, 12vw, 200px); font-weight: 700; line-height: .8; letter-spacing: -.055em; text-transform: uppercase; }
 			/* la spaziatura negativa vale anche dopo l'ultima cifra: senza compensarla il numero

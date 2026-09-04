@@ -241,7 +241,7 @@ test('l\'arco degli anni resta a destra anche quando la testa va a capo', async 
 	}
 });
 
-test('il colore della sezione è quello che il menu assegna ai progetti', async ({ page }) => {
+test('la sezione e la sua carta nella barra hanno lo stesso colore', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
 	await page.goto('/lab/it/');
 	await page.waitForTimeout(1600);
@@ -250,21 +250,32 @@ test('il colore della sezione è quello che il menu assegna ai progetti', async 
 	const colori = await page.evaluate(() => {
 		const sezione = document.querySelector('.home-section.carte')! as HTMLElement;
 		const tinta = getComputedStyle(sezione).getPropertyValue('--tinta').trim();
-		// la stessa tinta che la voce di menu Progetti usa quando è attiva
-		const voce = document.querySelector('.nav-item[data-page="Progetti"]')! as HTMLElement;
+		// il mazzo della barra assegna un accento a ogni sezione, nell'ordine in cui stanno
+		const carteBarra = [...document.querySelectorAll('.shuffle-card')].map(
+			(carta) => getComputedStyle(carta).backgroundColor,
+		);
 		return {
 			tinta,
-			menu: getComputedStyle(voce).getPropertyValue('--highlight').trim(),
+			barraProgetti: carteBarra[0],
+			barraContatto: carteBarra[3],
 			anta: getComputedStyle(document.querySelector('.carta-anta')!).backgroundColor,
 			tipo: getComputedStyle(document.querySelector('.carta-meta i')!).color,
 			arco: getComputedStyle(document.querySelector('.carte-testa i')!).color,
+			regolaContatto: getComputedStyle(document.querySelector('#contatto .section-rule')!).backgroundColor,
 		};
 	});
 
+	const arancio = 'rgb(255, 212, 184)';
+	const azzurro = 'rgb(205, 239, 255)';
+
 	expect(colori.tinta, 'la sezione ha una tinta').not.toBe('');
-	expect(colori.menu, 'la stessa che il menu dà ai progetti').toBe(colori.tinta);
+	// la carta dei progetti nel mazzo e la sezione dicono lo stesso colore
+	expect(colori.barraProgetti, 'progetti: la carta della barra').toBe(arancio);
 	// tre punti soli: l'arco, il tipo di progetto e l'anta che si apre
-	expect(colori.anta, 'l\'anta porta la tinta').toBe('rgb(205, 239, 255)');
-	expect(colori.tipo, 'il tipo di progetto anche').toBe('rgb(205, 239, 255)');
-	expect(colori.arco, 'e l\'arco degli anni').toBe('rgb(205, 239, 255)');
+	expect(colori.anta, 'l\'anta porta la tinta').toBe(arancio);
+	expect(colori.tipo, 'il tipo di progetto anche').toBe(arancio);
+	expect(colori.arco, 'e l\'arco degli anni').toBe(arancio);
+	// e contatto tiene quello che progetti ha lasciato, su entrambi i lati
+	expect(colori.regolaContatto, 'contatto: la riga della sezione').toBe(azzurro);
+	expect(colori.barraContatto, 'contatto: la carta della barra').toBe(azzurro);
 });
