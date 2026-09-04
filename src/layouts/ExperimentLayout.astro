@@ -286,7 +286,9 @@ const labPathsAbout = labPaths[lang].about;
 			.home-section.carte { grid-template-columns: minmax(0, 1fr); justify-content: stretch; align-content: start; gap: clamp(24px, 3vw, 40px); padding-inline: max(24px, 4vw); padding-bottom: max(16vh, 170px); }
 			/* titolo a sinistra e arco degli anni a destra, alla stessa misura */
 			.carte-testa { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 16px; max-width: none; margin: 0; font-size: clamp(48px, 12vw, 200px); font-weight: 700; line-height: .8; letter-spacing: -.055em; text-transform: uppercase; }
-			.carte-testa i { font-style: normal; }
+			/* la spaziatura negativa vale anche dopo l'ultima cifra: senza compensarla il numero
+			   sembra staccato dal bordo pur avendo la scatola allineata */
+			.carte-testa i { margin-right: -.055em; font-style: normal; }
 			.carte-elenco { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: clamp(12px, 1.4vw, 18px); margin: 0; padding: 0; list-style: none; }
 			.carte-elenco a {
 				display: grid;

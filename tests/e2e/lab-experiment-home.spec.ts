@@ -125,6 +125,8 @@ test('le carte dei progetti stanno in fila e dentro i loro bordi', async ({ page
 			sbordano: carte.some((carta) => carta.right > window.innerWidth + 1),
 			// titolo a sinistra e arco degli anni a destra, come sul riferimento
 			titoloEArco: getComputedStyle(testa).justifyContent,
+			sporgenza: document.querySelector('.carte-testa i')!.getBoundingClientRect().right - carte[2].right,
+			tracciatura: Number.parseFloat(getComputedStyle(testa).fontSize) * 0.055,
 			larghezzaPagina: document.documentElement.scrollWidth,
 		};
 	});
@@ -135,6 +137,9 @@ test('le carte dei progetti stanno in fila e dentro i loro bordi', async ({ page
 	expect(misura.nastroDentro, 'il nastro resta dentro la carta').toBe(true);
 	expect(misura.sbordano, 'nessuna carta esce dallo schermo').toBe(false);
 	expect(misura.titoloEArco).toBe('space-between');
+	// la spaziatura negativa vale anche dopo l'ultima cifra: la scatola dell'arco sporge di
+	// quel tanto, così è l'inchiostro ad allinearsi al bordo delle carte, non il riquadro
+	expect(misura.sporgenza, 'l\'arco compensa la spaziatura di coda').toBeCloseTo(misura.tracciatura, 0);
 	expect(misura.larghezzaPagina).toBeLessThanOrEqual(1280);
 
 	// sul telefono si impilano
