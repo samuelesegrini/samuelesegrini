@@ -40,16 +40,17 @@ const labPathsAbout = labPaths[lang].about;
 		<ClientRouter />
 	</head>
 	<body>
-		<main
-			class="stage"
-			aria-label={title}
-			data-lab-page
-			transition:name="labpage"
-			transition:animate={labPageTransition}
-		>
-			<!-- le sezioni viaggiano con la pagina: la barra sopravvive allo scambio e le rilegge qui -->
-			<script type="application/json" id="lab-sections" is:inline set:html={JSON.stringify(sections)}></script>
-			<slot />
+		<main class="stage" aria-label={title}>
+			<div
+				class="page-sheet"
+				data-lab-page
+				transition:name="labpage"
+				transition:animate={labPageTransition}
+			>
+				<!-- le sezioni viaggiano con la pagina: la barra sopravvive allo scambio e le rilegge qui -->
+				<script type="application/json" id="lab-sections" is:inline set:html={JSON.stringify(sections)}></script>
+				<slot />
+			</div>
 			<ExperimentToolbar
 				lang={lang}
 				name={siteConfig.name}
@@ -67,21 +68,23 @@ const labPathsAbout = labPaths[lang].about;
 			:root { --slot: #242424; --ease: cubic-bezier(.22,1,.36,1); }
 			body { overflow-x: hidden; }
 			::view-transition-old(root), ::view-transition-new(root) { animation: none !important; mix-blend-mode: normal; }
+			::view-transition-group(root) { z-index: 0; }
 			::view-transition-group(labpage) { z-index: 1; }
 			::view-transition-old(labpage), ::view-transition-new(labpage) { height: 100%; overflow: clip; mix-blend-mode: normal; }
 			::view-transition-group(labhero) { z-index: 2; }
-			::view-transition-group(barra-it), ::view-transition-group(barra-en) { z-index: 50; }
+			::view-transition-group(labtoolbar) { z-index: 50; }
 			@keyframes lab-page-forward-out { to { opacity: .58; transform: translateY(-72px) scale(.975); } }
 			@keyframes lab-page-forward-in { from { transform: translateY(100vh); } }
 			@keyframes lab-page-back-out { to { opacity: .58; transform: translateY(72px) scale(.975); } }
 			@keyframes lab-page-back-in { from { transform: translateY(-100vh); } }
-			@keyframes lab-hero-forward-out { to { opacity: 0; transform: translateY(-34px); } }
+			@keyframes lab-hero-forward-out { 55%, to { opacity: 0; transform: translateY(-34px); } }
 			@keyframes lab-hero-forward-in { from { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(64px); } to { clip-path: inset(0); opacity: 1; transform: none; } }
-			@keyframes lab-hero-back-out { to { opacity: 0; transform: translateY(34px); } }
+			@keyframes lab-hero-back-out { 55%, to { opacity: 0; transform: translateY(34px); } }
 			@keyframes lab-hero-back-in { from { clip-path: inset(0 0 100%); opacity: 0; transform: translateY(-64px); } to { clip-path: inset(0); opacity: 1; transform: none; } }
-			.stage { position: relative; width: 100%; min-height: 100%; }
-			.stage:after { content: ''; position: fixed; z-index: -2; inset: 0; background: radial-gradient(circle at 50% 110%, #ffffff 0, transparent 42%), var(--paper); }
-			.stage:before { content: ''; position: fixed; z-index: -1; inset: 0; background-image: linear-gradient(#0808080a 1px, transparent 1px), linear-gradient(90deg, #0808080a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, transparent 0, #000 100%); opacity: .3; }
+			.stage { position: relative; width: 100%; min-height: 100%; background: var(--paper); }
+			.page-sheet { position: relative; z-index: 0; min-height: 100vh; overflow: clip; isolation: isolate; background: var(--paper); }
+			.page-sheet:after { content: ''; position: fixed; z-index: -2; inset: 0; background: radial-gradient(circle at 50% 110%, #ffffff 0, transparent 42%), var(--paper); }
+			.page-sheet:before { content: ''; position: fixed; z-index: -1; inset: 0; background-image: linear-gradient(#0808080a 1px, transparent 1px), linear-gradient(90deg, #0808080a 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, transparent 0, #000 100%); opacity: .3; }
 			.home-section { display: grid; min-height: 108vh; align-content: center; gap: 44px; padding: 12vh max(24px, 7vw); }
 			/* la barra copre la parte bassa della viewport: l'ultima sezione le lascia spazio */
 			.home-section:last-of-type { min-height: 100vh; padding-bottom: 190px; }
@@ -119,6 +122,36 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-media { animation: apre 1000ms var(--ease) 260ms backwards; }
 			@media (prefers-reduced-motion: reduce) {
 				.hero .mascherina > *, .hero-media { animation: none }
+			}
+			/* --- movimento allo scroll: la hero si apre e si allontana mentre esce --- */
+			/* le animazioni d'ingresso usano transform, queste usano translate/scale/opacity:
+			   proprietà diverse, quindi si compongono invece di annullarsi */
+			@keyframes deriva-sinistra { to { translate: -14vw 0 } }
+			@keyframes deriva-destra { to { translate: 14vw 0 } }
+			@keyframes affonda { to { translate: 0 -9vh; scale: 1.07 } }
+			@keyframes sfuma { to { opacity: 0 } }
+			@supports (animation-timeline: scroll()) {
+				.hero-media, .hero-meta, .hero-intro,
+				.home-section.hero .hero-hint,
+				.hero-marchio > .mascherina {
+					animation-timeline: scroll(root block);
+					animation-range: 0 100vh;
+					animation-timing-function: linear;
+					animation-fill-mode: both;
+					animation-duration: auto;
+				}
+				.hero-media { animation-name: apre, affonda; animation-timeline: auto, scroll(root block); animation-range: normal, 0 100vh; animation-duration: 1000ms, auto; animation-timing-function: var(--ease), linear; animation-delay: 260ms, 0s; }
+				.hero-marchio > .mascherina:nth-child(1) { animation-name: deriva-sinistra; animation-range: 7vh 100vh }
+				.hero-marchio > .mascherina:nth-child(2) { animation-name: deriva-destra; animation-range: 7vh 100vh }
+				.hero-meta, .hero-intro, .home-section.hero .hero-hint { animation-name: sfuma; animation-range: 0 62vh }
+			}
+			@media (prefers-reduced-motion: reduce) {
+				/* stessa forma dei selettori qui sopra, altrimenti il nome dell'animazione sopravvive */
+				.hero-media, .hero-meta, .hero-intro,
+				.home-section.hero .hero-hint,
+				.hero-marchio > .mascherina,
+				.hero-marchio > .mascherina:nth-child(1),
+				.hero-marchio > .mascherina:nth-child(2) { animation: none; animation-timeline: auto }
 			}
 			/* ogni pezzo entra da sotto la propria feritoia */
 			.mascherina { display: block; overflow: hidden; }
