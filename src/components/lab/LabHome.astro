@@ -62,10 +62,14 @@ const sezioni = [
 
 	<section class="home-section righe" id="progetti" data-section="1">
 		<div class="righe-testa">
-			<span class="section-kicker">{t.kicker} 01</span>
-			<h1>{t.work}<i>{arco}</i></h1>
-			<p>{t.workText}</p>
-			<a class="collegamento" href={labPaths[lang].work}>{t.allWork}</a>
+			<div class="righe-titolo">
+				<span class="section-kicker">{t.kicker} 01</span>
+				<h1>{t.work}<i>{arco}</i></h1>
+			</div>
+			<div class="righe-guida">
+				<p>{t.workText}</p>
+				<a class="collegamento" href={labPaths[lang].work}>{t.allWork}</a>
+			</div>
 		</div>
 		<ol class="righe-elenco">
 			{featured.map((project, i) => (
@@ -74,6 +78,7 @@ const sezioni = [
 						<b>{String(i + 1).padStart(2, '0')}</b>
 						<strong>{project.title}</strong>
 						<span class="righe-meta"><i>{copy.work.kinds[project.kind].label}</i><i>{project.year}</i></span>
+						<span class="righe-sintesi">{project.excerpt}</span>
 						{/* il nastro scorre con la pagina invece che da solo: fermo non costa niente */}
 						<span class="righe-nastro" aria-hidden="true">
 							<span class="righe-treno">

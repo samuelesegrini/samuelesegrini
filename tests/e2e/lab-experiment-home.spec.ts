@@ -104,3 +104,40 @@ test('sul telefono la home si impila senza scorrimento laterale', async ({ page 
 		expect(misura.impilato, `${id}: le voci stanno sotto il testo`).toBe(true);
 	}
 });
+
+test('la scaletta dei progetti tiene la sua struttura', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1600);
+	await vaiA(page, 'progetti');
+
+	const misura = await page.evaluate(() => {
+		const riquadro = (selettore: string, dentro: ParentNode = document) =>
+			(dentro.querySelector(selettore) as HTMLElement).getBoundingClientRect();
+		const titolo = riquadro('.righe-titolo h1');
+		const guida = riquadro('.righe-guida');
+		const riga = document.querySelector('.righe-elenco li a')!;
+		const nome = riquadro('strong', riga);
+		const meta = riquadro('.righe-meta', riga);
+		const sintesi = riquadro('.righe-sintesi', riga);
+		const nastro = riquadro('.righe-nastro', riga);
+		return {
+			// titolo e guida si dividono la larghezza, non stanno uno sopra l'altro
+			guidaAccanto: Math.round(guida.left) > Math.round(titolo.right),
+			// dentro la riga: nome e tipo sulla stessa linea, sintesi e nastro sotto
+			metaAllineata: Math.abs(meta.bottom - nome.bottom) < 24,
+			sintesiSotto: sintesi.top > nome.bottom - 4,
+			nastroInFondo: nastro.top > sintesi.bottom - 4,
+			// la sintesi è tagliata a due righe: le righe restano scorribili
+			righeSintesi: Math.round(sintesi.height / Number.parseFloat(getComputedStyle(document.querySelector('.righe-sintesi')!).lineHeight)),
+			righe: document.querySelectorAll('.righe-elenco li').length,
+		};
+	});
+
+	expect(misura.guidaAccanto, 'la guida sta accanto al titolo').toBe(true);
+	expect(misura.metaAllineata, 'tipo e anno sulla linea del nome').toBe(true);
+	expect(misura.sintesiSotto, 'la sintesi viene dopo il nome').toBe(true);
+	expect(misura.nastroInFondo, 'e il nastro chiude la riga').toBe(true);
+	expect(misura.righeSintesi, 'la sintesi si ferma a due righe').toBeLessThanOrEqual(2);
+	expect(misura.righe, 'tre progetti in evidenza').toBe(3);
+});
