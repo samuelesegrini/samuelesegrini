@@ -153,8 +153,10 @@ const { lang, name, ticker, routes, sections, languages, cv, labels, mailHref } 
     @media(max-width:620px){
       .slot-row{grid-template-columns:repeat(4,minmax(0,1fr));height:66px}
       .slot-row{grid-template-columns:2fr 1fr}.toggle-square{display:none}
-      .panel-identity{grid-template-columns:minmax(0,1fr) auto;align-items:center}
-      .panel-lingue{display:flex;grid-row:span 2;grid-column:2;gap:4px;padding:3px;border-radius:14px;background:#242424}
+      /* nome e lingue sulla stessa riga e sugli stessi bordi delle schede sotto */
+      .panel-identity{grid-template-columns:minmax(0,1fr) auto;align-items:center;margin-right:0;margin-left:0}
+      .panel-identity .ticker{grid-column:1/-1}
+      .panel-lingue{display:flex;grid-row:1;grid-column:2;align-self:center;gap:4px;padding:3px;border-radius:14px;background:#242424}
       .panel-lingue a{display:grid;place-items:center;width:38px;height:32px;border-radius:11px;color:#8b8b8b;font:9px var(--mono);text-decoration:none;transition:background-color .22s ease,color .22s ease}
       .panel-lingue a[aria-current]{background:#fff;color:#111}
       .mode-group{grid-template-columns:1fr}.mode-group [data-detail],.mode-group .top-slot{display:none}.cv-slot{padding:9px 11px;gap:8px}.cv-slot b{font-size:13px}.cv-slot i{width:26px;height:26px;font-size:13px}.cv-slot .lungo{display:none}.cv-slot .corto{display:inline}

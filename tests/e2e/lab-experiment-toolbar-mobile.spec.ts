@@ -18,17 +18,26 @@ test('sul telefono il cambio lingua sta nel menu, non nella barra', async ({ pag
 	await page.click('#menu-toggle');
 	await page.waitForTimeout(700);
 	const aperto = await page.evaluate(() => {
+		const centro = (riquadro: DOMRect) => (riquadro.top + riquadro.bottom) / 2;
 		const lingue = [...document.querySelectorAll('.panel-lingue a')] as HTMLAnchorElement[];
-		const identita = document.querySelector('.panel-identity .identity-name')!.getBoundingClientRect();
+		const gruppo = document.querySelector('.panel-lingue')!.getBoundingClientRect();
+		const nome = document.querySelector('.panel-identity .identity-name')!.getBoundingClientRect();
+		const scheda = document.querySelector('.nav-item')!.getBoundingClientRect();
 		return {
 			visibili: lingue.filter((voce) => voce.getBoundingClientRect().width > 0).length,
 			attiva: lingue.find((voce) => voce.getAttribute('aria-current'))?.textContent?.trim(),
-			accanto: lingue[0].getBoundingClientRect().left > identita.right,
+			accanto: gruppo.left > nome.right,
+			scarto: Math.abs(centro(gruppo) - centro(nome)),
+			bordoSinistro: Math.abs(nome.left - scheda.left),
+			bordoDestro: Math.abs(gruppo.right - scheda.right),
 		};
 	});
 	expect(aperto.visibili, 'due lingue nel pannello').toBe(2);
 	expect(aperto.attiva, 'la lingua corrente è marcata').toBe('IT');
 	expect(aperto.accanto, 'stanno a destra del nome, non sopra').toBe(true);
+	expect(aperto.scarto, 'nome e lingue sulla stessa linea').toBeLessThanOrEqual(1);
+	expect(aperto.bordoSinistro, 'il nome parte dal bordo delle schede').toBeLessThanOrEqual(1);
+	expect(aperto.bordoDestro, 'le lingue finiscono sul bordo delle schede').toBeLessThanOrEqual(1);
 
 	await page.click('.panel-lingue a:not([aria-current])');
 	await page.waitForTimeout(1200);
