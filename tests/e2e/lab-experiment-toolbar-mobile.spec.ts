@@ -68,7 +68,7 @@ test('la riga resta in fondo al guscio in ogni stato', async ({ page }) => {
 	const passi: [string, () => Promise<unknown>][] = [
 		['a riposo', async () => {}],
 		['in modo indice', async () => {
-			await page.evaluate(() => document.querySelector('#lavoro')!.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior }));
+			await page.evaluate(() => document.querySelector('#progetti')!.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior }));
 			await page.waitForTimeout(800);
 		}],
 		['con il menu aperto', async () => apriMenu(page)],

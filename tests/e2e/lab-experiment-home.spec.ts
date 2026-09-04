@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
  *  la griglia valga solo dove esiste davvero una colonna di testo, e che nulla finisca
  *  sotto la barra o fuori dallo schermo. */
 
-const sezioni = ['inizio', 'lavoro', 'scrittura', 'percorso', 'contatto'] as const;
+const sezioni = ['inizio', 'progetti', 'scrittura', 'percorso', 'contatto'] as const;
 
 const vaiA = async (page: import('@playwright/test').Page, id: string) => {
 	await page.evaluate((s) => {
@@ -24,6 +24,8 @@ test('ogni sezione della home tiene la sua griglia e resta sopra la barra', asyn
 		await vaiA(page, id);
 		const misura = await page.evaluate((s) => {
 			const sezione = document.querySelector(`#${s}`)!;
+			// due forme: le sezioni a due colonne (.sezione-testo + elenco) e quella dei
+			// progetti, che è a tutta larghezza con le righe una sotto l'altra
 			const testo = sezione.querySelector('.sezione-testo');
 			const corpo = sezione.querySelector('.elenco, .tappe, .canali');
 			const barra = document.querySelector('.toolbar-shell')!.getBoundingClientRect();
@@ -34,23 +36,35 @@ test('ogni sezione della home tiene la sua griglia e resta sopra la barra', asyn
 					testo && corpo
 						? Math.round(corpo.getBoundingClientRect().left) > Math.round(testo.getBoundingClientRect().right)
 						: null,
-				// coperto davvero: si sovrappone al rettangolo della barra, non solo alla sua altezza
-				coperti: [...sezione.children]
-					.map((figlio) => figlio.getBoundingClientRect())
-					.filter(
-						(riquadro) =>
-							riquadro.height > 0 &&
-							riquadro.bottom > barra.top + 6 &&
-							riquadro.right > barra.left + 6 &&
-							riquadro.left < barra.right - 6,
-					).length,
 			};
+		}, id);
+
+		// La barra è fissa in basso: quello che conta è che arrivando in fondo alla sezione
+		// nessun pezzo le resti sotto. Le sezioni più alte di una schermata (i progetti) al
+		// loro inizio hanno per forza contenuto oltre il bordo: non è lì che si misura.
+		await page.evaluate((s) => {
+			document.querySelector(`#${s}`)!.scrollIntoView({ block: 'end', behavior: 'instant' as ScrollBehavior });
+		}, id);
+		await page.waitForTimeout(400);
+		const coperti = await page.evaluate((s) => {
+			const sezione = document.querySelector(`#${s}`)!;
+			const barra = document.querySelector('.toolbar-shell')!.getBoundingClientRect();
+			// coperto davvero: si sovrappone al rettangolo della barra, non solo alla sua altezza
+			return [...sezione.children]
+				.map((figlio) => figlio.getBoundingClientRect())
+				.filter(
+					(riquadro) =>
+						riquadro.height > 0 &&
+						riquadro.bottom > barra.top + 6 &&
+						riquadro.right > barra.left + 6 &&
+						riquadro.left < barra.right - 6,
+				).length;
 		}, id);
 
 		expect(misura.accoppiati, `${id}: colonna di testo e corpo vanno sempre insieme`).toBe(true);
 		if (misura.affiancati === null) expect(misura.colonne, `${id}: resta a una colonna`).toBe(1);
 		else expect(misura.affiancati, `${id}: le due colonne non si sovrappongono`).toBe(true);
-		expect(misura.coperti, `${id}: niente finisce sotto la barra`).toBe(0);
+		expect(coperti, `${id}: niente finisce sotto la barra`).toBe(0);
 	}
 
 	expect(errori).toEqual([]);
@@ -76,12 +90,12 @@ test('sul telefono la home si impila senza scorrimento laterale', async ({ page 
 	await page.waitForTimeout(800);
 	expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 
-	for (const id of ['lavoro', 'percorso', 'contatto']) {
+	for (const id of ['progetti', 'percorso', 'contatto']) {
 		await vaiA(page, id);
 		const misura = await page.evaluate((s) => {
 			const sezione = document.querySelector(`#${s}`)!;
-			const testo = sezione.querySelector('.sezione-testo')!.getBoundingClientRect();
-			const voci = [...sezione.querySelectorAll('.elenco li, .tappe li, .canali li')].map((voce) =>
+			const testo = sezione.querySelector('.sezione-testo, .righe-testa')!.getBoundingClientRect();
+			const voci = [...sezione.querySelectorAll('.elenco li, .tappe li, .canali li, .righe-elenco li')].map((voce) =>
 				voce.getBoundingClientRect(),
 			);
 			return { fuori: voci.filter((riquadro) => riquadro.right > 390).length, impilato: voci[0].top > testo.top };

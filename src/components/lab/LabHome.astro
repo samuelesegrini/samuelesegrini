@@ -19,6 +19,10 @@ const copy = await getLabCopy(lang);
 const parole = copy.home.headline.replace(/[,.]$/, '').split(/\s+/);
 const meta = Math.ceil(parole.length / 2);
 const parola = { prima: parole.slice(0, meta).join(' '), seconda: parole.slice(meta).join(' ') };
+const anni = inArchivio.map((p) => p.year);
+const arco = anni.length && Math.min(...anni) !== Math.max(...anni)
+	? `’${String(Math.min(...anni)).slice(2)}—’${String(Math.max(...anni)).slice(2)}`
+	: `’${String(anni[0] ?? new Date().getFullYear()).slice(2)}`;
 const domande = copy.about.sections.filter((sezione) => sezione.text !== copy.home.contactText);
 const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis, hint: copy.common.hint,
 	mail: copy.home.mailLink, one: copy.common.one, many: copy.common.many };
@@ -56,28 +60,32 @@ const sezioni = [
 		<span class="hero-hint mascherina"><span>{t.hint}</span></span>
 	</section>
 
-	<section class="home-section" id="lavoro" data-section="1">
-		<div class="sezione-testo">
+	<section class="home-section righe" id="progetti" data-section="1">
+		<div class="righe-testa">
 			<span class="section-kicker">{t.kicker} 01</span>
-			<h1>{t.work}</h1>
+			<h1>{t.work}<i>{arco}</i></h1>
 			<p>{t.workText}</p>
 			<a class="collegamento" href={labPaths[lang].work}>{t.allWork}</a>
-			<i class="section-rule" aria-hidden="true"></i>
 		</div>
-		<ul class="elenco">
-			{featured.map((project) => (
+		<ol class="righe-elenco">
+			{featured.map((project, i) => (
 				<li>
 					<a href={labProjectPath(lang, project.slug)}>
+						<b>{String(i + 1).padStart(2, '0')}</b>
 						<strong>{project.title}</strong>
-						<span>{project.excerpt}</span>
-						<span class="voce-meta">
-							<i>{project.year}</i>
-							{project.technologies.slice(0, 3).map((tecnologia) => <i>{tecnologia}</i>)}
+						<span class="righe-meta"><i>{copy.work.kinds[project.kind].label}</i><i>{project.year}</i></span>
+						{/* il nastro scorre con la pagina invece che da solo: fermo non costa niente */}
+						<span class="righe-nastro" aria-hidden="true">
+							<span class="righe-treno">
+								<i>{project.technologies.join(' · ')} · </i>
+								<i>{project.technologies.join(' · ')} · </i>
+							</span>
 						</span>
+						<span class="righe-freccia" aria-hidden="true">↗</span>
 					</a>
 				</li>
 			))}
-		</ul>
+		</ol>
 	</section>
 
 	<section class="home-section" id="scrittura" data-section="2">

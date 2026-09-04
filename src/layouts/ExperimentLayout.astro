@@ -280,6 +280,58 @@ const labPathsAbout = labPaths[lang].about;
 			@keyframes barra-entra { from { transform: translateY(150%); opacity: 0 } }
 			.toolbar-shell[data-entra] { animation: barra-entra 820ms var(--ease) 120ms backwards; }
 
+			/* --- sezione progetti: righe a tutta larghezza, come una scaletta --- */
+			.home-section.righe { align-content: start; gap: clamp(48px, 7vw, 84px); padding-inline: max(24px, 4vw); padding-bottom: max(16vh, 170px); }
+			.righe-testa { display: grid; align-content: start; }
+			.home-section.righe h1 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .32em; max-width: none; margin: 14px 0 0; font-size: clamp(52px, 10vw, 132px); line-height: .88; letter-spacing: -.06em; text-transform: uppercase; }
+			.home-section.righe h1 i { font: 400 clamp(18px, 2vw, 28px) var(--mono); font-style: normal; letter-spacing: 0; color: #97938a; }
+			.home-section.righe p { max-width: 46ch; }
+			.righe-elenco { display: grid; margin: 0; padding: 0; list-style: none; }
+			.righe-elenco li { border-top: 1px solid #ddd9d0; }
+			.righe-elenco li:last-child { border-bottom: 1px solid #ddd9d0; }
+			.righe-elenco a {
+				display: grid;
+				grid-template-columns: 4ch minmax(0, 1fr) auto 1.4em;
+				grid-template-areas: 'numero titolo meta freccia' '. nastro nastro nastro';
+				align-items: baseline;
+				gap: 10px clamp(16px, 3vw, 40px);
+				padding: clamp(22px, 3vw, 34px) 4px;
+				transition: background-color 220ms ease, padding-inline 320ms var(--ease);
+			}
+			.righe-elenco b { grid-area: numero }
+			.righe-elenco strong { grid-area: titolo }
+			.righe-meta { grid-area: meta }
+			.righe-freccia { grid-area: freccia }
+			.righe-nastro { grid-area: nastro }
+			.righe-elenco a:hover, .righe-elenco a:focus-visible { background: #efece4; padding-inline: 18px 4px; }
+			.righe-elenco b { color: #97938a; font: 11px var(--mono); font-weight: 400; letter-spacing: .06em; }
+			.righe-elenco strong { font-size: clamp(28px, 4.4vw, 64px); font-weight: 600; line-height: 1; letter-spacing: -.045em; text-transform: uppercase; }
+			.righe-meta { display: flex; flex-wrap: wrap; justify-content: end; gap: 6px 14px; }
+			.righe-meta i { color: #56534b; font: 10px var(--mono); font-style: normal; letter-spacing: .08em; text-transform: uppercase; }
+			.righe-meta i:last-child { color: #97938a; }
+			.righe-freccia { justify-self: end; color: #97938a; font-size: 18px; transition: transform 320ms var(--ease), color 220ms ease; }
+			.righe-elenco a:hover .righe-freccia { color: #14140f; transform: translate(3px, -3px); }
+			/* il nastro delle tecnologie: due copie in fila, il treno scorre di metà della sua
+			   larghezza e la seconda copia arriva esattamente dov'era la prima */
+			.righe-nastro { overflow: clip; color: #97938a; font: 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+			.righe-treno { display: flex; width: max-content; }
+			.righe-treno i { flex: none; font-style: normal; white-space: nowrap; padding-right: .5em; }
+			@keyframes nastro { to { transform: translateX(-50%) } }
+			@supports (animation-timeline: view()) {
+				/* scorre con la pagina invece che da solo: fermo non consuma niente */
+				.righe-treno { animation: nastro linear both; animation-timeline: view(); animation-duration: auto; }
+			}
+			@media (max-width: 760px) {
+				.righe-elenco a {
+					grid-template-columns: 4ch minmax(0, 1fr) 1.2em;
+					grid-template-areas: 'numero titolo freccia' '. meta meta' '. nastro nastro';
+				}
+				.righe-meta { justify-content: start; }
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.righe-treno { animation: none }
+				.righe-elenco a, .righe-freccia { transition: none }
+			}
 			/* --- sipario del primo caricamento --- */
 			.sipario { position: fixed; z-index: 100; inset: 0; display: none; grid-template-rows: auto 1fr; padding: 84px max(24px, 4vw) 68px; background: var(--paper); }
 			html[data-caricando] .sipario,
