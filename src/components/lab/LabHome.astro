@@ -73,8 +73,9 @@ const sezioni = [
 		</div>
 		<ol class="righe-elenco">
 			{featured.map((project, i) => (
-				<li>
-					<a href={labProjectPath(lang, project.slug)}>
+				<li class="righe-feritoia">
+					<a href={labProjectPath(lang, project.slug)} style={`--posto:${i}`}>
+						<i class="righe-lavagna" aria-hidden="true"></i>
 						<b>{String(i + 1).padStart(2, '0')}</b>
 						<strong>{project.title}</strong>
 						<span class="righe-meta"><i>{copy.work.kinds[project.kind].label}</i><i>{project.year}</i></span>
