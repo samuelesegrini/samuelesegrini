@@ -129,3 +129,40 @@ test('sul telefono la hero è compatta e non eredita il fondo dell\'ultima sezio
 	expect(misura.altezzaHero, 'la hero sta in una schermata').toBeLessThan(844);
 	expect(misura.stacco, 'il riquadro arriva subito dopo').toBeLessThan(90);
 });
+
+test('il marchio non deriva sul telefono', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1600);
+	const prima = await page.evaluate(() =>
+		document.querySelector('.hero-marchio > .mascherina')!.getBoundingClientRect().left,
+	);
+	await scorriA(page, 300);
+	const misura = await page.evaluate(() => {
+		const meta = document.querySelector('.hero-marchio > .mascherina')!;
+		return { nome: getComputedStyle(meta).animationName, sinistra: meta.getBoundingClientRect().left };
+	});
+	expect(misura.nome, 'nessuna animazione sul marchio').toBe('none');
+	expect(misura.sinistra, 'e resta dov\'è').toBe(prima);
+});
+
+test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ page }) => {
+	for (const [larghezza, altezza] of [[768, 1024], [834, 1194], [1024, 1366], [1280, 800], [1600, 900]] as const) {
+		await page.setViewportSize({ width: larghezza, height: altezza });
+		await page.goto('/lab/it/');
+		await page.waitForTimeout(1500);
+		const misura = await page.evaluate(() => {
+			const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
+			const pillola = document.querySelector('.hero-hint')!.getBoundingClientRect();
+			const barra = document.querySelector('.toolbar-shell')!.getBoundingClientRect();
+			return {
+				quota: riquadro.width / window.innerWidth,
+				sovrappostaAllaBarra:
+					pillola.right > barra.left + 4 && pillola.left < barra.right - 4 && pillola.bottom > barra.top + 4,
+			};
+		});
+		expect(misura.quota, `${larghezza}: il riquadro non è un francobollo`).toBeGreaterThan(0.28);
+		expect(misura.quota, `${larghezza}: e non è già grande`).toBeLessThan(0.62);
+		expect(misura.sovrappostaAllaBarra, `${larghezza}: la pillola non finisce sotto la barra`).toBe(false);
+	}
+});

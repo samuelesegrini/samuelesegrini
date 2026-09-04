@@ -58,6 +58,12 @@ const labPathsAbout = labPaths[lang].about;
 			/>
 		</main>
 
+		<script>
+			document.addEventListener('astro:before-swap', (event) => {
+				event.newDocument.documentElement.dataset.labClientArrival = '';
+			});
+		</script>
+
 		<style is:global>
 			:root { --slot: #242424; --ease: cubic-bezier(.22,1,.36,1); }
 			body { overflow-x: hidden; }
@@ -97,7 +103,10 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 48px; }
 			.vetrina { display: grid; align-content: center; min-height: 100vh; padding: 0 max(24px, 4vw); }
 			@media (max-width: 767px) { .vetrina { min-height: 0; padding-block: 4vh 12vh } }
-			.hero-media { width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
+			.hero-media { --piccola: .35; --richiamo: -104vh; width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
+			/* su schermi stretti e alti il riquadro pieno è più piccolo, quindi parte più grande */
+			@media (max-width: 1200px) { .hero-media { --piccola: .46; --richiamo: -108vh } }
+			@media (max-width: 900px) { .hero-media { --piccola: .54; --richiamo: -112vh } }
 			.hero-media-fill { width: 100%; height: 100%; background: #dcd8ce; }
 			.home-section.hero .hero-marchio { align-self: end; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 2vw; margin: 0; max-width: none; font-size: clamp(46px, 9.6vw, 150px); line-height: .82; letter-spacing: -.055em; text-transform: uppercase; }
 			.hero-intro { justify-self: end; max-width: 32ch; margin: 14px 0 0; text-align: right; font-size: 15.5px; }
@@ -117,8 +126,8 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-media { animation: apre 1000ms var(--ease) 260ms backwards; }
 			/* Il cambio pagina è già il reveal: riavviare anche l'ingresso della hero nel
 			   documento appena scambiato crea un salto fra snapshot e DOM vivo. */
-			html[data-astro-transition] .hero .mascherina > *,
-			html[data-astro-transition] .hero-media {
+			html[data-lab-client-arrival] .hero .mascherina > *,
+			html[data-lab-client-arrival] .hero-media {
 				animation-name: none;
 				animation-delay: 0s;
 				animation-timeline: auto;
@@ -131,7 +140,7 @@ const labPathsAbout = labPaths[lang].about;
 			   proprietà diverse, quindi si compongono invece di annullarsi */
 			@keyframes deriva-sinistra { to { translate: -14vw 0 } }
 			@keyframes deriva-destra { to { translate: 14vw 0 } }
-			@keyframes cresce { from { translate: 0 -104vh; scale: .35 } to { translate: 0 0; scale: 1 } }
+			@keyframes cresce { from { translate: 0 var(--richiamo); scale: var(--piccola) } to { translate: 0 0; scale: 1 } }
 			@keyframes sfuma { to { opacity: 0 } }
 			@supports (animation-timeline: scroll()) {
 				.hero-media, .hero-meta, .hero-intro,
@@ -144,10 +153,16 @@ const labPathsAbout = labPaths[lang].about;
 					animation-duration: auto;
 				}
 				.hero-media { animation-name: apre, cresce; animation-timeline: auto, scroll(root block); animation-range: normal, 0 100vh; animation-duration: 1000ms, auto; animation-timing-function: var(--ease), linear; animation-delay: 260ms, 0s; }
-				@media (max-width: 767px) { .hero-media { animation-name: apre; animation-timeline: auto; animation-duration: 1000ms } }
 				.hero-marchio > .mascherina:nth-child(1) { animation-name: deriva-sinistra; animation-range: 7vh 100vh }
 				.hero-marchio > .mascherina:nth-child(2) { animation-name: deriva-destra; animation-range: 7vh 100vh }
 				.hero-meta, .hero-intro, .home-section.hero .hero-hint { animation-name: sfuma; animation-range: 0 62vh }
+				@media (max-width: 767px) {
+					.hero-media { animation-name: apre; animation-timeline: auto; animation-duration: 1000ms }
+					/* il marchio qui va a capo: allontanare due righe impilate non vuol dire niente */
+					.hero-marchio > .mascherina,
+					.hero-marchio > .mascherina:nth-child(1),
+					.hero-marchio > .mascherina:nth-child(2) { animation-name: none; animation-timeline: auto }
+				}
 			}
 			@media (prefers-reduced-motion: reduce) {
 				/* stessa forma dei selettori qui sopra, altrimenti il nome dell'animazione sopravvive */
@@ -162,6 +177,8 @@ const labPathsAbout = labPaths[lang].about;
 			.mascherina > * { display: block; }
 			@media (max-width: 1039px) {
 				.hero-intro { position: static; max-width: 46ch; margin-top: 22px; text-align: left; }
+				/* qui la barra tocca quasi il margine: la pillola le finirebbe sotto */
+				.home-section.hero .hero-hint { position: static; margin-top: 4px; justify-self: start; }
 				/* una riga sola assorbe lo spazio libero: con tutte auto e align-content: stretch
 				   il gonfiore si spalmava su ogni riga e la pillola diventava un riquadro */
 				.home-section.hero { grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 26px; padding-bottom: 172px; }
@@ -170,7 +187,7 @@ const labPathsAbout = labPaths[lang].about;
 			   resterebbe un vuoto, quindi si accorcia e la vetrina arriva subito dopo */
 			@media (max-width: 767px) {
 				.home-section.hero { min-height: 0; padding-bottom: 44px; }
-				.home-section.hero .hero-hint { position: static; margin-top: 4px; }
+
 			}
 			.section-kicker { font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #8b877f; }
 			.home-section h1 { max-width: 14ch; margin: 16px 0 0; font-size: clamp(56px, 11vw, 132px); line-height: .86; letter-spacing: -.075em; }
