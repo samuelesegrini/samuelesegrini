@@ -92,6 +92,16 @@ test('la barra entra una volta sola, quando il sipario si ritira', async ({ page
 	expect(appena.y, 'e parte da sotto il bordo').toBeGreaterThan(60);
 	expect(appena.opacita).toBeLessThan(1);
 
+	// .identity-row è fissa alla viewport: con un transform sul guscio il suo left si
+	// misura dal guscio, e la riga scivolava fuori a destra per tutta l'animazione
+	const insieme = await page.evaluate(() => {
+		const guscio = document.querySelector('.toolbar-shell')!.getBoundingClientRect();
+		const riga = document.querySelector('.identity-row')!.getBoundingClientRect();
+		return { scarto: Math.abs(riga.left - guscio.left), fondo: Math.abs(riga.bottom - guscio.bottom) };
+	});
+	expect(insieme.scarto, 'la riga viaggia con il guscio, non fuori a destra').toBeLessThanOrEqual(2);
+	expect(insieme.fondo, 'e resta incollata al suo fondo').toBeLessThanOrEqual(2);
+
 	await page.waitForTimeout(1100);
 	const posata = await scostamento();
 	expect(posata.y, 'poi si posa').toBe(0);
