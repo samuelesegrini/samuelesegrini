@@ -102,6 +102,19 @@ const { label, ready, mark } = Astro.props;
 				radice.setAttribute('data-caricato', '');
 			};
 			const sparisci = () => { sipario?.removeAttribute('data-uscita') };
+			// la barra sale insieme alla ritirata, e si toglie il segno appena atterrata
+			const barraFissa = document.querySelector('.toolbar-shell');
+			if (barraFissa && !ridotto) {
+				barraFissa.setAttribute('data-entra', '');
+				const posata = (evento) => {
+					// animationend bolla: dentro la barra ci sono il ticker e le macchine,
+					// e il segno va tolto solo quando finisce l'ingresso della barra stessa
+					if (evento && (evento.target !== barraFissa || evento.animationName !== 'barra-entra')) return;
+					barraFissa.removeAttribute('data-entra');
+				};
+				barraFissa.addEventListener('animationend', posata);
+				setTimeout(posata, 1600);
+			}
 			if (ridotto || !sipario) return via();
 			// Il sipario si ritira verso l'alto mentre la hero è già in movimento sotto di lui:
 			// la bandiera cade all'inizio dell'uscita, non alla fine, altrimenti si vedrebbe

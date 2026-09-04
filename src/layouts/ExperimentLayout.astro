@@ -244,12 +244,12 @@ const labPathsAbout = labPaths[lang].about;
 			.canali b { font: 10px var(--mono); font-weight: 400; letter-spacing: .07em; text-transform: uppercase; color: #97938a; }
 			.canali span { color: #14140f; font-size: 15px; letter-spacing: -.02em; overflow-wrap: anywhere; }
 			.collegamento { display: inline-flex; width: max-content; margin-top: 26px; padding: 12px 18px; border-radius: 999px; background: #111; color: #fffef9; font-size: 14px; font-weight: 700; }
-			/* la barra entra una volta sola, quando il sipario si ritira: data-caricato lo alza
-			   solo il sipario, che a sua volta compare una volta per sessione, quindi alle
-			   navigazioni successive la barra è già lì e non si muove */
+			/* La barra entra una volta sola, quando il sipario si ritira. Il segno sta sulla
+			   barra stessa e se lo toglie appena finita: la barra sopravvive allo scambio di
+			   pagina, e spostare un nodo fa ripartire le animazioni che ha addosso. */
 			@keyframes barra-entra { from { transform: translateY(150%); opacity: 0 } }
-			html[data-caricato] .toolbar-shell { animation: barra-entra 820ms var(--ease) 120ms backwards; }
-			@media (prefers-reduced-motion: reduce) { html[data-caricato] .toolbar-shell { animation: none } }
+			.toolbar-shell[data-entra] { animation: barra-entra 820ms var(--ease) 120ms backwards; }
+			@media (prefers-reduced-motion: reduce) { .toolbar-shell[data-entra] { animation: none } }
 			/* --- sipario del primo caricamento --- */
 			.sipario { position: fixed; z-index: 100; inset: 0; display: none; grid-template-rows: auto 1fr auto; padding: 84px max(24px, 4vw) 68px; background: var(--paper, #f4f1ea); }
 			html[data-caricando] .sipario,

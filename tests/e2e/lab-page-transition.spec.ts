@@ -45,9 +45,12 @@ test('la pagina usa un solo snapshot opaco della viewport e mantiene la barra', 
 		.map((elemento) => getComputedStyle(elemento!).backgroundColor)))
 		.toEqual(['rgb(244, 241, 233)', 'rgb(244, 241, 233)', 'rgb(244, 241, 233)']);
 
+	// Il nome sta sul guscio, non sulla riga dentro: con il nome all'interno il rettangolo
+	// nero restava nel gruppo root e scorreva su con la pagina a ogni cambio, mentre il suo
+	// contenuto stava fermo.
 	const barra = page.locator('.toolbar-shell');
-	await expect(barra).toHaveCSS('view-transition-name', 'none');
-	await expect(barra.locator('.identity-row')).toHaveCSS('view-transition-name', 'labtoolbar');
+	await expect(barra).toHaveCSS('view-transition-name', 'labtoolbar');
+	await expect(barra.locator('.identity-row')).toHaveCSS('view-transition-name', 'none');
 	expect(await page.evaluate(() => ({
 		root: getComputedStyle(document.documentElement, '::view-transition-group(root)').zIndex,
 		toolbar: getComputedStyle(document.documentElement, '::view-transition-group(labtoolbar)').zIndex,

@@ -97,6 +97,27 @@ test('la barra entra una volta sola, quando il sipario si ritira', async ({ page
 	expect(posata.y, 'poi si posa').toBe(0);
 	expect(posata.opacita).toBe(1);
 
+	// navigando subito dopo, senza ricaricare: la barra è la stessa e non deve rientrare
+	await page.click('.toolbar-shell .menu-toggle');
+	await page.waitForTimeout(700);
+	await page.click('.toolbar-shell .nav-item[data-page="Progetti"]');
+	await page.waitForTimeout(300);
+	const durante = await page.evaluate(() => {
+		const barra = document.querySelector('.toolbar-shell')!;
+		const riquadro = barra.getBoundingClientRect();
+		return {
+			segno: barra.hasAttribute('data-entra'),
+			nome: getComputedStyle(barra).animationName,
+			// il guscio ha il suo gruppo di transizione: non scorre su con la pagina
+			gruppo: getComputedStyle(barra).viewTransitionName,
+			alto: Math.round(riquadro.top),
+		};
+	});
+	expect(durante.segno, 'il segno è già stato tolto').toBe(false);
+	expect(durante.nome, 'e la barra non rientra').toBe('none');
+	expect(durante.gruppo, 'il guscio è un gruppo a sé, non parte del root').toBe('labtoolbar');
+	expect(durante.alto, 'quindi resta al suo posto durante lo scambio').toBeLessThan(700);
+
 	// ricaricando nella stessa sessione il sipario non torna, quindi nemmeno l'ingresso
 	await page.reload();
 	await page.waitForTimeout(400);
