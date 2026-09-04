@@ -138,3 +138,34 @@ test('la barra entra una volta sola, quando il sipario si ritira', async ({ page
 		'la barra sopravvive allo scambio senza rientrare',
 	).toBe('none');
 });
+
+test('il sipario non se ne va prima dei caratteri', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.addInitScript(() => {
+		const finestra = window as typeof window & { __allaChiusura?: string[] };
+		const osserva = () => {
+			if (document.documentElement.hasAttribute('data-caricato')) {
+				finestra.__allaChiusura = [...document.fonts].map((faccia) => `${faccia.family}:${faccia.status}`);
+				return;
+			}
+			requestAnimationFrame(osserva);
+		};
+		requestAnimationFrame(osserva);
+	});
+	await page.goto('/lab/it/');
+	await page.waitForFunction(() => (window as typeof window & { __allaChiusura?: string[] }).__allaChiusura, null, {
+		timeout: 8000,
+	});
+
+	const stato = await page.evaluate(() => (window as typeof window & { __allaChiusura?: string[] }).__allaChiusura!);
+	// senza gli import dei font il banco cadeva sui caratteri di sistema, e document.fonts
+	// restava vuoto: il traguardo "font pronti" del sipario non voleva dire niente
+	expect(stato.length, 'i caratteri del sito sono dichiarati').toBeGreaterThan(0);
+	for (const famiglia of ['Manrope Variable', 'Newsreader Variable', 'IBM Plex Mono']) {
+		expect(stato, `${famiglia} è caricato prima che il sipario se ne vada`).toContain(`${famiglia}:loaded`);
+	}
+	expect(
+		await page.evaluate(() => getComputedStyle(document.querySelector('.hero-marchio .marchio-riga')!).fontFamily),
+		'e il marchio usa il carattere vero, non il ripiego di sistema',
+	).toContain('Manrope Variable');
+});

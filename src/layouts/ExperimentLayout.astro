@@ -4,6 +4,10 @@
  * Ogni pagina passa le proprie sezioni; la barra le usa come indice.
  */
 import { ClientRouter } from 'astro:transitions';
+// i caratteri del sito: senza questi il banco di prova cadeva sui font di sistema
+import '@fontsource-variable/manrope';
+import '@fontsource-variable/newsreader';
+import '@fontsource/ibm-plex-mono/400.css';
 import '../styles/global.css';
 import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
 import LabSipario from '../components/lab/LabSipario.astro';
