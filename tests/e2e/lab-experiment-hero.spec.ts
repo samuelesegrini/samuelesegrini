@@ -118,6 +118,7 @@ test('sul telefono la hero è compatta e non eredita il fondo dell\'ultima sezio
 			altezzaHero: Math.round(hero.getBoundingClientRect().height),
 			// con tutte le righe auto e align-content: stretch la pillola si gonfiava
 			altezzaPillola: Math.round(pillola.height),
+			pillolaSottoIlRiquadro: pillola.top > riquadro.bottom,
 			stacco: Math.round(riquadro.top - hero.getBoundingClientRect().bottom),
 		};
 	});
@@ -159,10 +160,12 @@ test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ 
 				quota: riquadro.width / window.innerWidth,
 				sovrappostaAllaBarra:
 					pillola.right > barra.left + 4 && pillola.left < barra.right - 4 && pillola.bottom > barra.top + 4,
+				pillolaInSchermo: pillola.top >= 0 && pillola.bottom <= window.innerHeight,
 			};
 		});
-		expect(misura.quota, `${larghezza}: il riquadro non è un francobollo`).toBeGreaterThan(0.28);
-		expect(misura.quota, `${larghezza}: e non è già grande`).toBeLessThan(0.62);
+		expect(misura.quota, `${larghezza}: il riquadro non è un francobollo`).toBeGreaterThan(0.3);
+		expect(misura.quota, `${larghezza}: e non è già grande`).toBeLessThan(0.72);
 		expect(misura.sovrappostaAllaBarra, `${larghezza}: la pillola non finisce sotto la barra`).toBe(false);
+		expect(misura.pillolaInSchermo, `${larghezza}: la pillola si vede senza scorrere`).toBe(true);
 	}
 });

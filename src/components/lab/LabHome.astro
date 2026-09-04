@@ -46,12 +46,14 @@ const sezioni = [
 			<span class="mascherina"><span class="marchio-riga">{parola.seconda}</span></span>
 		</h1>
 
-		<span class="hero-hint mascherina" aria-hidden="true"><span>{t.hint}</span></span>
 	</header>
 
-	{/* passo 1: riquadro grigio al posto del video, per lavorare sul movimento */}
+	{/* passo 1: riquadro grigio al posto del video, per lavorare sul movimento.
+	    La pillola vive qui perché sul telefono va letta dopo il riquadro; sul desktop
+	    torna in alto, ancorata al bordo della vetrina invece che a una quota fissa. */}
 	<section class="vetrina" aria-hidden="true">
 		<div class="hero-media"><div class="hero-media-fill"></div></div>
+		<span class="hero-hint mascherina"><span>{t.hint}</span></span>
 	</section>
 
 	<section class="home-section" id="lavoro" data-section="1">

@@ -101,39 +101,46 @@ const labPathsAbout = labPaths[lang].about;
 			/* --- hero passo 1: solo impianto e movimento, il riquadro è ancora grigio --- */
 			.home-section.hero { position: relative; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); align-content: stretch; justify-content: stretch; gap: 0; padding: 84px max(24px, 4vw) 128px; }
 			.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 48px; }
-			.vetrina { display: grid; align-content: center; min-height: 100vh; padding: 0 max(24px, 4vw); }
+			.vetrina { position: relative; display: grid; align-content: center; gap: 26px; min-height: 100vh; padding: 0 max(24px, 4vw); }
 			@media (max-width: 767px) { .vetrina { min-height: 0; padding-block: 4vh 12vh } }
 			.hero-media { --piccola: .35; --richiamo: -104vh; width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
 			/* su schermi stretti e alti il riquadro pieno è più piccolo, quindi parte più grande */
-			@media (max-width: 1200px) { .hero-media { --piccola: .46; --richiamo: -108vh } }
-			@media (max-width: 900px) { .hero-media { --piccola: .54; --richiamo: -112vh } }
+			@media (max-width: 1200px) { .hero-media { --piccola: .58; --richiamo: -106vh } }
+			@media (max-width: 900px) { .hero-media { --piccola: .68; --richiamo: -108vh } }
 			.hero-media-fill { width: 100%; height: 100%; background: #dcd8ce; }
 			.home-section.hero .hero-marchio { align-self: end; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 2vw; margin: 0; max-width: none; font-size: clamp(46px, 9.6vw, 150px); line-height: .82; letter-spacing: -.055em; text-transform: uppercase; }
 			.hero-intro { justify-self: end; max-width: 32ch; margin: 14px 0 0; text-align: right; font-size: 15.5px; }
-			.home-section.hero .hero-hint { position: absolute; left: max(24px, 4vw); bottom: 76px; margin: 0; }
+			.vetrina .hero-hint { justify-self: start; margin: 0; }
+			/* sopra il telefono la pillola risale in fondo alla hero, ancorata al bordo della
+			   vetrina invece che a una quota fissa. Fra 768 e 1039 la barra arriva quasi al
+			   margine, quindi va tenuta più in alto per non finirle sotto. */
+			@media (min-width: 768px) { .vetrina .hero-hint { position: absolute; left: max(24px, 4vw); bottom: calc(100% + 148px) } }
+			@media (min-width: 1040px) { .vetrina .hero-hint { bottom: calc(100% + 42px) } }
 			.hero-marchio .marchio-riga { white-space: nowrap; }
 			
 			/* la sequenza di ingresso: ogni pezzo sale dalla sua feritoia, il riquadro si apre */
 			@keyframes sale { from { transform: translateY(105%) } to { transform: translateY(0) } }
 			@keyframes apre { from { clip-path: inset(0 0 100% 0) } to { clip-path: inset(0 0 0 0) } }
-			.hero .mascherina > * { animation: sale 1000ms cubic-bezier(.165, .84, .44, 1) backwards; }
+			.hero .mascherina > *,
+			.vetrina .mascherina > * { animation: sale 1000ms cubic-bezier(.165, .84, .44, 1) backwards; }
 			.hero-meta .mascherina:nth-child(1) > * { animation-delay: 100ms }
 			.hero-meta .mascherina:nth-child(2) > * { animation-delay: 200ms }
 			.hero-marchio > .mascherina:nth-child(1) > * { animation-delay: 400ms }
 			.hero-marchio > .mascherina:nth-child(2) > * { animation-delay: 500ms }
 			.hero-intro .mascherina > * { animation-delay: 600ms }
-			.home-section.hero .hero-hint > * { animation-delay: 700ms }
+			.vetrina .hero-hint > * { animation-delay: 700ms }
 			.hero-media { animation: apre 1000ms var(--ease) 260ms backwards; }
 			/* Il cambio pagina è già il reveal: riavviare anche l'ingresso della hero nel
 			   documento appena scambiato crea un salto fra snapshot e DOM vivo. */
 			html[data-lab-client-arrival] .hero .mascherina > *,
+			html[data-lab-client-arrival] .vetrina .mascherina > *,
 			html[data-lab-client-arrival] .hero-media {
 				animation-name: none;
 				animation-delay: 0s;
 				animation-timeline: auto;
 			}
 			@media (prefers-reduced-motion: reduce) {
-				.hero .mascherina > *, .hero-media { animation: none }
+				.hero .mascherina > *, .vetrina .mascherina > *, .hero-media { animation: none }
 			}
 			/* --- movimento allo scroll: la hero si apre e si allontana mentre esce --- */
 			/* le animazioni d'ingresso usano transform, queste usano translate/scale/opacity:
@@ -144,7 +151,7 @@ const labPathsAbout = labPaths[lang].about;
 			@keyframes sfuma { to { opacity: 0 } }
 			@supports (animation-timeline: scroll()) {
 				.hero-media, .hero-meta, .hero-intro,
-				.home-section.hero .hero-hint,
+				.vetrina .hero-hint,
 				.hero-marchio > .mascherina {
 					animation-timeline: scroll(root block);
 					animation-range: 0 100vh;
@@ -155,7 +162,7 @@ const labPathsAbout = labPaths[lang].about;
 				.hero-media { animation-name: apre, cresce; animation-timeline: auto, scroll(root block); animation-range: normal, 0 100vh; animation-duration: 1000ms, auto; animation-timing-function: var(--ease), linear; animation-delay: 260ms, 0s; }
 				.hero-marchio > .mascherina:nth-child(1) { animation-name: deriva-sinistra; animation-range: 7vh 100vh }
 				.hero-marchio > .mascherina:nth-child(2) { animation-name: deriva-destra; animation-range: 7vh 100vh }
-				.hero-meta, .hero-intro, .home-section.hero .hero-hint { animation-name: sfuma; animation-range: 0 62vh }
+				.hero-meta, .hero-intro { animation-name: sfuma; animation-range: 0 62vh }
 				@media (max-width: 767px) {
 					.hero-media { animation-name: apre; animation-timeline: auto; animation-duration: 1000ms }
 					/* il marchio qui va a capo: allontanare due righe impilate non vuol dire niente */
@@ -167,7 +174,7 @@ const labPathsAbout = labPaths[lang].about;
 			@media (prefers-reduced-motion: reduce) {
 				/* stessa forma dei selettori qui sopra, altrimenti il nome dell'animazione sopravvive */
 				.hero-media, .hero-meta, .hero-intro,
-				.home-section.hero .hero-hint,
+				.vetrina .hero-hint,
 				.hero-marchio > .mascherina,
 				.hero-marchio > .mascherina:nth-child(1),
 				.hero-marchio > .mascherina:nth-child(2) { animation: none; animation-timeline: auto }
@@ -177,8 +184,6 @@ const labPathsAbout = labPaths[lang].about;
 			.mascherina > * { display: block; }
 			@media (max-width: 1039px) {
 				.hero-intro { position: static; max-width: 46ch; margin-top: 22px; text-align: left; }
-				/* qui la barra tocca quasi il margine: la pillola le finirebbe sotto */
-				.home-section.hero .hero-hint { position: static; margin-top: 4px; justify-self: start; }
 				/* una riga sola assorbe lo spazio libero: con tutte auto e align-content: stretch
 				   il gonfiore si spalmava su ogni riga e la pillola diventava un riquadro */
 				.home-section.hero { grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 26px; padding-bottom: 172px; }
