@@ -55,3 +55,57 @@ test('sul desktop il cambio lingua resta nella barra', async ({ page }) => {
 	expect(misura.cella, 'la cella è al suo posto').toBe(true);
 	expect(misura.pannello, 'e il doppione nel pannello resta nascosto').toBe('none');
 });
+
+test('la riga resta in fondo al guscio in ogni stato', async ({ page }) => {
+	const errori: string[] = [];
+	page.on('pageerror', (errore) => errori.push(errore.message));
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(2200);
+
+	const misura = () =>
+		page.evaluate(() => {
+			const guscio = document.querySelector('.toolbar-shell') as HTMLElement;
+			const g = guscio.getBoundingClientRect();
+			const r = document.querySelector('.identity-row')!.getBoundingClientRect();
+			return {
+				// la riga è ancorata in fondo al guscio: il suo fondo coincide con il suo
+				dalFondo: Math.round(r.bottom - g.bottom),
+				dalLato: Math.round(r.left - g.left),
+				// overflow: hidden faceva del guscio un contenitore scorrevole, e il fuoco su
+				// una voce di menu lo faceva scorrere di 195px portandosi via la riga
+				scorrimento: guscio.scrollTop,
+			};
+		});
+
+	const passi: [string, () => Promise<unknown>][] = [
+		['a riposo', async () => {}],
+		['in modo indice', async () => {
+			await page.evaluate(() => document.querySelector('#lavoro')!.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior }));
+			await page.waitForTimeout(800);
+		}],
+		['con il menu aperto', async () => {
+			await page.click('.toolbar-shell .menu-toggle');
+			await page.waitForTimeout(800);
+		}],
+		['dopo il fuoco da tastiera', async () => {
+			await page.keyboard.press('Tab');
+			await page.keyboard.press('Tab');
+			await page.waitForTimeout(300);
+		}],
+		['dopo aver navigato dal menu', async () => {
+			await page.click('.toolbar-shell .nav-item[data-page="Progetti"]');
+			await page.waitForTimeout(1400);
+		}],
+	];
+
+	for (const [dove, azione] of passi) {
+		await azione();
+		const m = await misura();
+		expect(m.dalFondo, `${dove}: la riga tocca il fondo del guscio`).toBeLessThanOrEqual(2);
+		expect(m.dalLato, `${dove}: e il suo lato`).toBeLessThanOrEqual(2);
+		expect(m.scorrimento, `${dove}: il guscio non scorre dentro di sé`).toBe(0);
+	}
+
+	expect(errori).toEqual([]);
+});

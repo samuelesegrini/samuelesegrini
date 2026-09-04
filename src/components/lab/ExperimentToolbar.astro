@@ -71,7 +71,7 @@ const { lang, name, ticker, routes, sections, languages, cv, labels, mailHref } 
 <!-- globale: le carte della sezione sono create a runtime, quindi lo scoping di Astro non le raggiungerebbe -->
 <style is:global>
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-    .toolbar-shell{--active-highlight:var(--acid);position:fixed;z-index:10;left:max(18px,calc((100vw - 720px)/2));bottom:24px;width:min(720px,calc(100vw - 36px));height:98px;overflow:hidden;border:1px solid #303030;border-radius:27px;background:#121212;color:white;box-shadow:0 28px 85px #0005;transition:height 520ms cubic-bezier(.2,.8,.2,1),border-radius 360ms ease}
+    .toolbar-shell{--active-highlight:var(--acid);position:fixed;z-index:10;left:max(18px,calc((100vw - 720px)/2));bottom:24px;width:min(720px,calc(100vw - 36px));height:98px;overflow:clip;border:1px solid #303030;border-radius:27px;background:#121212;color:white;box-shadow:0 28px 85px #0005;transition:height 520ms cubic-bezier(.2,.8,.2,1),border-radius 360ms ease}
     .toolbar-shell.open{height:min(590px,calc(100svh - 48px));border-radius:30px}
     .toolbar-shell.route-leaving{transition:none}
     .nav-panel{height:calc(100% - 98px);padding:14px 14px 0;opacity:0;transform:translateY(22px);pointer-events:none;transition:opacity 180ms ease,transform 420ms cubic-bezier(.2,.8,.2,1)}
