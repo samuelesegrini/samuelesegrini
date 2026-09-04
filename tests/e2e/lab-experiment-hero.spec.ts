@@ -30,7 +30,7 @@ test('scorrendo, la hero si apre e si allontana', async ({ page }) => {
 	await page.waitForTimeout(1800);
 
 	const fermo = await stato(page);
-	expect(Number.parseFloat(fermo.media.scale), 'da ferma il riquadro è piccolo').toBeLessThan(0.45);
+	expect(Number.parseFloat(fermo.media.scale), 'da ferma il riquadro è piccolo').toBeLessThan(0.6);
 	expect(fermo.meta.opacity).toBe(1);
 
 	await scorriA(page, 400);
@@ -148,7 +148,7 @@ test('il marchio non deriva sul telefono', async ({ page }) => {
 });
 
 test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ page }) => {
-	for (const [larghezza, altezza] of [[768, 1024], [834, 1194], [1024, 1366], [1280, 800], [1600, 900], [1920, 1080]] as const) {
+	for (const [larghezza, altezza] of [[768, 1024], [834, 1194], [1024, 1366], [1280, 700], [1280, 800], [1366, 768], [1512, 850], [1600, 900], [1920, 1080]] as const) {
 		await page.setViewportSize({ width: larghezza, height: altezza });
 		await page.goto('/lab/it/');
 		await page.waitForTimeout(1500);
@@ -156,20 +156,27 @@ test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ 
 			const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
 			const pillola = document.querySelector('.hero-hint')!.getBoundingClientRect();
 			const barra = document.querySelector('.toolbar-shell')!.getBoundingClientRect();
+			const intro = document.querySelector('.hero-intro')!.getBoundingClientRect();
+			const marchio = document.querySelector('.hero-marchio')!.getBoundingClientRect();
 			return {
 				quota: riquadro.width / window.innerWidth,
 				larghezza: riquadro.width,
+				// cresciuto del 30% il riquadro rischia di finire addosso all'intro o al marchio
+				daIntro: riquadro.top - intro.bottom,
+				daMarchio: marchio.top - riquadro.bottom,
 				sovrappostaAllaBarra:
 					pillola.right > barra.left + 4 && pillola.left < barra.right - 4 && pillola.bottom > barra.top + 4,
 				pillolaInSchermo: pillola.top >= 0 && pillola.bottom <= window.innerHeight,
 			};
 		});
 		// la misura piccola è capped: resta la stessa manciata di pixel su ogni schermo
-		expect(misura.larghezza, `${larghezza}: il riquadro non è un francobollo`).toBeGreaterThan(340);
-		expect(misura.larghezza, `${larghezza}: e non è già quasi pieno`).toBeLessThan(560);
-		expect(misura.quota, `${larghezza}: e non invade lo schermo`).toBeLessThan(0.56);
+		expect(misura.larghezza, `${larghezza}: il riquadro non è un francobollo`).toBeGreaterThan(370);
+		expect(misura.larghezza, `${larghezza}: e non è già quasi pieno`).toBeLessThan(700);
+		expect(misura.quota, `${larghezza}: e non invade lo schermo`).toBeLessThan(0.68);
 		expect(misura.sovrappostaAllaBarra, `${larghezza}: la pillola non finisce sotto la barra`).toBe(false);
 		expect(misura.pillolaInSchermo, `${larghezza}: la pillola si vede senza scorrere`).toBe(true);
+		expect(misura.daIntro, `${larghezza}: il riquadro non tocca l'intro`).toBeGreaterThan(0);
+		expect(misura.daMarchio, `${larghezza}: né il marchio`).toBeGreaterThan(0);
 	}
 });
 
@@ -238,7 +245,7 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 		};
 	});
 	expect(dopo.trasform, 'il marchio è arrivato').toBe('none');
-	expect(dopo.riquadro, 'e il riquadro è ancora quello piccolo').toBeLessThan(560);
+	expect(dopo.riquadro, 'e il riquadro è ancora quello piccolo').toBeLessThan(700);
 
 	await scorriA(page, 500);
 	const cresciuto = await page.evaluate(() =>
