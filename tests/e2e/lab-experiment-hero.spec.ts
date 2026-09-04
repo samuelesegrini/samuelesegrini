@@ -173,67 +173,45 @@ test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ 
 	}
 });
 
-test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ page }) => {
+test('la transizione spegne l\'ingresso, non il movimento allo scroll', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
 
-	// caricamento pieno: nessuna attesa, i pezzi partono col loro sfalsamento
+	// caricamento pieno: la tendina del riquadro parte, e la crescita è già armata
 	await page.goto('/lab/it/');
-	await page.waitForTimeout(300);
+	await page.waitForTimeout(400);
 	const carico = await page.evaluate(() => ({
 		tendina: getComputedStyle(document.querySelector('.hero-media-fill')!).animationName,
-		ritardoTendina: getComputedStyle(document.querySelector('.hero-media-fill')!).animationDelay,
 		crescita: getComputedStyle(document.querySelector('.hero-media')!).animationName,
 		bandiera: document.documentElement.hasAttribute('data-lab-client-arrival'),
 	}));
 	expect(carico.bandiera, 'un caricamento pieno non è un arrivo client').toBe(false);
-	expect(carico.tendina).toBe('apre');
-	expect(carico.ritardoTendina, 'solo il suo sfalsamento').toBe('0.26s');
-	expect(carico.crescita).toBe('cresce');
+	expect(carico.tendina, 'la tendina parte').toBe('apre');
+	expect(carico.crescita, 'e la crescita è agganciata').toBe('cresce');
 
-	// arrivo dal menu: l'ingresso c'è ancora, spostato in avanti perché la transizione
-	// copre i primi istanti e altrimenti si consumerebbe dove nessuno lo vede
+	// arrivo dalla navigazione client: la transizione è già il reveal, la tendina no
 	await page.goto('/lab/it/progetti/');
 	await page.waitForTimeout(1400);
 	await page.click('.toolbar-shell .menu-toggle');
 	await page.waitForTimeout(700);
 	await page.click('.toolbar-shell .nav-item[data-page="Home"]');
-	await page.waitForTimeout(150);
+	await page.waitForTimeout(1600);
 
-	const durante = await page.evaluate(() => {
-		const riga = document.querySelector('.hero-marchio > .mascherina:nth-child(1) > *')!;
-		const stile = getComputedStyle(riga);
-		return {
-			percorso: location.pathname,
-			bandiera: document.documentElement.hasAttribute('data-lab-client-arrival'),
-			nome: stile.animationName,
-			ritardo: stile.animationDelay,
-			// ancora dentro la feritoia: l'animazione non è partita
-			trasformato: stile.transform !== 'none' && stile.transform !== 'matrix(1, 0, 0, 1, 0, 0)',
-			crescita: getComputedStyle(document.querySelector('.hero-media')!).animationName,
-		};
-	});
-	expect(durante.percorso).toBe('/lab/it/');
-	expect(durante.bandiera).toBe(true);
-	expect(durante.nome, 'l\'ingresso non è annullato').toBe('sale');
-	expect(durante.ritardo, 'sfalsamento più il battito di attesa').toBe('0.5672s');
-	expect(durante.trasformato, 'e a 150ms non è ancora salito').toBe(true);
-	expect(durante.crescita, 'la crescita resta agganciata allo scroll').toBe('cresce');
-
-	// a transizione finita i pezzi sono al loro posto
-	await page.waitForTimeout(1900);
-	const dopo = await page.evaluate(() => {
-		const riga = document.querySelector('.hero-marchio > .mascherina:nth-child(1) > *')!;
-		return {
-			trasform: getComputedStyle(riga).transform,
-			riquadro: Math.round(document.querySelector('.hero-media')!.getBoundingClientRect().width),
-		};
-	});
-	expect(dopo.trasform, 'il marchio è arrivato').toBe('none');
-	expect(dopo.riquadro, 'e il riquadro è ancora quello piccolo').toBeLessThan(560);
+	const arrivo = await page.evaluate(() => ({
+		percorso: location.pathname,
+		bandiera: document.documentElement.hasAttribute('data-lab-client-arrival'),
+		tendina: getComputedStyle(document.querySelector('.hero-media-fill')!).animationName,
+		crescita: getComputedStyle(document.querySelector('.hero-media')!).animationName,
+		marchio: getComputedStyle(document.querySelector('.hero-marchio > .mascherina')!).animationName,
+		larghezza: Math.round(document.querySelector('.hero-media')!.getBoundingClientRect().width),
+	}));
+	expect(arrivo.percorso).toBe('/lab/it/');
+	expect(arrivo.bandiera).toBe(true);
+	expect(arrivo.tendina, 'la tendina non si ripete').toBe('none');
+	expect(arrivo.crescita, 'ma il riquadro resta agganciato allo scroll').toBe('cresce');
+	expect(arrivo.marchio, 'e il marchio pure').toBe('deriva-sinistra');
+	expect(arrivo.larghezza, 'quindi arriva piccolo, non a grandezza piena').toBeLessThan(560);
 
 	await scorriA(page, 500);
-	const cresciuto = await page.evaluate(() =>
-		Math.round(document.querySelector('.hero-media')!.getBoundingClientRect().width),
-	);
-	expect(cresciuto, 'e scorrendo cresce davvero').toBeGreaterThan(dopo.riquadro + 200);
+	const dopo = await page.evaluate(() => Math.round(document.querySelector('.hero-media')!.getBoundingClientRect().width));
+	expect(dopo, 'e scorrendo cresce davvero').toBeGreaterThan(arrivo.larghezza + 200);
 });
