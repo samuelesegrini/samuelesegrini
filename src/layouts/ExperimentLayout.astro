@@ -116,6 +116,7 @@ const labPathsAbout = labPaths[lang].about;
 			   resta per i browser senza funzioni trigonometriche. */
 			.hero-media { --piena: calc(100vw - 2 * max(24px, 4vw)); --piccola: clamp(.3, tan(atan2(clamp(380px, 40vw, 480px), var(--piena))), .7); }
 			.hero-media-fill { width: 100%; height: 100%; background: #dcd8ce; }
+
 			.home-section.hero .hero-marchio { align-self: end; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 2vw; margin: 0; max-width: none; font-size: clamp(46px, 9.6vw, 150px); line-height: .82; letter-spacing: -.055em; text-transform: uppercase; }
 			.hero-intro { justify-self: end; max-width: 32ch; margin: 14px 0 0; text-align: right; font-size: 15.5px; }
 			.vetrina .hero-hint { justify-self: start; margin: 0; }
@@ -126,14 +127,14 @@ const labPathsAbout = labPaths[lang].about;
 			@media (min-width: 1040px) { .vetrina .hero-hint { bottom: calc(100% + 42px) } }
 			.hero-marchio .marchio-riga { white-space: nowrap; }
 			
-			/* la sequenza di ingresso: ogni pezzo sale dalla sua feritoia, il riquadro si apre */
+			/* la sequenza di ingresso: ogni pezzo sale dalla sua feritoia, il grigio scende nel riquadro */
 			@keyframes sale { from { transform: translateY(105%) } to { transform: translateY(0) } }
-			@keyframes apre { from { clip-path: inset(0 0 100% 0) } to { clip-path: inset(0 0 0 0) } }
+			@keyframes scopre { from { transform: translateY(-100%) } }
 			.hero .mascherina > *,
 			.vetrina .mascherina > * { animation: sale 1000ms cubic-bezier(.165, .84, .44, 1) backwards; }
-			/* la tendina è sul riempimento, la crescita sul riquadro: sono due animazioni
-			   con due vite diverse, e spegnere l'ingresso non deve spegnere lo scroll */
-			.hero-media-fill { animation: apre 1000ms var(--ease) backwards; --ritardo: 260ms }
+			/* la discesa è sul riempimento, la crescita sul riquadro: sono due animazioni con due
+			   vite diverse, e spegnere l'ingresso non deve spegnere lo scroll */
+			.hero-media-fill { animation: scopre 1000ms var(--ease) backwards; --ritardo: 260ms }
 			.hero-meta .mascherina:nth-child(1) > * { --ritardo: 100ms }
 			.hero-meta .mascherina:nth-child(2) > * { --ritardo: 200ms }
 			.hero-marchio > .mascherina:nth-child(1) > * { --ritardo: 400ms }

@@ -180,14 +180,14 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 	await page.goto('/lab/it/');
 	await page.waitForTimeout(300);
 	const carico = await page.evaluate(() => ({
-		tendina: getComputedStyle(document.querySelector('.hero-media-fill')!).animationName,
-		ritardoTendina: getComputedStyle(document.querySelector('.hero-media-fill')!).animationDelay,
+		discesa: getComputedStyle(document.querySelector('.hero-media-fill')!).animationName,
+		ritardoDiscesa: getComputedStyle(document.querySelector('.hero-media-fill')!).animationDelay,
 		crescita: getComputedStyle(document.querySelector('.hero-media')!).animationName,
 		bandiera: document.documentElement.hasAttribute('data-lab-client-arrival'),
 	}));
 	expect(carico.bandiera, 'un caricamento pieno non è un arrivo client').toBe(false);
-	expect(carico.tendina).toBe('apre');
-	expect(carico.ritardoTendina, 'solo il suo sfalsamento').toBe('0.26s');
+	expect(carico.discesa).toBe('scopre');
+	expect(carico.ritardoDiscesa, 'solo il suo sfalsamento').toBe('0.26s');
 	expect(carico.crescita).toBe('cresce');
 
 	// arrivo dal menu: l'ingresso c'è ancora, spostato in avanti perché la transizione
