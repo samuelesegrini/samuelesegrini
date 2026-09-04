@@ -290,10 +290,27 @@ const labPathsAbout = labPaths[lang].about;
 /* margin-left: auto e non solo space-between: quando la testa va a capo l'arco resta
 			   l'unico elemento della riga, e space-between lo appoggerebbe a sinistra */
 			.carte-testa i { margin-left: auto; margin-right: -.055em; font-style: normal; color: var(--tinta); }
-			.carte-elenco { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: clamp(12px, 1.4vw, 18px); margin: 0; padding: 0; list-style: none; }
+			/* un progetto in evidenza grande il doppio, due di spalla accanto */
+			.carte-elenco { display: grid; gap: clamp(12px, 1.4vw, 18px); margin: 0; padding: 0; list-style: none; }
+			@media (min-width: 900px) { .carte-elenco { grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr); } }
+			.carte-spalla > ol { display: grid; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 18px); height: 100%; margin: 0; padding: 0; list-style: none; }
+			/* le carte di spalla mettono il pozzo di fianco al testo invece che sopra */
+			/* .carte-elenco a fissa una colonna sola più avanti: qui serve pesare di più */
+			@media (min-width: 620px) {
+				.carte-elenco .carte-spalla a { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-rows: 1fr; align-items: stretch; }
+			}
+			.carta-corpo { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; gap: 10px; }
+			.carta-sintesi { max-width: 54ch; margin: 0; color: #a9a49b; font-size: 15px; line-height: 1.5; }
+			.carta-prima .carta-pozzo { height: auto; min-height: clamp(240px, 26vw, 420px); }
+			.carta-prima > a { grid-template-rows: 1fr auto auto auto; }
+			.carta-prima .carta-riga strong { font-size: clamp(24px, 2.4vw, 34px); }
+			.carte-spalla .carta-riga strong { font-size: clamp(18px, 1.5vw, 22px); }
 			.carte-elenco a {
 				display: grid;
 				grid-template-columns: minmax(0, 1fr);
+				grid-template-rows: 1fr auto;
+				align-content: stretch;
+				height: 100%;
 				gap: clamp(14px, 1.4vw, 20px);
 				padding: clamp(12px, 1vw, 16px) clamp(12px, 1vw, 16px) clamp(18px, 1.6vw, 24px);
 				border-radius: clamp(16px, 1.6vw, 24px);
@@ -301,7 +318,7 @@ const labPathsAbout = labPaths[lang].about;
 				color: #f7f5ee;
 			}
 			/* il pozzo: qui dentro finirà il video, per ora è un rettangolo grigio */
-			.carta-pozzo { position: relative; display: block; height: clamp(260px, 30vw, 520px); border-radius: clamp(12px, 1.2vw, 18px); overflow: clip; }
+			.carta-pozzo { position: relative; display: block; min-height: 150px; height: 100%; border-radius: clamp(12px, 1.2vw, 18px); overflow: clip; }
 			.carta-fondo { position: absolute; inset: 0; background: #dcd8ce; transform: scale(1.06); transition: transform 520ms ease; }
 			.carta-velo { position: absolute; inset: 0; background: #14140f4d; backdrop-filter: blur(6px); opacity: 0; transition: opacity 460ms ease; }
 			/* l'anta si apre da una linea al centro: due scale, quindi resta sul compositore
@@ -335,19 +352,19 @@ const labPathsAbout = labPaths[lang].about;
 			/* le carte entrano una dopo l'altra quando la sezione arriva in vista */
 			@keyframes carta-entra { from { opacity: 0; transform: translateY(28px) scale(.98) } }
 			@supports (animation-timeline: view()) {
-				.carte-elenco > li {
+				.carte-elenco li:has(> a) {
 					animation: carta-entra linear both;
 					animation-timeline: view();
 					animation-range: entry 4% cover 22%;
 					animation-duration: auto;
 				}
 				.carta-treno { animation: nastro linear both; animation-timeline: view(); animation-duration: auto; }
-				.carte-elenco > li:nth-child(even) .carta-treno { animation-name: nastro-contrario }
+				.carte-spalla li:nth-child(odd) .carta-treno { animation-name: nastro-contrario }
 			}
 			@media (prefers-reduced-motion: reduce) {
-				.carte-elenco > li,
+				.carte-elenco li:has(> a),
 				.carta-treno,
-				.carte-elenco > li:nth-child(even) .carta-treno { animation: none; animation-timeline: auto }
+				.carte-spalla li:nth-child(odd) .carta-treno { animation: none; animation-timeline: auto }
 				.carta-fondo, .carta-velo, .carta-anta { transition: none }
 			}
 			/* --- sipario del primo caricamento --- */

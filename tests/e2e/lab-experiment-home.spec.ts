@@ -112,28 +112,34 @@ test('le carte dei progetti stanno in fila e dentro i loro bordi', async ({ page
 	await vaiA(page, 'progetti');
 
 	const misura = await page.evaluate(() => {
-		const carte = [...document.querySelectorAll('.carte-elenco > li')].map((carta) => carta.getBoundingClientRect());
+		const prima = document.querySelector('.carta-prima > a')!.getBoundingClientRect();
+		const spalla = [...document.querySelectorAll('.carte-spalla li a')].map((carta) => carta.getBoundingClientRect());
 		const nastro = document.querySelector('.carta-nastro')!.getBoundingClientRect();
 		const testa = document.querySelector('.carte-testa')!;
 		return {
-			quante: carte.length,
-			// tre in fila, alla stessa altezza e della stessa misura
-			inFila: carte.every((carta) => Math.abs(carta.top - carte[0].top) < 2),
-			stessaMisura: new Set(carte.map((carta) => Math.round(carta.width))).size === 1,
+			quante: 1 + spalla.length,
+			// la carta in evidenza è la più larga e alta quanto le altre due insieme
+			piuLarga: prima.width > spalla[0].width * 1.4,
+			altaQuantoLeDue: Math.abs(prima.height - (spalla[1].bottom - spalla[0].top)) < 4,
+			// le due di spalla stanno una sopra l'altra, a destra
+			impilate: spalla[1].top > spalla[0].bottom - 2,
+			aDestra: spalla[0].left > prima.right,
 			// il nastro è ritagliato dalla carta invece di allargarla
-			nastroDentro: nastro.right <= carte[0].right + 1,
-			sbordano: carte.some((carta) => carta.right > window.innerWidth + 1),
+			nastroDentro: nastro.right <= prima.right + 1,
+			sbordano: [prima, ...spalla].some((carta) => carta.right > window.innerWidth + 1),
 			// titolo a sinistra e arco degli anni a destra, come sul riferimento
 			titoloEArco: getComputedStyle(testa).justifyContent,
-			sporgenza: document.querySelector('.carte-testa i')!.getBoundingClientRect().right - carte[2].right,
+			sporgenza: document.querySelector('.carte-testa i')!.getBoundingClientRect().right - spalla[0].right,
 			tracciatura: Number.parseFloat(getComputedStyle(testa).fontSize) * 0.055,
 			larghezzaPagina: document.documentElement.scrollWidth,
 		};
 	});
 
 	expect(misura.quante, 'tre progetti in evidenza').toBe(3);
-	expect(misura.inFila, 'in fila sulla stessa linea').toBe(true);
-	expect(misura.stessaMisura, 'e della stessa misura').toBe(true);
+	expect(misura.piuLarga, 'la prima carta pesa più delle altre').toBe(true);
+	expect(misura.altaQuantoLeDue, 'ed è alta quanto le due di spalla insieme').toBe(true);
+	expect(misura.impilate, 'le due di spalla sono impilate').toBe(true);
+	expect(misura.aDestra, 'e stanno a destra della prima').toBe(true);
 	expect(misura.nastroDentro, 'il nastro resta dentro la carta').toBe(true);
 	expect(misura.sbordano, 'nessuna carta esce dallo schermo').toBe(false);
 	expect(misura.titoloEArco).toBe('space-between');
@@ -146,8 +152,9 @@ test('le carte dei progetti stanno in fila e dentro i loro bordi', async ({ page
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.waitForTimeout(500);
 	const stretto = await page.evaluate(() => {
-		const carte = [...document.querySelectorAll('.carte-elenco > li')].map((carta) => carta.getBoundingClientRect());
-		return { impilate: carte[1].top > carte[0].bottom - 2, larghezza: document.documentElement.scrollWidth };
+		const prima = document.querySelector('.carta-prima > a')!.getBoundingClientRect();
+		const spalla = document.querySelector('.carte-spalla li a')!.getBoundingClientRect();
+		return { impilate: spalla.top > prima.bottom - 2, larghezza: document.documentElement.scrollWidth };
 	});
 	expect(stretto.impilate, 'una sotto l\'altra').toBe(true);
 	expect(stretto.larghezza, 'senza scorrimento laterale').toBeLessThanOrEqual(390);
@@ -162,7 +169,7 @@ test('le carte entrano e si aprono al passaggio', async ({ page }) => {
 	await page.evaluate(() => window.scrollTo({ top: 900, behavior: 'instant' as ScrollBehavior }));
 	await page.waitForTimeout(400);
 	const entrando = await page.evaluate(() =>
-		[...document.querySelectorAll('.carte-elenco > li')].map((carta) => {
+		[...document.querySelectorAll('.carte-elenco li:has(> a)')].map((carta) => {
 			const stile = getComputedStyle(carta);
 			return { nome: stile.animationName, opacita: Number(stile.opacity), nastro: getComputedStyle(carta.querySelector('.carta-treno')!).animationName };
 		}),
@@ -171,11 +178,19 @@ test('le carte entrano e si aprono al passaggio', async ({ page }) => {
 	expect(entrando.every((c) => c.opacita < 1), 'ancora in arrivo').toBe(true);
 	expect(entrando.map((c) => c.nastro), 'i nastri si alternano').toEqual(['nastro', 'nastro-contrario', 'nastro']);
 
-	await vaiA(page, 'progetti');
-	const arrivate = await page.evaluate(() =>
-		[...document.querySelectorAll('.carte-elenco > li')].map((carta) => Number(getComputedStyle(carta).opacity)),
-	);
-	expect(arrivate, 'arrivate sono piene').toEqual([1, 1, 1]);
+	// la sezione è più alta di una schermata: ogni carta va portata in vista per davvero,
+	// altrimenti si misura l'ultima mentre è ancora fuori e la sua animazione non è finita
+	for (const indice of [0, 1, 2]) {
+		await page.evaluate((i) => {
+			document.querySelectorAll('.carte-elenco li:has(> a)')[i].scrollIntoView({ block: 'center', behavior: 'instant' as ScrollBehavior });
+		}, indice);
+		await page.waitForTimeout(350);
+		const piena = await page.evaluate(
+			(i) => Number(getComputedStyle(document.querySelectorAll('.carte-elenco li:has(> a)')[i]).opacity),
+			indice,
+		);
+		expect(piena, `la carta ${indice + 1} arriva piena`).toBe(1);
+	}
 
 	// al passaggio: il velo copre il pozzo e l'anta si apre dalla linea centrale
 	const prima = await page.evaluate(() => ({
@@ -185,7 +200,7 @@ test('le carte entrano e si aprono al passaggio', async ({ page }) => {
 	expect(prima.velo, 'a riposo il velo non c\'è').toBe(0);
 	expect(prima.anta, 'e l\'anta è chiusa in una linea').toContain('0, 0');
 
-	await page.hover('.carte-elenco > li:first-child a');
+	await page.hover('.carta-prima > a');
 	await page.waitForTimeout(900);
 	const dopo = await page.evaluate(() => ({
 		velo: Number(getComputedStyle(document.querySelector('.carta-velo')!).opacity),
@@ -206,7 +221,7 @@ test('con movimento ridotto le carte stanno ferme', async ({ browser }) => {
 	await pagina.waitForTimeout(300);
 
 	const misura = await pagina.evaluate(() =>
-		[...document.querySelectorAll('.carte-elenco > li')].map((carta) => ({
+		[...document.querySelectorAll('.carte-elenco li:has(> a)')].map((carta) => ({
 			nome: getComputedStyle(carta).animationName,
 			opacita: Number(getComputedStyle(carta).opacity),
 			nastro: getComputedStyle(carta.querySelector('.carta-treno')!).animationName,
