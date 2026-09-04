@@ -219,3 +219,24 @@ test('con movimento ridotto le carte stanno ferme', async ({ browser }) => {
 	}
 	await contesto.close();
 });
+
+test('l\'arco degli anni resta a destra anche quando la testa va a capo', async ({ page }) => {
+	for (const larghezza of [1280, 900, 600, 430, 390]) {
+		await page.setViewportSize({ width: larghezza, height: 900 });
+		await page.goto('/lab/it/');
+		await page.waitForTimeout(900);
+		await vaiA(page, 'progetti');
+
+		const misura = await page.evaluate(() => {
+			const testa = document.querySelector('.carte-testa')!.getBoundingClientRect();
+			const titolo = document.querySelector('.carte-testa span')!.getBoundingClientRect();
+			const arco = document.querySelector('.carte-testa i')!.getBoundingClientRect();
+			const traccia = Number.parseFloat(getComputedStyle(document.querySelector('.carte-testa')!).fontSize) * 0.055;
+			return { aCapo: arco.top > titolo.top + 4, distanzaDalBordo: testa.right - (arco.right - traccia) };
+		});
+
+		// con space-between da solo, andando a capo l'arco restava l'unico della riga e si
+		// appoggiava a sinistra: margin-left: auto lo tiene a destra in tutti e due i casi
+		expect(misura.distanzaDalBordo, `${larghezza}px${misura.aCapo ? ' (a capo)' : ''}: l'arco è a destra`).toBeLessThan(2);
+	}
+});

@@ -288,7 +288,9 @@ const labPathsAbout = labPaths[lang].about;
 			.carte-testa { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 16px; max-width: none; margin: 0; font-size: clamp(48px, 12vw, 200px); font-weight: 700; line-height: .8; letter-spacing: -.055em; text-transform: uppercase; }
 			/* la spaziatura negativa vale anche dopo l'ultima cifra: senza compensarla il numero
 			   sembra staccato dal bordo pur avendo la scatola allineata */
-			.carte-testa i { margin-right: -.055em; font-style: normal; }
+/* margin-left: auto e non solo space-between: quando la testa va a capo l'arco resta
+			   l'unico elemento della riga, e space-between lo appoggerebbe a sinistra */
+			.carte-testa i { margin-left: auto; margin-right: -.055em; font-style: normal; }
 			.carte-elenco { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: clamp(12px, 1.4vw, 18px); margin: 0; padding: 0; list-style: none; }
 			.carte-elenco a {
 				display: grid;
