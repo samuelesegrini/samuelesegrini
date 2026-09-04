@@ -109,7 +109,7 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 48px; }
 			.vetrina { position: relative; display: grid; align-content: center; gap: 26px; min-height: 100vh; padding: 0 max(24px, 4vw); }
 			@media (max-width: 767px) { .vetrina { min-height: 0; padding-block: 4vh 12vh } }
-			.hero-media { --piccola: .42; --richiamo: -100vh; width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
+			.hero-media { --piccola: .42; --richiamo: calc(-100vh - 15px); width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
 			/* La misura di partenza è una misura, non una proporzione: fra 494 e 624px su
 			   qualsiasi schermo. La scala si ricava dividendola per la larghezza piena —
 			   tan(atan2()) è il modo di dividere due lunghezze in CSS. Il .42 qui sopra
