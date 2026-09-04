@@ -240,3 +240,31 @@ test('l\'arco degli anni resta a destra anche quando la testa va a capo', async 
 		expect(misura.distanzaDalBordo, `${larghezza}px${misura.aCapo ? ' (a capo)' : ''}: l'arco è a destra`).toBeLessThan(2);
 	}
 });
+
+test('il colore della sezione è quello che il menu assegna ai progetti', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1600);
+	await vaiA(page, 'progetti');
+
+	const colori = await page.evaluate(() => {
+		const sezione = document.querySelector('.home-section.carte')! as HTMLElement;
+		const tinta = getComputedStyle(sezione).getPropertyValue('--tinta').trim();
+		// la stessa tinta che la voce di menu Progetti usa quando è attiva
+		const voce = document.querySelector('.nav-item[data-page="Progetti"]')! as HTMLElement;
+		return {
+			tinta,
+			menu: getComputedStyle(voce).getPropertyValue('--highlight').trim(),
+			anta: getComputedStyle(document.querySelector('.carta-anta')!).backgroundColor,
+			tipo: getComputedStyle(document.querySelector('.carta-meta i')!).color,
+			arco: getComputedStyle(document.querySelector('.carte-testa i')!).color,
+		};
+	});
+
+	expect(colori.tinta, 'la sezione ha una tinta').not.toBe('');
+	expect(colori.menu, 'la stessa che il menu dà ai progetti').toBe(colori.tinta);
+	// tre punti soli: l'arco, il tipo di progetto e l'anta che si apre
+	expect(colori.anta, 'l\'anta porta la tinta').toBe('rgb(205, 239, 255)');
+	expect(colori.tipo, 'il tipo di progetto anche').toBe('rgb(205, 239, 255)');
+	expect(colori.arco, 'e l\'arco degli anni').toBe('rgb(205, 239, 255)');
+});
