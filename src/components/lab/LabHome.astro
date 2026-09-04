@@ -4,6 +4,7 @@ import { getFeaturedProjects, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { siteConfig } from '../../config/site';
 import { getLabCopy } from '../../lib/lab-copy';
+import { labHeroTransition } from '../../lib/lab-transitions';
 import { labPaths, labPostPath, labProjectPath, type LabLocale } from './chrome';
 
 interface Props { lang: LabLocale }
@@ -16,6 +17,9 @@ const dataBreve = (quando: Date) => quando.toLocaleDateString(lang === 'it' ? 'i
 const conta = (n: number, uno: string, molti: string) => `${n} ${n === 1 ? uno : molti}`;
 
 const copy = await getLabCopy(lang);
+const parole = copy.home.headline.replace(/[,.]$/, '').split(/\s+/);
+const meta = Math.ceil(parole.length / 2);
+const parola = { prima: parole.slice(0, meta).join(' '), seconda: parole.slice(meta).join(' ') };
 const domande = copy.about.sections.filter((sezione) => sezione.text !== copy.home.contactText);
 const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis, hint: copy.common.hint,
 	mail: copy.home.mailLink, one: copy.common.one, many: copy.common.many };
@@ -31,11 +35,22 @@ const sezioni = [
 <ExperimentLayout lang={lang} title={t.title} currentHref={labPaths[lang].home} sections={sezioni}
 	itHref={labPaths.it.home} enHref={labPaths.en.home}>
 	<header class="home-section hero" id="inizio" data-section="0">
-		<span class="section-kicker">{siteConfig.name}</span>
-		<h1>{t.headline} <em>{t.em}</em></h1>
-		<p>{t.intro}</p>
-		<span class="hero-hint" aria-hidden="true">{t.hint}</span>
-		<i class="section-rule" aria-hidden="true"></i>
+		<div class="hero-meta">
+			<span class="mascherina"><span class="section-kicker">{siteConfig.name}</span></span>
+			<span class="mascherina"><span class="section-kicker">{siteConfig.role}</span></span>
+		</div>
+
+		<p class="hero-intro"><span class="mascherina"><span>{t.intro}</span></span></p>
+
+		{/* passo 1: riquadro grigio al posto del video, per lavorare sul movimento */}
+		<div class="hero-media" aria-hidden="true"><div class="hero-media-fill"></div></div>
+
+		<h1 class="hero-marchio" transition:name="labhero" transition:animate={labHeroTransition}>
+			<span class="mascherina"><span class="marchio-riga">{parola.prima}</span></span>
+			<span class="mascherina"><span class="marchio-riga">{parola.seconda}</span></span>
+		</h1>
+
+		<span class="hero-hint mascherina" aria-hidden="true"><span>{t.hint}</span></span>
 	</header>
 
 	<section class="home-section" id="lavoro" data-section="1">

@@ -34,9 +34,16 @@ test('ogni sezione della home tiene la sua griglia e resta sopra la barra', asyn
 					testo && corpo
 						? Math.round(corpo.getBoundingClientRect().left) > Math.round(testo.getBoundingClientRect().right)
 						: null,
+				// coperto davvero: si sovrappone al rettangolo della barra, non solo alla sua altezza
 				coperti: [...sezione.children]
 					.map((figlio) => figlio.getBoundingClientRect())
-					.filter((riquadro) => riquadro.height > 0 && riquadro.bottom > barra.top + 6).length,
+					.filter(
+						(riquadro) =>
+							riquadro.height > 0 &&
+							riquadro.bottom > barra.top + 6 &&
+							riquadro.right > barra.left + 6 &&
+							riquadro.left < barra.right - 6,
+					).length,
 			};
 		}, id);
 
