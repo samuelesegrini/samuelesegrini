@@ -197,7 +197,7 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 	await page.click('.toolbar-shell .menu-toggle');
 	await page.waitForTimeout(700);
 	await page.click('.toolbar-shell .nav-item[data-page="Home"]');
-	await page.waitForTimeout(150);
+	await page.waitForTimeout(250);
 
 	const durante = await page.evaluate(() => {
 		const riga = document.querySelector('.hero-marchio > .mascherina:nth-child(1) > *')!;
@@ -215,8 +215,8 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 	expect(durante.percorso).toBe('/lab/it/');
 	expect(durante.bandiera).toBe(true);
 	expect(durante.nome, 'l\'ingresso non è annullato').toBe('sale');
-	expect(durante.ritardo, 'sfalsamento più il battito di attesa').toBe('0.5672s');
-	expect(durante.trasformato, 'e a 150ms non è ancora salito').toBe(true);
+	expect(durante.ritardo, 'sfalsamento più l\'attesa, oltre la durata della transizione').toBe('0.818s');
+	expect(durante.trasformato, 'e a 250ms non è ancora salito').toBe(true);
 	expect(durante.crescita, 'la crescita resta agganciata allo scroll').toBe('cresce');
 
 	// a transizione finita i pezzi sono al loro posto

@@ -136,12 +136,13 @@ const labPathsAbout = labPaths[lang].about;
 			.vetrina .hero-hint > * { --ritardo: 700ms }
 			/* Un solo punto in cui lo sfalsamento diventa un ritardo vero, così l'attesa si
 			   somma a ognuno senza appiattirli. Arrivando da un'altra pagina la transizione
-			   copre i primi 760ms: l'ingresso aspetta un battito (~167ms) e poi parte, così i
-			   pezzi salgono mentre la pagina sta ancora scorrendo, invece di aspettarla ferma. */
+			   copre i primi 760ms. L'attesa è tarata perché il marchio parta dopo che la
+			   transizione ha chiuso (418 + 400 = 818ms): sotto quella soglia comincia a salire
+			   sotto lo snapshot, dove non si vede, e riappare a metà strada. */
 			.hero .mascherina > *,
 			.vetrina .mascherina > *,
 			.hero-media-fill { animation-delay: calc(var(--ritardo, 0ms) + var(--attesa, 0ms)); }
-			html[data-lab-client-arrival] { --attesa: calc(var(--transizione) * .22); }
+			html[data-lab-client-arrival] { --attesa: calc(var(--transizione) * .55); }
 			@media (prefers-reduced-motion: reduce) {
 				.hero .mascherina > *, .vetrina .mascherina > *, .hero-media-fill { animation: none }
 			}
