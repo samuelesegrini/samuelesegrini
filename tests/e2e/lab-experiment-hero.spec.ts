@@ -30,7 +30,7 @@ test('scorrendo, la hero si apre e si allontana', async ({ page }) => {
 	await page.waitForTimeout(1800);
 
 	const fermo = await stato(page);
-	expect(Number.parseFloat(fermo.media.scale), 'da ferma il riquadro è piccolo').toBeCloseTo(0.35, 2);
+	expect(Number.parseFloat(fermo.media.scale), 'da ferma il riquadro è piccolo').toBeLessThan(0.45);
 	expect(fermo.meta.opacity).toBe(1);
 
 	await scorriA(page, 400);
@@ -148,7 +148,7 @@ test('il marchio non deriva sul telefono', async ({ page }) => {
 });
 
 test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ page }) => {
-	for (const [larghezza, altezza] of [[768, 1024], [834, 1194], [1024, 1366], [1280, 800], [1600, 900]] as const) {
+	for (const [larghezza, altezza] of [[768, 1024], [834, 1194], [1024, 1366], [1280, 800], [1600, 900], [1920, 1080]] as const) {
 		await page.setViewportSize({ width: larghezza, height: altezza });
 		await page.goto('/lab/it/');
 		await page.waitForTimeout(1500);
@@ -158,13 +158,16 @@ test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ 
 			const barra = document.querySelector('.toolbar-shell')!.getBoundingClientRect();
 			return {
 				quota: riquadro.width / window.innerWidth,
+				larghezza: riquadro.width,
 				sovrappostaAllaBarra:
 					pillola.right > barra.left + 4 && pillola.left < barra.right - 4 && pillola.bottom > barra.top + 4,
 				pillolaInSchermo: pillola.top >= 0 && pillola.bottom <= window.innerHeight,
 			};
 		});
-		expect(misura.quota, `${larghezza}: il riquadro non è un francobollo`).toBeGreaterThan(0.3);
-		expect(misura.quota, `${larghezza}: e non è già grande`).toBeLessThan(0.72);
+		// la misura piccola è capped: resta la stessa manciata di pixel su ogni schermo
+		expect(misura.larghezza, `${larghezza}: il riquadro non è un francobollo`).toBeGreaterThan(340);
+		expect(misura.larghezza, `${larghezza}: e non è già quasi pieno`).toBeLessThan(560);
+		expect(misura.quota, `${larghezza}: e non invade lo schermo`).toBeLessThan(0.56);
 		expect(misura.sovrappostaAllaBarra, `${larghezza}: la pillola non finisce sotto la barra`).toBe(false);
 		expect(misura.pillolaInSchermo, `${larghezza}: la pillola si vede senza scorrere`).toBe(true);
 	}

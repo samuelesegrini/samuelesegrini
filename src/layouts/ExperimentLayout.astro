@@ -103,10 +103,12 @@ const labPathsAbout = labPaths[lang].about;
 			.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 48px; }
 			.vetrina { position: relative; display: grid; align-content: center; gap: 26px; min-height: 100vh; padding: 0 max(24px, 4vw); }
 			@media (max-width: 767px) { .vetrina { min-height: 0; padding-block: 4vh 12vh } }
-			.hero-media { --piccola: .35; --richiamo: -104vh; width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
-			/* su schermi stretti e alti il riquadro pieno è più piccolo, quindi parte più grande */
-			@media (max-width: 1200px) { .hero-media { --piccola: .58; --richiamo: -106vh } }
-			@media (max-width: 900px) { .hero-media { --piccola: .68; --richiamo: -108vh } }
+			.hero-media { --piccola: .42; --richiamo: -104vh; width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
+			/* La misura di partenza è una misura, non una proporzione: fra 380 e 480px su
+			   qualsiasi schermo. La scala si ricava dividendola per la larghezza piena —
+			   tan(atan2()) è il modo di dividere due lunghezze in CSS. Il .42 qui sopra
+			   resta per i browser senza funzioni trigonometriche. */
+			.hero-media { --piena: calc(100vw - 2 * max(24px, 4vw)); --piccola: clamp(.3, tan(atan2(clamp(380px, 40vw, 480px), var(--piena))), .7); }
 			.hero-media-fill { width: 100%; height: 100%; background: #dcd8ce; }
 			.home-section.hero .hero-marchio { align-self: end; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 2vw; margin: 0; max-width: none; font-size: clamp(46px, 9.6vw, 150px); line-height: .82; letter-spacing: -.055em; text-transform: uppercase; }
 			.hero-intro { justify-self: end; max-width: 32ch; margin: 14px 0 0; text-align: right; font-size: 15.5px; }
