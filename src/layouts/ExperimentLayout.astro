@@ -265,9 +265,9 @@ const labPathsAbout = labPaths[lang].about;
 			.sipario-voce { color: #8b877f; font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 			.sipario-conta { font: 600 clamp(64px, 13vw, 168px)/.82 var(--mono); letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
 			.sipario-barra { position: absolute; left: max(24px, 4vw); right: max(24px, 4vw); bottom: 30px; height: 2px; background: #ddd9d0; overflow: hidden; }
-			.sipario-barra b { display: block; height: 100%; background: #14140f; transform-origin: left; transform: scaleX(.02); transition: transform 220ms linear; }
+			.sipario-barra b { display: block; height: 100%; background: #14140f; transform-origin: left; transform: scaleX(.02); }
 			/* si ritira verso l'alto, come la tendina del riquadro al contrario */
-			@keyframes sipario-via { to { clip-path: inset(0 0 100% 0) } }
+			@keyframes sipario-via { to { transform: translateY(-100%) } }
 			.sipario[data-uscita] { animation: sipario-via 760ms var(--ease) forwards; }
 			/* l'ingresso della hero resta fermo al primo fotogramma finché il sipario copre */
 			html[data-caricando] .hero .mascherina > *,

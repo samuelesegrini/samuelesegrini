@@ -75,6 +75,7 @@ const { label, ready, mark } = Astro.props;
 
 		let mostrato = 0;
 		let fermo = false;
+		let ultimo = -1;
 
 		const quota = () => traguardi.reduce((somma, t) => somma + (t.fatto() ? t.peso : 0), 0);
 
@@ -85,7 +86,12 @@ const { label, ready, mark } = Astro.props;
 			const bersaglio = Math.min(quota(), trascorso);
 			mostrato += (bersaglio - mostrato) * 0.14;
 			const percento = Math.min(100, Math.round(mostrato * 100));
-			if (conta) conta.textContent = String(percento).padStart(3, '0');
+			// riscrivere il numero a ogni fotogramma rifà il layout di una cifra enorme anche
+			// quando non è cambiata: si tocca solo quando cambia davvero
+			if (conta && percento !== ultimo) {
+				conta.textContent = String(percento).padStart(3, '0');
+				ultimo = percento;
+			}
 			if (barra) barra.style.transform = `scaleX(${Math.max(0.02, mostrato)})`;
 			if (quota() >= 0.999 && trascorso >= 1 && percento >= 99) return chiudi();
 			requestAnimationFrame(disegna);
