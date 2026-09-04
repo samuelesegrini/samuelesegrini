@@ -30,7 +30,7 @@ test('scorrendo, la hero si apre e si allontana', async ({ page }) => {
 	await page.waitForTimeout(1800);
 
 	const fermo = await stato(page);
-	expect(fermo.media.translate, 'da ferma non si muove niente').toBe('0px');
+	expect(Number.parseFloat(fermo.media.scale), 'da ferma il riquadro è piccolo').toBeCloseTo(0.35, 2);
 	expect(fermo.meta.opacity).toBe(1);
 
 	await scorriA(page, 400);
@@ -39,10 +39,32 @@ test('scorrendo, la hero si apre e si allontana', async ({ page }) => {
 
 	expect(orizzontale(mosso.sinistra.translate), 'la metà sinistra va a sinistra').toBeLessThan(-20);
 	expect(orizzontale(mosso.destra.translate), 'la destra va a destra').toBeGreaterThan(20);
-	expect(Number.parseFloat(mosso.media.scale), 'il riquadro cresce').toBeGreaterThan(1);
-	expect(mosso.media.translate, 'e sale').not.toBe('0px');
+	expect(Number.parseFloat(mosso.media.scale), 'il riquadro cresce').toBeGreaterThan(0.6);
+	expect(mosso.media.translate, 'e scende verso la sua schermata').not.toBe(fermo.media.translate);
 	expect(mosso.meta.opacity, 'i dati in alto sfumano').toBeLessThan(0.5);
 	expect(mosso.larghezza, 'la deriva non crea scorrimento laterale').toBeLessThanOrEqual(1280);
+
+	await scorriA(page, 800);
+	const arrivato = await stato(page);
+	expect(Number.parseFloat(arrivato.media.scale), 'arriva a grandezza naturale').toBeCloseTo(1, 2);
+	expect(arrivato.media.translate, 'e al suo posto').toBe('0px');
+});
+
+test('il riquadro non conta come sezione della barra', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1500);
+	// la barra si orienta con i data-section, e il riquadro non deve averne uno
+	const conteggio = await page.evaluate(() => ({
+		numeri: [...document.querySelectorAll('.home-section')].map((s) => (s as HTMLElement).dataset.section),
+		voci: JSON.parse(document.querySelector('#lab-sections')!.textContent!).length,
+		vetrinaSezione: document.querySelector('.vetrina')!.classList.contains('home-section'),
+		vetrinaNumero: (document.querySelector('.vetrina') as HTMLElement).dataset.section,
+	}));
+	expect(conteggio.numeri, 'le sezioni restano numerate di fila').toEqual(['0', '1', '2', '3', '4']);
+	expect(conteggio.numeri.length - 1, 'una voce di indice per ogni sezione dopo la hero').toBe(conteggio.voci);
+	expect(conteggio.vetrinaSezione, 'il riquadro non è una sezione').toBe(false);
+	expect(conteggio.vetrinaNumero, 'e non ha un numero').toBeUndefined();
 });
 
 test('con movimento ridotto la hero resta immobile', async ({ page }) => {

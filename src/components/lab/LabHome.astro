@@ -4,7 +4,6 @@ import { getFeaturedProjects, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { siteConfig } from '../../config/site';
 import { getLabCopy } from '../../lib/lab-copy';
-import { labHeroTransition } from '../../lib/lab-transitions';
 import { labPaths, labPostPath, labProjectPath, type LabLocale } from './chrome';
 
 interface Props { lang: LabLocale }
@@ -42,16 +41,18 @@ const sezioni = [
 
 		<p class="hero-intro"><span class="mascherina"><span>{t.intro}</span></span></p>
 
-		{/* passo 1: riquadro grigio al posto del video, per lavorare sul movimento */}
-		<div class="hero-media" aria-hidden="true"><div class="hero-media-fill"></div></div>
-
-		<h1 class="hero-marchio" transition:name="labhero" transition:animate={labHeroTransition}>
+		<h1 class="hero-marchio">
 			<span class="mascherina"><span class="marchio-riga">{parola.prima}</span></span>
 			<span class="mascherina"><span class="marchio-riga">{parola.seconda}</span></span>
 		</h1>
 
 		<span class="hero-hint mascherina" aria-hidden="true"><span>{t.hint}</span></span>
 	</header>
+
+	{/* passo 1: riquadro grigio al posto del video, per lavorare sul movimento */}
+	<section class="vetrina" aria-hidden="true">
+		<div class="hero-media"><div class="hero-media-fill"></div></div>
+	</section>
 
 	<section class="home-section" id="lavoro" data-section="1">
 		<div class="sezione-testo">

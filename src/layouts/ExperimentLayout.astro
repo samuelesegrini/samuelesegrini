@@ -9,7 +9,6 @@ import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
 import type { LabLocale, ToolbarSection } from '../components/lab/chrome';
 import { experimentLanguages, experimentRoutes, labPaths, mailHref } from '../components/lab/chrome';
 import { getLabCopy, riempi } from '../lib/lab-copy';
-import { labPageTransition } from '../lib/lab-transitions';
 import { siteConfig } from '../config/site';
 
 interface Props {
@@ -41,12 +40,7 @@ const labPathsAbout = labPaths[lang].about;
 	</head>
 	<body>
 		<main class="stage" aria-label={title}>
-			<div
-				class="page-sheet"
-				data-lab-page
-				transition:name="labpage"
-				transition:animate={labPageTransition}
-			>
+			<div class="page-sheet" data-lab-page>
 				<!-- le sezioni viaggiano con la pagina: la barra sopravvive allo scambio e le rilegge qui -->
 				<script type="application/json" id="lab-sections" is:inline set:html={JSON.stringify(sections)}></script>
 				<slot />
@@ -67,20 +61,19 @@ const labPathsAbout = labPaths[lang].about;
 		<style is:global>
 			:root { --slot: #242424; --ease: cubic-bezier(.22,1,.36,1); }
 			body { overflow-x: hidden; }
-			::view-transition-old(root), ::view-transition-new(root) { animation: none !important; mix-blend-mode: normal; }
 			::view-transition-group(root) { z-index: 0; }
-			::view-transition-group(labpage) { z-index: 1; }
-			::view-transition-old(labpage), ::view-transition-new(labpage) { height: 100%; overflow: clip; mix-blend-mode: normal; }
-			::view-transition-group(labhero) { z-index: 2; }
 			::view-transition-group(labtoolbar) { z-index: 50; }
-			@keyframes lab-page-forward-out { to { opacity: .58; transform: translateY(-72px) scale(.975); } }
-			@keyframes lab-page-forward-in { from { transform: translateY(100vh); } }
-			@keyframes lab-page-back-out { to { opacity: .58; transform: translateY(72px) scale(.975); } }
-			@keyframes lab-page-back-in { from { transform: translateY(-100vh); } }
-			@keyframes lab-hero-forward-out { 55%, to { opacity: 0; transform: translateY(-34px); } }
-			@keyframes lab-hero-forward-in { from { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(64px); } to { clip-path: inset(0); opacity: 1; transform: none; } }
-			@keyframes lab-hero-back-out { 55%, to { opacity: 0; transform: translateY(34px); } }
-			@keyframes lab-hero-back-in { from { clip-path: inset(0 0 100%); opacity: 0; transform: translateY(-64px); } to { clip-path: inset(0); opacity: 1; transform: none; } }
+			::view-transition-old(root), ::view-transition-new(root) { mix-blend-mode: normal; }
+			::view-transition-old(root) { animation: lab-root-forward-out 760ms cubic-bezier(.87,0,.13,1) both; }
+			::view-transition-new(root) { animation: lab-root-forward-in 760ms cubic-bezier(.87,0,.13,1) both; }
+			[data-astro-transition="back"]::view-transition-old(root) { animation-name: lab-root-back-out; }
+			[data-astro-transition="back"]::view-transition-new(root) { animation-name: lab-root-back-in; }
+			@keyframes lab-root-forward-out { to { opacity: .58; transform: translateY(-72px) scale(.975); } }
+			@keyframes lab-root-forward-in { from { transform: translateY(100vh); } }
+			@keyframes lab-root-back-out { to { opacity: .58; transform: translateY(72px) scale(.975); } }
+			@keyframes lab-root-back-in { from { transform: translateY(-100vh); } }
+			@keyframes lab-toolbar-hide { from, to { opacity: 0; } }
+			@keyframes lab-toolbar-hold { from, to { opacity: 1; } }
 			.stage { position: relative; width: 100%; min-height: 100%; background: var(--paper); }
 			.page-sheet { position: relative; z-index: 0; min-height: 100vh; overflow: clip; isolation: isolate; background: var(--paper); }
 			.page-sheet:after { content: ''; position: fixed; z-index: -2; inset: 0; background: radial-gradient(circle at 50% 110%, #ffffff 0, transparent 42%), var(--paper); }
@@ -100,25 +93,27 @@ const labPathsAbout = labPaths[lang].about;
 			.sezione-testo h1 { max-width: none; }
 			.home-section.hero { min-height: 100vh; }
 			/* --- hero passo 1: solo impianto e movimento, il riquadro è ancora grigio --- */
-			.home-section.hero { position: relative; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto; align-content: stretch; justify-content: stretch; gap: 0; padding: 84px max(24px, 4vw) 128px; }
+			.home-section.hero { position: relative; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); align-content: stretch; justify-content: stretch; gap: 0; padding: 84px max(24px, 4vw) 128px; }
 			.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 48px; }
-			.hero-media { align-self: center; justify-self: center; width: min(560px, 100%); aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; }
+			.vetrina { display: grid; align-content: center; min-height: 100vh; padding: 0 max(24px, 4vw); }
+			@media (max-width: 767px) { .vetrina { min-height: 0; padding-block: 4vh 12vh } }
+			.hero-media { width: 100%; aspect-ratio: 16 / 9; border-radius: 28px; overflow: hidden; will-change: transform; }
 			.hero-media-fill { width: 100%; height: 100%; background: #dcd8ce; }
-			.home-section.hero .hero-marchio { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 2vw; margin: 0; max-width: none; font-size: clamp(46px, 9.6vw, 150px); line-height: .82; letter-spacing: -.055em; text-transform: uppercase; }
+			.home-section.hero .hero-marchio { align-self: end; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 2vw; margin: 0; max-width: none; font-size: clamp(46px, 9.6vw, 150px); line-height: .82; letter-spacing: -.055em; text-transform: uppercase; }
 			.hero-intro { justify-self: end; max-width: 32ch; margin: 14px 0 0; text-align: right; font-size: 15.5px; }
 			.home-section.hero .hero-hint { position: absolute; left: max(24px, 4vw); bottom: 76px; margin: 0; }
 			.hero-marchio .marchio-riga { white-space: nowrap; }
-			.hero-media { margin: 22px 0 26px; }
+			
 			/* la sequenza di ingresso: ogni pezzo sale dalla sua feritoia, il riquadro si apre */
 			@keyframes sale { from { transform: translateY(105%) } to { transform: translateY(0) } }
 			@keyframes apre { from { clip-path: inset(0 0 100% 0) } to { clip-path: inset(0 0 0 0) } }
-			.hero .mascherina > * { animation: sale 900ms var(--ease) backwards; }
-			.hero-meta .mascherina:nth-child(1) > * { animation-delay: 120ms }
-			.hero-meta .mascherina:nth-child(2) > * { animation-delay: 190ms }
-			.hero-marchio > .mascherina:nth-child(1) > * { animation-delay: 420ms }
+			.hero .mascherina > * { animation: sale 1000ms cubic-bezier(.165, .84, .44, 1) backwards; }
+			.hero-meta .mascherina:nth-child(1) > * { animation-delay: 100ms }
+			.hero-meta .mascherina:nth-child(2) > * { animation-delay: 200ms }
+			.hero-marchio > .mascherina:nth-child(1) > * { animation-delay: 400ms }
 			.hero-marchio > .mascherina:nth-child(2) > * { animation-delay: 500ms }
-			.hero-intro .mascherina > * { animation-delay: 620ms }
-			.home-section.hero .hero-hint > * { animation-delay: 720ms }
+			.hero-intro .mascherina > * { animation-delay: 600ms }
+			.home-section.hero .hero-hint > * { animation-delay: 700ms }
 			.hero-media { animation: apre 1000ms var(--ease) 260ms backwards; }
 			@media (prefers-reduced-motion: reduce) {
 				.hero .mascherina > *, .hero-media { animation: none }
@@ -128,7 +123,7 @@ const labPathsAbout = labPaths[lang].about;
 			   proprietà diverse, quindi si compongono invece di annullarsi */
 			@keyframes deriva-sinistra { to { translate: -14vw 0 } }
 			@keyframes deriva-destra { to { translate: 14vw 0 } }
-			@keyframes affonda { to { translate: 0 -9vh; scale: 1.07 } }
+			@keyframes cresce { from { translate: 0 -104vh; scale: .35 } to { translate: 0 0; scale: 1 } }
 			@keyframes sfuma { to { opacity: 0 } }
 			@supports (animation-timeline: scroll()) {
 				.hero-media, .hero-meta, .hero-intro,
@@ -140,7 +135,8 @@ const labPathsAbout = labPaths[lang].about;
 					animation-fill-mode: both;
 					animation-duration: auto;
 				}
-				.hero-media { animation-name: apre, affonda; animation-timeline: auto, scroll(root block); animation-range: normal, 0 100vh; animation-duration: 1000ms, auto; animation-timing-function: var(--ease), linear; animation-delay: 260ms, 0s; }
+				.hero-media { animation-name: apre, cresce; animation-timeline: auto, scroll(root block); animation-range: normal, 0 100vh; animation-duration: 1000ms, auto; animation-timing-function: var(--ease), linear; animation-delay: 260ms, 0s; }
+				@media (max-width: 767px) { .hero-media { animation-name: apre; animation-timeline: auto; animation-duration: 1000ms } }
 				.hero-marchio > .mascherina:nth-child(1) { animation-name: deriva-sinistra; animation-range: 7vh 100vh }
 				.hero-marchio > .mascherina:nth-child(2) { animation-name: deriva-destra; animation-range: 7vh 100vh }
 				.hero-meta, .hero-intro, .home-section.hero .hero-hint { animation-name: sfuma; animation-range: 0 62vh }
