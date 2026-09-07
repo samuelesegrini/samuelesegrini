@@ -1,0 +1,77 @@
+/* Chi sono: eredita il registro degli archivi (lab-work.css) e delle righe (lab-writing.css),
+   qui c'è solo quello che la pagina aggiunge. La tinta della sezione viaggia sul rigo-indice
+   e sulle schede attraverso --tinta, come negli altri capitoli. */
+.profilo-lab { --inchiostro: #20221f; --inchiostro-tenue: #6b6760; }
+.profilo-lab a { color: inherit; }
+.profilo-lab .about-hero { padding-bottom: 72px; }
+.profilo-lab .about-indice { --inchiostro: #20221f; margin-bottom: 40px; }
+.profilo-lab .about-indice a { text-decoration: none; }
+.profilo-lab .about-indice a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.about-hero .about-indice { margin: 64px 0 22px; }
+/* i quattro fatti: una scheda per sezione, con la sua tinta, e la freccia che porta giù */
+.about-fatti .scheda { min-height: 168px; color: var(--inchiostro); }
+.about-fatti .scheda-titolo { padding-right: 40px; font-size: clamp(24px, 2.3vw, 34px); }
+.about-note { margin: 0; padding: 0; list-style: none; }
+.about-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.about-cards .work-card:last-child:nth-child(odd) { grid-column: auto; }
+.about-cards .work-card:last-child:nth-child(odd) .work-card-link { display: block; }
+.about-fatti .scheda-freccia { transition: transform 400ms var(--ease); }
+.about-fatti a.scheda:is(:hover, :focus-visible) .scheda-freccia { transform: translateY(4px); }
+/* il racconto: indice a sinistra che resta, prosa a destra */
+.profilo-lab .scene { padding-top: 64px; padding-bottom: 96px; scroll-margin-top: 16px; }
+.about-lettura { display: grid; grid-template-columns: 240px minmax(0, 760px); gap: 100px; }
+.about-rail { position: sticky; top: 40px; align-self: start; display: grid; gap: 22px; max-height: calc(100vh - 190px); }
+.about-rail .section-kicker { color: var(--inchiostro-tenue); }
+.about-progresso { display: block; height: 2px; background: #d2d4ca; }
+.about-progresso i { display: block; height: 100%; background: var(--inchiostro); transform: scaleX(0); transform-origin: left; }
+.about-toc { display: grid; gap: 3px; }
+.about-toc a { display: grid; grid-template-columns: 24px 1fr; gap: 8px; padding: 10px 8px; border-radius: 6px; font-size: 13px; line-height: 1.5; text-decoration: none; transition: background-color 200ms ease; }
+.about-toc a span:first-child { opacity: .65; font-family: var(--mono); font-size: 11px; }
+.about-toc a:hover { background: #e9eadf; }
+.about-toc a[aria-current] { background: var(--acid); }
+.about-sigillo { --sigillo-misura: 120px; --tinta: var(--acid); margin: 18px 0 0 8px; color: var(--inchiostro-tenue); }
+.about-inizio { font-size: 12px; text-decoration: none; padding-left: 8px; }
+.profilo-lab .about-prosa { max-width: none; margin: 0; color: var(--inchiostro); font-size: 18px; line-height: 1.75; }
+.about-prosa > :first-child { margin-top: 0; }
+.profilo-lab .about-prosa h2 { margin: 72px 0 24px; font-size: clamp(30px, 3.2vw, 44px); letter-spacing: -.05em; line-height: 1.1; scroll-margin-top: 70px; }
+.profilo-lab .about-prosa p { font-size: inherit; }
+.profilo-lab .about-prosa blockquote { margin: 0 0 42px; padding: 0 0 0 24px; border-left: 2px solid #828c77; color: var(--inchiostro); font-family: var(--serif); font-size: clamp(22px, 2vw, 27px); line-height: 1.45; }
+.profilo-lab .about-prosa blockquote p { margin: 0; }
+.profilo-lab .about-prosa a { text-decoration-color: #a0a494; text-underline-offset: 4px; }
+/* progetti e articoli: le carte e le righe degli archivi, con una frase di raccordo */
+.about-sezione-testo { max-width: 52ch; margin: 0 0 40px; font-size: clamp(18px, 1.6vw, 22px); line-height: 1.5; color: var(--inchiostro); }
+.about-articoli .writing-entry:last-child { border-bottom: 1px solid #bfc3b8; }
+.about-articoli .writing-entry h3 { margin: 0 0 20px; font-size: clamp(26px, 2.8vw, 40px); font-weight: 500; line-height: 1.16; letter-spacing: -.045em; }
+/* il biglietto di chiusura */
+.about-biglietto-riga { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 48px; align-items: start; }
+.profilo-lab .about-biglietto { min-height: 260px; padding: clamp(24px, 3vw, 40px); gap: 32px; color: var(--inchiostro); text-decoration: none; }
+.profilo-lab .about-biglietto .scheda-kicker { opacity: 1; color: #3f5b66; }
+.about-indirizzo { font-size: clamp(24px, 3vw, 46px); font-weight: 500; letter-spacing: -.06em; line-height: 1; overflow-wrap: anywhere; }
+.about-biglietto-piede { display: flex; align-items: end; justify-content: space-between; gap: 16px; color: #3f5b66; font: 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.about-biglietto-piede .freccia-scambio { --inchiostro: #20221f; font-size: 44px; }
+@media (prefers-reduced-motion: no-preference) and (pointer: fine) {
+  @supports (animation-timeline: view()) {
+    .profilo-lab .about-prosa > * { animation: writing-enter linear both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
+  }
+}
+@media (max-width: 1039px) {
+  .about-lettura { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .about-rail { position: static; max-height: none; }
+  .about-sigillo, .about-inizio { display: none; }
+  .about-toc { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .about-biglietto-riga { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+}
+@media (max-width: 800px) {
+  .about-fatti { --mazzo-colonne: 2; }
+  .about-cards { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .profilo-lab .scene { padding-top: 48px; padding-bottom: 72px; }
+  .about-hero .about-indice { margin-top: 44px; }
+  .about-fatti .scheda { min-height: 130px; padding: 18px 20px; }
+  .about-fatti .scheda-titolo { font-size: 22px; }
+  .profilo-lab .about-prosa { font-size: 17px; }
+  .about-articoli .writing-entry h3 { font-size: 26px; }
+  .about-indirizzo { font-size: clamp(19px, 6.4vw, 26px); letter-spacing: -.04em; }
+  .about-biglietto-piede .freccia-scambio { font-size: 32px; }
+}

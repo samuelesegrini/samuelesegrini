@@ -1,51 +1,188 @@
 ---
-/** Profilo: la barra indicizza le tre domande a cui la pagina risponde. */
+/**
+ * Chi sono: il profilo raccontato con lo stesso registro degli archivi.
+ *
+ * Apre come Progetti e Articoli (riga in alto, titolo enorme, intro a due colonne) e mette
+ * subito i fatti in quattro schede. Poi il racconto del profilo con l'indice che segue la
+ * lettura, i progetti che il racconto cita come carte dell'archivio, le note come righe,
+ * e in chiusura il biglietto per scrivere.
+ */
+import { render } from 'astro:content';
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
+import LabContentLink from './LabContentLink.astro';
+import { getFeaturedProjects, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { siteConfig } from '../../config/site';
 import { getLabCopy, riempi } from '../../lib/lab-copy';
-import { labPaths, type LabLocale } from './chrome';
+import { labPaths, labPostPath, labProjectPath, type LabLocale } from './chrome';
+import '../../styles/lab-work.css';
+import '../../styles/lab-writing.css';
+import '../../styles/lab-about.css';
 
 interface Props { lang: LabLocale }
 const { lang } = Astro.props;
-const { projects, aboutDocuments } = await getPortfolioContent();
+const it = lang === 'it';
+const { projects, posts, aboutDocuments } = await getPortfolioContent();
 const profilo = aboutDocuments.find((page) => page.data.locale === lang && !page.data.draft);
 const pubblicati = projects.filter((p) => p.locale === lang && !p.draft);
+const inEvidenza = getFeaturedProjects(projects, lang);
+const note = getPublishedPosts(posts, lang).slice(0, 3);
+const reso = profilo ? await render(profilo) : undefined;
+const Content = reso?.Content;
+const capitoli = (reso?.headings ?? []).filter((h) => h.depth === 2);
 
 const copy = await getLabCopy(lang);
-const t = {
-	...copy.about,
-	kicker: copy.common.section,
-	hint: copy.common.hint,
-	mail: copy.about.mailLink,
-	s: copy.about.sections.map((sezione) => ({
-		id: sezione.id,
-		value: sezione.label,
-		testo: sezione.text,
-		dk: sezione.detailKicker,
-		dv: riempi(sezione.detailValue, { projects: pubblicati.length }),
-	})),
+const t = copy.about;
+const [percorso, strumenti, contatto] = t.sections;
+const titolo = profilo?.data.title ?? t.fallbackTitle;
+const estratto = profilo?.data.excerpt ?? t.fallbackExcerpt;
+const l = it ? {
+	topline: 'Samuele Segrini / Profilo', ruolo: siteConfig.role, lead: 'Dai sistemi allo schermo.',
+	fatti: 'In breve', racconto: 'Il racconto', indice: 'In questa pagina', inizio: 'Torna all’inizio',
+	progetti: 'Dai progetti', progettiTesto: 'I lavori che il racconto cita: dove il percorso è diventato software.',
+	archivio: 'Tutti i progetti', dentro: 'Dentro il progetto',
+	articoli: 'Dagli articoli', articoliTesto: 'Quello che ho dovuto capire davvero, messo per iscritto.',
+	tuttiArticoli: 'Tutti gli articoli', contatto: 'Contatto', scrivimi: 'Scrivimi', articoliVoce: 'Articoli',
+	stato: { verified: 'Verificato', archived: 'Archiviato', prototype: 'Prototipo', 'in-progress': 'In corso' },
+	autore: { team: 'Team', individual: 'Individuale', contribution: 'Contributo' },
+} : {
+	topline: 'Samuele Segrini / Profile', ruolo: siteConfig.role, lead: 'From systems to the screen.',
+	fatti: 'At a glance', racconto: 'The story', indice: 'On this page', inizio: 'Back to top',
+	progetti: 'From the projects', progettiTesto: 'The work the story mentions: where the path became software.',
+	archivio: 'All projects', dentro: 'Inside the project',
+	articoli: 'From the writing', articoliTesto: 'What I really had to understand, written down.',
+	tuttiArticoli: 'All articles', contatto: 'Contact', scrivimi: 'Write me', articoliVoce: 'Writing',
+	stato: { verified: 'Verified', archived: 'Archived', prototype: 'Prototype', 'in-progress': 'In progress' },
+	autore: { team: 'Team', individual: 'Individual', contribution: 'Contribution' },
 };
+const conta = (n: number, uno: string, molti: string) => `${n} ${n === 1 ? uno : molti}`;
+const fatti = [
+	{ kicker: percorso.detailKicker, valore: riempi(percorso.detailValue), tinta: 'var(--acid)', href: '#racconto' },
+	{ kicker: strumenti.detailKicker, valore: riempi(strumenti.detailValue, { projects: pubblicati.length }), tinta: 'var(--orange)', href: '#progetti' },
+	{ kicker: l.articoliVoce, valore: conta(note.length, copy.common.one, copy.common.many), tinta: 'var(--violet)', href: '#articoli' },
+	{ kicker: contatto.detailKicker, valore: riempi(contatto.detailValue), tinta: 'var(--blue)', href: '#contatto' },
+];
+const data = (d: Date) => d.toLocaleDateString(it ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const sezioni = [
+	{ id: 'racconto', kicker: copy.common.section, value: l.racconto, detail: { kicker: percorso.detailKicker, value: fatti[0].valore } },
+	{ id: 'progetti', kicker: copy.common.section, value: l.progetti, detail: { kicker: strumenti.detailKicker, value: fatti[1].valore } },
+	{ id: 'articoli', kicker: copy.common.section, value: l.articoli, detail: { kicker: l.articoliVoce, value: fatti[2].valore } },
+	{ id: 'contatto', kicker: copy.common.section, value: l.contatto, detail: { kicker: contatto.detailKicker, value: fatti[3].valore } },
+];
 ---
 
 <ExperimentLayout lang={lang} title={t.title} currentHref={labPaths[lang].about}
-	sections={t.s.map((s) => ({ kicker: t.kicker, value: s.value, detail: { kicker: s.dk, value: s.dv } }))}
+	sections={sezioni.map(({ kicker, value, detail }) => ({ kicker, value, detail }))}
 	itHref={labPaths.it.about} enHref={labPaths.en.about}>
-	<header class="home-section hero" id="inizio" data-section="0">
-		<span class="section-kicker">{siteConfig.name}</span>
-		<h1>{profilo?.data.title ?? t.fallbackTitle}</h1>
-		<p>{profilo?.data.excerpt ?? t.fallbackExcerpt}</p>
-		<span class="hero-hint" aria-hidden="true">{t.hint}</span>
-		<i class="section-rule" aria-hidden="true"></i>
-	</header>
+	<a class="work-skip skip-link" href="#racconto">{it ? 'Vai al racconto' : 'Skip to the story'}</a>
+	<div class="work-archive profilo-lab" data-about>
+		<header class="scene work-hero about-hero" id="inizio" data-section="0">
+			<div class="work-backdrop depth-0" aria-hidden="true"></div>
+			<div class="work-grid depth-2" aria-hidden="true"></div>
+			<div class="depth-4">
+				<div class="work-topline"><span>{l.topline}</span><span>{l.ruolo}</span></div>
+				<h1>{titolo}</h1>
+				<div class="work-intro"><span>{l.lead}</span><p>{estratto}</p></div>
+				<div class="rigo-indice about-indice"><b>00</b><span>{l.fatti}</span><i></i><span>{siteConfig.name}</span></div>
+				<ul class="mazzo about-fatti" role="list">{fatti.map((fatto) => (
+					<li style={`--tinta: ${fatto.tinta}`}><a class="scheda" href={fatto.href}><span class="scheda-kicker">{fatto.kicker}</span><span class="scheda-titolo">{fatto.valore}</span><span class="scheda-freccia" aria-hidden="true">↓</span></a></li>
+				))}</ul>
+			</div>
+		</header>
 
-	{t.s.map((sezione, i) => (
-		<section class="home-section" id={sezione.id} data-section={i + 1}>
-			<span class="section-kicker">{t.kicker} {String(i + 1).padStart(2, '0')}</span>
-			<h1>{sezione.value}</h1>
-			<p>{sezione.testo}</p>
-			{i === 2 && <a class="collegamento" href={`mailto:${siteConfig.email}`}>{t.mail}</a>}
-			<i class="section-rule" aria-hidden="true"></i>
+		<section class="scene about-racconto" id="racconto" data-section="1" aria-labelledby="racconto-title">
+			<div class="rigo-indice about-indice"><b>01</b><span id="racconto-title">{l.racconto}</span><i></i><span>{capitoli.length} {it ? 'capitoli' : 'chapters'}</span></div>
+			<div class="about-lettura">
+				<aside class="about-rail">
+					<span class="section-kicker">{l.indice}</span>
+					<span class="about-progresso" aria-hidden="true"><i></i></span>
+					<nav class="about-toc" aria-label={l.indice}>{capitoli.map((h, i) => <a href={`#${h.slug}`}><span>{String(i + 1).padStart(2, '0')}</span><span>{h.text}</span></a>)}</nav>
+					<div class="sigillo about-sigillo" aria-hidden="true">
+						<svg viewBox="0 0 100 100"><defs><path id="about-anello" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs><text><textPath href="#about-anello" textLength="236" lengthAdjust="spacing">{`${siteConfig.name} — ${siteConfig.role} — `}</textPath></text></svg>
+						<b>SS</b>
+					</div>
+					<a class="about-inizio" href="#inizio">↑ {l.inizio}</a>
+				</aside>
+				<div class="about-prosa prosa">{Content ? <Content components={{ a: LabContentLink }} /> : <p>{estratto}</p>}</div>
+			</div>
 		</section>
-	))}
+
+		<section class="scene about-progetti" id="progetti" data-section="2" aria-labelledby="progetti-title">
+			<div class="rigo-indice about-indice" style="--tinta: var(--orange)"><b>02</b><span id="progetti-title">{l.progetti}</span><i></i><a href={labPaths[lang].work}>{l.archivio} ↗</a></div>
+			<p class="about-sezione-testo">{l.progettiTesto}</p>
+			<ul class="work-cards about-cards">{inEvidenza.map((project) => (
+				<li class="work-card">
+					<a class="work-card-link" href={labProjectPath(lang, project.slug)} aria-labelledby={`about-${project.translationKey}`}>
+						<div class="work-card-art"><img src={project.coverImage} alt={project.coverAlt} width="1200" height="800" loading="lazy" decoding="async" /><span class="work-card-arrow" aria-hidden="true">↗</span></div>
+						<div class="work-card-copy">
+							<div class="work-card-meta"><span>{project.year} / {l.stato[project.lifecycle]}</span><span>{l.autore[project.authorship]}</span></div>
+							<h3 id={`about-${project.translationKey}`}>{project.title}</h3><p>{project.excerpt}</p>
+							<ul class="work-tags" aria-label={it ? 'Tecnologie' : 'Technologies'}>{project.technologies.slice(0, 4).map((tech) => <li>{tech}</li>)}</ul>
+							<span class="work-card-cta">{l.dentro} <span aria-hidden="true">↗</span></span>
+						</div>
+					</a>
+				</li>
+			))}</ul>
+		</section>
+
+		<section class="scene about-articoli" id="articoli" data-section="3" aria-labelledby="articoli-title">
+			<div class="rigo-indice about-indice" style="--tinta: var(--violet)"><b>03</b><span id="articoli-title">{l.articoli}</span><i></i><a href={labPaths[lang].writing}>{l.tuttiArticoli} ↗</a></div>
+			<p class="about-sezione-testo">{l.articoliTesto}</p>
+			<ol class="about-note" role="list">{note.map((post, i) => (
+				<li class="writing-entry">
+					<a href={labPostPath(lang, post.slug)} class="writing-entry-link" aria-labelledby={`about-post-${i}`}>
+						<div class="writing-entry-meta"><span>{String(i + 1).padStart(2, '0')}</span><time datetime={post.publishedAt.toISOString()}>{data(post.publishedAt)}</time></div>
+						<div class="writing-entry-body"><h3 id={`about-post-${i}`}>{post.title}</h3><p>{post.excerpt}</p><ul class="work-tags">{post.tags.slice(0, 3).map((tag) => <li>{tag}</li>)}</ul></div>
+						<span class="writing-arrow" aria-hidden="true">↗</span>
+					</a>
+				</li>
+			))}</ol>
+		</section>
+
+		<section class="scene about-contatto" id="contatto" data-section="4" aria-labelledby="contatto-title">
+			<div class="rigo-indice about-indice" style="--tinta: var(--blue)"><b>04</b><span id="contatto-title">{l.contatto}</span><i></i><span>{contatto.detailKicker} · {fatti[3].valore}</span></div>
+			<div class="about-biglietto-riga">
+				<p class="about-sezione-testo">{contatto.text}</p>
+				<a class="scheda about-biglietto" href={`mailto:${siteConfig.email}`} style="--tinta: var(--blue)">
+					<span class="scheda-kicker"><span>Email</span><span>{siteConfig.name}</span></span>
+					<span class="about-indirizzo">{siteConfig.email}</span>
+					<span class="about-biglietto-piede"><span>{l.scrivimi}</span><span class="freccia-scambio" aria-hidden="true"><span>↗</span><span>↗</span></span></span>
+				</a>
+			</div>
+		</section>
+	</div>
+
+	<script>
+		// L'indice segue la lettura: il capitolo in alto nella finestra è quello corrente, e la
+		// linea di avanzamento misura quanto racconto è passato. Senza JavaScript restano i link.
+		let smontaProfilo: (() => void) | undefined;
+		function montaProfilo() {
+			smontaProfilo?.();
+			const pagina = document.querySelector<HTMLElement>('[data-about]');
+			if (!pagina) return;
+			const voci = [...pagina.querySelectorAll<HTMLAnchorElement>('.about-toc a')];
+			const capitoli = voci.map((voce) => document.getElementById(decodeURIComponent(voce.hash.slice(1))));
+			const prosa = pagina.querySelector<HTMLElement>('.about-prosa');
+			const avanzamento = pagina.querySelector<HTMLElement>('.about-progresso i');
+			if (!prosa || !avanzamento) return;
+			const controller = new AbortController();
+			let frame = 0;
+			const aggiorna = () => {
+				frame = 0;
+				let attivo = -1;
+				capitoli.forEach((capitolo, i) => { if (capitolo && capitolo.getBoundingClientRect().top <= innerHeight * .3) attivo = i; });
+				voci.forEach((voce, i) => i === attivo ? voce.setAttribute('aria-current', 'location') : voce.removeAttribute('aria-current'));
+				const box = prosa.getBoundingClientRect();
+				avanzamento.style.transform = `scaleX(${Math.max(0, Math.min(1, (innerHeight * .3 - box.top) / Math.max(1, box.height - innerHeight * .5)))})`;
+			};
+			const programma = () => { if (!frame) frame = requestAnimationFrame(aggiorna); };
+			addEventListener('scroll', programma, { passive: true, signal: controller.signal });
+			addEventListener('resize', programma, { passive: true, signal: controller.signal });
+			aggiorna();
+			smontaProfilo = () => { controller.abort(); cancelAnimationFrame(frame); };
+		}
+		montaProfilo();
+		document.addEventListener('astro:page-load', montaProfilo);
+		document.addEventListener('astro:before-swap', () => smontaProfilo?.());
+	</script>
 </ExperimentLayout>
