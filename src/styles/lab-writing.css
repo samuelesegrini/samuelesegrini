@@ -1,0 +1,56 @@
+.writing-archive a { color: inherit; }
+.writing-jump { display: flex; gap: 12px; margin-top: 44px; }
+.writing-jump a { border: 1px solid #bfc3b8; border-radius: 12px; padding: 16px 22px; text-decoration: none; font-size: 13px; }
+.writing-list > ol { list-style: none; padding: 0; margin: 0; }
+.writing-entry { border-top: 1px solid #bfc3b8; }
+.writing-entry-link { display: grid; grid-template-columns: 180px minmax(0, 1fr) 44px; gap: 40px; padding: 40px 0; text-decoration: none; }
+.writing-entry-meta { display: flex; flex-direction: column; gap: 14px; font-size: 11px; }
+.writing-entry-meta > span { text-transform: uppercase; letter-spacing: .06em; }
+.writing-entry h2 { font-size: clamp(28px, 3vw, 44px); font-weight: 500; line-height: 1.16; letter-spacing: -.045em; margin: 0 0 20px; }
+.writing-entry p { font-size: 16px; line-height: 1.65; max-width: 700px; margin: 0; }
+.writing-entry .work-tags { margin-bottom: 0; }
+.writing-arrow { font-size: 36px; transition: transform .25s ease; }
+.writing-lead { background: #ded1ff; border: 0; border-radius: 24px; margin-bottom: 32px; }
+.writing-lead .writing-entry-link { padding: 40px; grid-template-columns: 140px minmax(0, 1fr) 44px; }
+.writing-lead h2 { font-size: clamp(32px, 4vw, 56px); }
+.writing-lead .work-tags li { border-color: #a297b9; }
+.writing-topics { background: #e9ebe1; }
+.writing-topics h2 { font-size: clamp(32px, 4vw, 56px); letter-spacing: -.05em; font-weight: 500; margin: 0 0 20px; }
+.writing-topics > p { font-size: 17px; }
+.writing-topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 44px; }
+.writing-topic-grid > div { border-top: 1px solid #bfc3b8; }
+.writing-topic-grid h3 { font-weight: 500; font-size: 20px; }
+.writing-topic-grid sup { font-size: 11px; margin-left: 12px; }
+.writing-topic-grid ul { list-style: none; padding: 0; }
+.writing-topic-grid a { display: block; padding: 10px 0; font-size: 14px; line-height: 1.6; text-underline-offset: 4px; }
+.case-detail.post-detail .case-hero { padding-bottom: 70px; }
+.case-detail.post-detail h1 { font-size: clamp(40px, 6.5vw, 94px); line-height: 1.08; letter-spacing: -.055em; overflow-wrap: normal; }
+.case-detail.post-detail .case-title-mask { padding-bottom: 16px; margin-top: 70px; }
+.post-tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 40px 0 0; }
+.post-tags li { padding: 8px 14px; border: 1px solid #797d73; border-radius: 24px; font-size: 11px; }
+.case-detail.post-detail .case-prose { font-family: 'Newsreader Variable', Georgia, serif; font-size: 22px; line-height: 1.65; }
+.post-detail .case-prose h2, .post-detail .case-prose h3 { font-family: 'Manrope Variable', sans-serif; }
+.post-detail .case-prose table { display: block; max-width: 100%; overflow: auto; font-family: 'Manrope Variable', sans-serif; font-size: 13px; }
+.post-detail .case-prose th, .post-detail .case-prose td { padding: 12px; border-bottom: 1px solid #bfc3b8; min-width: 110px; }
+.case-detail.post-detail .case-next-link h2 { font-size: clamp(32px, 4.5vw, 64px); }
+@media (prefers-reduced-motion: no-preference) and (pointer: fine) {
+  .writing-entry-link:hover .writing-arrow { transform: translate(4px, -4px); }
+  @supports (animation-timeline: view()) {
+    .writing-entry { animation: writing-enter linear both; animation-timeline: view(); animation-range: entry 0% entry 25%; }
+  }
+}
+@keyframes writing-enter { from { opacity: .4; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@media (max-width: 800px) {
+  .writing-entry-link, .writing-lead .writing-entry-link { grid-template-columns: minmax(0, 1fr) 32px; gap: 20px; }
+  .writing-entry-meta { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; }
+  .writing-lead .writing-entry-link { padding: 28px; }
+}
+@media (max-width: 560px) {
+  .writing-topic-grid { grid-template-columns: 1fr; gap: 24px; }
+  .writing-jump a { padding: 14px 16px; }
+  .writing-lead .writing-entry-link { padding: 24px; }
+  .writing-entry h2 { font-size: 28px; }
+  .writing-entry p { font-size: 15px; }
+  .case-detail.post-detail .case-prose { font-size: 20px; }
+  .case-detail.post-detail .case-title-mask { margin-top: 52px; }
+}

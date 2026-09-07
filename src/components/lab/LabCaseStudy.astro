@@ -1,0 +1,158 @@
+---
+/** Epic-design: masked title, expanding artwork, layered scenes, sticky reading index. */
+import { render } from 'astro:content';
+import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
+import LabContentLink from './LabContentLink.astro';
+import { getTranslationPair } from '../../lib/content';
+import { getPortfolioContent } from '../../lib/portfolio';
+import { getLabCopy } from '../../lib/lab-copy';
+import { labPaths, labProjectPath, labPostPath, type LabLocale } from './chrome';
+import '../../styles/lab-project-detail.css';
+
+interface Props { lang: LabLocale; slug: string }
+const { lang, slug } = Astro.props;
+const { projects, projectDocuments, posts } = await getPortfolioContent();
+const project = projects.find(p => p.locale === lang && p.slug === slug)!;
+const document = projectDocuments.find(d => d.data.locale === lang && d.data.slug === slug)!;
+const { Content, headings } = await render(document);
+const chapters = headings.filter(heading => heading.depth === 2);
+const copy = await getLabCopy(lang);
+const isIt = lang === 'it';
+const labels = isIt ? {
+  back: 'Tutti i progetti', overview: 'In breve', story: 'Il progetto', results: 'Risultati', resources: 'Strumenti e fonti',
+  next: 'Prossimo progetto', role: 'Il mio ruolo', year: 'Anno', status: 'Stato', authorship: 'Autorialità',
+  index: 'Dentro il progetto', visual: 'Sintesi visiva', evidence: 'Cosa mostrano i risultati', stack: 'Tecnologie',
+  links: 'Esplora il lavoro', writing: 'Dietro le scelte', pause: 'Pausa animazioni', resume: 'Attiva animazioni',
+} : {
+  back: 'All projects', overview: 'At a glance', story: 'The project', results: 'Outcomes', resources: 'Tools & sources',
+  next: 'Next project', role: 'My role', year: 'Year', status: 'Status', authorship: 'Authorship',
+  index: 'Inside the project', visual: 'Visual overview', evidence: 'What the results show', stack: 'Technologies',
+  links: 'Explore the work', writing: 'Behind the decisions', pause: 'Pause animations', resume: 'Enable animations',
+};
+const lifecycle = (isIt
+  ? { verified: 'Verificato', archived: 'Archiviato', prototype: 'Prototipo', 'in-progress': 'In corso' }
+  : { verified: 'Verified', archived: 'Archived', prototype: 'Prototype', 'in-progress': 'In progress' })[project.lifecycle];
+const authorship = (isIt
+  ? { individual: 'Individuale', team: 'Lavoro di squadra', contribution: 'Contributo' }
+  : { individual: 'Individual work', team: 'Team work', contribution: 'Contribution' })[project.authorship];
+const relationship = isIt
+  ? { 'my-repository': 'Repository personale', 'team-repository': 'Repository del team', 'live-demo': 'Demo', 'write-up': 'Approfondimento', 'course-page': 'Pagina del corso' }
+  : { 'my-repository': 'My repository', 'team-repository': 'Team repository', 'live-demo': 'Live demo', 'write-up': 'Write-up', 'course-page': 'Course page' };
+const translations = (locale: LabLocale) => {
+  const other = getTranslationPair(projects, project.translationKey, locale);
+  return other ? labProjectPath(locale, other.slug) : labPaths[locale].work;
+};
+const ordered = projects.filter(p => p.locale === lang && !p.draft)
+  .toSorted((a, b) => (a.featuredRank ?? 99) - (b.featuredRank ?? 99) || b.year - a.year || a.translationKey.localeCompare(b.translationKey));
+const position = ordered.findIndex(p => p.translationKey === project.translationKey);
+const next = ordered[(position + 1) % ordered.length];
+const ordinal = String(position + 1).padStart(2, '0');
+const related = project.relatedPosts.flatMap(({ key, reason }) => {
+  const post = posts.find(p => p.translationKey === key && p.locale === lang && !p.draft);
+  return post ? [{ title: post.title, reason, href: labPostPath(lang, post.slug) }] : [];
+});
+const sections = [
+  { id: 'panoramica', value: labels.overview, detail: { kicker: labels.role, value: project.role } },
+  { id: 'caso', value: labels.story, detail: { kicker: labels.index, value: `${chapters.length} ${isIt ? 'capitoli' : 'chapters'}` } },
+  ...(project.outcomes.length ? [{ id: 'risultati', value: labels.results, detail: { kicker: labels.evidence, value: String(project.outcomes.length) } }] : []),
+  { id: 'tecnologie', value: labels.resources, detail: { kicker: labels.year, value: String(project.year) } },
+  { id: 'prossimo', value: labels.next, detail: { kicker: labels.next, value: next.title } },
+];
+const sectionNumber = (id: string) => sections.findIndex(s => s.id === id) + 1;
+const accent = project.translationKey === 'easymanager' ? '#cfeaff' : project.translationKey === 'spingo-sustainable-micromobility' ? '#ded1ff' : '#ffd4b8';
+---
+
+<ExperimentLayout lang={lang} title={`${project.title} — ${copy.projectDetail.eyebrow}`} currentHref={labProjectPath(lang, slug)}
+  sections={sections.map(s => ({ kicker: copy.common.section, value: s.value, detail: s.detail }))}
+  itHref={translations('it')} enHref={translations('en')}>
+  <a class="case-skip skip-link" href="#caso">{isIt ? 'Vai al caso studio' : 'Skip to case study'}</a>
+  <article class="case-detail" style={`--case-accent: ${accent}`} data-project={project.translationKey}>
+    <!-- The masked title and background grid move at different depths. -->
+    <header class="scene case-hero" data-scene="hero" id="inizio" data-section="0" aria-labelledby="case-title">
+      <div class="layer depth-0 case-backdrop" data-depth="0" aria-hidden="true"></div>
+      <div class="layer depth-2 case-grid" data-depth="2" aria-hidden="true"></div>
+      <div class="layer depth-4 case-hero-content" data-depth="4">
+        <div class="case-topline" data-reveal data-depth="4">
+          <a href={labPaths[lang].work}><span aria-hidden="true">↖</span> {labels.back}</a>
+          <span>{ordinal} / {String(ordered.length).padStart(2, '0')}</span>
+          <button class="case-motion-toggle" hidden type="button" aria-pressed="false" data-pause={labels.pause} data-resume={labels.resume}>{labels.pause}</button>
+        </div>
+        <div class="case-title-mask"><h1 id="case-title" data-title data-depth="4">{project.title}</h1></div>
+        <div class="case-hero-bottom" data-reveal data-depth="4">
+          <div class="case-classification"><span><i aria-hidden="true"></i>{copy.work.kinds[project.kind].label}</span><span>{project.year} / {lifecycle}</span></div>
+          <p>{project.excerpt}</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Framed artwork expands from a window; the source image is never cropped. -->
+    <div class="case-art-scene" data-scene="artwork">
+      <figure class="case-art" data-depth="3">
+        <div class="case-art-window" data-art-window data-depth="3"><div class="case-art-float" data-depth="3"><img src={project.coverImage} alt={project.coverAlt} width="1200" height="800" fetchpriority="high" loading="eager" /></div></div>
+        <figcaption class="depth-4" data-reveal data-depth="4"><span>{ordinal} / {labels.visual}</span><span>{project.title}</span></figcaption>
+      </figure>
+    </div>
+
+    <section class="scene case-overview" data-scene="overview" id="panoramica" data-section="1" aria-labelledby="overview-title">
+      <div class="layer depth-0 case-surface" data-depth="0" aria-hidden="true"></div>
+      <span class="depth-2 case-section-marker" data-depth="2" aria-hidden="true">01 /</span>
+      <div class="depth-4 case-overview-content" data-reveal data-depth="4">
+        <div class="case-premise"><h2 id="overview-title">{labels.overview}</h2><p>{project.startingPoint ?? project.excerpt}</p></div>
+        <dl class="case-facts">
+          <div><dt>{labels.role}</dt><dd>{project.role}</dd></div>
+          <div><dt>{labels.authorship}</dt><dd>{authorship}</dd></div>
+          <div><dt>{labels.status}</dt><dd><i aria-hidden="true"></i>{lifecycle}</dd></div>
+          <div><dt>{labels.year}</dt><dd>{project.year}</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- Long-form text stays in normal flow; only its chapter index sticks. -->
+    <section class="scene case-reading" data-scene="reading" id="caso" data-section="2" aria-label={labels.story}>
+      <div class="layer depth-0 case-surface" data-depth="0" aria-hidden="true"></div>
+      <div class="layer depth-2 case-reading-rule" data-depth="2" aria-hidden="true"></div>
+      <aside class="depth-4 case-reading-rail" data-depth="4">
+        <div class="case-rail-header" data-reveal data-depth="4"><span class="case-eyebrow">{labels.index}</span><span class="case-read-progress" aria-hidden="true"><i></i></span></div>
+        <nav class="case-toc" aria-label={labels.index}>{chapters.map((chapter, index) => <a href={`#${chapter.slug}`}><span>{String(index + 1).padStart(2, '0')}</span><span>{chapter.text}</span></a>)}</nav>
+        <a class="case-rail-back" href="#inizio">↑ {project.title}</a>
+      </aside>
+      <div class="depth-4 case-prose prosa" data-depth="4"><Content components={{ a: LabContentLink }} /></div>
+    </section>
+
+    {project.outcomes.length > 0 && <section class="scene case-results" data-scene="results" id="risultati" data-section={sectionNumber('risultati')} aria-labelledby="results-title">
+      <div class="layer depth-0 case-dark-surface" data-depth="0" aria-hidden="true"></div>
+      <div class="layer depth-2 case-results-orbit" data-depth="2" aria-hidden="true"></div>
+      <div class="depth-4 case-results-content" data-depth="4">
+        <div class="case-section-heading" data-reveal data-depth="4"><span class="case-eyebrow">{labels.evidence}</span><h2 id="results-title">{labels.results}<sup>({String(project.outcomes.length).padStart(2, '0')})</sup></h2></div>
+        <dl class="case-outcomes">{project.outcomes.map(outcome => <div data-reveal data-depth="4"><dt>{outcome.value}</dt><dd>{outcome.label}{outcome.method && <small class="outcome-method">{outcome.method}</small>}</dd></div>)}</dl>
+      </div>
+    </section>}
+
+    <section class="scene case-resources" data-scene="resources" id="tecnologie" data-section={sectionNumber('tecnologie')} aria-labelledby="resources-title">
+      <div class="layer depth-0 case-surface" data-depth="0" aria-hidden="true"></div>
+      <span class="depth-2 case-section-marker" data-depth="2" aria-hidden="true">{String(sectionNumber('tecnologie')).padStart(2, '0')} /</span>
+      <div class="depth-4 case-resources-content" data-depth="4">
+        <h2 id="resources-title" data-reveal data-depth="4">{labels.resources}</h2>
+        <ul class="case-stack" aria-label={labels.stack} data-reveal data-depth="4">{project.technologies.map(technology => <li>{technology}</li>)}</ul>
+        {project.links.length > 0 && <div class="case-source-list" data-reveal data-depth="4"><h3>{labels.links}</h3>{project.links.map(link => <a href={link.url} target="_blank" rel="noopener noreferrer"><span><strong>{link.label}</strong><small>{relationship[link.relationship]} / {new URL(link.url).hostname}</small></span><span aria-hidden="true">↗</span></a>)}</div>}
+        {related.length > 0 && <div class="case-source-list" data-reveal data-depth="4"><h3>{labels.writing}</h3>{related.map(post => <a href={post.href}><span><strong>{post.title}</strong><small>{post.reason}</small></span><span aria-hidden="true">↗</span></a>)}</div>}
+      </div>
+    </section>
+
+    <section class="scene case-next" data-scene="next" id="prossimo" data-section={sectionNumber('prossimo')} aria-labelledby="next-title">
+      <div class="layer depth-0 case-dark-surface" data-depth="0" aria-hidden="true"></div>
+      <span class="layer depth-2 case-next-number" data-depth="2" aria-hidden="true">{String((position + 1) % ordered.length + 1).padStart(2, '0')}</span>
+      <div class="depth-4 case-next-content" data-reveal data-depth="4">
+        <span class="case-eyebrow">{labels.next}</span>
+        <a class="case-next-link" href={labProjectPath(lang, next.slug)}><h2 id="next-title">{next.title}</h2><span aria-hidden="true">↗</span></a>
+        <div class="case-next-bottom"><span>{next.technologies.slice(0, 3).join(' / ')}</span><a href={labPaths[lang].work}>{labels.back}</a></div>
+      </div>
+    </section>
+  </article>
+  <script is:inline defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    import { initProjectDetail } from '../../lib/lab-project-detail';
+    initProjectDetail();
+    document.addEventListener('astro:page-load', initProjectDetail);
+  </script>
+</ExperimentLayout>

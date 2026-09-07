@@ -1,0 +1,84 @@
+/* Primitivi visivi del banco di prova.
+   Nascono nel piede e sono pensati per tornare nelle sezioni: ogni pezzo legge una
+   `--tinta` (il colore della sezione) e un `--inchiostro`, così cambia pelle senza
+   cambiare forma. Nessuno di questi dipende da JavaScript. */
+
+/* .nastro: una striscia di parole in mono che scorre, con il quadratino del kicker fra una
+   voce e l'altra. Serve da confine fra due superfici (carta → fondo scuro, o fra sezioni). */
+.nastro { overflow: hidden; background: var(--tinta, var(--blue)); color: var(--inchiostro, #171713); font: 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.nastro-corsa { display: flex; width: max-content; animation: nastro-scorre var(--nastro-durata, 40s) linear infinite; }
+.nastro ul { display: flex; flex: none; margin: 0; padding: 0; list-style: none; }
+.nastro li { display: inline-flex; align-items: center; gap: 22px; padding: 16px 0 16px 22px; white-space: nowrap; }
+.nastro li::after { content: ''; width: 7px; height: 7px; border-radius: 2px; background: currentColor; }
+.nastro:hover .nastro-corsa { animation-play-state: paused; }
+@keyframes nastro-scorre { to { transform: translateX(-50%); } }
+
+/* .rigo-indice: la riga d'apertura di una scena. Numero, nome, un filo che si tende
+   fino al bordo e un'annotazione a destra. È il kicker delle sezioni, steso in orizzontale. */
+.rigo-indice { display: flex; align-items: center; gap: 14px; color: var(--inchiostro-tenue, #6b6760); font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.rigo-indice::before { content: ''; flex: none; width: 9px; height: 9px; border-radius: 2px; background: var(--tinta, currentColor); }
+.rigo-indice > i { flex: 1; height: 1px; background: currentColor; opacity: .3; }
+.rigo-indice b { font-weight: 400; color: var(--inchiostro, inherit); }
+
+/* .scheda: la carta del banco. Bordo sottile, angoli larghi, ombra piatta a due strati che
+   la fa sembrare appoggiata su un'altra. Il colore è la tinta, l'inchiostro resta scuro. */
+.scheda { --scheda-bordo: color-mix(in srgb, var(--inchiostro, #171713) 28%, var(--tinta, #fff)); position: relative; display: grid; align-content: space-between; gap: 22px; min-height: 200px; padding: 22px 24px; border: 1px solid var(--scheda-bordo); border-radius: 22px; background: var(--tinta, #fffefb); color: var(--inchiostro, #171713); box-shadow: 0 7px 0 -2px color-mix(in srgb, var(--tinta, #fff) 78%, #fff), 0 8px 0 -2px var(--scheda-bordo); }
+.scheda-kicker { display: flex; justify-content: space-between; align-items: center; gap: 12px; font: 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; opacity: .72; }
+.scheda-titolo { margin: 0; font-size: clamp(24px, 2.4vw, 36px); font-weight: 550; letter-spacing: -.05em; line-height: 1.05; }
+.scheda-freccia { position: absolute; right: 22px; bottom: 20px; font-size: 26px; line-height: 1; transition: transform 400ms var(--ease); }
+a.scheda:is(:hover, :focus-visible) .scheda-freccia { transform: translate(4px, -4px); }
+
+/* .mazzo: schede appoggiate sul tavolo, ognuna un po' storta. Sotto il puntatore la carta
+   si raddrizza e si alza; sul telefono stanno dritte in due colonne. */
+.mazzo { display: grid; grid-template-columns: repeat(var(--mazzo-colonne, 4), minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.mazzo > li { min-width: 0; }
+.mazzo .scheda { height: 100%; transition: transform 500ms var(--ease), box-shadow 500ms var(--ease); }
+@media (min-width: 900px) and (pointer: fine) {
+	.mazzo > li:nth-child(1) .scheda { transform: rotate(-3deg) translateY(10px); }
+	.mazzo > li:nth-child(2) .scheda { transform: rotate(1.5deg) translateY(-4px); }
+	.mazzo > li:nth-child(3) .scheda { transform: rotate(-1deg) translateY(6px); }
+	.mazzo > li:nth-child(4) .scheda { transform: rotate(2.5deg) translateY(-8px); }
+	.mazzo > li .scheda:is(:hover, :focus-visible) { transform: rotate(0) translateY(-14px); z-index: 1; }
+}
+
+/* .ventaglio: le tre foglie sfalsate della barra e dei capitoli, ora con una tinta sola.
+   Decorativo: sta dietro o accanto a un titolo. */
+.ventaglio { position: relative; display: block; width: var(--ventaglio-misura, 132px); aspect-ratio: 132 / 118; pointer-events: none; }
+.ventaglio i { position: absolute; inset: 5% 15%; border: 1px solid color-mix(in srgb, var(--inchiostro, #171713) 40%, var(--tinta, #fff)); border-radius: 10%; background: var(--tinta, var(--violet)); transform: rotate(-16deg); }
+.ventaglio i:nth-child(2) { transform: translate(11%, -3%) rotate(-3deg); }
+.ventaglio i:nth-child(3) { transform: translate(21%, -6%) rotate(10deg); background: color-mix(in srgb, var(--tinta, #fff) 45%, #fffefb); }
+
+/* Varianti del ventaglio legate alla sezione. Stesso sfalsamento, forme diverse. */
+/* .ventaglio-fogli: tre fogli scritti, righe di testo in filigrana e l'angolo del primo piegato */
+.ventaglio-fogli { --riga: color-mix(in srgb, var(--inchiostro, #171713) 55%, transparent); }
+.ventaglio-fogli i:nth-child(3) { transform: translate(14%, -3%) rotate(8deg); }
+.ventaglio-fogli i { border-radius: 7%; background-color: color-mix(in srgb, var(--tinta, var(--violet)) 55%, #fffefb); background-image: repeating-linear-gradient(to bottom, transparent 0 6px, var(--riga) 6px 7px); background-size: 52% 46%; background-position: 24% 58%; background-repeat: no-repeat; }
+.ventaglio-fogli i:nth-child(3) { background-color: var(--tinta, var(--violet)); background-image: repeating-linear-gradient(to bottom, transparent 0 6px, var(--riga) 6px 7px); background-size: 52% 46%; background-position: 24% 62%; background-repeat: no-repeat; clip-path: polygon(0 0, 70% 0, 100% 24%, 100% 100%, 0 100%); }
+.ventaglio-fogli i:nth-child(3)::after { content: ''; position: absolute; top: 0; right: 0; width: 30%; height: 24%; background: color-mix(in srgb, var(--inchiostro, #171713) 22%, var(--tinta, var(--violet))); clip-path: polygon(0 0, 0 100%, 100% 100%); border-bottom-left-radius: 12%; }
+/* .ventaglio-busta: tre buste sfalsate, la prima con la linguetta chiusa. Stesse rotazioni del ventaglio. */
+.ventaglio-busta i { inset: 24% 10%; border-radius: 9%; overflow: clip; background: color-mix(in srgb, var(--tinta, var(--blue)) 50%, #fffefb); }
+.ventaglio-busta i:nth-child(2) { background: color-mix(in srgb, var(--tinta, var(--blue)) 75%, #fffefb); }
+.ventaglio-busta i:nth-child(3) { background: var(--tinta, var(--blue)); transform: translate(12%, -4%) rotate(8deg); }
+.ventaglio-busta i:nth-child(3)::before { content: ''; position: absolute; inset: -1px -1px auto -1px; height: 62%; background: color-mix(in srgb, var(--inchiostro, #171713) 22%, var(--tinta, var(--blue))); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.ventaglio-busta i:nth-child(3)::after { content: ''; position: absolute; right: 9%; bottom: 12%; width: 16%; aspect-ratio: 1; border-radius: 2px; background: var(--inchiostro, #171713); }
+
+/* .sigillo: il marchio che gira. Un anello di testo in mono e le iniziali al centro,
+   come un timbro sul foglio. Gira piano; ferma con movimento ridotto. */
+.sigillo { position: relative; display: grid; place-items: center; width: var(--sigillo-misura, 120px); aspect-ratio: 1; color: var(--inchiostro, #171713); }
+.sigillo svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: sigillo-gira 28s linear infinite; }
+.sigillo svg text { font: 6.4px var(--mono); letter-spacing: .1em; text-transform: uppercase; fill: currentColor; }
+.sigillo b { position: relative; z-index: 1; display: grid; place-items: center; width: 46%; aspect-ratio: 1; border-radius: 50%; background: var(--tinta, var(--paper)); color: #171713; font-size: 20px; font-weight: 750; letter-spacing: -.1em; }
+@keyframes sigillo-gira { to { rotate: 1turn; } }
+
+/* .freccia-scambio: la freccia che esce da un angolo e rientra dall'altro quando il genitore
+   è sotto il puntatore. È il gesto di ogni collegamento "verso fuori". */
+.freccia-scambio { position: relative; display: grid; flex: none; width: 1em; height: 1em; overflow: clip; border-radius: .22em; background: var(--inchiostro, #171713); color: var(--tinta, var(--paper)); line-height: 1; }
+.freccia-scambio > span { position: absolute; inset: 0; display: grid; place-items: center; transition: transform 700ms var(--ease); }
+.freccia-scambio > span:last-child { transform: translate(-110%, 110%); }
+:is(a, button):is(:hover, :focus-visible) .freccia-scambio > span:first-child { transform: translate(110%, -110%); }
+:is(a, button):is(:hover, :focus-visible) .freccia-scambio > span:last-child { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+	.nastro-corsa, .sigillo svg { animation: none; }
+	.scheda-freccia, .mazzo .scheda, .freccia-scambio > span { transition: none; }
+}

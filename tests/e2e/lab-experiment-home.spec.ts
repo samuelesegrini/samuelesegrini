@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 /** La home sperimentale mette il testo a sinistra e le voci a destra: qui si controlla che
  *  la griglia valga solo dove esiste davvero una colonna di testo, e che nulla finisca
@@ -27,8 +28,7 @@ test('ogni sezione della home tiene la sua griglia e resta sopra la barra', asyn
 			// due forme: le sezioni a due colonne (.sezione-testo + elenco) e quella dei
 			// progetti, che è a tutta larghezza con le righe una sotto l'altra
 			const testo = sezione.querySelector('.sezione-testo');
-			const corpo = sezione.querySelector('.elenco, .tappe, .canali');
-			const barra = document.querySelector('.toolbar-shell')!.getBoundingClientRect();
+			const corpo = sezione.querySelector('.elenco, .tappe, .canali, .pila, .rotta, .chapter-channels');
 			return {
 				colonne: getComputedStyle(sezione).gridTemplateColumns.split(' ').length,
 				accoppiati: Boolean(testo) === Boolean(corpo),
@@ -94,8 +94,8 @@ test('sul telefono la home si impila senza scorrimento laterale', async ({ page 
 		await vaiA(page, id);
 		const misura = await page.evaluate((s) => {
 			const sezione = document.querySelector(`#${s}`)!;
-			const testo = sezione.querySelector('.sezione-testo, .carte-testa')!.getBoundingClientRect();
-			const voci = [...sezione.querySelectorAll('.elenco li, .tappe li, .canali li, .carte-elenco > li')].map((voce) =>
+			const testo = sezione.querySelector('.sezione-testo, .projects-opening')!.getBoundingClientRect();
+			const voci = [...sezione.querySelectorAll('.elenco li, .tappe li, .canali li, .pila li, .rotta li, .canali-mazzo li, .project-index > li')].map((voce) =>
 				voce.getBoundingClientRect(),
 			);
 			return { fuori: voci.filter((riquadro) => riquadro.right > 390).length, impilato: voci[0].top > testo.top };
@@ -105,177 +105,113 @@ test('sul telefono la home si impila senza scorrimento laterale', async ({ page 
 	}
 });
 
-test('le carte dei progetti stanno in fila e dentro i loro bordi', async ({ page }) => {
-	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
-	await page.waitForTimeout(1600);
-	await vaiA(page, 'progetti');
+const selectedKeys = ['easymanager', 'galaxy-trucker', 'spingo-sustainable-micromobility'];
 
-	const misura = await page.evaluate(() => {
-		const carte = [...document.querySelectorAll('.carte-elenco > li')].map((carta) => carta.getBoundingClientRect());
-		const nastro = document.querySelector('.carta-nastro')!.getBoundingClientRect();
-		const testa = document.querySelector('.carte-testa')!;
-		return {
-			quante: carte.length,
-			// tre in fila, alla stessa altezza e della stessa misura
-			inFila: carte.every((carta) => Math.abs(carta.top - carte[0].top) < 2),
-			stessaMisura: new Set(carte.map((carta) => Math.round(carta.width))).size === 1,
-			// il nastro è ritagliato dalla carta invece di allargarla
-			nastroDentro: nastro.right <= carte[0].right + 1,
-			sbordano: carte.some((carta) => carta.right > window.innerWidth + 1),
-			// titolo a sinistra e arco degli anni a destra, come sul riferimento
-			titoloEArco: getComputedStyle(testa).justifyContent,
-			sporgenza: document.querySelector('.carte-testa i')!.getBoundingClientRect().right - carte[2].right,
-			tracciatura: Number.parseFloat(getComputedStyle(testa).fontSize) * 0.055,
-			larghezzaPagina: document.documentElement.scrollWidth,
-		};
-	});
-
-	expect(misura.quante, 'tre progetti in evidenza').toBe(3);
-	expect(misura.inFila, 'in fila sulla stessa linea').toBe(true);
-	expect(misura.stessaMisura, 'e della stessa misura').toBe(true);
-	expect(misura.nastroDentro, 'il nastro resta dentro la carta').toBe(true);
-	expect(misura.sbordano, 'nessuna carta esce dallo schermo').toBe(false);
-	expect(misura.titoloEArco).toBe('space-between');
-	// la spaziatura negativa vale anche dopo l'ultima cifra: la scatola dell'arco sporge di
-	// quel tanto, così è l'inchiostro ad allinearsi al bordo delle carte, non il riquadro
-	expect(misura.sporgenza, 'l\'arco compensa la spaziatura di coda').toBeCloseTo(misura.tracciatura, 0);
-	expect(misura.larghezzaPagina).toBeLessThanOrEqual(1280);
-
-	// sul telefono si impilano
-	await page.setViewportSize({ width: 390, height: 844 });
-	await page.waitForTimeout(500);
-	const stretto = await page.evaluate(() => {
-		const carte = [...document.querySelectorAll('.carte-elenco > li')].map((carta) => carta.getBoundingClientRect());
-		return { impilate: carte[1].top > carte[0].bottom - 2, larghezza: document.documentElement.scrollWidth };
-	});
-	expect(stretto.impilate, 'una sotto l\'altra').toBe(true);
-	expect(stretto.larghezza, 'senza scorrimento laterale').toBeLessThanOrEqual(390);
-});
-
-test('le carte entrano e si aprono al passaggio', async ({ page }) => {
-	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
-	await page.waitForTimeout(1600);
-
-	// prima di entrare in vista sono ancora abbassate e trasparenti
-	await page.evaluate(() => window.scrollTo({ top: 900, behavior: 'instant' as ScrollBehavior }));
-	await page.waitForTimeout(400);
-	const entrando = await page.evaluate(() =>
-		[...document.querySelectorAll('.carte-elenco > li')].map((carta) => {
-			const stile = getComputedStyle(carta);
-			return { nome: stile.animationName, opacita: Number(stile.opacity), nastro: getComputedStyle(carta.querySelector('.carta-treno')!).animationName };
-		}),
-	);
-	expect(entrando.map((c) => c.nome)).toEqual(['carta-entra', 'carta-entra', 'carta-entra']);
-	expect(entrando.every((c) => c.opacita < 1), 'ancora in arrivo').toBe(true);
-	expect(entrando.map((c) => c.nastro), 'i nastri si alternano').toEqual(['nastro', 'nastro-contrario', 'nastro']);
-
-	await vaiA(page, 'progetti');
-	const arrivate = await page.evaluate(() =>
-		[...document.querySelectorAll('.carte-elenco > li')].map((carta) => Number(getComputedStyle(carta).opacity)),
-	);
-	expect(arrivate, 'arrivate sono piene').toEqual([1, 1, 1]);
-
-	// al passaggio: il velo copre il pozzo e l'anta si apre dalla linea centrale
-	const prima = await page.evaluate(() => ({
-		velo: Number(getComputedStyle(document.querySelector('.carta-velo')!).opacity),
-		anta: getComputedStyle(document.querySelector('.carta-anta')!).transform,
-	}));
-	expect(prima.velo, 'a riposo il velo non c\'è').toBe(0);
-	expect(prima.anta, 'e l\'anta è chiusa in una linea').toContain('0, 0');
-
-	await page.hover('.carte-elenco > li:first-child a');
-	await page.waitForTimeout(900);
-	const dopo = await page.evaluate(() => ({
-		velo: Number(getComputedStyle(document.querySelector('.carta-velo')!).opacity),
-		anta: getComputedStyle(document.querySelector('.carta-anta')!).transform,
-		fondo: getComputedStyle(document.querySelector('.carta-fondo')!).transform,
-	}));
-	expect(dopo.velo, 'il velo compare').toBeGreaterThan(0.9);
-	expect(dopo.anta, 'l\'anta è aperta').toBe('matrix(1, 0, 0, 1, 0, 0)');
-	expect(dopo.fondo, 'e lo sfondo torna alla sua misura').toBe('matrix(1, 0, 0, 1, 0, 0)');
-});
-
-test('con movimento ridotto le carte stanno ferme', async ({ browser }) => {
-	const contesto = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
-	const pagina = await contesto.newPage();
-	await pagina.goto('/lab/it/');
-	await pagina.waitForTimeout(1500);
-	await pagina.evaluate(() => window.scrollTo({ top: 900, behavior: 'instant' as ScrollBehavior }));
-	await pagina.waitForTimeout(300);
-
-	const misura = await pagina.evaluate(() =>
-		[...document.querySelectorAll('.carte-elenco > li')].map((carta) => ({
-			nome: getComputedStyle(carta).animationName,
-			opacita: Number(getComputedStyle(carta).opacity),
-			nastro: getComputedStyle(carta.querySelector('.carta-treno')!).animationName,
-		})),
-	);
-	for (const carta of misura) {
-		expect(carta.nome).toBe('none');
-		expect(carta.opacita).toBe(1);
-		expect(carta.nastro).toBe('none');
+test('i tre progetti selezionati e l’archivio portano alle pagine nella stessa lingua', async ({ page }) => {
+	for (const locale of ['it', 'en']) {
+		await page.goto(`/lab/${locale}/`);
+		const links = page.locator('.project-link');
+		await expect(links).toHaveCount(3);
+		expect(await page.locator('.project-entry').evaluateAll((folios) => folios.map((folio) => (folio as HTMLElement).dataset.projectKey))).toEqual(selectedKeys);
+		for (const link of await links.all()) {
+			const href = await link.getAttribute('href');
+			expect(href).toMatch(new RegExp(`^/lab/${locale}/${locale === 'it' ? 'progetti' : 'projects'}/`));
+			expect((await page.request.get(href!)).status()).toBe(200);
+		}
+		await expect(page.locator('.projects-archive')).toHaveAttribute('href', `/lab/${locale}/${locale === 'it' ? 'progetti' : 'projects'}/`);
 	}
-	await contesto.close();
 });
 
-test('l\'arco degli anni resta a destra anche quando la testa va a capo', async ({ page }) => {
-	for (const larghezza of [1280, 900, 600, 430, 390]) {
-		await page.setViewportSize({ width: larghezza, height: 900 });
+test('l’indice e la superficie condivisa restano leggibili a ogni larghezza', async ({ page }) => {
+	for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800 }, { width: 1040, height: 760 }, { width: 1280, height: 600 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
+		await page.setViewportSize(viewport);
 		await page.goto('/lab/it/');
-		await page.waitForTimeout(900);
+		await page.waitForTimeout(1200);
 		await vaiA(page, 'progetti');
-
-		const misura = await page.evaluate(() => {
-			const testa = document.querySelector('.carte-testa')!.getBoundingClientRect();
-			const titolo = document.querySelector('.carte-testa span')!.getBoundingClientRect();
-			const arco = document.querySelector('.carte-testa i')!.getBoundingClientRect();
-			const traccia = Number.parseFloat(getComputedStyle(document.querySelector('.carte-testa')!).fontSize) * 0.055;
-			return { aCapo: arco.top > titolo.top + 4, distanzaDalBordo: testa.right - (arco.right - traccia) };
+		const layout = await page.evaluate(() => {
+			const visual = document.querySelector('.hero-media')!.getBoundingClientRect();
+			const index = document.querySelector('.project-index')!.getBoundingClientRect();
+			const titles = [...document.querySelectorAll('.project-link')].map((link) => link.getBoundingClientRect());
+			return { width: document.documentElement.scrollWidth, sideBySide: visual.right < index.left, stacked: visual.bottom < index.top, titlesInside: titles.every((title) => title.left >= 0 && title.right <= innerWidth), sticky: getComputedStyle(document.querySelector('.vetrina')!).position };
 		});
-
-		// con space-between da solo, andando a capo l'arco restava l'unico della riga e si
-		// appoggiava a sinistra: margin-left: auto lo tiene a destra in tutti e due i casi
-		expect(misura.distanzaDalBordo, `${larghezza}px${misura.aCapo ? ' (a capo)' : ''}: l'arco è a destra`).toBeLessThan(2);
+		expect(layout.width).toBeLessThanOrEqual(viewport.width);
+		expect(layout.titlesInside).toBe(true);
+		if (viewport.width <= 767) { expect(layout.stacked).toBe(true); expect(layout.sticky).toBe('relative'); }
+		else expect(layout.sideBySide).toBe(true);
 	}
 });
 
-test('la sezione e la sua carta nella barra hanno lo stesso colore', async ({ page }) => {
-	await page.setViewportSize({ width: 1280, height: 800 });
+test('l’accento del progetto selezionato riprende il colore della barra', async ({ page }) => {
+	await page.goto('/lab/it/');
+	await page.locator('.project-link').first().focus();
+	const colors = await page.evaluate(() => ({
+		selected: getComputedStyle(document.querySelector('.project-entry')!).backgroundColor,
+		toolbar: getComputedStyle(document.querySelector('.shuffle-card')!).backgroundColor,
+	}));
+	expect(colors.selected).toBe('rgb(255, 212, 184)');
+	expect(colors.toolbar).toBe(colors.selected);
+});
+
+test('la navigazione da tastiera apre un progetto e il ritorno riattiva l’anteprima', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 900 });
 	await page.goto('/lab/it/');
 	await page.waitForTimeout(1600);
-	await vaiA(page, 'progetti');
+	const first = page.locator('.project-link').first();
+	await first.focus();
+	await expect(first).toBeFocused();
+	await expect(first).toHaveCSS('outline-style', 'solid');
+	await first.press('Enter');
+	await expect(page).toHaveURL(/easymanager-operazioni-ristorante/);
+	await page.goBack();
+	await expect(page.locator('.project-link')).toHaveCount(3);
+	await page.locator('.project-link').nth(1).focus();
+	await expect(page.locator('.project-gallery')).toHaveAttribute('data-active', '1');
+	await page.locator('.project-link').nth(1).press('Enter');
+	await expect(page).toHaveURL(/galaxy-trucker-progetto-java/);
+});
 
-	const colori = await page.evaluate(() => {
-		const sezione = document.querySelector('.home-section.carte')! as HTMLElement;
-		const tinta = getComputedStyle(sezione).getPropertyValue('--tinta').trim();
-		// il mazzo della barra assegna un accento a ogni sezione, nell'ordine in cui stanno
-		const carteBarra = [...document.querySelectorAll('.shuffle-card')].map(
-			(carta) => getComputedStyle(carta).backgroundColor,
-		);
-		return {
-			tinta,
-			barraProgetti: carteBarra[0],
-			barraContatto: carteBarra[3],
-			anta: getComputedStyle(document.querySelector('.carta-anta')!).backgroundColor,
-			tipo: getComputedStyle(document.querySelector('.carta-meta i')!).color,
-			arco: getComputedStyle(document.querySelector('.carte-testa i')!).color,
-			regolaContatto: getComputedStyle(document.querySelector('#contatto .section-rule')!).backgroundColor,
-		};
-	});
+test('movimento ridotto e assenza di JavaScript lasciano tutti i progetti leggibili', async ({ browser }) => {
+	for (const javaScriptEnabled of [true, false]) {
+		const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce', javaScriptEnabled });
+		const page = await context.newPage();
+		await page.goto('/lab/it/');
+		const folios = page.locator('.project-entry');
+		await expect(folios).toHaveCount(3);
+		for (const folio of await folios.all()) {
+			await expect(folio).toHaveCSS('position', 'relative');
+			await expect(folio.locator('.project-link')).toHaveCSS('animation-name', 'none');
+			await expect(folio.locator('h3')).toHaveCSS('animation-name', 'none');
+			await expect(folio.locator('h3')).toBeVisible();
+		}
+		await context.close();
+	}
+});
 
-	const arancio = 'rgb(255, 212, 184)';
-	const azzurro = 'rgb(205, 239, 255)';
+test('l’anteprima condivisa segue scroll, puntatore e tastiera', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 900 });
+	await page.goto('/lab/it/');
+	await page.waitForTimeout(1500);
+	const gallery = page.locator('.project-gallery');
+	await expect(page.locator('.exhibition-screen')).toHaveCount(1);
+	await page.locator('.project-entry').nth(1).evaluate((entry) => entry.scrollIntoView({ block: 'center', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-active', '1');
+	await page.locator('.project-entry').first().hover();
+	await expect(gallery).toHaveAttribute('data-active', '0');
+	await page.locator('.project-link').nth(2).focus();
+	await expect(gallery).toHaveAttribute('data-active', '2');
+	await expect(page.locator('[data-caption="2"]')).toHaveCSS('opacity', '1');
+	await expect(page.locator('[data-scene="2"]')).toHaveCSS('clip-path', 'inset(0px)');
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	expect(await page.locator('[data-scene="2"]').evaluate((node) => parseFloat(getComputedStyle(node).transitionDuration))).toBeLessThanOrEqual(0.001);
+});
 
-	expect(colori.tinta, 'la sezione ha una tinta').not.toBe('');
-	// la carta dei progetti nel mazzo e la sezione dicono lo stesso colore
-	expect(colori.barraProgetti, 'progetti: la carta della barra').toBe(arancio);
-	// tre punti soli: l'arco, il tipo di progetto e l'anta che si apre
-	expect(colori.anta, 'l\'anta porta la tinta').toBe(arancio);
-	expect(colori.tipo, 'il tipo di progetto anche').toBe(arancio);
-	expect(colori.arco, 'e l\'arco degli anni').toBe(arancio);
-	// e contatto tiene quello che progetti ha lasciato, su entrambi i lati
-	expect(colori.regolaContatto, 'contatto: la riga della sezione').toBe(azzurro);
-	expect(colori.barraContatto, 'contatto: la carta della barra').toBe(azzurro);
+test('la nuova sezione non introduce violazioni di accessibilità', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	for (const width of [1280, 390]) {
+		await page.setViewportSize({ width, height: 900 });
+		await page.goto('/lab/it/');
+		await vaiA(page, 'progetti');
+		const result = await new AxeBuilder({ page }).include('.project-journey').analyze();
+		expect(result.violations).toEqual([]);
+	}
 });

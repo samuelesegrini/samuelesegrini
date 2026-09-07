@@ -5,6 +5,7 @@
  */
 import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
+import '../styles/lab-primitives.css';
 import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
 import LabSipario from '../components/lab/LabSipario.astro';
 import LabPiede from '../components/lab/LabPiede.astro';
@@ -279,77 +280,6 @@ const labPathsAbout = labPaths[lang].about;
 			@keyframes barra-entra { from { transform: translateY(150%); opacity: 0 } }
 			.toolbar-shell[data-entra] { animation: barra-entra 820ms var(--ease) 120ms backwards; }
 
-			/* --- sezione progetti: tre carte affiancate, come su itsjay.us --- */
-			/* la colonna va vincolata: senza, la traccia si allarga sul contenuto più largo — la
-			   testa — e le carte si dividono uno spazio che sullo schermo non c'è */
-			.home-section.carte { --tinta: var(--orange); grid-template-columns: minmax(0, 1fr); justify-content: stretch; align-content: start; gap: clamp(24px, 3vw, 40px); padding-inline: max(24px, 4vw); padding-bottom: max(16vh, 170px); }
-			/* titolo a sinistra e arco degli anni a destra, alla stessa misura */
-			.carte-testa { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 16px; max-width: none; margin: 0; font-size: clamp(48px, 12vw, 200px); font-weight: 700; line-height: .8; letter-spacing: -.055em; text-transform: uppercase; }
-			/* la spaziatura negativa vale anche dopo l'ultima cifra: senza compensarla il numero
-			   sembra staccato dal bordo pur avendo la scatola allineata */
-/* margin-left: auto e non solo space-between: quando la testa va a capo l'arco resta
-			   l'unico elemento della riga, e space-between lo appoggerebbe a sinistra */
-			.carte-testa i { margin-left: auto; margin-right: -.055em; font-style: normal; color: var(--tinta); }
-			.carte-elenco { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: clamp(12px, 1.4vw, 18px); margin: 0; padding: 0; list-style: none; }
-			.carte-elenco a {
-				display: grid;
-				grid-template-columns: minmax(0, 1fr);
-				gap: clamp(14px, 1.4vw, 20px);
-				padding: clamp(12px, 1vw, 16px) clamp(12px, 1vw, 16px) clamp(18px, 1.6vw, 24px);
-				border-radius: clamp(16px, 1.6vw, 24px);
-				background: #14140f;
-				color: #f7f5ee;
-			}
-			/* il pozzo: qui dentro finirà il video, per ora è un rettangolo grigio */
-			.carta-pozzo { position: relative; display: block; height: clamp(260px, 30vw, 520px); border-radius: clamp(12px, 1.2vw, 18px); overflow: clip; }
-			.carta-fondo { position: absolute; inset: 0; background: #dcd8ce; transform: scale(1.06); transition: transform 520ms ease; }
-			.carta-velo { position: absolute; inset: 0; background: #14140f4d; backdrop-filter: blur(6px); opacity: 0; transition: opacity 460ms ease; }
-			/* l'anta si apre da una linea al centro: due scale, quindi resta sul compositore
-			   invece del clip-path del riferimento, che a ogni fotogramma fa ridipingere */
-			.carta-anta {
-				position: absolute;
-				top: 50%; left: 50%;
-				width: min(66%, 300px);
-				aspect-ratio: 16 / 9;
-				border-radius: 10px;
-				background: var(--tinta);
-				translate: -50% -50%;
-				transform: scale(.62, 0);
-				transition: transform 700ms cubic-bezier(.87, 0, .13, 1), translate 700ms cubic-bezier(.87, 0, .13, 1);
-			}
-			.carte-elenco a:hover .carta-fondo, .carte-elenco a:focus-visible .carta-fondo { transform: scale(1) }
-			.carte-elenco a:hover .carta-velo, .carte-elenco a:focus-visible .carta-velo { opacity: 1 }
-			.carte-elenco a:hover .carta-anta, .carte-elenco a:focus-visible .carta-anta { transform: scale(1); translate: -50% -58% }
-			.carta-riga { display: flex; min-width: 0; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 14px; }
-			.carta-riga strong { font-size: clamp(20px, 1.9vw, 30px); font-weight: 600; letter-spacing: -.035em; text-transform: uppercase; }
-			.carta-meta { display: flex; gap: 12px; }
-			.carta-meta i { color: #8b877f; font: 10px var(--mono); font-style: normal; letter-spacing: .08em; text-transform: uppercase; }
-			.carta-meta i:first-child { color: var(--tinta); }
-			.carta-nastro { display: block; min-width: 0; overflow: clip; color: #56534b; font: 10px var(--mono); letter-spacing: .07em; text-transform: uppercase; }
-			.carta-treno { display: flex; width: max-content; }
-			.carta-treno i { flex: none; font-style: normal; white-space: nowrap; padding-right: .5em; }
-			.carte-coda { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 20px 40px; margin-top: clamp(12px, 2vw, 28px); }
-			.home-section.carte p { max-width: 40ch; margin: 0; font-size: 16.5px; }
-			@keyframes nastro { to { transform: translateX(-50%) } }
-			@keyframes nastro-contrario { from { transform: translateX(-50%) } to { transform: translateX(0) } }
-			/* le carte entrano una dopo l'altra quando la sezione arriva in vista */
-			@keyframes carta-entra { from { opacity: 0; transform: translateY(28px) scale(.98) } }
-			@supports (animation-timeline: view()) {
-				.carte-elenco > li {
-					animation: carta-entra linear both;
-					animation-timeline: view();
-					animation-range: entry 4% cover 22%;
-					animation-duration: auto;
-				}
-				.carta-treno { animation: nastro linear both; animation-timeline: view(); animation-duration: auto; }
-				.carte-elenco > li:nth-child(even) .carta-treno { animation-name: nastro-contrario }
-			}
-			@media (prefers-reduced-motion: reduce) {
-				.carte-elenco > li,
-				.carta-treno,
-				.carte-elenco > li:nth-child(even) .carta-treno { animation: none; animation-timeline: auto }
-				.carta-fondo, .carta-velo, .carta-anta { transition: none }
-			}
 			/* --- sipario del primo caricamento --- */
 			.sipario { position: fixed; z-index: 100; inset: 0; display: none; grid-template-rows: auto 1fr; padding: 84px max(24px, 4vw) 68px; background: var(--paper); }
 			html[data-caricando] .sipario,

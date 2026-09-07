@@ -1,11 +1,11 @@
 ---
 /**
- * Il piede del banco di prova.
+ * Il piede del banco di prova: la scena che chiude ogni pagina.
  *
- * Chiude ogni pagina con la stessa cosa: un invito grande a scrivere, e sotto le tre
- * colonne che un piede deve avere — dove andare, dove trovarmi altrove, e di cosa è
- * fatto il sito. Lascia in fondo lo spazio della barra, che è fissa e coprirebbe
- * l'ultima riga.
+ * La carta finisce e sotto c'è il tavolo scuro. Prima passa il nastro azzurro del
+ * contatto, poi l'invito grande a scrivere, poi le quattro pagine appoggiate come carte,
+ * ognuna con la tinta della propria sezione. I pezzi visivi (nastro, rigo-indice, scheda,
+ * mazzo, sigillo, freccia-scambio) stanno in lab-primitives.css per tornare nelle sezioni.
  */
 import { siteConfig } from '../../config/site';
 import { experimentLanguages, labPaths, mailHref, type LabLocale } from './chrome';
@@ -20,9 +20,12 @@ interface Props {
 const { lang, copy, itHref, enHref } = Astro.props;
 const t = copy.footer;
 const percorsi = labPaths[lang];
+const tinte = ['var(--paper)', 'var(--orange)', 'var(--violet)', 'var(--acid)'];
 const pagine = [percorsi.home, percorsi.work, percorsi.writing, percorsi.about].map((href, i) => ({
 	href,
 	label: copy.nav[i].label,
+	kicker: copy.nav[i].kicker,
+	tinta: tinte[i],
 }));
 const altrove = [
 	{ label: 'GitHub', href: siteConfig.github },
@@ -31,136 +34,185 @@ const altrove = [
 ];
 const lingue = experimentLanguages(lang, itHref, enHref);
 const anno = new Date().getFullYear();
+const apertura = lang === 'it' ? 'Un progetto, una domanda, un’idea.' : 'A project, a question, an idea.';
+const nastro = [t.invito, apertura, siteConfig.email, lang === 'it' ? 'Risposta entro 24 ore' : 'Reply within 24 hours'];
+const scena = lang === 'it' ? 'Chiusura' : 'Closing';
+const inizio = lang === 'it' ? 'Torna all’inizio' : 'Back to top';
+const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 ---
 
-<footer class="piede">
-	<a class="piede-invito" href={mailHref}>
-		<span class="piede-etichetta">{t.invito}</span>
-		<span class="piede-riga">{t.scrivimi}</span>
-		<span class="piede-mail">{siteConfig.email}</span>
-	</a>
-
-	<div class="piede-colonne">
-		<nav class="piede-colonna" aria-label={t.navigazione}>
-			<span class="piede-etichetta">{t.navigazione}</span>
-			<ul>{pagine.map((pagina) => <li><a href={pagina.href}>{pagina.label}</a></li>)}</ul>
-		</nav>
-
-		<div class="piede-colonna">
-			<span class="piede-etichetta">{t.altrove}</span>
-			<ul>{altrove.map((voce) => <li><a href={voce.href} rel="me noopener">{voce.label}</a></li>)}</ul>
-		</div>
-
-		<div class="piede-colonna">
-			<span class="piede-etichetta">{t.colofone}</span>
-			<ul>
-				<li><span>{t.fattoCon}</span></li>
-				<li><span>{t.caratteri}</span></li>
-			</ul>
-		</div>
-
-		<div class="piede-colonna">
-			<span class="piede-etichetta">{t.lingua}</span>
-			<ul class="piede-lingue">
-				{lingue.map((lingua) => (
-					<li><a href={lingua.href} aria-current={lingua.current ? 'true' : undefined}>{lingua.label}</a></li>
-				))}
-			</ul>
-		</div>
+<footer class="scene piede" id="footer" aria-labelledby="piede-titolo" data-scene="contact">
+	<div class="nastro piede-nastro" aria-hidden="true">
+		<div class="nastro-corsa">{[0, 1].map(() => <ul role="presentation">{nastro.map((voce) => <li>{voce}</li>)}</ul>)}</div>
 	</div>
 
-	<div class="piede-chiusura">
-		<span>© {anno} {siteConfig.name}</span>
-		<span>{siteConfig.role} · {t.diritti}</span>
+	<div class="piede-foglio">
+		<div class="rigo-indice piede-indice"><b>05</b><span>{scena}</span><i></i><span>{siteConfig.role}</span></div>
+
+		<div class="piede-gesto">
+			<a class="piede-invito" href={mailHref} aria-labelledby="piede-titolo" aria-describedby="piede-indirizzo">
+				<span class="piede-apertura">{apertura}</span>
+				<h2 id="piede-titolo"><span>{t.invito}</span></h2>
+				<span class="piede-contatto">
+					<span class="piede-mail" id="piede-indirizzo">{siteConfig.email}</span>
+					<span class="freccia-scambio piede-freccia" aria-hidden="true"><span>↗</span><span>↗</span></span>
+				</span>
+			</a>
+			<div class="sigillo piede-sigillo" aria-hidden="true">
+				<svg viewBox="0 0 100 100"><defs><path id="piede-anello" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs><text><textPath href="#piede-anello" textLength="236" lengthAdjust="spacing">{anello}</textPath></text></svg>
+				<b>SS</b>
+			</div>
+		</div>
+
+		<nav class="piede-navigazione" aria-label={t.navigazione}>
+			<ul class="mazzo" role="list">{pagine.map((pagina, index) => (
+				<li style={`--tinta: ${pagina.tinta}`}>
+					<a class="scheda" href={pagina.href}>
+						<span class="scheda-kicker">{pagina.kicker}</span>
+						<span class="scheda-titolo">{pagina.label}</span>
+						<span class="scheda-freccia" aria-hidden="true">↗</span>
+					</a>
+				</li>
+			))}</ul>
+		</nav>
+
+		<div class="piede-dettagli">
+			<div class="piede-altrove">
+				<span class="piede-etichetta">{t.altrove}</span>
+				<ul role="list">{altrove.map((voce) => <li><a href={voce.href} rel="me noopener">{voce.label}<span aria-hidden="true"> ↗</span></a></li>)}</ul>
+			</div>
+			<div class="piede-colofone">
+				<span class="piede-etichetta">{t.colofone}</span>
+				<p>{t.fattoCon}<br />{t.caratteri}</p>
+			</div>
+			<nav class="piede-lingua" aria-label={t.lingua}>
+				<span class="piede-etichetta">{t.lingua}</span>
+				<ul class="piede-lingue" role="list">{lingue.map((lingua) => (
+					<li><a href={lingua.href} lang={lingua.label.toLowerCase()} aria-current={lingua.current ? 'true' : undefined}>{lingua.label}</a></li>
+				))}</ul>
+			</nav>
+		</div>
+
+		<div class="piede-chiusura">
+			<span>© {anno} {siteConfig.name}</span>
+			<a class="piede-inizio" href="#inizio">{inizio} <span aria-hidden="true">↑</span></a>
+			<span>{t.diritti}</span>
+		</div>
 	</div>
 </footer>
 
+<script>
+	// Le carte entrano una alla volta quando il piede arriva in vista. Senza JavaScript, o con
+	// movimento ridotto, restano semplicemente al loro posto.
+	let smontaPiede: (() => void) | undefined;
+	function montaPiede() {
+		smontaPiede?.();
+		const piede = document.querySelector<HTMLElement>('.piede');
+		const mazzo = piede?.querySelector<HTMLElement>('.piede-navigazione');
+		if (!piede || !mazzo) return;
+		const ridotto = matchMedia('(prefers-reduced-motion: reduce)');
+		if (ridotto.matches) return;
+		const osservatore = new IntersectionObserver((voci) => {
+			if (!voci.some((voce) => voce.isIntersecting)) return;
+			piede.dataset.entrato = '';
+			osservatore.disconnect();
+		}, { threshold: .15 });
+		osservatore.observe(mazzo);
+		smontaPiede = () => { osservatore.disconnect(); delete piede.dataset.entrato; };
+	}
+	montaPiede();
+	document.addEventListener('astro:page-load', montaPiede);
+	document.addEventListener('astro:before-swap', () => smontaPiede?.());
+</script>
+
 <style>
 	.piede {
-		display: grid;
-		gap: clamp(48px, 7vw, 92px);
-		/* la barra è fissa e alta 122px col suo margine: l'ultima riga le sta sopra */
-		padding: clamp(72px, 10vh, 132px) max(24px, 4vw) 190px;
-		border-top: 1px solid #ddd9d0;
-	}
-
-	.piede-etichetta {
-		color: #8b877f;
-		font: 10px var(--mono);
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-	}
-
-	.piede-invito {
-		display: grid;
-		gap: 10px;
-		width: max-content;
-		max-width: 100%;
-		color: inherit;
-		text-decoration: none;
-	}
-	.piede-riga {
-		font-size: clamp(46px, 9vw, 132px);
-		font-weight: 700;
-		line-height: 0.9;
-		letter-spacing: -0.055em;
-		text-transform: uppercase;
-	}
-	/* la riga si sottolinea da sola, da sinistra: è l'unico gesto del piede */
-	.piede-mail {
+		--tinta: var(--blue);
+		--inchiostro: #171713;
+		--piede-carta: #f4f1e9;
+		--piede-tenue: #a9a59b;
+		--piede-filo: #3a3b35;
 		position: relative;
-		width: max-content;
-		max-width: 100%;
-		color: #56534b;
-		font: 13px var(--mono);
-		overflow-wrap: anywhere;
+		isolation: isolate;
+		overflow: clip;
+		background: var(--inchiostro);
+		color: var(--piede-carta);
 	}
-	.piede-mail::after {
-		content: '';
-		position: absolute;
-		right: 0;
-		bottom: -3px;
-		left: 0;
-		height: 1px;
-		background: currentColor;
-		transform: scaleX(0);
-		transform-origin: left;
-		transition: transform 420ms var(--ease);
-	}
-	.piede-invito:hover .piede-mail::after,
-	.piede-invito:focus-visible .piede-mail::after { transform: scaleX(1) }
+	.piede a { color: inherit; text-decoration: none; }
+	.piede a:focus-visible { outline: 3px solid var(--tinta); outline-offset: 5px; }
+	/* il nastro azzurro è il confine fra la carta e il tavolo */
+	.piede-nastro { --nastro-durata: 44s; }
+	.piede-foglio { display: grid; gap: clamp(48px, 6vw, 88px); padding: clamp(40px, 5vw, 72px) max(24px, 4vw) 174px; }
+	.piede-indice { --inchiostro-tenue: var(--piede-tenue); --inchiostro: var(--piede-carta); }
 
-	.piede-colonne {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-		gap: 34px clamp(24px, 4vw, 64px);
-	}
-	.piede-colonna { display: grid; align-content: start; gap: 14px }
-	.piede-colonna ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none }
-	.piede-colonna a,
-	.piede-colonna span {
-		color: #56534b;
-		font-size: 14.5px;
-		text-decoration: none;
-	}
-	.piede-colonna a { width: max-content; transition: color 180ms ease }
-	.piede-colonna a:hover { color: #14140f }
+	/* l'invito: apertura piccola, titolo enorme che sale dalla sua feritoia, indirizzo sotto */
+	.piede-gesto { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 32px; }
+	.piede .piede-invito { display: grid; gap: 18px; min-width: 0; }
+	.piede-apertura { color: var(--piede-tenue); font: 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+	.piede-invito h2 { overflow: clip; margin: 0 0 0 -.05em; padding: .02em 0 .12em; font-size: clamp(64px, 12.5vw, 184px); font-weight: 500; letter-spacing: -.08em; line-height: .92; }
+	.piede-invito h2 > span { display: block; white-space: nowrap; }
+	.piede-contatto { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px; }
+	.piede-mail { position: relative; font-size: clamp(18px, 2.4vw, 34px); letter-spacing: -.04em; overflow-wrap: anywhere; }
+	.piede-mail::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 2px; background: var(--tinta); transform: scaleX(0); transform-origin: left; transition: transform 600ms var(--ease); }
+	.piede-invito:is(:hover, :focus-visible) .piede-mail::after { transform: scaleX(1); }
+	.piede-freccia { background: var(--tinta); color: #171713; font-size: clamp(34px, 3.4vw, 52px); }
+	.piede-sigillo { --sigillo-misura: clamp(110px, 12vw, 168px); --inchiostro: var(--piede-tenue); --tinta: var(--blue); margin-bottom: 10px; }
 
-	.piede-lingue { grid-auto-flow: column; justify-content: start; gap: 14px }
-	.piede-lingue a[aria-current] { color: #14140f; font-weight: 600 }
+	/* le quattro pagine, appoggiate come carte */
+	.piede-navigazione .mazzo { --mazzo-colonne: 4; }
+	/* le carte sono chiare e tengono l'inchiostro scuro, non quello del piede */
+	.piede .scheda { color: var(--inchiostro); }
+	.piede .scheda:focus-visible { outline-color: var(--piede-carta); }
+	.piede-navigazione .scheda { min-height: clamp(180px, 16vw, 240px); }
+	.piede-navigazione .scheda-titolo { font-size: clamp(26px, 2.6vw, 40px); }
 
-	.piede-chiusura {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		gap: 8px 24px;
-		padding-top: 26px;
-		border-top: 1px solid #ddd9d0;
-		color: #8b877f;
-		font: 11px var(--mono);
+	/* le tre colonne di servizio */
+	.piede-dettagli { display: grid; grid-template-columns: 1fr 1.3fr auto; gap: 32px; padding-top: clamp(28px, 4vw, 44px); border-top: 1px solid var(--piede-filo); }
+	.piede-etichetta { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; color: var(--piede-tenue); font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+	.piede-etichetta::before { content: ''; width: 7px; height: 7px; border-radius: 2px; background: var(--tinta); }
+	.piede-altrove ul, .piede-lingue { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0; padding: 0; list-style: none; }
+	.piede-altrove a, .piede-lingue a { display: inline-flex; align-items: baseline; gap: 6px; min-height: 30px; font-size: 15px; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 6px; transition: text-decoration-color 300ms ease, color 300ms ease; }
+	.piede-altrove a:is(:hover, :focus-visible), .piede-lingue a:is(:hover, :focus-visible), .piede-lingue a[aria-current] { color: var(--tinta); text-decoration-color: var(--tinta); }
+	.piede-altrove a > span { font-size: 12px; }
+	.piede-colofone p { margin: 0; color: var(--piede-tenue); font-size: 14px; line-height: 1.7; }
+	.piede-lingue a[aria-current] { font-weight: 700; }
+
+	/* l'ultima riga sta sopra la barra fissa: il padding del foglio le lascia il posto */
+	.piede-chiusura { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; padding-top: 22px; border-top: 1px solid var(--piede-filo); color: var(--piede-tenue); font: 11px/1.5 var(--mono); letter-spacing: .04em; }
+	.piede-inizio { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 1px solid var(--piede-filo); border-radius: 999px; color: var(--piede-carta); transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease; }
+	.piede-inizio:is(:hover, :focus-visible) { background: var(--tinta); border-color: var(--tinta); color: #171713; }
+
+	/* ingresso: il titolo sale dalla feritoia mentre il piede entra, le carte una alla volta */
+	@keyframes piede-titolo-entra { from { transform: translateY(110%); } to { transform: none; } }
+	@keyframes piede-carta-entra { from { opacity: 0; translate: 0 28px; } to { opacity: 1; translate: 0 0; } }
+	@supports (animation-timeline: view()) {
+		@media (prefers-reduced-motion: no-preference) and (pointer: fine) {
+			.piede-invito h2 > span { animation: piede-titolo-entra linear both; animation-timeline: view(); animation-range: entry 0% entry 90%; }
+		}
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.piede[data-entrato] .mazzo > li { animation: piede-carta-entra 650ms var(--ease) both; animation-delay: calc(var(--i) * 80ms); }
+		.mazzo > li:nth-child(1) { --i: 0; } .mazzo > li:nth-child(2) { --i: 1; } .mazzo > li:nth-child(3) { --i: 2; } .mazzo > li:nth-child(4) { --i: 3; }
 	}
 
+	@media (max-width: 899px) {
+		.piede-gesto { grid-template-columns: minmax(0, 1fr); }
+		.piede-sigillo { display: none; }
+		.piede-navigazione .mazzo { --mazzo-colonne: 2; gap: 12px; }
+		.piede-navigazione .scheda { min-height: 160px; padding: 18px 20px; }
+		.piede-navigazione .scheda-titolo { font-size: clamp(22px, 5vw, 30px); }
+		.piede-dettagli { grid-template-columns: minmax(0, 1fr) auto; gap: 28px 20px; }
+		.piede-colofone { grid-column: 1 / -1; grid-row: 2; }
+	}
+	@media (max-width: 600px) {
+		.piede-foglio { gap: 40px; padding-bottom: 150px; }
+		.piede-invito h2 { font-size: clamp(44px, 15vw, 88px); }
+		.piede-mail { font-size: 16px; }
+		.piede-freccia { font-size: 30px; }
+		.piede-altrove a, .piede-lingue a { min-height: 36px; }
+		.piede-chiusura { font-size: 10px; }
+	}
 	@media (prefers-reduced-motion: reduce) {
-		.piede-mail::after { transition: none }
+		.piede-mail::after, .piede-inizio, .piede-altrove a, .piede-lingue a { transition: none; }
 	}
 </style>

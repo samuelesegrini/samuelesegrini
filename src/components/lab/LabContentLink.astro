@@ -1,0 +1,7 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+type Props = HTMLAttributes<'a'>;
+const { href, ...attributes } = Astro.props;
+const target = href?.toString().replace(/^\/(it|en)\/(progetti|projects|articoli|writing)\//, '/lab/$1/$2/');
+---
+<a {...attributes} href={target}><slot /></a>

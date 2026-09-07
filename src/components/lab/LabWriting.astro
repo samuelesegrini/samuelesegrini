@@ -1,60 +1,45 @@
 ---
-/** Archivio articoli: le sezioni sono i temi ricorrenti, presi dai tag dei post. */
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import { getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
-import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labPostPath, type LabLocale } from './chrome';
-
+import '../../styles/lab-work.css';
+import '../../styles/lab-writing.css';
 interface Props { lang: LabLocale }
 const { lang } = Astro.props;
+const it = lang === 'it';
 const { posts } = await getPortfolioContent();
-const pubblicati = getPublishedPosts(posts, lang);
-
-// I temi sono i tag che ricorrono, dal più frequente. Un articolo può stare in più temi.
-const frequenza = new Map<string, number>();
-pubblicati.forEach((post) => post.tags.forEach((tag) => frequenza.set(tag, (frequenza.get(tag) ?? 0) + 1)));
-const temi = [...frequenza.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 4).map(([tag]) => tag);
-
-const maiuscola = (testo: string) => testo.charAt(0).toUpperCase() + testo.slice(1);
-const copy = await getLabCopy(lang);
-const t = { ...copy.writing, kicker: copy.writing.topic, em: copy.writing.emphasis, hint: copy.common.hint };
-const conta = (n: number) => `${n} ${n === 1 ? copy.writing.one : copy.writing.many}`;
-
-const sezioni = temi.map((tema) => {
-	const dentro = pubblicati.filter((post) => post.tags.includes(tema));
-	return {
-		id: tema.replace(/[^a-z0-9]+/gi, '-').toLowerCase(),
-		kicker: t.kicker,
-		value: maiuscola(tema),
-		articoli: dentro,
-		detail: { kicker: maiuscola(tema), value: conta(dentro.length) },
-	};
-});
+const entries = getPublishedPosts(posts, lang);
+const title = it ? 'Articoli' : 'Writing';
+const topics = [...new Set(entries.flatMap(p => p.tags))];
+const date = (d: Date) => d.toLocaleDateString(it ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const sections = [{ kicker: it ? 'Sezione' : 'Section', value: it ? 'Tutti gli articoli' : 'All articles', detail: { kicker: title, value: String(entries.length) } }, { kicker: it ? 'Sezione' : 'Section', value: it ? 'Argomenti' : 'Topics', detail: { kicker: title, value: String(topics.length) } }];
 ---
-
-<ExperimentLayout lang={lang} title={t.title} currentHref={labPaths[lang].writing}
-	sections={sezioni.map(({ kicker, value, detail }) => ({ kicker, value, detail }))}
-	itHref={labPaths.it.writing} enHref={labPaths.en.writing}>
-	<header class="home-section hero" id="inizio" data-section="0">
-		<span class="section-kicker">{t.eyebrow}</span>
-		<h1>{t.headline} <em>{t.em}</em></h1>
-		<p>{conta(pubblicati.length)} {t.intro}</p>
-		<span class="hero-hint" aria-hidden="true">{t.hint}</span>
-		<i class="section-rule" aria-hidden="true"></i>
-	</header>
-
-	{sezioni.map((sezione, i) => (
-		<section class="home-section" id={sezione.id} data-section={i + 1}>
-			<span class="section-kicker">{t.kicker} {String(i + 1).padStart(2, '0')}</span>
-			<h1>{sezione.value}</h1>
-			<p>{conta(sezione.articoli.length)} {t.on}</p>
-			<ul class="elenco">
-				{sezione.articoli.map((post) => (
-					<li><a href={labPostPath(lang, post.slug)}><strong>{post.title}</strong><span>{post.excerpt}</span></a></li>
-				))}
-			</ul>
-			<i class="section-rule" aria-hidden="true"></i>
-		</section>
-	))}
+<ExperimentLayout lang={lang} title={title} currentHref={labPaths[lang].writing} sections={sections} itHref={labPaths.it.writing} enHref={labPaths.en.writing}>
+  <a class="work-skip skip-link" href="#articoli">{it ? 'Vai agli articoli' : 'Skip to articles'}</a>
+  <div class="work-archive writing-archive">
+    <header class="scene work-hero" id="inizio" data-section="0">
+      <div class="work-backdrop" data-depth="0" aria-hidden="true"></div><div class="work-grid depth-2" data-depth="2" aria-hidden="true"></div>
+      <div class="depth-4" data-depth="4"><div class="work-topline"><span>Samuele Segrini / {it ? 'Appunti' : 'Notes'}</span><a href={it ? '/it/rss.xml' : '/en/rss.xml'}>RSS ↗</a></div>
+      <h1>{title}<sup>({String(entries.length).padStart(2, '0')})</sup></h1>
+      <div class="work-intro"><span>{it ? 'Il ragionamento, oltre il codice.' : 'The thinking behind the code.'}</span><p>{it ? 'Scelte tecniche, esperimenti e lezioni dai progetti. Scrivere per rendere esplicito quello che ho imparato.' : 'Technical decisions, experiments and lessons from projects. Writing to make what I have learned explicit.'}</p></div>
+      <nav class="writing-jump" aria-label={it ? 'Indice della pagina' : 'Page index'}><a href="#articoli">{it ? 'Tutti gli articoli' : 'All articles'} ↓</a><a href="#argomenti">{it ? 'Argomenti' : 'Topics'} ↓</a></nav></div>
+    </header>
+    <section class="scene writing-list" id="articoli" data-section="1" aria-label={it ? 'Tutti gli articoli' : 'All articles'}>
+      <ol>{entries.map((post, i) => <li class:list={['writing-entry', { 'writing-lead': i === 0 }]} data-depth="4">
+        <a href={labPostPath(lang, post.slug)} class="writing-entry-link" aria-labelledby={`post-${i}`}>
+          <div class="writing-entry-meta"><span>{i === 0 ? (it ? 'Ultimo articolo' : 'Latest article') : String(i + 1).padStart(2, '0')}</span><time datetime={post.publishedAt.toISOString()}>{date(post.publishedAt)}</time></div>
+          <div class="writing-entry-body"><h2 id={`post-${i}`}>{post.title}</h2><p>{post.excerpt}</p><ul class="work-tags">{post.tags.map(tag => <li>{tag}</li>)}</ul></div><span class="writing-arrow" aria-hidden="true">↗</span>
+        </a>
+      </li>)}</ol>
+    </section>
+    <section class="scene writing-topics" id="argomenti" data-section="2" aria-labelledby="topics-title">
+      <h2 id="topics-title">{it ? 'Fili del discorso' : 'Recurring threads'}</h2>
+      <p>{it ? 'Segui un argomento attraverso gli articoli.' : 'Follow a topic through the articles.'}</p>
+      <div class="writing-topic-grid">{topics.map(topic => <div>
+        <h3>{topic}<sup>{entries.filter(p => p.tags.includes(topic)).length}</sup></h3>
+        <ul>{entries.filter(p => p.tags.includes(topic)).map(post => <li><a href={labPostPath(lang, post.slug)}>{post.title} <span aria-hidden="true">↗</span></a></li>)}</ul>
+      </div>)}</div>
+    </section>
+  </div>
 </ExperimentLayout>

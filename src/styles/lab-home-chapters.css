@@ -1,0 +1,160 @@
+/* I capitoli della home: scrittura, percorso, contatto.
+   Ogni capitolo apre con un rigo-indice a tutta larghezza, tiene il testo a sinistra
+   (fermo, mentre il resto scorre) e mette a destra il proprio gesto: le note che si
+   impilano, la rotta che si disegna, il biglietto che si inclina. I pezzi comuni
+   (nastro, rigo-indice, scheda, mazzo, ventaglio, sigillo, freccia-scambio) vengono
+   da lab-primitives.css; qui c'è solo come ogni capitolo li usa. */
+
+.home-section.home-chapter {
+  --tinta: var(--violet);
+  --inchiostro: #171713;
+  --inchiostro-tenue: #6b6760;
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: start;
+  gap: clamp(40px, 6vw, 80px) clamp(48px, 6vw, 96px);
+  padding: 0 max(24px, 4vw) 160px;
+  border-top: 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1200px;
+}
+.home-chapter.chapter-path { --tinta: var(--acid); }
+.home-chapter.chapter-contact { --tinta: var(--blue); }
+
+/* la riga d'apertura: occupa tutta la larghezza, sopra le due colonne */
+.chapter-indice { grid-column: 1 / -1; padding-top: 96px; }
+.chapter-nastro { grid-column: 1 / -1; margin: 0 calc(-1 * max(24px, 4vw)); }
+.chapter-nastro + .chapter-indice { padding-top: 72px; }
+
+/* il testo: fermo mentre a destra si scorre */
+.home-chapter .chapter-opening { position: relative; top: auto; min-width: 0; padding-top: 0; }
+.home-chapter .chapter-opening h2 { margin: 0 0 0 -.04em; overflow: clip; padding-bottom: .08em; font-size: clamp(56px, 7.4vw, 118px); font-weight: 500; letter-spacing: -.075em; line-height: .96; }
+.home-chapter .chapter-opening h2 > span { display: block; }
+.home-chapter .chapter-opening p { max-width: 34ch; margin-top: 22px; color: #55524b; font-size: clamp(16px, 1.4vw, 19px); }
+.home-chapter .collegamento { gap: 18px; margin-top: 30px; padding: 14px 20px; border-radius: 14px; }
+.home-chapter a:focus-visible { outline: 3px solid var(--inchiostro); outline-offset: 5px; }
+.home-chapter .chapter-ventaglio { --ventaglio-misura: 128px; margin: 64px 0 0 14px; }
+.home-chapter .chapter-sigillo { --sigillo-misura: 150px; --inchiostro-tenue: #6b6760; margin-top: 56px; color: #6b6760; }
+.home-chapter .chapter-sigillo b { font-size: 26px; letter-spacing: -.06em; }
+
+/* ─── 02 · le note che si impilano ─────────────────────────────────────────── */
+.pila { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.pila-foglio { position: sticky; top: calc(84px + var(--i) * 22px); }
+.home-chapter .nota { min-height: clamp(300px, 34vw, 420px); padding: clamp(24px, 3vw, 40px); gap: 28px; color: var(--inchiostro); overflow: clip; background: color-mix(in srgb, var(--tinta) calc(100% - var(--i) * 14%), #fbf8ff); transition: transform 500ms var(--ease); }
+.home-chapter .nota:is(:hover, :focus-visible) { transform: translateY(-6px) rotate(-.4deg); }
+/* il numero in filigrana: lo stesso della vetrina dei progetti */
+.nota-filigrana { position: absolute; right: -.04em; bottom: -.22em; z-index: 0; font-size: clamp(160px, 20vw, 300px); font-weight: 500; letter-spacing: -.09em; line-height: 1; color: var(--inchiostro); opacity: .07; pointer-events: none; }
+.nota > :not(.nota-filigrana) { position: relative; z-index: 1; }
+.home-chapter .nota .scheda-kicker { opacity: 1; color: #4e4560; }
+.nota-corpo { display: grid; gap: 14px; }
+.home-chapter .nota h3 { margin: 0; max-width: 22ch; font-size: clamp(26px, 2.8vw, 44px); font-weight: 550; letter-spacing: -.055em; line-height: 1.06; }
+.nota-estratto { max-width: 52ch; color: #4e4560; font-size: 15px; line-height: 1.6; }
+.nota-piede { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
+.nota-piede .freccia-scambio { --inchiostro: #171713; font-size: 40px; }
+.home-chapter .nota .voce-meta { margin: 0; }
+.home-chapter .nota .voce-meta i { background: #ffffff8a; color: #4e4560; }
+
+/* ─── 03 · la rotta che si disegna ─────────────────────────────────────────── */
+.rotta { position: relative; display: grid; gap: 0; margin: 0; padding: 0 0 0 0; list-style: none; }
+.rotta-linea { position: absolute; top: 18px; bottom: 18px; left: 5px; width: 1px; background: #cfcbc0; }
+.rotta-linea i { position: absolute; inset: 0; background: var(--inchiostro); transform-origin: top; transform: scaleY(0); }
+.tappa { position: relative; }
+.tappa > a, .tappa-oggi { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto 32px; align-items: start; gap: 8px 22px; padding: 30px 0 34px 0; border-bottom: 1px solid #ddd9d0; transition: background-color 300ms ease; }
+.tappa > a:hover { background: transparent; }
+.tappa-nodo { position: absolute; top: 34px; left: 0; width: 11px; height: 11px; border-radius: 3px; border: 1px solid var(--inchiostro); background: var(--paper); transition: background-color 300ms ease; }
+.tappa > a:hover .tappa-nodo, .tappa-oggi .tappa-nodo { background: var(--tinta); }
+.tappa-numero { grid-column: 1; padding-top: 4px; padding-left: 26px; color: #6b6760; font: 11px var(--mono); font-weight: 400; letter-spacing: .08em; }
+.tappa-testo { display: grid; gap: 12px; min-width: 0; }
+.tappa-testo strong { font-size: clamp(30px, 3.4vw, 54px); font-weight: 500; letter-spacing: -.06em; line-height: 1; }
+.tappa-testo em { max-width: 46ch; color: #55524b; font-size: 15.5px; font-style: normal; line-height: 1.6; }
+.tappa-dettaglio { display: grid; gap: 6px; justify-items: end; padding-top: 6px; text-align: right; }
+.tappa-dettaglio > span:first-child { color: #6b6760; font: 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.tappa-dettaglio > span:last-child { padding: 6px 10px; border-radius: 8px; background: var(--tinta); font: 11px var(--mono); white-space: nowrap; }
+.home-chapter .step-arrow { justify-self: end; padding-top: 8px; font-size: 26px; font-style: normal; transition: transform 350ms var(--ease); }
+.tappa > a:hover .step-arrow { transform: translate(4px, -4px); }
+.tappa-oggi { padding-bottom: 0; border-bottom: 0; color: #6b6760; }
+.tappa-oggi .tappa-testo strong { font-size: 22px; letter-spacing: -.04em; color: var(--inchiostro); }
+
+/* ─── 04 · il biglietto ────────────────────────────────────────────────────── */
+.chapter-channels { display: grid; gap: 16px; }
+.biglietto-scena { perspective: 1400px; }
+.home-chapter .biglietto { --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%; position: relative; min-height: clamp(280px, 30vw, 380px); padding: clamp(24px, 3vw, 40px); gap: 32px; overflow: clip; color: var(--inchiostro); background: var(--tinta); transform: rotateX(var(--rx)) rotateY(var(--ry)); transform-style: preserve-3d; transition: transform 200ms ease-out, box-shadow 400ms var(--ease); }
+.biglietto-luce { position: absolute; inset: 0; z-index: 0; background: radial-gradient(circle at var(--mx) var(--my), #ffffffb8 0, transparent 38%); pointer-events: none; }
+.biglietto > :not(.biglietto-luce) { position: relative; z-index: 1; }
+.home-chapter .biglietto .scheda-kicker { opacity: 1; color: #3f5b66; }
+.biglietto-indirizzo { font-size: clamp(26px, 3.3vw, 52px); font-weight: 500; letter-spacing: -.06em; line-height: 1; overflow-wrap: anywhere; }
+.biglietto-piede { display: flex; align-items: end; justify-content: space-between; gap: 16px; color: #3f5b66; font: 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.biglietto-piede .freccia-scambio { --inchiostro: #171713; font-size: 44px; }
+.canali-mazzo { --mazzo-colonne: 2; }
+.canali-mazzo .canale { --tinta: #edf6f9; min-height: 150px; color: var(--inchiostro); }
+.canali-mazzo .scheda-titolo { font-size: clamp(16px, 1.5vw, 20px); font-weight: 500; letter-spacing: -.03em; padding-right: 40px; overflow-wrap: anywhere; }
+.canali-mazzo .scheda-kicker { color: #3f5b66; opacity: 1; }
+@media (min-width: 900px) and (pointer: fine) {
+  .canali-mazzo > li:nth-child(1) .scheda { transform: rotate(-1.5deg) translateY(6px); }
+  .canali-mazzo > li:nth-child(2) .scheda { transform: rotate(1.5deg) translateY(-2px); }
+}
+
+/* ─── impaginazione a due colonne ──────────────────────────────────────────── */
+@media (min-width: 1040px) {
+  .home-section.home-chapter { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); }
+  .home-section.home-chapter:has(> .sezione-testo) { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); padding-bottom: 180px; }
+  .home-chapter .chapter-opening { position: sticky; top: 96px; }
+}
+
+/* ─── movimento ────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .chapter-entered .chapter-opening h2 > span { animation: chapter-title 950ms var(--ease) both; }
+  .chapter-entered .chapter-opening > :not(h2), .chapter-entered > :is(ol, .chapter-channels) { animation: chapter-rise 850ms var(--ease) both; }
+  .chapter-entered > :is(ol, .chapter-channels) { animation-delay: 120ms; }
+  @keyframes chapter-title { from { transform: translateY(110%) rotate(2deg); } to { transform: none; } }
+  @keyframes chapter-rise { from { opacity: .15; transform: translateY(32px); } to { opacity: 1; transform: none; } }
+  /* la rotta si disegna e le tappe si accendono mentre entrano nella finestra */
+  @supports (animation-timeline: view()) {
+    .rotta-linea i { animation: rotta-disegna linear both; animation-timeline: view(); animation-range: entry 30% exit 60%; }
+    .tappa { animation: tappa-accende linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+    @keyframes rotta-disegna { to { transform: scaleY(1); } }
+    @keyframes tappa-accende { from { opacity: .25; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rotta-linea i { transform: none; }
+  .home-chapter *, .home-chapter *::before, .home-chapter *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  .home-chapter a:hover { transform: none; }
+}
+
+/* ─── schermi stretti ──────────────────────────────────────────────────────── */
+@media (max-width: 1039px) {
+  .home-chapter .chapter-ventaglio, .home-chapter .chapter-sigillo { position: absolute; right: 0; bottom: 0; margin: 0; }
+  .home-chapter .chapter-ventaglio { transform: scale(.7); transform-origin: right bottom; }
+  .home-chapter .chapter-sigillo { --sigillo-misura: 110px; }
+  .home-chapter .chapter-opening p { padding-right: 110px; }
+  .tappa > a, .tappa-oggi { grid-template-columns: 44px minmax(0, 1fr) 32px; }
+  .tappa-dettaglio { grid-column: 2; justify-items: start; text-align: left; padding-top: 6px; }
+}
+@media (max-width: 600px) {
+  .home-section.home-chapter { min-height: auto; padding-bottom: 130px; gap: 36px; }
+  .chapter-indice { padding-top: 64px; }
+  .chapter-nastro + .chapter-indice { padding-top: 48px; }
+  .home-chapter .chapter-opening h2 { font-size: clamp(48px, 13vw, 76px); }
+  .home-chapter .chapter-opening p { padding-right: 0; }
+  .home-chapter .chapter-ventaglio { transform: scale(.5); bottom: -8px; }
+  .home-chapter .chapter-sigillo { display: none; }
+  .home-chapter .collegamento { max-width: calc(100% - 70px); }
+  .pila-foglio { top: calc(72px + var(--i) * 14px); }
+  .home-chapter .nota { min-height: 280px; padding: 22px; gap: 22px; }
+  .nota-filigrana { font-size: 46vw; }
+  .nota-piede .freccia-scambio, .biglietto-piede .freccia-scambio { font-size: 32px; }
+  .tappa > a, .tappa-oggi { grid-template-columns: 34px minmax(0, 1fr); gap: 8px 14px; padding: 24px 0 28px; }
+  .tappa-numero { padding-left: 20px; }
+  .home-chapter .step-arrow { display: none; }
+  .tappa-dettaglio { grid-column: 2; }
+  .canali-mazzo { --mazzo-colonne: 1; }
+  .home-chapter .biglietto { min-height: 250px; padding: 22px; }
+  .biglietto-indirizzo { font-size: clamp(19px, 6.4vw, 26px); letter-spacing: -.04em; }
+}
+@media (pointer: coarse) {
+  .home-chapter a:hover { transform: none; }
+}

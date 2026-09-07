@@ -1,58 +1,44 @@
 ---
-/** Dettaglio articolo: il corpo e i suoi argomenti. */
 import { render } from 'astro:content';
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
-import { getTranslationPair } from '../../lib/content';
+import LabContentLink from './LabContentLink.astro';
+import { getTranslationPair, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
-import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labPostPath, type LabLocale } from './chrome';
-
+import '../../styles/lab-project-detail.css';
+import '../../styles/lab-writing.css';
 interface Props { lang: LabLocale; slug: string }
 const { lang, slug } = Astro.props;
-// la lingua qui serve solo a formattare la data: il testo viene dalla collection
-const isIt = lang === 'it';
+const it = lang === 'it';
 const { posts, postDocuments } = await getPortfolioContent();
-const articolo = posts.find((p) => p.locale === lang && p.slug === slug)!;
-const documento = postDocuments.find((d) => d.data.locale === lang && d.data.slug === slug)!;
-const { Content } = await render(documento);
-
-const gemello = (altra: LabLocale) => {
-	const pari = getTranslationPair(posts, articolo.translationKey, altra);
-	return pari ? labPostPath(altra, pari.slug) : labPaths[altra].writing;
-};
-
-const data = articolo.publishedAt.toLocaleDateString(isIt ? 'it-IT' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-const copy = await getLabCopy(lang);
-const t = { ...copy.postDetail, kicker: copy.common.section };
-
-const sezioni = [
-	{ id: 'articolo', value: t.body, detail: { kicker: t.published, value: data } },
-	{ id: 'argomenti', value: t.topics, detail: { kicker: t.topics, value: String(articolo.tags.length) } },
-];
+const post = posts.find(p => p.locale === lang && p.slug === slug)!;
+const doc = postDocuments.find(d => d.data.locale === lang && d.data.slug === slug)!;
+const { Content, headings } = await render(doc);
+const chapters = headings.filter(h => h.depth === 2);
+const ordered = getPublishedPosts(posts, lang);
+const next = ordered[(ordered.findIndex(p => p.slug === slug) + 1) % ordered.length];
+const date = post.publishedAt.toLocaleDateString(it ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const other = (locale: LabLocale) => { const pair = getTranslationPair(posts, post.translationKey, locale); return pair ? labPostPath(locale, pair.slug) : labPaths[locale].writing; };
+const labels = { back: it ? 'Tutti gli articoli' : 'All articles', body: it ? 'Lettura' : 'Reading', next: it ? 'Continua a leggere' : 'Keep reading', index: it ? 'In questo articolo' : 'In this article', pause: it ? 'Pausa animazioni' : 'Pause animations', resume: it ? 'Attiva animazioni' : 'Enable animations' };
+const sections = [labels.body, labels.next].map(value => ({ kicker: it ? 'Sezione' : 'Section', value, detail: { kicker: it ? 'Articolo' : 'Article', value: value === labels.body ? date : next.title } }));
 ---
-
-<ExperimentLayout lang={lang} title={`${articolo.title} — ${t.eyebrow}`} currentHref={labPostPath(lang, slug)}
-	sections={sezioni.map((s) => ({ kicker: t.kicker, value: s.value, detail: s.detail }))}
-	itHref={gemello('it')} enHref={gemello('en')}>
-	<header class="home-section hero" id="inizio" data-section="0">
-		<span class="section-kicker">{t.eyebrow} · {data}</span>
-		<h1>{articolo.title}</h1>
-		<p>{articolo.excerpt}</p>
-		<a class="collegamento" href={labPaths[lang].writing}>{t.back}</a>
-		<i class="section-rule" aria-hidden="true"></i>
-	</header>
-
-	<section class="home-section" id="articolo" data-section="1">
-		<span class="section-kicker">{t.kicker} 01</span>
-		<h1>{t.body}</h1>
-		<div class="prosa"><Content /></div>
-		<i class="section-rule" aria-hidden="true"></i>
-	</section>
-
-	<section class="home-section" id="argomenti" data-section="2">
-		<span class="section-kicker">{t.kicker} 02</span>
-		<h1>{t.topics}</h1>
-		<p>{articolo.tags.join(' · ')}</p>
-		<i class="section-rule" aria-hidden="true"></i>
-	</section>
+<ExperimentLayout lang={lang} title={post.title} currentHref={labPostPath(lang, slug)} sections={sections} itHref={other('it')} enHref={other('en')}>
+  <a class="case-skip skip-link" href="#articolo">{it ? 'Vai al testo' : 'Skip to text'}</a>
+  <article class="case-detail post-detail" style="--case-accent: #ded1ff">
+    <header class="scene case-hero" id="inizio" data-section="0"><div class="depth-0 case-backdrop" data-depth="0" aria-hidden="true"></div><div class="depth-2 case-grid" data-depth="2" aria-hidden="true"></div><div class="depth-4" data-depth="4">
+      <div class="case-topline" data-reveal><a href={labPaths[lang].writing}>↖ {labels.back}</a><button class="case-motion-toggle" hidden type="button" aria-pressed="false" data-pause={labels.pause} data-resume={labels.resume}>{labels.pause}</button></div>
+      <div class="case-title-mask"><h1 data-title>{post.title}</h1></div><div class="case-hero-bottom" data-reveal><div class="case-classification"><time datetime={post.publishedAt.toISOString()}>{date}</time><span>Samuele Segrini</span></div><p>{post.excerpt}</p></div><ul class="post-tags">{post.tags.map(tag => <li>{tag}</li>)}</ul>
+    </div></header>
+    <section class="scene case-reading" id="articolo" data-section="1" aria-label={labels.body}><div class="depth-0 case-surface" data-depth="0" aria-hidden="true"></div><div class="depth-2 case-reading-rule" data-depth="2" aria-hidden="true"></div>
+      <aside class="depth-4 case-reading-rail" data-depth="4"><div class="case-rail-header"><span class="case-eyebrow">{labels.index}</span><span class="case-read-progress" aria-hidden="true"><i></i></span></div><nav class="case-toc" aria-label={labels.index}>{chapters.map((h, i) => <a href={`#${h.slug}`}><span>{String(i + 1).padStart(2, '0')}</span><span>{h.text}</span></a>)}</nav><a class="case-rail-back" href="#inizio">↑ {it ? 'Torna all’inizio' : 'Back to top'}</a></aside>
+      <div class="depth-4 case-prose prosa" data-depth="4"><Content components={{ a: LabContentLink }} /></div>
+    </section>
+    <section class="scene case-next" id="prossimo" data-section="2" aria-labelledby="next-post"><div class="depth-0 case-dark-surface" data-depth="0" aria-hidden="true"></div><span class="depth-2 case-next-number" data-depth="2" aria-hidden="true">Aa</span><div class="depth-4" data-depth="4" data-reveal><span class="case-eyebrow">{labels.next}</span><a class="case-next-link" href={labPostPath(lang, next.slug)}><h2 id="next-post">{next.title}</h2><span aria-hidden="true">↗</span></a><div class="case-next-bottom"><span>{next.tags.slice(0, 3).join(' / ')}</span><a href={labPaths[lang].writing}>{labels.back}</a></div></div></section>
+  </article>
+  <script is:inline defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    import { initProjectDetail } from '../../lib/lab-project-detail';
+    initProjectDetail();
+    document.addEventListener('astro:page-load', initProjectDetail);
+  </script>
 </ExperimentLayout>

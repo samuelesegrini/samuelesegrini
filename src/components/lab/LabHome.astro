@@ -1,10 +1,12 @@
 ---
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
+import LabProjects from './LabProjects.astro';
+import '../../styles/lab-home-chapters.css';
 import { getFeaturedProjects, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { siteConfig } from '../../config/site';
-import { getLabCopy } from '../../lib/lab-copy';
-import { labPaths, labPostPath, labProjectPath, type LabLocale } from './chrome';
+import { getLabCopy, riempi } from '../../lib/lab-copy';
+import { labPaths, labPostPath, type LabLocale } from './chrome';
 
 interface Props { lang: LabLocale }
 const { lang } = Astro.props;
@@ -24,6 +26,8 @@ const arco = anni.length && Math.min(...anni) !== Math.max(...anni)
 	? `’${String(Math.min(...anni)).slice(2)}—’${String(Math.max(...anni)).slice(2)}`
 	: `’${String(anni[0] ?? new Date().getFullYear()).slice(2)}`;
 const domande = copy.about.sections.filter((sezione) => sezione.text !== copy.home.contactText);
+// gli argomenti delle note, senza doppioni: corrono nel nastro in testa alla scrittura
+const argomenti = [...new Set(published.flatMap((post) => post.tags))].slice(0, 10);
 const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis, hint: copy.common.hint,
 	mail: copy.home.mailLink, one: copy.common.one, many: copy.common.many };
 
@@ -52,104 +56,141 @@ const sezioni = [
 
 	</header>
 
-	{/* passo 1: riquadro grigio al posto del video, per lavorare sul movimento.
-	    La pillola vive qui perché sul telefono va letta dopo il riquadro; sul desktop
-	    torna in alto, ancorata al bordo della vetrina invece che a una quota fissa. */}
-	<section class="vetrina" aria-hidden="true">
-		<div class="hero-media"><div class="hero-media-fill"></div></div>
-		<span class="hero-hint mascherina"><span>{t.hint}</span></span>
-	</section>
+	<LabProjects lang={lang} projects={featured} total={inArchivio.length} years={arco} copy={copy} />
 
-	<section class="home-section carte" id="progetti" data-section="1">
-		<h1 class="carte-testa"><span>{t.work}</span><i>{arco}</i></h1>
-
-		<ol class="carte-elenco">
-			{featured.map((project, i) => (
-				<li>
-					<a href={labProjectPath(lang, project.slug)} style={`--posto:${i}`}>
-						{/* passo 1: il pozzo è un rettangolo grigio, il video arriva dopo */}
-						<span class="carta-pozzo">
-							<i class="carta-fondo"></i>
-							<i class="carta-velo"></i>
-							<i class="carta-anta"></i>
+	<!-- 02 · Scrittura: il nastro degli argomenti, poi le note che si impilano scorrendo -->
+	<section class="home-section home-chapter chapter-writing scene" data-scene="writing" aria-labelledby="scrittura-title" id="scrittura" data-section="2">
+		<div class="nastro chapter-nastro" aria-hidden="true">
+			<div class="nastro-corsa">{[0, 1].map(() => <ul role="presentation">{argomenti.map((tag) => <li>{tag}</li>)}</ul>)}</div>
+		</div>
+		<div class="rigo-indice chapter-indice"><b>02</b><span>{t.writing}</span><i></i><span>{conta(published.length, t.one, t.many)}</span></div>
+		<div class="sezione-testo chapter-opening">
+			<h2 id="scrittura-title"><span>{t.writing}</span></h2>
+			<p>{t.writingText}</p>
+			<a class="collegamento" href={labPaths[lang].writing}>{t.allWriting}</a>
+			<span class="ventaglio ventaglio-fogli chapter-ventaglio" aria-hidden="true"><i></i><i></i><i></i></span>
+		</div>
+		<ol class="pila chapter-pages" role="list">
+			{published.slice(0, 4).map((post, index) => (
+				<li class="pila-foglio" style={`--i: ${index}`}>
+					<a href={labPostPath(lang, post.slug)} class="scheda nota">
+						<span class="nota-filigrana" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+						<span class="scheda-kicker"><span>{lang === 'it' ? 'Nota' : 'Note'} / {String(index + 1).padStart(2, '0')}</span><span>{dataBreve(post.publishedAt)}</span></span>
+						<span class="nota-corpo">
+							<h3>{post.title}</h3>
+							<span class="nota-estratto">{post.excerpt}</span>
 						</span>
-						<span class="carta-riga">
-							<strong>{project.title}</strong>
-							<span class="carta-meta"><i>{copy.work.kinds[project.kind].label}</i><i>{project.year}</i></span>
-						</span>
-						<span class="carta-nastro" aria-hidden="true">
-							<span class="carta-treno">
-								<i>{project.technologies.join(' · ')} · </i>
-								<i>{project.technologies.join(' · ')} · </i>
-							</span>
+						<span class="nota-piede">
+							<span class="voce-meta">{post.tags.slice(0, 3).map((tag) => <i>{tag}</i>)}</span>
+							<span class="freccia-scambio" aria-hidden="true"><span>↗</span><span>↗</span></span>
 						</span>
 					</a>
 				</li>
 			))}
 		</ol>
-
-		<div class="carte-coda">
-			<p>{t.workText}</p>
-			<a class="collegamento" href={labPaths[lang].work}>{t.allWork}</a>
-		</div>
 	</section>
 
-	<section class="home-section" id="scrittura" data-section="2">
-		<div class="sezione-testo">
-			<span class="section-kicker">{t.kicker} 02</span>
-			<h1>{t.writing}</h1>
-			<p>{t.writingText}</p>
-			<a class="collegamento" href={labPaths[lang].writing}>{t.allWriting}</a>
-			<i class="section-rule" aria-hidden="true"></i>
-		</div>
-		<ul class="elenco">
-			{published.slice(0, 3).map((post) => (
-				<li>
-					<a href={labPostPath(lang, post.slug)}>
-						<strong>{post.title}</strong>
-						<span>{post.excerpt}</span>
-						<span class="voce-meta">
-							<i>{dataBreve(post.publishedAt)}</i>
-							{post.tags.slice(0, 3).map((tag) => <i>{tag}</i>)}
-						</span>
-					</a>
-				</li>
-			))}
-		</ul>
-	</section>
-
-	<section class="home-section" id="percorso" data-section="3">
-		<div class="sezione-testo">
-			<span class="section-kicker">{t.kicker} 03</span>
-			<h1>{t.path}</h1>
+	<!-- 03 · Percorso: una rotta che si disegna scorrendo, con le tappe e il sigillo degli anni -->
+	<section class="home-section home-chapter chapter-path scene" data-scene="path" aria-labelledby="percorso-title" id="percorso" data-section="3">
+		<div class="rigo-indice chapter-indice"><b>03</b><span>{t.path}</span><i></i><span>{t.experience} · {t.years}</span></div>
+		<div class="sezione-testo chapter-opening">
+			<h2 id="percorso-title"><span>{t.path}</span></h2>
 			<p>{t.pathText}</p>
 			<a class="collegamento" href={labPaths[lang].about}>{t.aboutLink}</a>
-			<i class="section-rule" aria-hidden="true"></i>
+			<div class="sigillo chapter-sigillo" aria-hidden="true">
+				<svg viewBox="0 0 100 100"><defs><path id="percorso-anello" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs><text><textPath href="#percorso-anello" textLength="236" lengthAdjust="spacing">{`${t.experience} — ${t.years} — ${siteConfig.role} — `}</textPath></text></svg>
+				<b>{t.years.split(' ')[0]}</b>
+			</div>
 		</div>
-		<ul class="tappe">
+		<ol class="rotta chapter-steps" role="list">
+			<span class="rotta-linea" aria-hidden="true"><i></i></span>
 			{domande.map((domanda, i) => (
-				<li>
+				<li class="tappa">
 					<a href={`${labPaths[lang].about}#${domanda.id}`}>
-						<b>{String(i + 1).padStart(2, '0')}</b>
-						<span><strong>{domanda.label}</strong><em>{domanda.text}</em></span>
+						<span class="tappa-nodo" aria-hidden="true"></span>
+						<b class="tappa-numero" aria-hidden="true">{String(i + 1).padStart(2, '0')}</b>
+						<span class="tappa-testo"><strong>{domanda.label}</strong><em>{domanda.text}</em></span>
+						<span class="tappa-dettaglio"><span>{domanda.detailKicker}</span><span>{riempi(domanda.detailValue, { projects: inArchivio.length })}</span></span>
+						<i class="step-arrow" aria-hidden="true">↗</i>
 					</a>
 				</li>
 			))}
-		</ul>
+			<li class="tappa tappa-oggi" aria-hidden="true"><span class="tappa-nodo"></span><b class="tappa-numero">{lang === 'it' ? 'Oggi' : 'Now'}</b><span class="tappa-testo"><strong>{siteConfig.role}</strong></span></li>
+		</ol>
 	</section>
 
-	<section class="home-section" id="contatto" data-section="4">
-		<div class="sezione-testo">
-			<span class="section-kicker">{t.kicker} 04</span>
-			<h1>{t.contact}</h1>
+	<!-- 04 · Contatto: il biglietto da visita che segue il puntatore -->
+	<section class="home-section home-chapter chapter-contact scene" data-scene="contact" aria-labelledby="contatto-title" id="contatto" data-section="4">
+		<div class="rigo-indice chapter-indice"><b>04</b><span>{t.contact}</span><i></i><span>{t.reply} · {t.within}</span></div>
+		<div class="sezione-testo chapter-opening">
+			<h2 id="contatto-title"><span>{t.contact}</span></h2>
 			<p>{t.contactText}</p>
 			<a class="collegamento" href={`mailto:${siteConfig.email}`}>{t.mail}</a>
-			<i class="section-rule" aria-hidden="true"></i>
+			<span class="ventaglio ventaglio-busta chapter-ventaglio" aria-hidden="true"><i></i><i></i><i></i></span>
 		</div>
-		<ul class="canali">
-			<li><a href={`mailto:${siteConfig.email}`}><b>Email</b><span>{siteConfig.email}</span></a></li>
-			<li><a href={siteConfig.github} rel="me noopener"><b>GitHub</b><span>{siteConfig.github.replace('https://', '')}</span></a></li>
-			<li><a href={siteConfig.linkedin} rel="me noopener"><b>LinkedIn</b><span>{siteConfig.linkedin.replace('https://www.', '').replace(/\/$/, '')}</span></a></li>
-		</ul>
+		<div class="chapter-channels">
+			<div class="biglietto-scena" data-biglietto>
+				<a class="scheda biglietto" href={`mailto:${siteConfig.email}`}>
+					<span class="biglietto-luce" aria-hidden="true"></span>
+					<span class="scheda-kicker"><span>Email</span><span>{siteConfig.name}</span></span>
+					<span class="biglietto-indirizzo">{siteConfig.email}</span>
+					<span class="biglietto-piede"><span>{t.reply} · {t.within}</span><span class="freccia-scambio" aria-hidden="true"><span>↗</span><span>↗</span></span></span>
+				</a>
+			</div>
+			<ul class="mazzo canali-mazzo" role="list">
+				<li><a class="scheda canale" href={siteConfig.github} rel="me noopener"><span class="scheda-kicker">GitHub</span><span class="scheda-titolo">{siteConfig.github.replace('https://', '')}</span><span class="scheda-freccia" aria-hidden="true">↗</span></a></li>
+				<li><a class="scheda canale" href={siteConfig.linkedin} rel="me noopener"><span class="scheda-kicker">LinkedIn</span><span class="scheda-titolo">{siteConfig.linkedin.replace('https://www.', '').replace(/\/$/, '')}</span><span class="scheda-freccia" aria-hidden="true">↗</span></a></li>
+			</ul>
+		</div>
 	</section>
 </ExperimentLayout>
+
+<script>
+  // One-shot masked entrances, scoped to these scenes and reset on Astro navigation.
+  let cleanupChapters: (() => void) | undefined;
+  function initChapters() {
+    cleanupChapters?.();
+    const scenes = [...document.querySelectorAll<HTMLElement>('.home-chapter')];
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) if (entry.isIntersecting) {
+        entry.target.classList.add('chapter-entered');
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.08 });
+    if (!reduced.matches) scenes.forEach((scene) => observer.observe(scene));
+    const stop = () => {
+      observer.disconnect();
+      scenes.forEach((scene) => scene.classList.remove('chapter-entered'));
+    };
+    reduced.addEventListener('change', stop);
+    cleanupChapters = () => { stop(); reduced.removeEventListener('change', stop); };
+  }
+  document.addEventListener('astro:page-load', initChapters);
+  document.addEventListener('astro:before-swap', () => cleanupChapters?.());
+
+  // Il biglietto si inclina verso il puntatore e la luce lo segue. Solo con mouse e
+  // movimento pieno: altrove resta una carta ferma.
+  let cleanupBiglietto: (() => void) | undefined;
+  function initBiglietto() {
+    cleanupBiglietto?.();
+    const scena = document.querySelector<HTMLElement>('[data-biglietto]');
+    if (!scena || !matchMedia('(pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const carta = scena.firstElementChild as HTMLElement;
+    const controller = new AbortController();
+    const { signal } = controller;
+    scena.addEventListener('pointermove', (event) => {
+      const box = scena.getBoundingClientRect();
+      const x = (event.clientX - box.left) / box.width;
+      const y = (event.clientY - box.top) / box.height;
+      carta.style.setProperty('--rx', `${(0.5 - y) * 10}deg`);
+      carta.style.setProperty('--ry', `${(x - 0.5) * 12}deg`);
+      carta.style.setProperty('--mx', `${x * 100}%`);
+      carta.style.setProperty('--my', `${y * 100}%`);
+    }, { signal });
+    scena.addEventListener('pointerleave', () => { ['--rx', '--ry', '--mx', '--my'].forEach((p) => carta.style.removeProperty(p)); }, { signal });
+    cleanupBiglietto = () => controller.abort();
+  }
+  document.addEventListener('astro:page-load', initBiglietto);
+  document.addEventListener('astro:before-swap', () => cleanupBiglietto?.());
+</script>

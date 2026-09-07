@@ -172,7 +172,7 @@ test('senza View Transition API il lab continua a navigare', async ({ browser })
 	await page.getByRole('button', { name: /apri menu/i }).click();
 	await page.locator('.nav-item[href="/lab/it/progetti/"]').click();
 	await page.waitForURL('/lab/it/progetti/');
-	await expect(page.locator('.hero h1')).toBeVisible();
+	await expect(page.getByRole('heading', { level: 1, name: /Progetti/ })).toBeVisible();
 	await expect(page.locator('.toolbar-shell')).toBeVisible();
 
 	await context.close();

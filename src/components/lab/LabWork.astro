@@ -5,6 +5,7 @@ import { getProjectKinds } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labProjectPath, type LabLocale } from './chrome';
+import '../../styles/lab-work.css';
 
 interface Props { lang: LabLocale }
 const { lang } = Astro.props;
@@ -17,8 +18,20 @@ const tipi = getProjectKinds(projects, lang).sort((a, b) => ordine.indexOf(a) - 
 const copy = await getLabCopy(lang);
 const t = { ...copy.work, kicker: copy.common.section, em: copy.work.emphasis, hint: copy.common.hint };
 const nome = (tipo: string) => copy.work.kinds[tipo as keyof typeof copy.work.kinds]?.label ?? tipo;
-const testoTipo = (tipo: string) => copy.work.kinds[tipo as keyof typeof copy.work.kinds]?.text ?? '';
+const descrizioni: Record<string, string> = lang === 'it' ? {
+  app: 'Interfacce, interazioni e logica di prodotto: dai prototipi ai progetti universitari.',
+  package: 'Confini, contratti e componenti riusabili, a partire da problemi concreti.',
+  'open-source': 'Contributi e percorsi aperti: il contesto e lo stato sono parte del lavoro.',
+  experiment: 'Algoritmi e interfacce esplorati attraverso prove circoscritte.',
+} : {
+  app: 'Interfaces, interactions and product logic: from prototypes to university projects.',
+  package: 'Boundaries, contracts and reusable components, built around concrete problems.',
+  'open-source': 'Contributions and open explorations: context and status are part of the work.',
+  experiment: 'Algorithms and interfaces explored through focused experiments.',
+};
+const testoTipo = (tipo: string) => descrizioni[tipo] ?? '';
 const conta = (n: number) => `${n} ${n === 1 ? copy.work.one : copy.work.many}`;
+const stato = lang === 'it' ? { verified: 'Verificato', archived: 'Archiviato', prototype: 'Prototipo', 'in-progress': 'In corso' } : { verified: 'Verified', archived: 'Archived', prototype: 'Prototype', 'in-progress': 'In progress' };
 
 const sezioni = tipi.map((tipo) => {
 	const dentro = pubblicati.filter((p) => p.kind === tipo);
@@ -27,7 +40,7 @@ const sezioni = tipi.map((tipo) => {
 		kicker: t.kicker,
 		value: nome(tipo),
 		testo: testoTipo(tipo),
-		progetti: dentro,
+		progetti: dentro.toSorted((a, b) => (a.featuredRank ?? 99) - (b.featuredRank ?? 99) || b.year - a.year),
 		detail: { kicker: nome(tipo), value: conta(dentro.length) },
 	};
 });
@@ -36,25 +49,77 @@ const sezioni = tipi.map((tipo) => {
 <ExperimentLayout lang={lang} title={t.title} currentHref={labPaths[lang].work}
 	sections={sezioni.map(({ kicker, value, detail }) => ({ kicker, value, detail }))}
 	itHref={labPaths.it.work} enHref={labPaths.en.work}>
-	<header class="home-section hero" id="inizio" data-section="0">
-		<span class="section-kicker">{t.eyebrow}</span>
-		<h1>{t.headline} <em>{t.em}</em></h1>
-		<p>{conta(pubblicati.length)} {t.intro}</p>
-		<span class="hero-hint" aria-hidden="true">{t.hint}</span>
-		<i class="section-rule" aria-hidden="true"></i>
-	</header>
-
-	{sezioni.map((sezione, i) => (
-		<section class="home-section" id={sezione.id} data-section={i + 1}>
-			<span class="section-kicker">{t.kicker} {String(i + 1).padStart(2, '0')}</span>
-			<h1>{sezione.value}</h1>
-			<p>{sezione.testo}</p>
-			<ul class="elenco">
-				{sezione.progetti.map((project) => (
-					<li><a href={labProjectPath(lang, project.slug)}><strong>{project.title}</strong><span>{project.excerpt}</span></a></li>
-				))}
-			</ul>
-			<i class="section-rule" aria-hidden="true"></i>
-		</section>
-	))}
+  <a class="work-skip skip-link" href={`#${tipi[0]}`}>{lang === 'it' ? 'Vai ai progetti' : 'Skip to projects'}</a>
+  <div class="work-archive">
+    <!-- Oversized typography sits above the archive's ruled background. -->
+    <header class="scene work-hero" id="inizio" data-section="0">
+      <div class="work-backdrop depth-0" data-depth="0" aria-hidden="true"></div>
+      <div class="work-grid depth-2" data-depth="2" aria-hidden="true"></div>
+      <div class="work-hero-content depth-4" data-depth="4" data-work-reveal>
+        <div class="work-topline"><span>{lang === 'it' ? 'Samuele Segrini / Archivio' : 'Samuele Segrini / Archive'}</span><span>{Math.min(...pubblicati.map(p => p.year))} — {Math.max(...pubblicati.map(p => p.year))}</span></div>
+        <h1>{lang === 'it' ? 'Progetti' : 'Projects'}<sup>({String(pubblicati.length).padStart(2, '0')})</sup></h1>
+        <div class="work-intro"><span>{lang === 'it' ? 'Dal problema al software.' : 'From problem to software.'}</span><p>{lang === 'it' ? 'Applicazioni, sistemi e piccoli esperimenti. Modi diversi di progettare, costruire e capire come funzionano le cose.' : 'Applications, systems and small experiments. Different ways to design, build and understand how things work.'}</p></div>
+        <nav class="work-jump" aria-label={lang === 'it' ? 'Categorie dei progetti' : 'Project categories'}>{sezioni.map(s => <a href={`#${s.id}`}><span>{s.value}</span><small>{String(s.progetti.length).padStart(2, '0')}</small><span aria-hidden="true">↓</span></a>)}</nav>
+      </div>
+    </header>
+    {sezioni.map((sezione, i) => (
+      <section class="scene work-group" id={sezione.id} data-section={i + 1} aria-labelledby={`work-${sezione.id}`}>
+        <div class="work-backdrop depth-0" data-depth="0" aria-hidden="true"></div>
+        <span class="work-group-number depth-2" data-depth="2" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <div class="work-group-heading depth-4" data-depth="4" data-work-reveal><h2 id={`work-${sezione.id}`}>{sezione.value}<sup>{String(sezione.progetti.length).padStart(2, '0')}</sup></h2><p>{sezione.testo}</p></div>
+        <ul class="work-cards">
+          {sezione.progetti.map(project => <li class="work-card" data-work-reveal data-depth="3">
+            <a class="work-card-link" href={labProjectPath(lang, project.slug)} aria-labelledby={`title-${project.translationKey}`}>
+              <div class="work-card-art depth-3" data-depth="3"><img src={project.coverImage} alt={project.coverAlt} width="1200" height="800" loading="lazy" decoding="async" /><span class="work-card-arrow" aria-hidden="true">↗</span></div>
+              <div class="work-card-copy depth-4" data-depth="4">
+                <div class="work-card-meta"><span>{project.year} / {stato[project.lifecycle]}</span><span>{project.authorship === 'team' ? (lang === 'it' ? 'Team' : 'Team') : project.authorship === 'individual' ? (lang === 'it' ? 'Individuale' : 'Individual') : (lang === 'it' ? 'Contributo' : 'Contribution')}</span></div>
+                <h3 id={`title-${project.translationKey}`}>{project.title}</h3><p>{project.excerpt}</p>
+                <ul class="work-tags" aria-label={lang === 'it' ? 'Tecnologie' : 'Technologies'}>{project.technologies.slice(0, 4).map(tech => <li>{tech}</li>)}</ul>
+                <span class="work-card-cta">{lang === 'it' ? 'Dentro il progetto' : 'Inside the project'} <span aria-hidden="true">↗</span></span>
+              </div>
+            </a>
+          </li>)}
+        </ul>
+      </section>
+    ))}
+  </div>
+  <script is:inline defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    let cleanup: (() => void) | undefined;
+    function mountArchive() {
+      cleanup?.();
+      const root = document.querySelector('.work-archive');
+      if (!root) return;
+      const media = matchMedia('(prefers-reduced-motion: reduce)');
+      const animations = new Set<Animation>();
+      const tweens = new Set<{ kill(): void }>();
+      const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        if (media.matches) return;
+        const gsap = (window as unknown as { gsap?: { fromTo(target: Element, from: object, to: object): { kill(): void } } }).gsap;
+        if (gsap) {
+          const tween = gsap.fromTo(entry.target, { opacity: 0, y: matchMedia('(pointer: coarse)').matches ? 8 : 18 }, {
+            opacity: 1, y: 0, duration: .55, ease: 'power2.out', clearProps: 'opacity,transform', onComplete: () => tweens.delete(tween),
+          });
+          tweens.add(tween);
+          return;
+        }
+        const animation = entry.target.animate([{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }], { duration: 550, easing: 'cubic-bezier(.2,.7,.2,1)' });
+        animations.add(animation);
+        animation.finished.catch(() => {}).finally(() => animations.delete(animation));
+      }), { threshold: .05 });
+      const stop = () => {
+        animations.forEach(animation => animation.cancel());
+        tweens.forEach(tween => tween.kill());
+        root.querySelectorAll<HTMLElement>('[data-work-reveal]').forEach(el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); });
+      };
+      media.addEventListener('change', stop);
+      root.querySelectorAll('[data-work-reveal]').forEach(el => observer.observe(el));
+      cleanup = () => { observer.disconnect(); stop(); media.removeEventListener('change', stop); };
+    }
+    mountArchive();
+    document.addEventListener('astro:page-load', mountArchive);
+    document.addEventListener('astro:before-swap', () => cleanup?.());
+  </script>
 </ExperimentLayout>
