@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('la stessa superficie cresce dalla hero e lascia spazio ai tre riquadri', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/lab/it/');
+  await page.goto('/it/');
   const media = page.locator('.hero-media');
   await expect(media.locator('[data-scene]')).toHaveCount(3);
   const initial = await media.boundingBox();
@@ -27,7 +27,7 @@ test('la stessa superficie cresce dalla hero e lascia spazio ai tre riquadri', a
 
 test('the preview keeps the selected project when moving from its card to the link', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/lab/en/');
+  await page.goto('/en/');
   await page.locator('.project-entry').nth(1).evaluate(el => el.scrollIntoView({block: 'center', behavior: 'instant'}));
   await page.locator('.project-entry').nth(1).hover();
   const destination = await page.locator('.project-link').nth(1).getAttribute('href');
@@ -42,7 +42,7 @@ test('the preview keeps the selected project when moving from its card to the li
 
 test('preview link is unavailable in the hero and keyboard accessible once docked', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/lab/it/');
+  await page.goto('/it/');
   const preview = page.locator('.preview-open');
   await expect(preview).toHaveAttribute('tabindex', '-1');
   await page.locator('.project-link').nth(2).focus();
@@ -60,7 +60,7 @@ test('preview tags fit beside the touch target on narrow screens', async ({ page
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const width of [320, 390, 768, 1040]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/lab/it/');
+    await page.goto('/it/');
     await page.locator('.project-link').nth(2).focus();
     const geometry = await page.evaluate(() => {
       const action = document.querySelector('.preview-action')!.getBoundingClientRect();

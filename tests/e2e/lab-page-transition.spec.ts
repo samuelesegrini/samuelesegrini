@@ -35,7 +35,7 @@ const leggiTransizione = (page: Page) =>
 	page.evaluate(() => (window as typeof window & { __labTransition?: TransitionRecord }).__labTransition);
 
 test('la pagina usa un solo snapshot opaco della viewport e mantiene la barra', async ({ page }) => {
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 
 	const foglio = page.locator('[data-lab-page]');
 	await expect(foglio).toHaveCSS('view-transition-name', 'none');
@@ -66,8 +66,8 @@ test('la pagina usa un solo snapshot opaco della viewport e mantiene la barra', 
 				document.querySelector('.toolbar-shell')?.classList.contains('open') ?? false;
 		}, { once: true });
 	});
-	await page.locator('.nav-item[href="/lab/it/progetti/"]').click();
-	await page.waitForURL('/lab/it/progetti/');
+	await page.locator('.nav-item[href="/it/progetti/"]').click();
+	await page.waitForURL('/it/progetti/');
 	await expect(barra).toHaveAttribute('data-e2e-persisted', 'true');
 	expect(await page.evaluate(() => (window as typeof window & { __menuOpenAtNavigation?: boolean }).__menuOpenAtNavigation)).toBe(false);
 
@@ -81,7 +81,7 @@ test('la pagina usa un solo snapshot opaco della viewport e mantiene la barra', 
 
 	await osservaProssimaTransizione(page);
 	await page.goBack();
-	await page.waitForURL('/lab/it/');
+	await page.waitForURL('/it/');
 	await expect.poll(() => leggiTransizione(page)).toMatchObject({ direction: 'back' });
 	const indietro = (await leggiTransizione(page))!;
 	expect(indietro.animations).toEqual(expect.arrayContaining([
@@ -95,12 +95,12 @@ test('il titolo home non si muove mentre la pagina sta entrando', async ({ page 
 	// parta dopo che la transizione ha chiuso. La garanzia da difendere resta la stessa —
 	// niente si muove sotto lo snapshot — ma ora si misura la posizione, non il nome
 	// dell'animazione: è la posizione che si vedeva saltare.
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 
 	const righeTitolo = page.locator('.hero-marchio .mascherina > *');
 	await expect(righeTitolo.first()).toHaveCSS('animation-name', 'sale');
 
-	await page.goto('/lab/it/progetti/');
+	await page.goto('/it/progetti/');
 	await page.evaluate(() => {
 		type FinestraDiagnostica = typeof window & {
 			__homeTitleTransforms?: string[];
@@ -121,8 +121,8 @@ test('il titolo home non si muove mentre la pagina sta entrando', async ({ page 
 	});
 
 	await page.getByRole('button', { name: /apri menu/i }).click();
-	await page.locator('.nav-item[href="/lab/it/"]').click();
-	await page.waitForURL('/lab/it/');
+	await page.locator('.nav-item[href="/it/"]').click();
+	await page.waitForURL('/it/');
 
 	// fuori dalla feritoia, fermo al punto di partenza: 105% dell'altezza della riga
 	const fermoInBasso = (posizioni: string[] | undefined) =>
@@ -150,7 +150,7 @@ test('il movimento ridotto disattiva le animazioni della transizione', async ({ 
 		reducedMotion: 'reduce',
 	});
 	const page = await context.newPage();
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 
 	const animations = await page.evaluate(() => ({
 		root: getComputedStyle(document.documentElement, '::view-transition-new(root)').animationName,
@@ -167,11 +167,11 @@ test('senza View Transition API il lab continua a navigare', async ({ browser })
 		Object.defineProperty(document, 'startViewTransition', { configurable: true, value: undefined });
 	});
 	const page = await context.newPage();
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 
 	await page.getByRole('button', { name: /apri menu/i }).click();
-	await page.locator('.nav-item[href="/lab/it/progetti/"]').click();
-	await page.waitForURL('/lab/it/progetti/');
+	await page.locator('.nav-item[href="/it/progetti/"]').click();
+	await page.waitForURL('/it/progetti/');
 	await expect(page.getByRole('heading', { level: 1, name: /Progetti/ })).toBeVisible();
 	await expect(page.locator('.toolbar-shell')).toBeVisible();
 

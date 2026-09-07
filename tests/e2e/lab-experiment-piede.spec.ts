@@ -6,7 +6,7 @@ import { attendiCaricato } from './lab-chrome';
 /** Il piede chiude ogni pagina del banco: sta sopra la barra fissa, non sborda, e le sue
  *  voci portano dove dicono. */
 
-const rotte = ['/lab/it/', '/lab/it/progetti/', '/lab/en/about/'];
+const rotte = ['/it/', '/it/progetti/', '/en/about/'];
 
 test('il piede chiude ogni pagina e lascia spazio alla barra', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
@@ -39,7 +39,7 @@ test('il piede chiude ogni pagina e lascia spazio alla barra', async ({ page }) 
 
 test('le voci del piede portano dove dicono', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await attendiCaricato(page);
 
 	const voci = await page.evaluate(() => ({
@@ -54,21 +54,21 @@ test('le voci del piede portano dove dicono', async ({ page }) => {
 
 	expect(voci.invito, 'l\'invito grande apre la posta').toMatch(/^mailto:/);
 	expect(voci.pagine, 'le quattro rotte italiane').toEqual([
-		'/lab/it/',
-		'/lab/it/progetti/',
-		'/lab/it/articoli/',
-		'/lab/it/chi-sono/',
+		'/it/',
+		'/it/progetti/',
+		'/it/articoli/',
+		'/it/chi-sono/',
 	]);
 	expect(voci.altrove?.length, 'GitHub, LinkedIn ed email').toBe(3);
 	expect(voci.lingue.find((lingua) => lingua.corrente)?.testo?.trim(), 'la lingua corrente è marcata').toBe('IT');
 
 	// e la lingua porta alla stessa pagina nell'altra lingua, non alla home
-	await page.goto('/lab/it/progetti/');
+	await page.goto('/it/progetti/');
 	await page.waitForTimeout(700);
 	const altra = await page.evaluate(
 		() => [...document.querySelectorAll('.piede-lingue a')].find((a) => !a.hasAttribute('aria-current'))?.getAttribute('href'),
 	);
-	expect(altra, 'la lingua tiene la pagina').toBe('/lab/en/projects/');
+	expect(altra, 'la lingua tiene la pagina').toBe('/en/projects/');
 });
 
 
@@ -77,7 +77,7 @@ test('il footer resta leggibile da 320px al desktop, in entrambe le lingue', asy
 	for (const locale of ['it', 'en']) {
 		for (const width of [320, 390, 768, 1280, 1440]) {
 			await page.setViewportSize({ width, height: 900 });
-			await page.goto(`/lab/${locale}/`);
+			await page.goto(`/${locale}/`);
 			await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
 			const layout = await page.evaluate(() => {
 				const title = document.querySelector<HTMLElement>('.piede-gesto h2 > span')!;
@@ -103,7 +103,7 @@ test('il footer è accessibile su desktop e telefono', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	for (const width of [1280, 390]) {
 		await page.setViewportSize({ width, height: 900 });
-		await page.goto('/lab/it/');
+		await page.goto('/it/');
 		await page.locator('.piede').scrollIntoViewIfNeeded();
 		const result = await new AxeBuilder({ page }).include('#footer').analyze();
 		expect(result.violations).toEqual([]);
@@ -111,7 +111,7 @@ test('il footer è accessibile su desktop e telefono', async ({ page }) => {
 });
 
 test('l’invito funziona da tastiera e resta leggibile senza JavaScript e con movimento ridotto', async ({ browser, page }) => {
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await attendiCaricato(page);
 	const invite = page.locator('.piede-invito');
 	await invite.focus();
@@ -121,7 +121,7 @@ test('l’invito funziona da tastiera e resta leggibile senza JavaScript e con m
 	await expect(invite).toHaveAttribute('href', /^mailto:/);
 	const context = await browser.newContext({ javaScriptEnabled: false, reducedMotion: 'reduce' });
 	const fallback = await context.newPage();
-	await fallback.goto('/lab/en/');
+	await fallback.goto('/en/');
 	await expect(fallback.locator('.piede-gesto h2 > span')).toHaveCSS('animation-name', 'none');
 	await expect(fallback.locator('.piede-gesto h2')).toBeVisible();
 	await expect(fallback.locator('.piede-navigazione a')).toHaveCount(4);

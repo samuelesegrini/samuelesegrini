@@ -7,7 +7,7 @@ import { apriMenu, rigaSulGuscio, vaiDalMenu } from './lab-chrome';
 
 test('sul telefono il cambio lingua sta nel menu, non nella barra', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(800);
 
 	const chiusa = await page.evaluate(() => ({
@@ -43,12 +43,12 @@ test('sul telefono il cambio lingua sta nel menu, non nella barra', async ({ pag
 
 	await page.click('.panel-lingue a:not([aria-current])');
 	await page.waitForTimeout(1200);
-	expect(new URL(page.url()).pathname, 'e portano davvero all\'altra lingua').toBe('/lab/en/');
+	expect(new URL(page.url()).pathname, 'e portano davvero all\'altra lingua').toBe('/en/');
 });
 
 test('sul desktop il cambio lingua resta nella barra', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 900 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(700);
 	const misura = await page.evaluate(() => ({
 		cella: document.querySelector('.toggle-square')!.getBoundingClientRect().width > 0,
@@ -62,7 +62,7 @@ test('la riga resta in fondo al guscio in ogni stato', async ({ page }) => {
 	const errori: string[] = [];
 	page.on('pageerror', (errore) => errori.push(errore.message));
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(2200);
 
 	const passi: [string, () => Promise<unknown>][] = [

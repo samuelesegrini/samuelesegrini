@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 test('writing archive and reader navigate in both languages', async ({ page }) => {
-  for (const route of ['/lab/it/articoli/', '/lab/en/writing/']) {
+  for (const route of ['/it/articoli/', '/en/writing/']) {
     await page.goto(route);
     await expect(page.locator('.writing-entry')).toHaveCount(4);
     const urls = await page.locator('.writing-entry-link').evaluateAll(links => links.map(a => a.getAttribute('href')));
@@ -26,7 +26,7 @@ test('archive and long article reflow with accessible reduced motion', async ({ 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ['/lab/it/articoli/', '/lab/it/articoli/ricostruire-galaxy-trucker-con-claude/']) {
+    for (const route of ['/it/articoli/', '/it/articoli/ricostruire-galaxy-trucker-con-claude/']) {
       await page.goto(route);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
       await expect(page.locator('main h1')).toHaveCount(1);

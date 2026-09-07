@@ -6,7 +6,7 @@ for (const locale of ['it', 'en']) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     for (const width of [1440, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
-      await page.goto(`/lab/${locale}/`);
+      await page.goto(`/${locale}/`);
       await page.waitForTimeout(1800);
       for (const id of ['scrittura', 'percorso', 'contatto']) {
         const section = page.locator(`#${id}`);
@@ -16,7 +16,7 @@ for (const locale of ['it', 'en']) {
         expect((await new AxeBuilder({ page }).include(`#${id}`).analyze()).violations).toEqual([]);
         for (const link of await section.locator('a').all()) {
           const href = await link.getAttribute('href');
-          if (href?.startsWith('/')) expect(href).toMatch(new RegExp(`^/lab/${locale}/`));
+          if (href?.startsWith('/')) expect(href).toMatch(new RegExp(`^/${locale}/`));
         }
       }
     }
@@ -26,10 +26,10 @@ for (const locale of ['it', 'en']) {
 test('chapter content works without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
-  await page.goto('/lab/it/');
+  await page.goto('/it/');
   for (const id of ['scrittura', 'percorso', 'contatto']) {
     await expect(page.locator(`#${id} h2`)).toBeVisible();
-    await expect(page.locator(`#${id} a`).first()).toHaveAttribute('href', /^(\/lab\/it\/|mailto:)/);
+    await expect(page.locator(`#${id} a`).first()).toHaveAttribute('href', /^(\/it\/|mailto:)/);
   }
   await context.close();
 });

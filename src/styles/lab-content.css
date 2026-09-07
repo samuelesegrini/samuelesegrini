@@ -1,0 +1,25 @@
+/* Componenti richiamati dagli articoli (MultiplayerSequence, RebuildEvidenceComparison):
+   le loro regole, ereditate dal vecchio foglio di produzione e tenute qui accanto alla lettura. */
+.evidence-comparison { max-width: 100%; margin: 2rem 0 3rem; overflow-x: auto; border: 1px solid var(--line); background: var(--white); }
+.evidence-comparison table { width: 100%; min-width: 38rem; border-collapse: collapse; font: .82rem/1.45 var(--sans); }
+.evidence-comparison th, .evidence-comparison td { min-width: 12rem; padding: 1rem; vertical-align: top; text-align: left; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.evidence-comparison th:last-child, .evidence-comparison td:last-child { border-right: 0; }
+.evidence-comparison tr:last-child td { border-bottom: 0; }
+.evidence-comparison th { background: var(--acid); font-size: .72rem; letter-spacing: .025em; }
+.multiplayer-sequence { margin: 2rem 0 3rem; font-family: var(--sans); }
+.system-participants { display: grid; grid-template-columns: 1fr minmax(9rem,1.2fr) 1fr; align-items: center; gap: .75rem; margin-bottom: 1px; text-align: center; }
+.system-participants span, .system-participants strong { padding: .75rem; border: 1px solid var(--line); background: var(--white); font: max(.7rem,11px) var(--mono); text-transform: uppercase; }
+.system-participants .authority-boundary { border-color: var(--ink); background: var(--acid); }
+.multiplayer-sequence ol { display: grid; gap: 1px; margin: 0; padding: 1px; background: var(--line); list-style: none; }
+.multiplayer-sequence li { display: grid; grid-template-columns: 2.5rem minmax(0,1fr); gap: 1rem; padding: 1.25rem; background: var(--white); }
+.multiplayer-sequence li > span { color: var(--muted); font: max(.7rem,11px) var(--mono); }
+.multiplayer-sequence strong { display: block; font-size: 1rem; }
+.multiplayer-sequence p { margin: .35rem 0 0; color: var(--muted); font: .9rem/1.5 var(--sans); }
+.multiplayer-sequence figcaption { margin-top: .75rem; color: var(--muted); font: max(.7rem,11px)/1.55 var(--mono); }
+@media (max-width: 760px) {
+	.rebuild-evidence { overflow: visible; border: 0; }
+	.rebuild-evidence table, .rebuild-evidence thead, .rebuild-evidence tbody, .rebuild-evidence tr { display: block; min-width: 0; }
+	.rebuild-evidence tr { display: grid; gap: 1px; margin-bottom: 1rem; padding: 1px; background: var(--line); }
+	.rebuild-evidence th, .rebuild-evidence td { display: block; min-width: 0; border: 0; background: var(--white); }
+	.rebuild-evidence thead tr { grid-template-columns: 1fr; }
+}

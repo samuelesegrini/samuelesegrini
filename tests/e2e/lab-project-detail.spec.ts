@@ -2,10 +2,10 @@ import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const routes = [
-  '/lab/it/progetti/easymanager-operazioni-ristorante/',
-  '/lab/en/projects/galaxy-trucker-java-project/',
-  '/lab/it/progetti/spingo-micromobilita-sostenibile/',
-  '/lab/en/projects/highway-route-planner/',
+  '/it/progetti/easymanager-operazioni-ristorante/',
+  '/en/projects/galaxy-trucker-java-project/',
+  '/it/progetti/spingo-micromobilita-sostenibile/',
+  '/en/projects/highway-route-planner/',
 ];
 
 test('case studies retain their evidence and have a navigable reading structure', async ({ page }) => {
@@ -21,7 +21,7 @@ test('case studies retain their evidence and have a navigable reading structure'
     }
     await expect(page.locator('.case-prose blockquote').first()).toBeVisible();
     const next = page.locator('.case-next-link');
-    await expect(next).toHaveAttribute('href', new RegExp(`^/lab/${route.includes('/it/') ? 'it/progetti' : 'en/projects'}/`));
+    await expect(next).toHaveAttribute('href', new RegExp(`^/${route.includes('/it/') ? 'it/progetti' : 'en/projects'}/`));
     const sections = await page.locator('.case-detail [data-section]').evaluateAll(nodes => nodes.map(node => Number((node as HTMLElement).dataset.section)));
     expect(sections).toEqual(sections.map((_, index) => index));
     if (route.includes('easymanager')) {

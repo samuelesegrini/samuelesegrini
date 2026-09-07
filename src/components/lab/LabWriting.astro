@@ -3,6 +3,7 @@ import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import { getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { labPaths, labPostPath, type LabLocale } from './chrome';
+import { withBase } from '../../lib/base';
 import '../../styles/lab-work.css';
 import '../../styles/lab-writing.css';
 interface Props { lang: LabLocale }
@@ -20,7 +21,7 @@ const sections = [{ kicker: it ? 'Sezione' : 'Section', value: it ? 'Tutti gli a
   <div class="work-archive writing-archive">
     <header class="scene work-hero" id="inizio" data-section="0">
       <div class="work-backdrop" data-depth="0" aria-hidden="true"></div><div class="work-grid depth-2" data-depth="2" aria-hidden="true"></div>
-      <div class="depth-4" data-depth="4"><div class="work-topline"><span>Samuele Segrini / {it ? 'Appunti' : 'Notes'}</span><a href={it ? '/it/rss.xml' : '/en/rss.xml'}>RSS ↗</a></div>
+      <div class="depth-4" data-depth="4"><div class="work-topline"><span>Samuele Segrini / {it ? 'Appunti' : 'Notes'}</span><a href={withBase(it ? '/it/rss.xml' : '/en/rss.xml')}>RSS ↗</a></div>
       <h1>{title}<sup>({String(entries.length).padStart(2, '0')})</sup></h1>
       <div class="work-intro"><span>{it ? 'Il ragionamento, oltre il codice.' : 'The thinking behind the code.'}</span><p>{it ? 'Scelte tecniche, esperimenti e lezioni dai progetti. Scrivere per rendere esplicito quello che ho imparato.' : 'Technical decisions, experiments and lessons from projects. Writing to make what I have learned explicit.'}</p></div>
       <nav class="writing-jump" aria-label={it ? 'Indice della pagina' : 'Page index'}><a href="#articoli">{it ? 'Tutti gli articoli' : 'All articles'} ↓</a><a href="#argomenti">{it ? 'Argomenti' : 'Topics'} ↓</a></nav></div>

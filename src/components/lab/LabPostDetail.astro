@@ -2,11 +2,13 @@
 import { render } from 'astro:content';
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import LabContentLink from './LabContentLink.astro';
+import LabContentImage from './LabContentImage.astro';
 import { getTranslationPair, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { labPaths, labPostPath, type LabLocale } from './chrome';
 import '../../styles/lab-project-detail.css';
 import '../../styles/lab-writing.css';
+import '../../styles/lab-content.css';
 interface Props { lang: LabLocale; slug: string }
 const { lang, slug } = Astro.props;
 const it = lang === 'it';
@@ -31,7 +33,7 @@ const sections = [labels.body, labels.next].map(value => ({ kicker: it ? 'Sezion
     </div></header>
     <section class="scene case-reading" id="articolo" data-section="1" aria-label={labels.body}><div class="depth-0 case-surface" data-depth="0" aria-hidden="true"></div><div class="depth-2 case-reading-rule" data-depth="2" aria-hidden="true"></div>
       <aside class="depth-4 case-reading-rail" data-depth="4"><div class="case-rail-header"><span class="case-eyebrow">{labels.index}</span><span class="case-read-progress" aria-hidden="true"><i></i></span></div><nav class="case-toc" aria-label={labels.index}>{chapters.map((h, i) => <a href={`#${h.slug}`}><span>{String(i + 1).padStart(2, '0')}</span><span>{h.text}</span></a>)}</nav><a class="case-rail-back" href="#inizio">↑ {it ? 'Torna all’inizio' : 'Back to top'}</a></aside>
-      <div class="depth-4 case-prose prosa" data-depth="4"><Content components={{ a: LabContentLink }} /></div>
+      <div class="depth-4 case-prose prosa" data-depth="4"><Content components={{ a: LabContentLink, img: LabContentImage }} /></div>
     </section>
     <section class="scene case-next" id="prossimo" data-section="2" aria-labelledby="next-post"><div class="depth-0 case-dark-surface" data-depth="0" aria-hidden="true"></div><span class="depth-2 case-next-number" data-depth="2" aria-hidden="true">Aa</span><div class="depth-4" data-depth="4" data-reveal><span class="case-eyebrow">{labels.next}</span><a class="case-next-link" href={labPostPath(lang, next.slug)}><h2 id="next-post">{next.title}</h2><span aria-hidden="true">↗</span></a><div class="case-next-bottom"><span>{next.tags.slice(0, 3).join(' / ')}</span><a href={labPaths[lang].writing}>{labels.back}</a></div></div></section>
   </article>

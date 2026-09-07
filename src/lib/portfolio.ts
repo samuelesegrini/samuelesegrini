@@ -1,5 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { validateContentSet, type Locale, type PostEntry, type ProjectEntry } from './content';
+import { withBase } from './base';
 
 export type ProjectDocument = CollectionEntry<'projects'>;
 export type PostDocument = CollectionEntry<'posts'>;
@@ -58,15 +59,11 @@ export function findPostDocument(
 }
 
 export function projectPath(project: ProjectEntry): string {
-	return project.locale === 'it'
-		? `/it/progetti/${project.slug}/`
-		: `/en/projects/${project.slug}/`;
+	return withBase(project.locale === 'it' ? `/it/progetti/${project.slug}/` : `/en/projects/${project.slug}/`);
 }
 
 export function postPath(post: PostEntry): string {
-	return post.locale === 'it'
-		? `/it/articoli/${post.slug}/`
-		: `/en/writing/${post.slug}/`;
+	return withBase(post.locale === 'it' ? `/it/articoli/${post.slug}/` : `/en/writing/${post.slug}/`);
 }
 
 function validateAboutPages(documents: readonly AboutDocument[], errors: string[]) {

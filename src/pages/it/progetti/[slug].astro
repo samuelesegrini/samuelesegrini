@@ -1,11 +1,15 @@
 ---
-import ProjectDetail from '../../../components/ProjectDetail.astro';
+import LabProjectDetail from '../../../components/lab/LabProjectDetail.astro';
 import { getPortfolioContent } from '../../../lib/portfolio';
 
 export async function getStaticPaths() {
-	const { projectDocuments } = await getPortfolioContent();
-	return projectDocuments.filter(({ data }) => !data.draft && data.locale === 'it').map((document) => ({ params: { slug: document.data.slug }, props: { document } }));
+	const { projects } = await getPortfolioContent();
+	return projects
+		.filter((entry) => entry.locale === 'it' && !entry.draft)
+		.map((entry) => ({ params: { slug: entry.slug } }));
 }
-const { document } = Astro.props;
+
+const { slug } = Astro.params;
 ---
-<ProjectDetail document={document} />
+
+<LabProjectDetail lang="it" slug={slug!} />

@@ -1,107 +1,35 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+/** Pagina non trovata, in due lingue, senza dipendere da nulla oltre ai token del sito. */
+import '../styles/global.css';
+import { labPaths } from '../components/lab/chrome';
 import { siteConfig } from '../config/site';
 ---
 
-<BaseLayout
-	lang="it"
-	title="Pagina non trovata — 404"
-	description="La pagina richiesta non esiste."
-	translationURL="/en/"
-	canonicalPath="/404.html"
-	noIndex
->
-	<section class="not-found dark-section" data-not-found>
-		<p class="eyebrow">404 · <span data-error-label>Pagina non trovata</span></p>
-		<h1 data-error-title>Questa strada non porta a una pagina.</h1>
-		<a class="primary-button" href="/it/" data-error-link>Torna alla home</a>
-	</section>
-	<noscript slot="body-fallback">
-		<style>
-			body > .skip-link,
-			body > .site-header,
-			body > #main,
-			body > .site-footer {
-				display: none !important;
-			}
-		</style>
-		<a class="skip-link" href="#static-404-main" data-bilingual-404-skip>
-			<span lang="it">Vai al contenuto</span> / <span lang="en">Skip to content</span>
-		</a>
-		<main id="static-404-main" class="not-found not-found-fallback dark-section" data-bilingual-404-fallback>
-			<p class="eyebrow">404 · <span lang="it">Pagina non trovata</span> / <span lang="en">Page not found</span></p>
-			<h1><span lang="it">Pagina non trovata.</span> <span lang="en">Page not found.</span></h1>
-			<p class="not-found-message">
-				<span lang="it" data-fallback-copy="it">La pagina richiesta non esiste. Continua in italiano.</span>
-				<span lang="en" data-fallback-copy="en">The requested page does not exist. Continue in English.</span>
-			</p>
-			<div class="not-found-language-navigation">
-				<div lang="it">
-					<p>Italiano</p>
-					<nav class="not-found-navigation" aria-label="Navigazione pagina non trovata in italiano">
-						<a href="/it/">Home</a>
-						<a href="/it/progetti/">Progetti</a>
-						<a href="/it/articoli/">Articoli</a>
-						<a href="/it/chi-sono/">Chi sono</a>
-						<a href={`mailto:${siteConfig.email}`}>Scrivimi</a>
-					</nav>
-				</div>
-				<div lang="en">
-					<p>English</p>
-					<nav class="not-found-navigation" aria-label="English page-not-found navigation">
-						<a href="/en/">Home</a>
-						<a href="/en/projects/">Projects</a>
-						<a href="/en/writing/">Writing</a>
-						<a href="/en/about/">About</a>
-						<a href={`mailto:${siteConfig.email}`}>Contact me</a>
-					</nav>
-				</div>
-			</div>
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<title>404 — {siteConfig.name}</title>
+	</head>
+	<body class="non-trovata">
+		<main>
+			<span class="non-trovata-kicker">404</span>
+			<h1>Questa strada non porta a una pagina.<br /><em>This road leads nowhere.</em></h1>
+			<nav aria-label="Dove andare">
+				<a href={labPaths.it.home} lang="it">Torna alla home ↗</a>
+				<a href={labPaths.en.home} lang="en">Back to the home ↗</a>
+			</nav>
 		</main>
-	</noscript>
-</BaseLayout>
+	</body>
+</html>
 
-<script is:inline>
-	if (window.location.pathname.startsWith('/en/')) {
-		const title = 'Page not found — 404';
-		const description = 'The requested page does not exist.';
-		document.documentElement.lang = 'en';
-		document.title = title;
-		document.querySelector('meta[name="description"]')?.setAttribute('content', description);
-		document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-		document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
-		document.querySelector('meta[property="og:locale"]')?.setAttribute('content', 'en_US');
-		const canonical = document.querySelector('link[rel="canonical"]');
-		if (canonical instanceof HTMLLinkElement) {
-			const pageURL = new URL(window.location.pathname, canonical.href).href;
-			canonical.href = pageURL;
-			document.querySelector('meta[property="og:url"]')?.setAttribute('content', pageURL);
-			const feed = document.querySelector('link[type="application/rss+xml"]');
-			if (feed instanceof HTMLLinkElement) feed.href = new URL('/en/rss.xml', canonical.href).href;
-		}
-		document.querySelector('.skip-link')?.replaceChildren('Skip to content');
-		document.querySelector('[data-error-label]')?.replaceChildren('Page not found');
-		document.querySelector('[data-error-title]')?.replaceChildren('This path does not lead to a page.');
-		const link = document.querySelector('[data-error-link]');
-		if (link instanceof HTMLAnchorElement) {
-			link.textContent = 'Back to home';
-			link.href = '/en/';
-		}
-		const wordmark = document.querySelector('.wordmark');
-		if (wordmark instanceof HTMLAnchorElement) {
-			wordmark.href = '/en/';
-			wordmark.setAttribute('aria-label', 'Samuele Segrini, home');
-		}
-		for (const [index, nav] of [...document.querySelectorAll('.desktop-nav, .mobile-menu nav')].entries()) {
-			nav.setAttribute('aria-label', index === 0 ? 'Primary navigation' : 'Mobile navigation');
-			const links = nav.querySelectorAll('a');
-			const labels = ['Projects', 'Writing', 'About', 'Italiano', 'Contact me'];
-			const hrefs = ['/en/projects/', '/en/writing/', '/en/about/', '/it/', 'mailto:samuele.segrini@gmail.com'];
-			links.forEach((item, index) => {
-				item.textContent = labels[index];
-				item.setAttribute('href', hrefs[index]);
-			});
-		}
-		document.querySelector('.site-footer span')?.replaceChildren('Software, thoughtfully made.');
-	}
-</script>
+<style>
+	.non-trovata main { display: grid; align-content: center; gap: 28px; min-height: 100svh; padding: 10vh max(24px, 4vw); }
+	.non-trovata-kicker { font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #6b6760; }
+	.non-trovata h1 { max-width: 16ch; margin: 0; font-size: clamp(40px, 7vw, 96px); font-weight: 500; letter-spacing: -.07em; line-height: .96; }
+	.non-trovata h1 em { display: block; margin-top: .3em; font-family: var(--serif); font-style: italic; font-weight: 430; color: #6b6760; }
+	.non-trovata nav { display: flex; flex-wrap: wrap; gap: 12px; }
+	.non-trovata nav a { display: inline-flex; min-height: 44px; align-items: center; padding: 0 18px; border-radius: 999px; background: #111; color: #fffef9; font-size: 14px; font-weight: 700; }
+</style>

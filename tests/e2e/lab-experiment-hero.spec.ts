@@ -28,7 +28,7 @@ const scorriA = async (page: import('@playwright/test').Page, y: number) => {
 
 test('scorrendo, la hero si apre e si allontana', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1800);
 
 	const fermo = await stato(page);
@@ -54,7 +54,7 @@ test('scorrendo, la hero si apre e si allontana', async ({ page }) => {
 
 test('il riquadro non conta come sezione della barra', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1500);
 	// la barra si orienta con i data-section, e il riquadro non deve averne uno
 	const conteggio = await page.evaluate(() => ({
@@ -72,7 +72,7 @@ test('il riquadro non conta come sezione della barra', async ({ page }) => {
 test('con movimento ridotto la hero resta immobile', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1200);
 	await scorriA(page, 400);
 
@@ -88,7 +88,7 @@ test('con movimento ridotto la hero resta immobile', async ({ page }) => {
 
 test('le altre pagine tengono la hero classica', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
-	for (const rotta of ['/lab/it/progetti/', '/lab/it/chi-sono/']) {
+	for (const rotta of ['/it/progetti/', '/it/chi-sono/']) {
 		await page.goto(rotta);
 		await page.waitForTimeout(700);
 		const misura = await page.evaluate(() => ({
@@ -104,7 +104,7 @@ test('le altre pagine tengono la hero classica', async ({ page }) => {
 
 test('sul telefono la hero è compatta e non prende il ruolo dell\'ultima sezione', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1600);
 
 	const misura = await page.evaluate(() => {
@@ -136,7 +136,7 @@ test('sul telefono la hero è compatta e non prende il ruolo dell\'ultima sezion
 
 test('il marchio non deriva sul telefono', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1600);
 	const prima = await page.evaluate(() =>
 		document.querySelector('.hero-marchio > .mascherina')!.getBoundingClientRect().left,
@@ -153,7 +153,7 @@ test('il marchio non deriva sul telefono', async ({ page }) => {
 test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ page }) => {
 	for (const [larghezza, altezza] of [[768, 1024], [834, 1194], [1024, 1366], [1280, 700], [1280, 800], [1366, 768], [1512, 850], [1600, 900], [1920, 1080]] as const) {
 		await page.setViewportSize({ width: larghezza, height: altezza });
-		await page.goto('/lab/it/');
+		await page.goto('/it/');
 		await page.waitForTimeout(1500);
 		const misura = await page.evaluate(() => {
 			const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
@@ -187,7 +187,7 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 	await page.setViewportSize({ width: 1280, height: 800 });
 
 	// caricamento pieno: nessuna attesa, i pezzi partono col loro sfalsamento
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(300);
 	const carico = await page.evaluate(() => ({
 		discesa: getComputedStyle(document.querySelector('.hero-media-fill')!).animationName,
@@ -202,7 +202,7 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 
 	// arrivo dal menu: l'ingresso c'è ancora, spostato in avanti perché la transizione
 	// copre i primi istanti e altrimenti si consumerebbe dove nessuno lo vede
-	await page.goto('/lab/it/progetti/');
+	await page.goto('/it/progetti/');
 	await page.waitForTimeout(1400);
 	await vaiDalMenu(page, 'Home', 250);
 
@@ -219,7 +219,7 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 			crescita: getComputedStyle(document.querySelector('.hero-media')!).animationName,
 		};
 	});
-	expect(durante.percorso).toBe('/lab/it/');
+	expect(durante.percorso).toBe('/it/');
 	expect(durante.bandiera).toBe(true);
 	expect(durante.nome, 'l\'ingresso non è annullato').toBe('sale');
 	expect(durante.ritardo, 'sfalsamento più l\'attesa, oltre la durata della transizione').toBe('0.818s');
@@ -256,7 +256,7 @@ test('l\'ingresso aspetta la transizione invece di essere annullato', async ({ p
 
 test('la crescita del riquadro non porta variabili nei fotogrammi', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1600);
 
 	const lette = await page.evaluate(() => {
@@ -291,7 +291,7 @@ test('la crescita del riquadro non porta variabili nei fotogrammi', async ({ pag
 
 	// e i ripieghi restano corretti: dove l'animazione non c'è, il riquadro è a grandezza piena
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1400);
 	const telefono = await page.evaluate(() => {
 		const stile = getComputedStyle(document.querySelector('.hero-media')!);
@@ -303,7 +303,7 @@ test('la crescita del riquadro non porta variabili nei fotogrammi', async ({ pag
 
 test('la pillola sfuma prima che il riquadro le arrivi addosso', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1800);
 
 	// da fermi si legge

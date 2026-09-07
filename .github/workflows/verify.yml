@@ -1,4 +1,4 @@
-name: Verify portfolio
+name: Verify
 
 on:
   pull_request:
@@ -17,4 +17,3 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run verify
-      - run: npm run build

@@ -1,5 +1,5 @@
 {
-  "name": "portfolio",
+  "name": "samuelesegrini",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -7,35 +7,23 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "dev:cms": "tinacms dev --noTelemetry -c \"ASTRO_DEV_BACKGROUND=0 astro dev\"",
-    "build": "npm run launch:check && npm run build:cms && npm run build:site",
-    "build:cms": "tinacms build --skip-cloud-checks --skip-indexing --content=local --noTelemetry",
-    "build:site": "astro build",
+    "build": "astro build",
+    "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "links": "linkinator dist --recurse --skip 'mailto:*' --skip 'https://www.linkedin.com/in/samuele-segrini-221443241/' --skip 'https://milenaramosduran.github.io/hci-eco/' --skip 'https://portfolio-placeholder.pages.dev/*'",
-    "launch:check": "node scripts/assert-launch-ready.mjs",
-    "lighthouse": "lhci autorun",
-    "verify": "npm run check && npm test && npm run test:e2e && npm run build:site && npm run links",
-    "preview": "astro preview",
+    "verify": "npm run check && npm test && npm run test:e2e && npm run build",
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.2.5",
     "@astrojs/mdx": "^7.0.8",
-    "@astrojs/react": "^6.0.4",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource-variable/manrope": "^5.3.0",
     "@fontsource-variable/newsreader": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
-    "@tinacms/cli": "^2.6.1",
-    "astro": "^7.2.7",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "tinacms": "^3.12.1"
+    "astro": "^7.2.7"
   },
   "allowScripts": {
     "esbuild": true
@@ -43,10 +31,8 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
-    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.62.1",
     "@vitest/coverage-v8": "^4.1.11",
-    "linkinator": "^8.0.4",
     "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11"

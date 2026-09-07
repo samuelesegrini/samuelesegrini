@@ -10,11 +10,13 @@
 import { render } from 'astro:content';
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import LabContentLink from './LabContentLink.astro';
+import LabContentImage from './LabContentImage.astro';
 import { getFeaturedProjects, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { siteConfig } from '../../config/site';
 import { getLabCopy, riempi } from '../../lib/lab-copy';
 import { labPaths, labPostPath, labProjectPath, type LabLocale } from './chrome';
+import { withBase } from '../../lib/base';
 import '../../styles/lab-work.css';
 import '../../styles/lab-writing.css';
 import '../../styles/lab-about.css';
@@ -103,7 +105,7 @@ const sezioni = [
 					</div>
 					<a class="about-inizio" href="#inizio">↑ {l.inizio}</a>
 				</aside>
-				<div class="about-prosa prosa">{Content ? <Content components={{ a: LabContentLink }} /> : <p>{estratto}</p>}</div>
+				<div class="about-prosa prosa">{Content ? <Content components={{ a: LabContentLink, img: LabContentImage }} /> : <p>{estratto}</p>}</div>
 			</div>
 		</section>
 
@@ -113,7 +115,7 @@ const sezioni = [
 			<ul class="work-cards about-cards">{inEvidenza.map((project) => (
 				<li class="work-card">
 					<a class="work-card-link" href={labProjectPath(lang, project.slug)} aria-labelledby={`about-${project.translationKey}`}>
-						<div class="work-card-art"><img src={project.coverImage} alt={project.coverAlt} width="1200" height="800" loading="lazy" decoding="async" /><span class="work-card-arrow" aria-hidden="true">↗</span></div>
+						<div class="work-card-art"><img src={withBase(project.coverImage)} alt={project.coverAlt} width="1200" height="800" loading="lazy" decoding="async" /><span class="work-card-arrow" aria-hidden="true">↗</span></div>
 						<div class="work-card-copy">
 							<div class="work-card-meta"><span>{project.year} / {l.stato[project.lifecycle]}</span><span>{l.autore[project.authorship]}</span></div>
 							<h3 id={`about-${project.translationKey}`}>{project.title}</h3><p>{project.excerpt}</p>

@@ -1,0 +1,8 @@
+---
+/** Le immagini scritte nei contenuti sono radicate alla radice del sito: qui prendono il prefisso. */
+import type { HTMLAttributes } from 'astro/types';
+import { withBase } from '../../lib/base';
+type Props = HTMLAttributes<'img'>;
+const { src, ...attributes } = Astro.props;
+---
+<img {...attributes} src={src ? withBase(src.toString()) : src} />

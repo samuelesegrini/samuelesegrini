@@ -1,12 +1,13 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
-import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import rehypeBaseImages from './src/lib/rehype-base-images.mjs';
 
-// https://astro.build/config
+// Su GitHub Pages il sito vive sotto /samuelesegrini/: base e site arrivano dal workflow.
 export default defineConfig({
-	site: process.env.PUBLIC_SITE_URL ?? 'https://portfolio-placeholder.pages.dev',
+	site: process.env.PUBLIC_SITE_URL ?? 'https://samuelesegrini.github.io',
 	base: process.env.BASE_URL ?? undefined,
-	integrations: [mdx(), react(), sitemap({ filter: (page) => !page.includes('/lab/') })],
+	integrations: [mdx(), sitemap()],
+	markdown: { rehypePlugins: [rehypeBaseImages] },
 });

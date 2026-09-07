@@ -9,7 +9,7 @@ test('copre il primo caricamento e passa la mano alla hero', async ({ page }) =>
 	const errori: string[] = [];
 	page.on('pageerror', (errore) => errori.push(errore.message));
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(150);
 
 	const acceso = await page.evaluate(() => ({
@@ -41,7 +41,7 @@ test('copre il primo caricamento e passa la mano alla hero', async ({ page }) =>
 
 test('non si ripresenta nella stessa sessione né sulle navigazioni client', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await attendiCaricato(page);
 
 	// stessa scheda, ricaricando: già visto
@@ -50,7 +50,7 @@ test('non si ripresenta nella stessa sessione né sulle navigazioni client', asy
 	expect(await page.evaluate(() => document.documentElement.hasAttribute('data-caricando')), 'una volta per sessione').toBe(false);
 
 	// navigazione client: la transizione è già il passaggio
-	await page.goto('/lab/it/progetti/');
+	await page.goto('/it/progetti/');
 	await page.waitForTimeout(1200);
 	await vaiDalMenu(page, 'Home', 900);
 	expect(await page.evaluate(() => document.documentElement.hasAttribute('data-caricando')), 'niente sipario sopra la transizione').toBe(false);
@@ -59,7 +59,7 @@ test('non si ripresenta nella stessa sessione né sulle navigazioni client', asy
 test('con movimento ridotto il sipario non trattiene la pagina', async ({ browser }) => {
 	const contesto = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1280, height: 800 } });
 	const pagina = await contesto.newPage();
-	await pagina.goto('/lab/it/');
+	await pagina.goto('/it/');
 	await pagina.waitForFunction(() => document.documentElement.hasAttribute('data-caricato'), null, { timeout: 4000 });
 	const misura = await pagina.evaluate(() => ({
 		visibile: getComputedStyle(document.querySelector('.sipario')!).display,
@@ -72,7 +72,7 @@ test('con movimento ridotto il sipario non trattiene la pagina', async ({ browse
 
 test('la barra entra una volta sola, quando il sipario si ritira', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await attendiCaricato(page);
 
 	const scostamento = () =>
@@ -155,7 +155,7 @@ test('il sipario non se ne va prima dei caratteri', async ({ page }) => {
 		};
 		requestAnimationFrame(osserva);
 	});
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForFunction(() => (window as typeof window & { __allaChiusura?: string[] }).__allaChiusura, null, {
 		timeout: 8000,
 	});

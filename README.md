@@ -1,59 +1,52 @@
-# Bilingual editorial portfolio
+<h1 align="center">Samuele Segrini</h1>
+<p align="center">Software Engineer · Swift & iOS · sistemi affidabili</p>
 
-An employer-focused Astro portfolio with Italian as the default language, localized English routes, strict MDX content validation, and a Git-backed TinaCMS editor.
+<p align="center">
+  <a href="https://samuelesegrini.github.io/samuelesegrini/it/"><b>Portfolio (IT)</b></a> ·
+  <a href="https://samuelesegrini.github.io/samuelesegrini/en/"><b>Portfolio (EN)</b></a> ·
+  <a href="https://www.linkedin.com/in/samuele-segrini-221443241/">LinkedIn</a> ·
+  <a href="mailto:samuele.segrini@gmail.com">Email</a>
+</p>
 
-The checked-in writing, identity, profile links, project outcomes, and artwork are explicit preview fixtures. Production deployment is intentionally blocked until they are replaced with real bilingual content and both CV files.
+---
 
-## Local development
+I design and build iOS products where the logic holds up as well as the interface. I got here through distributed systems, algorithms, hardware and interfaces: projects that taught me to treat software as a complete product, not a collection of screens.
 
-Requires Node 22 or newer.
+**What I care about**
+
+- Explicit constraints and contracts, verified across the whole system rather than in isolated parts.
+- Swift, SwiftUI and UIKit, with the architecture, platform limits and accessibility that come with them.
+- Writing down what I learned: technical notes on systems, trade-offs and useful mistakes.
+
+**Selected work**
+
+| Project | What it is | Stack |
+| --- | --- | --- |
+| [EasyManager](https://samuelesegrini.github.io/samuelesegrini/en/projects/easymanager-restaurant-operations/) | Restaurant operations software turned into a modular Swift toolkit: durable orders, device lanes, honest fiscal reconciliation. | Swift 6.3, SwiftUI, Swift Concurrency |
+| [Galaxy Trucker](https://samuelesegrini.github.io/samuelesegrini/en/projects/galaxy-trucker-java-project/) | A four-person multiplayer game with an authoritative server, two network transports (Socket and RMI) and two playable interfaces. | Java, JavaFX, Maven |
+| [SpinGO](https://samuelesegrini.github.io/samuelesegrini/en/projects/spingo-sustainable-micromobility/) | A micromobility app shaped by 109 survey answers and 7 usability sessions, with off-phone riding interactions. | HCI, Figma, React, TypeScript |
+
+**Writing**
+
+Recent notes live in the [writing section](https://samuelesegrini.github.io/samuelesegrini/en/writing/), from why my first video game was really a distributed system to what changed when I rebuilt it with an AI agent.
+
+**Currently**
+
+Looking for a first iOS role where I can contribute to a real product, go through code review and technical decisions, and grow alongside more experienced people. I reply within 24 hours, Italian time zone.
+
+---
+
+<details>
+<summary>About this repository</summary>
+
+This repository is both my GitHub profile and the source of my portfolio, an [Astro](https://astro.build) site published to GitHub Pages by the workflow in `.github/workflows/deploy.yml`.
 
 ```sh
 npm install
-npm run dev
+npm run dev        # http://localhost:4321/it/
+npm run verify     # astro check, unit tests, Playwright e2e, production build
 ```
 
-Open `http://localhost:4321/it/`. To edit content with the local TinaCMS UI, run `npm run dev:cms` and open `/admin/`.
+Content is bilingual MDX under `src/content` (projects, posts, the about page) plus the interface copy in `src/content/lab-copy`. Components live in `src/components/lab`, shared visual primitives in `src/styles/lab-primitives.css`.
 
-Copy `.env.example` to `.env` when configuring TinaCloud or a real canonical origin. Never commit the Tina token.
-
-## Content model
-
-- Projects live in `src/content/projects/{it,en}`.
-- Articles live in `src/content/posts/{it,en}`.
-- About pages live in `src/content/pages`.
-- `translationKey` pairs independently localized slugs.
-- A non-draft entry is valid only when its non-draft translation exists.
-- The homepage must contain ranks 1, 2, and 3 exactly once per locale.
-- Cross-language metadata and related-content keys are validated during every build.
-- A project `excerpt` is one outcome-led sentence under 25 words. It must contain a finite verb, include a supported number when useful, and must not begin with an indefinite article such as `A`, `An`, `Un`, or `Una`.
-- `outcomes` contain inspectable facts; `method` records how each value was obtained. Values, lifecycle, authorship, link destinations, and relationships must match across translations.
-- `lifecycle` is one of `verified`, `archived`, `prototype`, or `in-progress`; `authorship` is `individual`, `team`, or `contribution`.
-- External links must state their relationship to the work. Related articles include a localized reason to read rather than a generic backlink.
-- A project may contain at most one real attributed testimonial. Never create one as presentation copy.
-
-TinaCMS exposes the same fields at `/admin/`. Saving incomplete or invalid bilingual content can fail a preview build; Cloudflare keeps the last successful production deployment.
-
-## Verification
-
-```sh
-npm run verify
-npm run build
-npm run lighthouse
-```
-
-`verify` runs Astro Check, Vitest, Playwright, the static production build, and internal-link checking. The separate Lighthouse CI command enforces 90 or better for performance, accessibility, best practices, and SEO on representative pages.
-
-## Cloudflare Pages
-
-Connect the GitHub repository in Cloudflare Pages and configure:
-
-- Production branch: `main`
-- Build command: `npm run verify && npm run build`
-- Build output: `dist`
-- Node version: `22`
-- Environment variables: `PUBLIC_SITE_URL`, `TINA_PUBLIC_CLIENT_ID`, `TINA_TOKEN`, and `GITHUB_BRANCH=main`
-
-Branch deployments remain previews. On `main`, `npm run launch:check` blocks the build while placeholder mode, demonstration copy, missing Tina credentials, a placeholder origin, or either CV PDF remains.
-
-Before public launch, replace all fixture content and profile values, set `isPlaceholder: false` in `src/config/site-shared.mjs`, add `public/cv/cv-it.pdf` and `public/cv/cv-en.pdf`, and set the real Cloudflare-provided origin.
+</details>

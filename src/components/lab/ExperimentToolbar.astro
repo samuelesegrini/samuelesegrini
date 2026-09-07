@@ -267,9 +267,6 @@ function montaIndice(shell) {
   const carta = shell.querySelector('.shuffle-slot')
   const dettaglio = shell.querySelector('[data-detail]')
   const marcati = [...document.querySelectorAll('[data-section]')]
-  // #region agent log
-  fetch('http://127.0.0.1:7757/ingest/94fbb232-e0f1-41cc-8491-e489e60e16cc',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9ad063'},body:JSON.stringify({sessionId:'9ad063',runId:'pre-fix',hypothesisId:'A',location:'ExperimentToolbar.astro:montaIndice',message:'toolbar index mount',data:{path:location.pathname,sezioni:sezioni.length,homeSections:bersagli.length,markedSections:marcati.length,markedClasses:marcati.map(n=>n.className),hasCarta:Boolean(carta),mode:shell.dataset.mode||null,earlyReturn:!carta||sezioni.length===0},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
   if (!carta || sezioni.length === 0) return
 
   // i listener della pagina precedente vanno sciolti: la barra è la stessa, la pagina no
@@ -358,9 +355,6 @@ function montaIndice(shell) {
 
   carta.addEventListener('click', () => {
     const prossima = (indice + 1) % carte.length
-    // #region agent log
-    fetch('http://127.0.0.1:7757/ingest/94fbb232-e0f1-41cc-8491-e489e60e16cc',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9ad063'},body:JSON.stringify({sessionId:'9ad063',runId:'pre-fix',hypothesisId:'E',location:'ExperimentToolbar.astro:shuffle-click',message:'shuffle click scroll target',data:{path:location.pathname,prossima,bersagli:bersagli.length,targetId:bersagli[prossima+1]?.id||null,hasTarget:Boolean(bersagli[prossima+1])},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     mostra(prossima, 1)
     shell.dataset.mode = 'index'
     // lo scroll programmato attraversa le sezioni intermedie: senza questa pausa
@@ -370,9 +364,6 @@ function montaIndice(shell) {
   }, { signal })
 
   // la carta segue lo scroll, non solo il contrario
-  // #region agent log
-  fetch('http://127.0.0.1:7757/ingest/94fbb232-e0f1-41cc-8491-e489e60e16cc',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9ad063'},body:JSON.stringify({sessionId:'9ad063',runId:'pre-fix',hypothesisId:'A',location:'ExperimentToolbar.astro:observer-gate',message:'scroll spy attach',data:{path:location.pathname,attach:bersagli.length>0,homeIds:bersagli.map(n=>n.id)},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
   if (bersagli.length) {
     const quote = new Map()
     const spia = new IntersectionObserver(voci => {
@@ -382,9 +373,6 @@ function montaIndice(shell) {
       quote.forEach((quota, nodo) => { if (quota > massimo) { massimo = quota; migliore = nodo } })
       if (!migliore || massimo <= 0.25) return
       const a = Number(migliore.dataset.section)
-      // #region agent log
-      fetch('http://127.0.0.1:7757/ingest/94fbb232-e0f1-41cc-8491-e489e60e16cc',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9ad063'},body:JSON.stringify({sessionId:'9ad063',runId:'pre-fix',hypothesisId:'A',location:'ExperimentToolbar.astro:observer',message:'scroll spy pick',data:{path:location.pathname,section:a,id:migliore.id,ratio:massimo,mode:a===0?'hero':'index'},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       shell.dataset.mode = a === 0 ? 'hero' : 'index'
       if (a > 0) mostra(a - 1)
     }, { threshold: [0, 0.25, 0.5, 0.75, 1] })
@@ -396,12 +384,6 @@ function montaIndice(shell) {
 function montaBarraSperimentale() {
   const shells = [...document.querySelectorAll('.toolbar-shell')]
   const shell = shells[0]
-  // #region agent log
-  const rect = shell?.getBoundingClientRect()
-  const mid = shell ? { x: Math.round(rect.left + rect.width / 2), y: Math.round(rect.top + rect.height / 2) } : null
-  const hit = mid ? document.elementFromPoint(mid.x, mid.y) : null
-  fetch('http://127.0.0.1:7757/ingest/94fbb232-e0f1-41cc-8491-e489e60e16cc',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9ad063'},body:JSON.stringify({sessionId:'9ad063',runId:'pre-fix',hypothesisId:'C',location:'ExperimentToolbar.astro:montaBarraSperimentale',message:'toolbar shell stacking',data:{path:location.pathname,shellCount:shells.length,hasShell:Boolean(shell),mode:shell?.dataset.mode||null,zIndex:shell?getComputedStyle(shell).zIndex:null,rect:rect?{top:rect.top,bottom:rect.bottom,width:rect.width,height:rect.height}:null,hitClass:hit?.className||null,hitTag:hit?.tagName||null,inToolbar:Boolean(shell&&hit&&shell.contains(hit))},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
   if (!shell) return
   legaBarra(shell)
   montaIndice(shell)

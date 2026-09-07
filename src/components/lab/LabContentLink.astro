@@ -1,7 +1,9 @@
 ---
+/** I link scritti nei contenuti sono radicati alla radice del sito: qui prendono il prefisso. */
 import type { HTMLAttributes } from 'astro/types';
+import { withBase } from '../../lib/base';
 type Props = HTMLAttributes<'a'>;
 const { href, ...attributes } = Astro.props;
-const target = href?.toString().replace(/^\/(it|en)\/(progetti|projects|articoli|writing)\//, '/lab/$1/$2/');
+const target = href ? withBase(href.toString()) : href;
 ---
 <a {...attributes} href={target}><slot /></a>

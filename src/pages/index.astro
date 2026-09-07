@@ -1,3 +1,4 @@
 ---
-return Astro.redirect('/it/', 302);
+import { labPaths } from '../components/lab/chrome';
+return Astro.redirect(labPaths.it.home, 302);
 ---

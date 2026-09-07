@@ -18,7 +18,7 @@ test('ogni sezione della home tiene la sua griglia e resta sopra la barra', asyn
 	const errori: string[] = [];
 	page.on('pageerror', (errore) => errori.push(String(errore.message)));
 	await page.setViewportSize({ width: 1280, height: 900 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(800);
 
 	for (const id of sezioni) {
@@ -72,7 +72,7 @@ test('ogni sezione della home tiene la sua griglia e resta sopra la barra', asyn
 
 test('le altre pagine del laboratorio restano a una colonna', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 900 });
-	for (const rotta of ['/lab/it/progetti/', '/lab/it/chi-sono/', '/lab/en/writing/']) {
+	for (const rotta of ['/it/progetti/', '/it/chi-sono/', '/en/writing/']) {
 		await page.goto(rotta);
 		await page.waitForTimeout(600);
 		const colonne = await page.evaluate(() =>
@@ -86,7 +86,7 @@ test('le altre pagine del laboratorio restano a una colonna', async ({ page }) =
 
 test('sul telefono la home si impila senza scorrimento laterale', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(800);
 	expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 
@@ -109,23 +109,23 @@ const selectedKeys = ['easymanager', 'galaxy-trucker', 'spingo-sustainable-micro
 
 test('i tre progetti selezionati e l’archivio portano alle pagine nella stessa lingua', async ({ page }) => {
 	for (const locale of ['it', 'en']) {
-		await page.goto(`/lab/${locale}/`);
+		await page.goto(`/${locale}/`);
 		const links = page.locator('.project-link');
 		await expect(links).toHaveCount(3);
 		expect(await page.locator('.project-entry').evaluateAll((folios) => folios.map((folio) => (folio as HTMLElement).dataset.projectKey))).toEqual(selectedKeys);
 		for (const link of await links.all()) {
 			const href = await link.getAttribute('href');
-			expect(href).toMatch(new RegExp(`^/lab/${locale}/${locale === 'it' ? 'progetti' : 'projects'}/`));
+			expect(href).toMatch(new RegExp(`^/${locale}/${locale === 'it' ? 'progetti' : 'projects'}/`));
 			expect((await page.request.get(href!)).status()).toBe(200);
 		}
-		await expect(page.locator('.projects-archive')).toHaveAttribute('href', `/lab/${locale}/${locale === 'it' ? 'progetti' : 'projects'}/`);
+		await expect(page.locator('.projects-archive')).toHaveAttribute('href', `/${locale}/${locale === 'it' ? 'progetti' : 'projects'}/`);
 	}
 });
 
 test('l’indice e la superficie condivisa restano leggibili a ogni larghezza', async ({ page }) => {
 	for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800 }, { width: 1040, height: 760 }, { width: 1280, height: 600 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
 		await page.setViewportSize(viewport);
-		await page.goto('/lab/it/');
+		await page.goto('/it/');
 		await page.waitForTimeout(1200);
 		await vaiA(page, 'progetti');
 		const layout = await page.evaluate(() => {
@@ -142,7 +142,7 @@ test('l’indice e la superficie condivisa restano leggibili a ogni larghezza', 
 });
 
 test('l’accento del progetto selezionato riprende il colore della barra', async ({ page }) => {
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.locator('.project-link').first().focus();
 	const colors = await page.evaluate(() => ({
 		selected: getComputedStyle(document.querySelector('.project-entry')!).backgroundColor,
@@ -154,7 +154,7 @@ test('l’accento del progetto selezionato riprende il colore della barra', asyn
 
 test('la navigazione da tastiera apre un progetto e il ritorno riattiva l’anteprima', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 900 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1600);
 	const first = page.locator('.project-link').first();
 	await first.focus();
@@ -174,7 +174,7 @@ test('movimento ridotto e assenza di JavaScript lasciano tutti i progetti leggib
 	for (const javaScriptEnabled of [true, false]) {
 		const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce', javaScriptEnabled });
 		const page = await context.newPage();
-		await page.goto('/lab/it/');
+		await page.goto('/it/');
 		const folios = page.locator('.project-entry');
 		await expect(folios).toHaveCount(3);
 		for (const folio of await folios.all()) {
@@ -189,7 +189,7 @@ test('movimento ridotto e assenza di JavaScript lasciano tutti i progetti leggib
 
 test('l’anteprima condivisa segue scroll, puntatore e tastiera', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 900 });
-	await page.goto('/lab/it/');
+	await page.goto('/it/');
 	await page.waitForTimeout(1500);
 	const gallery = page.locator('.project-gallery');
 	await expect(page.locator('.exhibition-screen')).toHaveCount(1);
@@ -209,7 +209,7 @@ test('la nuova sezione non introduce violazioni di accessibilità', async ({ pag
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	for (const width of [1280, 390]) {
 		await page.setViewportSize({ width, height: 900 });
-		await page.goto('/lab/it/');
+		await page.goto('/it/');
 		await vaiA(page, 'progetti');
 		const result = await new AxeBuilder({ page }).include('.project-journey').analyze();
 		expect(result.violations).toEqual([]);

@@ -1,9 +1,9 @@
 /**
  * Elementi della barra che non cambiano da pagina a pagina, declinati per lingua.
- * I percorsi rispecchiano quelli veri del sito (progetti/projects, articoli/writing),
- * così sostituire le rotte definitive sarà un cambio di prefisso, non di struttura.
+ * I percorsi sono quelli veri del sito, con il prefisso di GitHub Pages davanti.
  */
 import { siteConfig } from '../../config/site';
+import { base } from '../../lib/base';
 
 export type LabLocale = 'it' | 'en';
 
@@ -24,10 +24,10 @@ export interface ChromeRoute {
 	current?: boolean;
 }
 
-export const labPaths = {
-	it: { home: '/lab/it/', work: '/lab/it/progetti/', writing: '/lab/it/articoli/', about: '/lab/it/chi-sono/' },
-	en: { home: '/lab/en/', work: '/lab/en/projects/', writing: '/lab/en/writing/', about: '/lab/en/about/' },
-} as const;
+export const labPaths: Record<LabLocale, { home: string; work: string; writing: string; about: string }> = {
+	it: { home: `${base}/it/`, work: `${base}/it/progetti/`, writing: `${base}/it/articoli/`, about: `${base}/it/chi-sono/` },
+	en: { home: `${base}/en/`, work: `${base}/en/projects/`, writing: `${base}/en/writing/`, about: `${base}/en/about/` },
+};
 
 export const labProjectPath = (lang: LabLocale, slug: string) => `${labPaths[lang].work}${slug}/`;
 export const labPostPath = (lang: LabLocale, slug: string) => `${labPaths[lang].writing}${slug}/`;
