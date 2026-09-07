@@ -32,8 +32,8 @@ jobs:
       - name: Build site
         run: npm run build
         env:
-          PUBLIC_SITE_URL: https://samuelesegrini.github.io
-          BASE_URL: /portfolio-2
+          PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io
+          BASE_URL: /${{ github.event.repository.name }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
