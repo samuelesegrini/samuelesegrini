@@ -15,7 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-		"links": "linkinator dist --recurse --skip 'mailto:*' --skip 'https://www.linkedin.com/in/samuele-segrini-221443241/' --skip 'https://milenaramosduran.github.io/hci-eco/' --skip 'https://portfolio-placeholder.pages.dev/*'",
+    "links": "linkinator dist --recurse --skip 'mailto:*' --skip 'https://www.linkedin.com/in/samuele-segrini-221443241/' --skip 'https://milenaramosduran.github.io/hci-eco/' --skip 'https://portfolio-placeholder.pages.dev/*'",
     "launch:check": "node scripts/assert-launch-ready.mjs",
     "lighthouse": "lhci autorun",
     "verify": "npm run check && npm test && npm run test:e2e && npm run build:site && npm run links",
@@ -47,6 +47,7 @@
     "@playwright/test": "^1.62.1",
     "@vitest/coverage-v8": "^4.1.11",
     "linkinator": "^8.0.4",
+    "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11"
   }
