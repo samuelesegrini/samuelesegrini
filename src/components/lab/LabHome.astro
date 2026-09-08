@@ -26,8 +26,6 @@ const arco = anni.length && Math.min(...anni) !== Math.max(...anni)
 	? `’${String(Math.min(...anni)).slice(2)}—’${String(Math.max(...anni)).slice(2)}`
 	: `’${String(anni[0] ?? new Date().getFullYear()).slice(2)}`;
 const domande = copy.about.sections.filter((sezione) => sezione.text !== copy.home.contactText);
-// gli argomenti delle note, senza doppioni: corrono nel nastro in testa alla scrittura
-const argomenti = [...new Set(published.flatMap((post) => post.tags))].slice(0, 10);
 const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis, hint: copy.common.hint,
 	mail: copy.home.mailLink, one: copy.common.one, many: copy.common.many };
 
@@ -58,11 +56,8 @@ const sezioni = [
 
 	<LabProjects lang={lang} projects={featured} total={inArchivio.length} years={arco} copy={copy} />
 
-	<!-- 02 · Scrittura: il nastro degli argomenti, poi le note che si impilano scorrendo -->
+	<!-- 02 · Scrittura: le note che si impilano scorrendo -->
 	<section class="home-section home-chapter chapter-writing scene" data-scene="writing" aria-labelledby="scrittura-title" id="scrittura" data-section="2">
-		<div class="nastro chapter-nastro" aria-hidden="true">
-			<div class="nastro-corsa">{[0, 1].map(() => <ul role="presentation">{argomenti.map((tag) => <li>{tag}</li>)}</ul>)}</div>
-		</div>
 		<div class="rigo-indice chapter-indice"><b>02</b><span>{t.writing}</span><i></i><span>{conta(published.length, t.one, t.many)}</span></div>
 		<div class="sezione-testo chapter-opening">
 			<h2 id="scrittura-title"><span>{t.writing}</span></h2>

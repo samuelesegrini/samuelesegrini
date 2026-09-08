@@ -3,16 +3,6 @@
    `--tinta` (il colore della sezione) e un `--inchiostro`, così cambia pelle senza
    cambiare forma. Nessuno di questi dipende da JavaScript. */
 
-/* .nastro: una striscia di parole in mono che scorre, con il quadratino del kicker fra una
-   voce e l'altra. Serve da confine fra due superfici (carta → fondo scuro, o fra sezioni). */
-.nastro { overflow: hidden; background: var(--tinta, var(--blue)); color: var(--inchiostro, #171713); font: 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-.nastro-corsa { display: flex; width: max-content; animation: nastro-scorre var(--nastro-durata, 40s) linear infinite; }
-.nastro ul { display: flex; flex: none; margin: 0; padding: 0; list-style: none; }
-.nastro li { display: inline-flex; align-items: center; gap: 22px; padding: 16px 0 16px 22px; white-space: nowrap; }
-.nastro li::after { content: ''; width: 7px; height: 7px; border-radius: 2px; background: currentColor; }
-.nastro:hover .nastro-corsa { animation-play-state: paused; }
-@keyframes nastro-scorre { to { transform: translateX(-50%); } }
-
 /* .rigo-indice: la riga d'apertura di una scena. Numero, nome, un filo che si tende
    fino al bordo e un'annotazione a destra. È il kicker delle sezioni, steso in orizzontale. */
 .rigo-indice { display: flex; align-items: center; gap: 14px; color: var(--inchiostro-tenue, #6b6760); font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
@@ -79,6 +69,6 @@ a.scheda:is(:hover, :focus-visible) .scheda-freccia { transform: translate(4px, 
 :is(a, button):is(:hover, :focus-visible) .freccia-scambio > span:last-child { transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
-	.nastro-corsa, .sigillo svg { animation: none; }
+	.sigillo svg { animation: none; }
 	.scheda-freccia, .mazzo .scheda, .freccia-scambio > span { transition: none; }
 }

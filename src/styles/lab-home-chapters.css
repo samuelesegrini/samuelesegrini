@@ -2,7 +2,7 @@
    Ogni capitolo apre con un rigo-indice a tutta larghezza, tiene il testo a sinistra
    (fermo, mentre il resto scorre) e mette a destra il proprio gesto: le note che si
    impilano, la rotta che si disegna, il biglietto che si inclina. I pezzi comuni
-   (nastro, rigo-indice, scheda, mazzo, ventaglio, sigillo, freccia-scambio) vengono
+   (rigo-indice, scheda, mazzo, ventaglio, sigillo, freccia-scambio) vengono
    da lab-primitives.css; qui c'è solo come ogni capitolo li usa. */
 
 .home-section.home-chapter {
@@ -26,8 +26,6 @@
 
 /* la riga d'apertura: occupa tutta la larghezza, sopra le due colonne */
 .chapter-indice { grid-column: 1 / -1; padding-top: 96px; }
-.chapter-nastro { grid-column: 1 / -1; margin: 0 calc(-1 * max(24px, 4vw)); }
-.chapter-nastro + .chapter-indice { padding-top: 72px; }
 
 /* il testo: fermo mentre a destra si scorre */
 .home-chapter .chapter-opening { position: relative; top: auto; min-width: 0; padding-top: 0; }
@@ -137,7 +135,6 @@
 @media (max-width: 600px) {
   .home-section.home-chapter { min-height: auto; padding-bottom: 130px; gap: 36px; }
   .chapter-indice { padding-top: 64px; }
-  .chapter-nastro + .chapter-indice { padding-top: 48px; }
   .home-chapter .chapter-opening h2 { font-size: clamp(48px, 13vw, 76px); }
   .home-chapter .chapter-opening p { padding-right: 0; }
   .home-chapter .chapter-ventaglio { transform: scale(.5); bottom: -8px; }
