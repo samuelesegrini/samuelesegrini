@@ -3,88 +3,95 @@ translationKey: galaxy-trucker
 locale: it
 slug: galaxy-trucker-progetto-java
 title: Galaxy Trucker
-excerpt: Quattro persone hanno consegnato un gioco multiplayer Socket e RMI con un server autorevole, due trasporti di rete e due interfacce giocabili.
+excerpt: Quattro persone hanno tradotto un gioco da tavolo in un sistema client-server Java con server autorevole, Socket e RMI, TUI e GUI.
 draft: false
 coverImage: /images/projects/galaxy-trucker-network.png
 coverAlt: Nave modulare geometrica collegata tramite un server a quattro client
-seoTitle: Galaxy Trucker — Gioco multiplayer Java e ricostruzione AI
-seoDescription: Case study di un'implementazione client-server Java di Galaxy Trucker realizzata da quattro persone e di una successiva ricostruzione assistita da AI.
+seoTitle: Galaxy Trucker — Sistema distribuito Java e ricostruzione assistita da AI
+seoDescription: Case study tecnico del progetto di Ingegneria del Software 2024–2025 al Politecnico di Milano, con architettura, protocollo, contributi e una ricostruzione successiva.
 kind: app
 lifecycle: archived
 authorship: team
 year: 2025
 role: Sviluppatore nel team di quattro persone
 technologies:
-  - Java
+  - Java 23
   - JavaFX
   - Maven
   - Socket / RMI
-  - JUnit
+  - JUnit 5
 featuredRank: 2
 outcomes:
-  - value: "4"
-    label: persone nel team originale
-    method: Composizione del team di corso
+  - value: "314"
+    label: commit del team sul branch principale
+    method: Cronologia Git del repository, febbraio–luglio 2025
   - value: "2"
-    label: trasporti di rete
-    method: Implementazioni Socket e RMI
-  - value: "2"
-    label: interfacce giocabili
-    method: Client TUI e JavaFX
-startingPoint: Quattro persone, un semestre e un gioco da tavolo basato sullo stato da tradurre in un sistema distribuito.
-links: []
+    label: trasporti di rete intercambiabili
+    method: Adapter Socket e RMI su client e server
+  - value: "63"
+    label: classi di test
+    method: File JUnit in src/test/java al momento della consegna
+startingPoint: Quattro persone, un semestre e un gioco da tavolo con molto stato da trasformare in un sistema distribuito coerente.
+links:
+  - url: https://github.com/samuelesegrini/ing-sw-2025-segrini-terribile-varricchio-zanca
+    label: Repository del team
+    relationship: team-repository
 relatedPosts:
   - key: rebuilding-galaxy-trucker-with-claude
-    reason: Confronta l'architettura del team archiviata con la successiva ricostruzione assistita da AI.
+    reason: Confronta l'architettura consegnata dal team con la ricostruzione assistita da AI del 2026.
   - key: my-first-video-game
-    reason: Leggi il racconto personale sull'apprendimento dei sistemi distribuiti attraverso il progetto.
+    reason: Il racconto personale di come questo progetto mi ha insegnato i sistemi distribuiti.
 ---
 
-> Galaxy Trucker nasce come progetto finale del corso di Ingegneria del Software 2024–2025 al Politecnico di Milano. Il nostro team di quattro persone ha tradotto il gioco da tavolo in un'applicazione Java distribuita con un server autorevole, più client, due trasporti di rete e interfacce sia testuali sia grafiche.
+> Progetto finale del corso di Ingegneria del Software 2024–2025 al Politecnico di Milano (gruppo GC26, docente Gianpaolo Cugola). In quattro abbiamo tradotto il gioco da tavolo Galaxy Trucker di Cranio Creations in un'applicazione Java distribuita: un server autorevole, più client, due trasporti di rete e due interfacce.
 >
-> Il team ha completato il perimetro accademico concordato. Il repository non è però un prodotto mantenuto e rifinito dopo la consegna: il sorgente archiviato contiene un errore noto di compilazione nel client. Conservo questo fatto invece di riscrivere retroattivamente la storia condivisa.
->
-> Nel 2026 sono tornato sugli stessi requisiti per una ricostruzione separata assistita da AI. Questa pagina presenta il progetto; l'articolo collegato approfondisce l'esperimento successivo.
+> Nel mio percorso è il punto in cui il software ha smesso di essere una somma di classi. Un comando corretto in locale non basta quando deve attraversare la rete, modificare uno stato condiviso una sola volta e tornare a quattro interfacce diverse in modo coerente. Questa pagina descrive il sistema consegnato, il mio contributo, i limiti dell'artefatto archiviato e la ricostruzione che ho fatto un anno dopo.
 
-## Il prodotto collaborativo
+## Il problema
 
-La consegna richiedeva il gioco completo di livello II, la validazione automatica della nave, la visibilità delle navi degli altri giocatori e un'implementazione client–server basata su MVC. I client dovevano potersi collegare tramite Socket o RMI, anche all'interno della stessa partita, e il risultato doveva essere giocabile sia tramite TUI sia tramite GUI JavaFX.
+Galaxy Trucker si gioca in due fasi molto diverse. Nella costruzione i giocatori pescano contemporaneamente componenti da una pila comune e li montano sulla propria nave, rispettando regole di adiacenza dei connettori e posizioni vietate. Nel volo una sequenza di carte avventura (pirati, pianeti, sciami di meteore, spazio aperto, zone di guerra, epidemie) modifica navi, equipaggi, crediti e posizioni sulla plancia in base a scelte prese a turno.
 
-Come funzionalità avanzate, il team ha inoltre implementato il volo di prova e le partite simultanee. Questo richiedeva di coordinare diversi tipi di stato: la pila comune dei componenti durante la costruzione, le informazioni pubbliche e private dei giocatori, le carte avventura dipendenti dal turno, le disconnessioni e più sessioni di gioco sullo stesso server.
+La specifica del corso richiedeva il regolamento completo di livello II, la validazione automatica della nave, la visibilità in tempo reale delle navi altrui, un'architettura client-server MVC, connessioni Socket e RMI anche nella stessa partita, e due client: uno testuale (TUI) e uno grafico (JavaFX). Come funzionalità avanzate abbiamo aggiunto il volo di prova e le partite simultanee sullo stesso server.
 
-Il risultato non era una raccolta di schermate isolate. I comandi dovevano attraversare la rete, modificare lo stato autorevole una sola volta e produrre informazioni sufficienti perché interfacce diverse restassero sincronizzate.
+Il nodo ingegneristico è la coerenza. Lo stato ha quattro nature diverse: la pila comune dei componenti, il tavolo pubblico e la mano privata di ogni giocatore, le carte dipendenti dal turno, e più partite che convivono in un unico processo. Ogni azione parte da un client, deve essere validata una volta sola, applicata una volta sola e resa visibile a tutti.
+
+## Architettura
+
+Il codice è organizzato per ruolo in tre radici: `server`, `client` e `common`. Sul server la parte di dominio (`model/domain`) separa nave e componenti, equipaggio, plancia di volo, carte avventura e configurazione caricata da JSON. Il coordinamento vive in `server/core`: `GameSessionManager` possiede le partite, `PlayerSessionRegistry` collega identità e sessioni, `ConnectionMonitorService` gestisce l'heartbeat e le disconnessioni.
+
+La comunicazione segue il pattern Command con richieste autocontenute: 22 tipi di richiesta più 9 dedicati al volo, 34 tipi di risposta e 47 eventi (32 generali, 15 di volo) definiti in `common/message`. Una richiesta arriva al server, viene validata contro lo stato autorevole, produce una risposta per chi l'ha inviata e un evento per gli altri. L'evento è la sola strada con cui un client viene a sapere che il mondo è cambiato.
 
 <figure class="project-explainer">
   <img src="/images/projects/explainers/galaxy-authoritative-server.svg" alt="Quattro client con interfacce differenti collegati a un server autorevole centrale" width="1200" height="675" loading="lazy" />
-  <figcaption>TUI e GUI potevano usare Socket o RMI nella stessa partita. Ogni comando convergeva sul server autorevole, che applicava la modifica una sola volta e distribuiva il nuovo stato ai client.</figcaption>
+  <figcaption>TUI e GUI possono usare Socket o RMI nella stessa partita. Ogni comando converge sul server autorevole, che applica la modifica una sola volta e distribuisce il nuovo stato con un evento.</figcaption>
 </figure>
+
+I due trasporti sono adapter simmetrici: `SocketServerAdapter` e `RMIServerAdapter` sul server, `SocketNetworkAdapter` e `RMINetworkAdapter` sul client. Sopra di loro il resto del sistema vede un'unica interfaccia di rete, quindi la scelta del protocollo è un parametro di avvio, non una biforcazione del codice. La serializzazione Java trasporta i messaggi; Jackson carica configurazione e mazzi.
+
+La logica delle carte avventura usa il pattern Visitor: `AdventureCardVisitor` risolve otto famiglie di carte con regole differenti (forza di combattimento con cannoni direzionali e batterie, difesa dalle meteore con scudi, conteggio dei connettori esposti, connettività delle cabine per le epidemie). `FlightBoard` mantiene le posizioni con prevenzione delle collisioni e ricalcola la leadership a ogni movimento.
 
 ## Il mio contributo
 
-Ho lavorato soprattutto sui punti di integrazione del sistema originale. La cronologia del repository documenta contributi alla prima struttura dei package e del modello, al trasporto RMI, al sistema di comandi ed eventi, all'autenticazione, all'heartbeat, al ciclo di vita delle partite, al coordinamento multi-game e al controller della fase di costruzione.
+Sono l'autore di 121 dei 314 commit del branch principale. La cronologia mostra dove ho lavorato: la struttura iniziale di package e modello, il trasporto RMI, il sistema interno di comandi ed eventi, l'autenticazione, il servizio di heartbeat, il registro delle sessioni per il multi-partita, il controller della fase di costruzione con le posizioni vietate, e la logica di caricamento dei dati di gioco.
 
-Avvicinandoci alla consegna, il mio lavoro è diventato sempre più trasversale: collegare la navigazione dell'interfaccia allo stato del client, correggere i flussi di eventi e serializzazione e risolvere problemi nella costruzione della nave e nelle carte avventura. È la parte del progetto che mi ha insegnato di più sui sistemi distribuiti: una classe corretta localmente non basta quando un evento può arrivare vecchio, duplicato o essere interpretato in modo diverso ai due estremi della connessione.
+Verso la consegna il lavoro è diventato trasversale: collegare la navigazione dell'interfaccia allo stato del client, sistemare la struttura dei listener e la serializzazione, correggere la dipendenza circolare fra giocatore e nave, risolvere doppie pescate, timer e colori dei giocatori. Le ultime settimane di commit sono quasi tutte `fix(...)`: è la fase in cui un sistema distribuito rivela gli errori che nessuna classe presa da sola avrebbe mostrato.
 
-Questi sono i miei contributi, non una rivendicazione di paternità esclusiva. Regole, interfacce, test, integrazione e consegna finale sono state responsabilità collettive condivise con Manuela Terribile, Alessandra Varricchio e Diego Zanca.
+Regole, interfacce, test e consegna sono state responsabilità condivise con Manuela Terribile, Alessandra Varricchio e Diego Zanca. Questi sono i miei contributi, non una rivendicazione di paternità del tutto.
 
-## Perimetro completato, build archiviata
+## Cosa è verificabile e cosa no
 
-Il progetto originale è stato completato come consegna accademica, ma questo non significa che oggi il suo sorgente superi una build pulita. Nello snapshot finale, `ClientApp` importa una classe `newGUI` che non è più presente. Una nuova compilazione fallisce quindi prima di raggiungere il gioco.
+Il repository contiene 272 file sorgente e 63 classi di test JUnit 5 con Mockito, i JAR consegnati in `deliverables/` e la documentazione del protocollo. Il perimetro accademico è stato completato e valutato.
 
-Ho scelto di non correggere silenziosamente quel difetto per poi descrivere il codice modificato come la submission del team. Il branch resta un artefatto storico e questa case study dichiara il limite accanto al risultato. Anche i JAR consegnati restano nel repository, ma li tratto come deliverable archiviati, non come prova di una build verificata oggi.
+Lo snapshot finale ha però un difetto che dichiaro invece di correggerlo in silenzio: `ClientApp` importa `newGUI` e `newUI` dal package `client.ui`, ma nell'albero sopravvive solo `newTUI`. Una compilazione pulita di `main` fallisce prima di arrivare al gioco. Il completamento è uno stato storico del progetto; la riproducibilità è uno stato tecnico attuale, e un portfolio deve dire quale dei due può dimostrare.
 
-Per me la distinzione è importante: **il completamento è uno stato storico del progetto; la riproducibilità è uno stato tecnico attuale**. Un portfolio credibile deve dichiarare quale dei due può dimostrare.
+## Un anno dopo: la ricostruzione
 
-## Un secondo passaggio con Claude
+Nell'agosto 2026 sono tornato sugli stessi requisiti sul branch `develop`: 146 commit in quattro giorni, da solo, con Claude come collaboratore. Ho diretto le milestone, valutato le proposte architetturali e verificato il comportamento contro regole e requisiti pubblicati.
 
-Il lavoro successivo su `develop` è una ricostruzione individuale assistita da AI, non un'estensione della paternità del team. Ho diretto le milestone, valutato le proposte architetturali e verificato il comportamento rispetto a regole e requisiti pubblicati, mentre Claude accelerava esplorazione e implementazione.
+La scelta centrale è documentata in `SIMPLE-DIRECT-MODEL-ARCHITECTURE.md`: il client usa direttamente i modelli del server invece di uno stato locale parallelo. `LocalGameState`, 691 righe con quindici metodi di conversione, è sostituito da un `ClientState` di circa 150 righe che riceve il modello aggiornato e chiede alle viste un `refresh()`. Il flusso diventa richiesta, aggiornamento sul server, risposta al richiedente più evento agli altri, ridisegno.
 
-La ricostruzione ha mantenuto diverse scelte di sistema e modificato strutture interne importanti. Ha anche mostrato i limiti del confronto: documentazione e contesto del repository erano disponibili, quindi non si trattava di un test cieco sulla capacità dell'AI di riscoprire autonomamente ogni decisione.
+Non è stato un test cieco sulla capacità dell'AI di riscoprire le decisioni: documentazione e codice erano disponibili. Metodo, convergenze e differenze sono in [Ricostruire Galaxy Trucker con Claude: cosa è cambiato, cosa no e come misurarlo](/it/articoli/ricostruire-galaxy-trucker-con-claude/).
 
-Approfondisco metodo, convergenze architetturali, differenze e lavoro umano rimasto in [Ricostruire Galaxy Trucker con Claude: cosa è cambiato, cosa no e come misurarlo](/it/articoli/ricostruire-galaxy-trucker-con-claude/).
+## Cosa porto avanti
 
-## Cosa porterei avanti
-
-Questo progetto mi ha insegnato che il comportamento distribuito è un problema di integrazione prima ancora che di design delle singole classi. La ricostruzione ha aggiunto una seconda lezione: l'AI diventa realmente più veloce quando requisiti, criteri decisionali e verifica sono espliciti.
-
-Le due versioni rappresentano quindi prove diverse. L'originale mostra collaborazione e consegna entro una scadenza. Il rebuild mostra come oggi strutturo, metto in discussione e verifico un sistema con un collaboratore AI, mantenendo la responsabilità del risultato.
+Il comportamento distribuito è un problema di integrazione prima che di design delle classi: contratti espliciti fra i componenti e verifica del sistema intero valgono più della correttezza locale. La ricostruzione ha aggiunto una seconda lezione, che oggi applico nello sviluppo iOS: quando requisiti, criteri di decisione e verifiche sono scritti, un collaboratore automatico accelera davvero, e la responsabilità del risultato resta mia.

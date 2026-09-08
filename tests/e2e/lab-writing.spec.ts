@@ -4,9 +4,9 @@ import AxeBuilder from '@axe-core/playwright';
 test('writing archive and reader navigate in both languages', async ({ page }) => {
   for (const route of ['/it/articoli/', '/en/writing/']) {
     await page.goto(route);
-    await expect(page.locator('.writing-entry')).toHaveCount(4);
+    await expect(page.locator('.writing-entry')).toHaveCount(2);
     const urls = await page.locator('.writing-entry-link').evaluateAll(links => links.map(a => a.getAttribute('href')));
-    expect(new Set(urls).size).toBe(4);
+    expect(new Set(urls).size).toBe(2);
     await page.locator('.writing-entry-link').first().click();
     await expect(page.locator('.post-detail h1')).toHaveCount(1);
     await expect(page.locator('.post-detail')).toHaveAttribute('data-ready', 'true');

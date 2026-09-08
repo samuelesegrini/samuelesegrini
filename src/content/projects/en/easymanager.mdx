@@ -3,12 +3,12 @@ translationKey: easymanager
 locale: en
 slug: easymanager-restaurant-operations
 title: EasyManager
-excerpt: Restaurant operations software became a modular Swift toolkit built around durable orders, device lanes, and honest fiscal reconciliation.
+excerpt: The 2023 SwiftUI app carries an order from the table to the fiscal printer; the re-engineering turns it into a modular Swift toolkit.
 draft: false
 coverImage: /images/projects/easymanager-service-pulse.svg
 coverAlt: Five connected stages follow a restaurant order from table draft to fiscal reconciliation
-seoTitle: EasyManager — Swift restaurant operations case study
-seoDescription: From a 2023 SwiftUI restaurant app to a modular Swift 6.3 operations toolkit designed around concurrency, hardware, and fiscal uncertainty.
+seoTitle: EasyManager — From a SwiftUI restaurant app to a modular Swift toolkit
+seoDescription: Technical case study: an iPad restaurant manager in SwiftUI and Firestore with Epson fiscal printing, and its re-engineering into Swift 6.3 packages built around durable orders, devices and fiscal uncertainty.
 kind: package
 lifecycle: in-progress
 authorship: individual
@@ -23,7 +23,7 @@ technologies:
 featuredRank: 1
 outcomes:
   - value: "31"
-    label: modules in verified 0.1 source
+    label: modules in the verified 0.1 source
     method: Package products documented and built by the 0.1 release gate
   - value: "0"
     label: remote package dependencies
@@ -31,56 +31,58 @@ outcomes:
   - value: "0.1.0"
     label: versioned API
     method: Signed 0.1.0 release verified in the later source checkout
-startingPoint: A 2023 SwiftUI restaurant application whose product scope outgrew its original boundaries.
+startingPoint: A SwiftUI application for a real restaurant, written in twenty commits in April 2023, whose scope had outgrown its initial architecture.
 links:
   - url: https://github.com/samuelesegrini/easymanager
-    label: Original application
+    label: Original application (2023)
     relationship: my-repository
 relatedPosts: []
 ---
 
-> EasyManager is a restaurant-operations project with two distinct code histories. The public 2023 repository records a SwiftUI application. The later work is an individual re-engineering effort: a modular Swift toolkit for orders, hardware, and Italian fiscal workflows. They share a problem domain, not a single finished product. The later re-engineering source is not currently publicly linked or independently inspectable in this preview.
+> EasyManager is where my path starts, and it is also what I am still working on. In April 2023, before university, I wrote in twenty commits an iPad manager for a real restaurant: order taking, kitchen, till, fiscal printing. In 2026 I came back to the same domain with what I had learned in between about distributed systems, hardware and verification, and rethought it as a modular Swift toolkit.
+>
+> The two eras share the problem, not the code. The public repository documents the first; the second is ongoing individual work, described here within the limits of what has been verified.
 
-## Two eras, one problem domain
+## A restaurant's problem
 
-The original application made the restaurant problem tangible: a team needs to move an order from a table through preparation, payment, and a fiscal record without losing its meaning along the way. Its public repository is the historical starting point, not evidence that the later package architecture was present in 2023.
+An order passes through four pairs of hands and three devices: the waiter who takes it at the table, the kitchen that prepares it by course, the till that closes it with one or more payments, the fiscal printer that turns it into a legally binding document. Each step has its own lifecycle and its own way of failing, and an error in the last one (a duplicate receipt, a wrong total) cannot be undone with a tap.
 
-The later work asks a narrower engineering question: which boundaries let that workflow remain understandable when an order can outlive a view, a device can answer late, and a fiscal mutation can be uncertain? It is an ongoing re-engineering, separate from the original app’s historical implementation.
+The client needed a single tool on iPad, with different roles for the staff and integration with the fiscal printer already in the dining room.
 
-## What the original application exposed
+## The 2023 application
 
-The app’s growing scope made the seams visible. A restaurant operation is not one screen: the order-taking flow, kitchen work, inventory, loyalty, reservations, checkout, devices, and fiscal records all have different lifetimes and failure modes. Keeping those concerns together made local changes carry hidden consequences elsewhere.
+The app is pure SwiftUI with an MVVM architecture. Six `ObservableObject`s (`RestaurantViewModel`, `AuthenticationViewModel`, `OrderViewModel`, `ProductViewModel`, `PrinterViewModel`, `TableViewModel`) are created at launch and injected as `environmentObject`s into a view hierarchy organised by station: `DiningView` for the room, `OrdersView` and `OrderSheetView` for the order pad, `CookingView` for the kitchen, `CashDesk` with `CheckOut` and `ScontrinoView` for the till, and an admin area for products, categories, cover charges, tables and users.
 
-That is the useful evidence from the first era. It exposed the domain vocabulary and the pressure points; it does not justify a claim that the original application had already solved deployment, hardware compatibility, or fiscal certification.
+Persistence is Cloud Firestore. Models are `Codable` structs with `@DocumentID`; view models open `addSnapshotListener` on the collections and rebuild local state on every snapshot, so several iPads in the room see the same order without an application server. Decoding distinguishes the four `DecodingError` cases and surfaces them as a message instead of silently dropping a malformed document.
 
-## Re-engineering the boundaries
+The domain is richer than it looks. A table has a state (`free`, `booked`, `waiting`, `occupied`), an assigned waiter and a service start time. An order holds dishes with a course, a VAT rate, a decimal quantity, a void flag and variants with their own price; the total depends on which variants are selected. A user has roles and an operator number, which is what the fiscal printer demands on every line.
 
-The later source turns those pressure points into separate Swift package products. The versioned 0.1 API documents and builds 31 products without remote package dependencies. Within that verified checkout, feature code depends on focused domain and hardware contracts rather than on one application-shaped service surface. Those architecture and release facts come from source verification; this preview does not present them as anonymously inspectable GitHub evidence.
+## The fiscal printer as an external system
 
-Swift concurrency matters here because order work and device work cannot assume a single immediate response. The design uses explicit ownership and serialized device lanes where a physical endpoint needs ordered access. SQL remains at the persistence boundary; DocC records the versioned contracts beside the packages that own them.
+The most instructive part is `PrinterViewModel`. The Epson printer in the room exposes the fiscal ePOS protocol over HTTP: the app composes an XML document inside a SOAP envelope and POSTs it to `fpmate.cgi`. I implemented two document types and the closing operations:
 
-## Following one order through failure
+- the **pre-bill**, a non-fiscal document (`beginNonFiscal` … `endNonFiscal`) with one `printNormal` line per dish and variant and a total aligned on 46 columns, handed to the customer before paying;
+- the **fiscal receipt** (`beginFiscalReceipt`), with one `printRecItem` per line carrying description, quantity, unit price and VAT department (three departments mapped onto the rates), and one `printRecTotal` per payment method: cash, cheque, electronic payment, meal voucher;
+- the **X and Z reports** and the invoice from the last receipt, requested at the end of a shift.
 
-An order begins as a draft, but a durable operation needs more than a happy-path request. Once work is sent to a device or fiscal service, a lost response does not prove that nothing happened. The useful state distinction is therefore between an operation known not to have been sent and one that may already have executed.
+This is where I first met a problem I would see again in distributed systems: the request leaves, the reply may never come, and not knowing whether the printer printed is not the same as knowing it did not. In 2023 the app recorded the connection error and left the decision to the operator. That is the starting point of the re-engineering.
 
-The re-engineering treats the outbox, acknowledgement, and reconciliation as separate stages. A timeout or malformed reply must preserve the uncertainty for follow-up instead of silently retrying a mutation and risking a duplicate fiscal action. This is a correctness boundary, not a claim that every real-world fiscal device has been validated.
+## What the first era exposed
 
-## Hardware is not another API
+Scope grew with the client's requests (loyalty, reservations, shifts, inventory) and the seams became visible: a restaurant operation is not one screen, and every area has its own timing and failure modes. Keeping everything in six shared view models made local changes carry consequences elsewhere. That is the useful evidence from 2023: the domain vocabulary and the pressure points. It is not proof that the app had already solved hardware compatibility or fiscal certification.
 
-Hardware has timing, connection state, and irreversible side effects. A device lane serializes access to a specific endpoint; its contract is different from a generic network client because two commands that are individually valid may be unsafe when interleaved.
+## The re-engineering
 
-The fiscal layer follows the same discipline. It can report an incomplete or uncertain outcome rather than manufacture readiness from an ambiguous exchange. The repository contains protocol and driver work, but compatibility with a physical device depends on evidence outside source code.
+The 2026 work asks a narrower question: which boundaries let this workflow remain understandable when an order outlives a view, a device answers late and a fiscal mutation can be uncertain?
 
-## What is released—and what is not
+The answer is a set of Swift 6.3 packages separated by contract: order domain, device lanes, fiscal layer, SQL persistence at the boundary, DocC documentation next to every versioned API. The 0.1.0 API documents and builds 31 products with no remote dependencies; feature code depends on focused domain and hardware contracts rather than on a service surface modelled after the application.
 
-The 0.1.0 API is the versioned package surface described above. This preview publishes the case study while keeping the later source unlinked, so the broader narrative remains constrained by the checks already performed rather than claiming independent public reproducibility.
+Three design decisions hold the shape:
 
-**Current status**
+- **An order is a durable state machine.** Draft, sent, acknowledged, reconciled: outbox, acknowledgement and reconciliation are separate phases, and a timeout preserves uncertainty for the next step instead of silently retrying a mutation that could duplicate a fiscal document.
+- **Hardware is not just another API.** A per-device lane serialises access to a physical endpoint with Swift Concurrency, because two individually valid commands become unsafe when interleaved.
+- **The fiscal layer may answer "uncertain".** An incomplete outcome is a domain value, not an error to hide.
 
-- The application migration is incomplete; the later packages are not a claim that the original app has adopted every new boundary.
-- The later re-engineering source is not currently public evidence in this preview.
-- There are no deployment claims here.
-- The 0.2 work is unreleased.
-- Physical device compatibility and fiscal certification evidence are missing.
+## What can be verified today
 
-Those limits are part of the work, not footnotes to hide. They define what can honestly be evaluated now: the original public repository, the explicitly bounded facts recorded here, and failure semantics designed to avoid false certainty. Public inspection of the later package seams remains a launch blocker.
+The public 2023 repository can be read in full. Of the later work, the release facts reported here come from the verified checkout of the 0.1 source; the source itself is not yet public, the 0.2 work is unreleased, and evidence of physical-device compatibility and fiscal certification is missing. These are not footnotes: they define what this page can demonstrate and what it cannot.

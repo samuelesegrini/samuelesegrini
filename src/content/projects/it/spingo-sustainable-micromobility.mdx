@@ -3,12 +3,12 @@ translationKey: spingo-sustainable-micromobility
 locale: it
 slug: spingo-micromobilita-sostenibile
 title: SpinGO
-excerpt: 109 risposte e 7 sessioni di usabilità hanno guidato un’app di micromobilità con 89.2 SUS e interazioni di guida fuori dallo smartphone.
+excerpt: 109 risposte, 4 interviste e 7 sessioni di test hanno portato un'app di micromobilità a 88% di successo e SUS 89,2.
 draft: false
 coverImage: /images/projects/spingo-micromobility.svg
 coverAlt: Illustrazione geometrica di una bicicletta collegata da un percorso verde acido a un punto sicuro
-seoTitle: SpinGO — Case study HCI sulla micromobilità sostenibile
-seoDescription: Ricerca utenti, prototipazione mobile e usability testing per SpinGO, un progetto HCI sulla micromobilità urbana sostenibile.
+seoTitle: SpinGO — Ricerca utente, prototipazione e usability testing per la micromobilità
+seoDescription: Case study HCI del Politecnico di Milano 2025–2026: needfinding con 109 risposte, prototipi in Figma, valutazione euristica, usability testing con 7 utenti e sito React del progetto.
 kind: app
 lifecycle: prototype
 authorship: team
@@ -17,21 +17,21 @@ role: Frontend developer e membro del team HCI
 technologies:
   - Human-computer interaction
   - Figma
-  - React
+  - React 19
   - TypeScript
   - GSAP
 featuredRank: 3
 outcomes:
   - value: "109"
-    label: risposte alla survey
-    method: Survey di needfinding
-  - value: "7"
-    label: sessioni di usability testing
-    method: Sessioni moderate sul prototipo
+    label: risposte al questionario di needfinding
+    method: Questionario adattivo distribuito in gruppi universitari e social, Consegna 1
+  - value: "88%"
+    label: success rate medio sui tre task
+    method: Scala 0–2 per task su 7 utenti, 14 punti massimi, Consegna 6
   - value: "89.2"
-    label: punteggio SUS
-    method: System Usability Scale dopo il test
-startingPoint: Chi si muove in città chiedeva percorsi più sicuri e meno interazioni con lo smartphone durante la guida.
+    label: punteggio SUS, grado A
+    method: System Usability Scale compilata dai 7 partecipanti dopo il test
+startingPoint: Chi si muove in bici, e-bike o monopattino chiedeva percorsi più sicuri, soste affidabili e meno interazioni con il telefono durante la guida.
 links:
   - url: https://github.com/milenaramosduran/hci-eco
     label: Repository del team
@@ -42,81 +42,53 @@ links:
 relatedPosts: []
 ---
 
-> SpinGO è il progetto del team 30%usability per il corso di Human-Computer Interaction del Politecnico di Milano 2025–2026. Il lavoro segue l’intero processo user-centered: needfinding, sintesi dei bisogni, prototipi a fedeltà crescente, valutazione euristica e usability testing.
+> SpinGO è il progetto del gruppo 30%usability per il corso di Human-Computer Interaction del Politecnico di Milano 2025–2026. In cinque abbiamo percorso l'intero processo user-centered: needfinding, sintesi dei bisogni, prototipi a fedeltà crescente, valutazione euristica incrociata, usability testing e consegna finale.
 >
-> Il concept propone un’app mobile con companion per smartwatch che aiuta chi usa bici, e-bike e monopattini a scegliere percorsi più sicuri, gestire la sosta e condividere informazioni utili con la community.
->
-> Come frontend developer ho realizzato il sito React e TypeScript che organizza risultati, deliverable e prototipi in una narrazione interattiva. Il progetto di ricerca e design è invece un lavoro collettivo del team di cinque persone.
+> Nel mio percorso è il progetto che ha messo la ricerca prima del codice. Dopo sistemi distribuiti e hardware, qui la domanda non era come costruire un'altra app di navigazione, ma cosa impedisce alle persone di adottare stabilmente questi mezzi e come un'interfaccia possa restituire controllo senza aumentare la distrazione. Il design è lavoro collettivo; il sito che raccoglie ricerca, sette consegne e prototipi l'ho costruito io.
 
-## Il problema di partenza
+## Il dominio e la domanda di ricerca
 
-Il team ha scelto la micromobilità urbana perché il suo potenziale ambientale entra spesso in conflitto con un’esperienza quotidiana fragile. Bici e monopattini promettono spostamenti leggeri, ma traffico, percorsi discontinui, furti e informazioni inaffidabili trasformano una scelta conveniente in una decisione carica di incertezza.
+Abbiamo scelto la micromobilità urbana perché il suo potenziale ambientale si scontra con un'esperienza quotidiana fragile. Il bacino dei bisogni era già visibile prima dei dati: piste discontinue, furti, soste inaffidabili, informazioni frammentate. La domanda di ricerca è diventata: quali barriere trasformano una scelta conveniente in una decisione carica di incertezza, e quali di queste barriere un prodotto digitale può davvero abbassare?
 
-La domanda non era quindi semplicemente come costruire un’altra app di navigazione. Volevamo capire cosa impedisce alle persone di adottare stabilmente questi mezzi e come un’interfaccia possa restituire controllo senza aumentare la distrazione durante il viaggio.
+Il target è stato diviso in tre profili: utenti medi che possiedono o condividono un mezzo ma lo usano meno di quanto vorrebbero, lead user che lo usano ogni giorno per lavoro o pendolarismo, ed esperti di dominio (associazioni, promotori della mobilità sostenibile) per una prospettiva sistemica.
 
-## Needfinding e triangolazione
+## Needfinding: questionario e interviste
 
-La prima fase ha combinato 109 risposte alla survey, quattro interviste e due focus group. Ha coinvolto utenti abituali, persone interessate e non utenti, approfondendo percorsi evitati, furti, autonomia e fiducia negli strumenti esistenti.
+Il questionario è stato costruito scomponendo concetti astratti come sicurezza e comfort in fattori osservabili (traffico, illuminazione, condizioni di parcheggio, meteo), con scale Likert per percezioni, scelte multiple per comportamenti e domande aperte per le esperienze. Le domande seguivano il viaggio dell'utente (prima, durante, dopo) e il percorso si adattava al profilo dichiarato: esperti, interessati non attivi, non interessati.
 
-La triangolazione ha evidenziato tre comportamenti ricorrenti:
+Abbiamo raccolto 109 risposte. Il 95,4% del campione ha fra 18 e 35 anni e il 78% vive a Milano o in provincia, coerente con il contesto urbano studiato. Il 43,1% si è dichiarato utente esperto; fra gli altri, il 74,2% è interessato ma non attivo e il 25,8% non interessato. È il dato che ha orientato il progetto: la domanda latente è più grande dell'uso effettivo.
 
-- **Paradosso dell’intenzione.** Molte persone dichiarano interesse, ma sicurezza e infrastrutture impediscono di trasformarlo in uso regolare.
-- **Strategie di adattamento.** Gli utenti abituali memorizzano percorsi, scelgono mezzi poco appariscenti e modificano orari o destinazioni per ridurre il rischio.
-- **Rinuncia preventiva.** La paura filtra la decisione prima ancora della partenza, specialmente quando non è possibile prevedere percorso e sosta.
+Quattro interviste semi-strutturate da 30–45 minuti, condotte in presenza da una coppia intervistatore–annotatore, hanno approfondito profili deliberatamente diversi: un rider professionista che sceglie una bici piccola e poco appariscente come strategia anti-furto, un pendolare in monopattino con autonomia insufficiente e nessun punto di ricarica pubblico, uno studente che usa il bike sharing e non compra una bici per paura dei furti, una laureanda che ha comprato una bici e non l'ha mai usata. I profili sono stati confrontati su sei dimensioni (intensità d'uso, esperienza, dipendenza dal mezzo, esposizione ai rischi, consapevolezza dei problemi, capacità di workaround) per misurare l'impatto reale delle barriere.
 
 ## Dai dati ai bisogni
 
-Interviste e focus group sono stati analizzati attraverso open, axial e selective coding. Oltre 150 codici grezzi sono confluiti prima in cluster tematici e poi in una board collaborativa con più di cinquanta bisogni granulari.
-
-Affinity mapping e dot voting hanno permesso di convergere su quattro direzioni progettuali:
-
-- **sicurezza e controllo**, intesi come capacità di anticipare rischi e comprendere il contesto;
-- **fiducia**, nei luoghi di sosta, nelle informazioni e negli strumenti digitali;
-- **fluidità**, per ridurre interruzioni e carico cognitivo tra le diverse fasi del viaggio;
-- **appartenenza**, trasformando segnalazioni ed esperienze individuali in conoscenza collettiva.
+Interviste e due focus group sono stati analizzati con open, axial e selective coding. Oltre 150 codici grezzi sono confluiti in cluster tematici e poi in una board con più di cinquanta bisogni granulari; affinity mapping e dot voting hanno fatto convergere il gruppo su quattro direzioni: sicurezza e controllo, fiducia nei luoghi e nelle informazioni, fluidità fra le fasi del viaggio, appartenenza a una comunità che trasforma le segnalazioni individuali in conoscenza collettiva.
 
 <figure class="project-explainer">
   <img src="/images/projects/explainers/spingo-research-loop.svg" alt="Ricerca con utenti trasformata in bisogni, prototipo mobile e nuovo ciclo di test" width="1200" height="675" loading="lazy" />
-  <figcaption>Interviste, survey e focus group convergono in bisogni progettuali; il prototipo li rende verificabili e i test riportano nuove evidenze dentro il processo.</figcaption>
+  <figcaption>Questionario, interviste e focus group convergono in bisogni progettuali; il prototipo li rende verificabili e i test riportano nuove evidenze dentro il processo.</figcaption>
 </figure>
 
-## Tre task e due direzioni
+## Tre task, due direzioni, un companion
 
-Tre task coprivano pianificazione sicura, mezzi e preferenze, segnalazioni e percorsi condivisi dalla community.
+Tre task hanno guidato la progettazione: pianificare e avviare un percorso sicuro, gestire mezzi e preferenze (il "Garage"), interagire con la community di segnalazioni. Nella fase low-fidelity abbiamo confrontato un dispositivo dedicato da manubrio e un'app mobile nativa. L'app copriva meglio i tre task ma esponeva alla distrazione durante la guida; la soluzione finale conserva la ricchezza dell'app e sposta su un companion per smartwatch le interazioni essenziali: prossima svolta, feedback aptico, segnalazione rapida.
 
-Nella fase low-fidelity abbiamo confrontato due direzioni:
-
-- un dispositivo dedicato da manubrio, leggibile a colpo d’occhio e isolato dalle distrazioni dello smartphone;
-- un’app mobile nativa, più adatta a confrontare percorsi, configurare preferenze e creare contenuti completi.
-
-L’app mobile offriva la copertura migliore dei tre task, ma esponeva al rischio di distrazione durante la guida. La soluzione finale ha quindi conservato la ricchezza dell’app e trasferito le interazioni essenziali a un companion per smartwatch: prossima svolta, feedback aptico e segnalazioni rapide.
-
-## Dall’euristica al prototipo hi-fi
-
-Una valutazione euristica esterna ha evidenziato problemi di chiarezza e scoperta. La tab bar era troppo piccola, il pulsante indietro non seguiva le convenzioni, alcune azioni non restituivano feedback e i flussi relativi a punti di interesse e percorsi salvati risultavano ambigui.
-
-Prima dei test abbiamo quindi aumentato dimensioni e leggibilità della navigazione, aggiunto label testuali e conferme, riposizionato i controlli secondo gli standard mobile e separato più chiaramente luoghi, percorsi e mezzi personali.
+La valutazione euristica incrociata con un altro gruppo (GreenBytes) ha evidenziato tab bar troppo piccola, tasto indietro fuori convenzione, azioni senza feedback e ambiguità fra punti di interesse e percorsi salvati. Prima dei test abbiamo sostituito le mappe statiche con dati reali, aumentato dimensioni e leggibilità della navigazione, aggiunto label e conferme e riposizionato i controlli secondo gli standard mobile.
 
 ## Usability testing
 
-Il prototipo hi-fi è stato valutato con sette partecipanti tra 16 e 35 anni. Le sessioni, in presenza o da remoto, duravano in media 45 minuti e combinavano think-aloud, osservazione, tempi, errori, Single Ease Question dopo ciascun task e System Usability Scale finale.
+Il prototipo high-fidelity in Figma è stato valutato con sette partecipanti fra 16 e 35 anni, in presenza o da remoto, in sessioni di circa 45 minuti con think-aloud, osservazione, tempi ed errori, Single Ease Question dopo ogni task e System Usability Scale finale. Le metriche target erano success rate sopra l'85%, SUS sopra 70 e meno di tre problemi di severità 1–2.
 
-Il success rate complessivo ha raggiunto l’88%. La navigazione è risultata l’area più solida con il 93%, la Community ha raggiunto l’89%, mentre la personalizzazione si è fermata all’82%. Il punteggio SUS medio di 89,2 indica un’elevata usabilità percepita, ma l’analisi qualitativa ha mostrato tre problemi importanti:
+L'efficacia è stata misurata su una scala 0–2 per task (successo completo, con problemi minori, con problemi maggiori, insuccesso) e rapportata ai 14 punti massimi. Il success rate medio è 88%: 93% nella navigazione (SEQ 6,5/7), 82% nella personalizzazione (SEQ 4,2/7), 89% nella community (SEQ 5,8/7). Il SUS medio è 89,2, grado A: sei utenti su sette fra 82,5 e 100, un outlier a 70 riconducibile alla confusione fra simboli di percorsi e punti di interesse. Il tempo medio di reazione ai pericoli nel task di navigazione è stato di 7,8 secondi.
 
-- punti di interesse e percorsi salvati non erano sempre distinguibili;
-- il comando per aggiungere un mezzo nel Garage aveva una gerarchia troppo debole;
-- la partenza richiedeva input ridondanti invece di usare posizione corrente e un’unica azione di avvio.
+I problemi ordinati per severità dicono di più della media. Il 28% degli utenti ha fallito la gestione dei percorsi salvati perché l'architettura informativa separava la visualizzazione (Home) dalla gestione (Profilo), una distinzione che per l'utente non esiste: severità 1. Nel Garage due utenti hanno modificato un mezzo esistente invece di aggiungerne uno nuovo, perché il comando "Aggiungi" stava in fondo alla lista: severità 2. La ridondanza dei tasti "Avvia" e l'inserimento manuale della partenza al posto della posizione corrente sono severità 3.
 
-Il test non è stato trattato come una conferma finale, ma come una nuova sorgente di decisioni. Le raccomandazioni hanno privilegiato unificazione dei flussi, smart default e migliore affordance dei comandi.
+Il test non è stato una conferma finale ma una nuova sorgente di decisioni: unificare visualizzazione e gestione, portare in alto l'azione di creazione, usare smart default per la partenza, differenziare le icone di percorsi e punti.
 
 ## Il sito del progetto
 
-Ho trasformato ricerca, sei consegne, documenti e prototipi Figma in un sito React e TypeScript pubblicato su GitHub Pages.
+Ho costruito il sito che raccoglie ricerca, sette consegne, video del prototipo finale e prototipi Figma: React 19 con TypeScript, Vite 7, GSAP con ScrollTrigger per la timeline orizzontale delle consegne e le transizioni fra sezioni, componenti dedicati a persone, valori, showcase con modale per i prototipi, e pubblicazione su GitHub Pages tramite GitHub Actions. Sono l'autore di 112 dei 119 commit del repository.
 
-GSAP e ScrollTrigger supportano la presentazione e una timeline orizzontale delle consegne, mentre GitHub Actions costruisce e pubblica il sito dal branch principale.
+## Cosa porto avanti
 
-## Cosa porterei avanti
-
-SpinGO mi ha mostrato che un numero positivo non conclude una ricerca. Il SUS elevato descrive una percezione complessiva, mentre esitazioni e percorsi sbagliati rivelano dove l’architettura dell’informazione non coincide ancora con il modello mentale dell’utente.
-
-In una nuova iterazione validerei i flussi corretti in una demo funzionante e ridurrei le animazioni non essenziali. Aggiungerei inoltre supporto sistematico per tastiera, focus e movimento ridotto nella presentazione.
+Un numero positivo non chiude una ricerca. Il SUS di 89,2 descrive una percezione complessiva; i 45 secondi di stallo di un utente davanti a un pannello che non si lascia modificare descrivono un modello mentale che l'interfaccia non rispecchia. In una nuova iterazione validerei i flussi corretti in una demo funzionante, ridurrei le animazioni non essenziali del sito e aggiungerei supporto sistematico per tastiera, focus e movimento ridotto.

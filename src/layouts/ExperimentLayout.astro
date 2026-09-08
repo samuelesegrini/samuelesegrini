@@ -12,6 +12,7 @@ import LabPiede from '../components/lab/LabPiede.astro';
 import type { LabLocale, ToolbarSection } from '../components/lab/chrome';
 import { experimentLanguages, experimentRoutes, labPaths, mailHref } from '../components/lab/chrome';
 import { getLabCopy, riempi } from '../lib/lab-copy';
+import { withBase } from '../lib/base';
 import { siteConfig } from '../config/site';
 
 interface Props {
@@ -27,8 +28,6 @@ interface Props {
 const { lang, title, currentHref, sections, itHref, enHref } = Astro.props;
 const copy = await getLabCopy(lang);
 const labels = { ...copy.toolbar, mail: riempi(copy.toolbar.mail) };
-// finché non esiste un PDF nel repo, il curriculum porta alla pagina profilo
-const labPathsAbout = labPaths[lang].about;
 ---
 
 <!doctype html>
@@ -57,7 +56,7 @@ const labPathsAbout = labPaths[lang].about;
 				routes={experimentRoutes(lang, currentHref, copy.nav)}
 				sections={sections}
 				languages={experimentLanguages(lang, itHref, enHref)}
-				cv={{ ...copy.cv, href: labPathsAbout }}
+				cv={{ ...copy.cv, href: withBase('/cv.pdf') }}
 				labels={labels}
 				mailHref={mailHref}
 			/>

@@ -3,88 +3,95 @@ translationKey: galaxy-trucker
 locale: en
 slug: galaxy-trucker-java-project
 title: Galaxy Trucker
-excerpt: Four people shipped a Socket-and-RMI multiplayer game with one authoritative server, two network transports, and two playable interfaces.
+excerpt: Four people turned a board game into a Java client-server system with one authoritative server, Socket and RMI, TUI and GUI.
 draft: false
 coverImage: /images/projects/galaxy-trucker-network.png
 coverAlt: Geometric modular spaceship connected through a server to four clients
-seoTitle: Galaxy Trucker — Java multiplayer game and AI reconstruction
-seoDescription: Case study of a four-person Java client-server implementation of Galaxy Trucker and a later AI-assisted reconstruction based on the same requirements.
+seoTitle: Galaxy Trucker — Java distributed system and AI-assisted reconstruction
+seoDescription: Technical case study of the 2024–2025 Software Engineering project at Politecnico di Milano, covering architecture, protocol, contributions and a later reconstruction.
 kind: app
 lifecycle: archived
 authorship: team
 year: 2025
 role: Developer on the four-person team
 technologies:
-  - Java
+  - Java 23
   - JavaFX
   - Maven
   - Socket / RMI
-  - JUnit
+  - JUnit 5
 featuredRank: 2
 outcomes:
-  - value: "4"
-    label: people in the original team
-    method: Course team roster
+  - value: "314"
+    label: team commits on the main branch
+    method: Git history of the repository, February–July 2025
   - value: "2"
-    label: network transports
-    method: Socket and RMI implementations
-  - value: "2"
-    label: playable interfaces
-    method: TUI and JavaFX clients
-startingPoint: Four people, one semester, and a stateful board game to translate into a distributed system.
-links: []
+    label: interchangeable network transports
+    method: Socket and RMI adapters on both client and server
+  - value: "63"
+    label: test classes
+    method: JUnit files under src/test/java at submission time
+startingPoint: Four people, one semester and a board game full of state to turn into a coherent distributed system.
+links:
+  - url: https://github.com/samuelesegrini/ing-sw-2025-segrini-terribile-varricchio-zanca
+    label: Team repository
+    relationship: team-repository
 relatedPosts:
   - key: rebuilding-galaxy-trucker-with-claude
-    reason: Compare the archived team architecture with the later AI-assisted reconstruction.
+    reason: Compare the architecture the team shipped with the 2026 AI-assisted reconstruction.
   - key: my-first-video-game
-    reason: Read the personal account of learning distributed systems through the project.
+    reason: The personal account of how this project taught me distributed systems.
 ---
 
-> Galaxy Trucker began as the final project for the 2024–2025 Software Engineering course at Politecnico di Milano. Our four-person team translated the board game into a distributed Java application with an authoritative server, multiple clients, two network transports, and both textual and graphical interfaces.
+> Final project of the 2024–2025 Software Engineering course at Politecnico di Milano (group GC26, taught by Gianpaolo Cugola). Four of us translated Cranio Creations' board game Galaxy Trucker into a distributed Java application: one authoritative server, multiple clients, two network transports and two interfaces.
 >
-> The team completed the agreed academic scope. The repository is nevertheless not a polished product maintained after submission: its archived source contains a known client compilation defect. I preserve that fact instead of rewriting the shared history.
->
-> In 2026 I returned to the same requirements for a separate AI-assisted reconstruction. This page presents the project; the linked article examines that later experiment in depth.
+> In my path this is where software stopped being a sum of classes. A command that is correct locally is not enough when it has to cross the network, mutate shared state exactly once and come back consistently to four different interfaces. This page describes the system we shipped, my contribution, the limits of the archived artifact and the reconstruction I did a year later.
 
-## The collaborative product
+## The problem
 
-The assignment required the complete level II game, automatic ship validation, visibility of every player's ship, and a client–server implementation following MVC. Clients had to connect through either Socket or RMI, including within the same game, and the result had to be playable through both a TUI and a JavaFX GUI.
+Galaxy Trucker is played in two very different phases. During construction, players draw components simultaneously from a shared pool and mount them on their ship, respecting connector adjacency rules and forbidden positions. During flight, a sequence of adventure cards (pirates, planets, meteor swarms, open space, war zones, epidemics) alters ships, crews, credits and board positions according to turn-based choices.
 
-The team also implemented the test-flight mode and simultaneous games as advanced features. That meant coordinating several kinds of state at once: the shared component pool during ship construction, each player's private and public information, turn-dependent adventure cards, disconnections, and game sessions sharing one server.
+The course specification required the complete level II ruleset, automatic ship validation, real-time visibility of the other ships, an MVC client-server architecture, Socket and RMI connections even within the same game, and two clients: a textual one (TUI) and a graphical one (JavaFX). As advanced features we added the test flight and simultaneous games on the same server.
 
-The result was not a collection of isolated screens. Commands had to cross the network, mutate authoritative state exactly once, and produce enough information for different interfaces to remain synchronized.
+The engineering knot is consistency. State has four different natures: the shared component pool, each player's public table and private hand, turn-dependent cards, and several games living in a single process. Every action starts on a client and must be validated once, applied once and made visible to everyone.
+
+## Architecture
+
+The code is organised by role into three roots: `server`, `client` and `common`. On the server, the domain (`model/domain`) separates ship and components, crew, flight board, adventure cards and configuration loaded from JSON. Coordination lives in `server/core`: `GameSessionManager` owns the games, `PlayerSessionRegistry` binds identities to sessions, `ConnectionMonitorService` handles heartbeat and disconnections.
+
+Communication follows the Command pattern with self-contained requests: 22 request types plus 9 for flight, 34 response types and 47 events (32 general, 15 flight) defined in `common/message`. A request reaches the server, is validated against authoritative state, and produces a response for the sender and an event for everyone else. The event is the only way a client learns that the world has changed.
 
 <figure class="project-explainer">
   <img src="/images/projects/explainers/galaxy-authoritative-server.svg" alt="Four clients with different interfaces connected to one central authoritative server" width="1200" height="675" loading="lazy" />
-  <figcaption>TUI and GUI clients could use Socket or RMI in the same game. Every command converged on the authoritative server, which applied the change once and distributed the new state to all clients.</figcaption>
+  <figcaption>TUI and GUI clients can use Socket or RMI in the same game. Every command converges on the authoritative server, which applies the change once and distributes the new state through an event.</figcaption>
 </figure>
+
+The two transports are symmetric adapters: `SocketServerAdapter` and `RMIServerAdapter` on the server, `SocketNetworkAdapter` and `RMINetworkAdapter` on the client. Above them the rest of the system sees a single network interface, so the protocol is a startup parameter rather than a fork in the code. Java serialisation carries the messages; Jackson loads configuration and decks.
+
+Adventure-card logic uses the Visitor pattern: `AdventureCardVisitor` resolves eight card families with different rules (combat strength with directional cannons and batteries, meteor defence with shields, exposed-connector counting, cabin connectivity for epidemics). `FlightBoard` keeps positions with collision prevention and recomputes leadership after every move.
 
 ## My contribution
 
-I worked mainly across the integration seams of the original system. The repository history records my contributions to the early package and model structure, RMI transport, command and event messaging, authentication, heartbeat handling, game lifecycle and multi-game coordination, and the building-phase controller.
+I authored 121 of the 314 commits on the main branch. The history shows where I worked: the initial package and model structure, the RMI transport, the internal command and event system, authentication, the heartbeat service, the session registry for multi-game support, the construction-phase controller with forbidden positions, and the game-data loading logic.
 
-As the project moved toward submission, my work became increasingly cross-cutting: connecting UI navigation to client state, repairing event and serialization flows, and debugging ship construction and adventure-card behaviour. This was the part of the project that taught me the most about distributed systems: a locally correct class is not enough when an event can be stale, duplicated, or interpreted differently on each side of a connection.
+Towards submission the work became cross-cutting: wiring interface navigation to client state, fixing the listener structure and serialisation, resolving the circular dependency between player and ship, fixing double draws, timers and player colours. The final weeks of commits are almost all `fix(...)`: it is the phase in which a distributed system reveals the errors no single class would have shown.
 
-These are my contributions, not a claim of sole authorship. Game rules, interfaces, testing, integration, and final delivery were collective responsibilities shared with Manuela Terribile, Alessandra Varricchio, and Diego Zanca.
+Rules, interfaces, tests and delivery were shared responsibilities with Manuela Terribile, Alessandra Varricchio and Diego Zanca. These are my contributions, not a claim of authorship over the whole.
 
-## Finished scope, archived build
+## What can be verified, and what cannot
 
-The original project was completed as an academic deliverable, but those words do not mean that its source currently passes a clean build. In the final snapshot, `ClientApp` imports a `newGUI` class that is no longer present. A fresh compilation therefore fails before reaching the game.
+The repository holds 272 source files and 63 JUnit 5 test classes with Mockito, the delivered JARs under `deliverables/` and the protocol documentation. The academic scope was completed and graded.
 
-I chose not to silently fix that defect and then describe the modified code as the team's submission. The branch remains a historical artifact, while this case study states the limitation beside the result. The submitted JAR files also remain in the repository, but I treat them as archived deliverables rather than evidence of a build verified today.
+The final snapshot has a defect I declare rather than silently fix: `ClientApp` imports `newGUI` and `newUI` from the `client.ui` package, but only `newTUI` survives in the tree. A clean build of `main` fails before reaching the game. Completion is a historical state of the project; reproducibility is a present technical state, and a portfolio has to say which of the two it can demonstrate.
 
-This distinction is important to me: **completion is a historical project status; reproducibility is a current technical status**. A credible portfolio should say which one it can prove.
+## One year later: the reconstruction
 
-## A second pass with Claude
+In August 2026 I returned to the same requirements on the `develop` branch: 146 commits in four days, alone, with Claude as a collaborator. I directed the milestones, evaluated the architectural proposals and verified behaviour against the published rules and requirements.
 
-The later work on `develop` is an individual AI-assisted reconstruction, not an extension of the team's authorship. I directed the milestones, evaluated architectural proposals, and reviewed behaviour against the published rules and requirements while Claude accelerated exploration and implementation.
+The central choice is documented in `SIMPLE-DIRECT-MODEL-ARCHITECTURE.md`: the client uses the server models directly instead of a parallel local state. `LocalGameState`, 691 lines with fifteen conversion methods, is replaced by a `ClientState` of roughly 150 lines that receives the updated model and asks the views to `refresh()`. The flow becomes request, server update, response to the requester plus event to the others, redraw.
 
-That reconstruction kept several system-level choices and changed important internal structures. It also exposed the limits of the comparison: the documentation and repository context were available, so this was not a blind test of whether an AI would independently rediscover every decision.
+It was not a blind test of an AI's ability to rediscover decisions: documentation and code were available. Method, convergences and differences are in [Rebuilding Galaxy Trucker with Claude: what changed, what did not, and how to measure it](/en/writing/rebuilding-galaxy-trucker-with-claude/).
 
-I examine the method, architectural convergence, divergences, and the human work that remained in [Rebuilding Galaxy Trucker with Claude: what changed, what didn't, and how to measure it](/en/writing/rebuilding-galaxy-trucker-with-claude/).
+## What I carry forward
 
-## What I would carry forward
-
-This project taught me that distributed behaviour is an integration problem before it is a class-design problem. The reconstruction added a second lesson: AI becomes meaningfully faster when requirements, decision criteria, and verification are explicit.
-
-The two versions therefore represent different evidence. The original shows collaboration and delivery under a deadline. The rebuild shows how I now structure, question, and verify a system with an AI collaborator while retaining responsibility for the result.
+Distributed behaviour is an integration problem before it is a class-design problem: explicit contracts between components and whole-system verification matter more than local correctness. The reconstruction added a second lesson, which I now apply to iOS development: when requirements, decision criteria and checks are written down, an automated collaborator genuinely accelerates, and responsibility for the result stays mine.

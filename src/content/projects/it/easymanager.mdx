@@ -3,12 +3,12 @@ translationKey: easymanager
 locale: it
 slug: easymanager-operazioni-ristorante
 title: EasyManager
-excerpt: Il software per le operazioni di ristorazione è diventato un toolkit Swift modulare, progettato attorno a ordini durevoli, corsie per dispositivi e riconciliazione fiscale onesta.
+excerpt: L'app SwiftUI del 2023 porta un ordine dal tavolo alla stampante fiscale; la reingegnerizzazione ne fa un toolkit Swift modulare.
 draft: false
 coverImage: /images/projects/easymanager-service-pulse.svg
 coverAlt: Cinque fasi collegate seguono un ordine del ristorante dalla bozza del tavolo alla riconciliazione fiscale
-seoTitle: EasyManager — Case study Swift per le operazioni di ristorazione
-seoDescription: Da un'app SwiftUI per ristoranti del 2023 a un toolkit operativo modulare in Swift 6.3, progettato per concorrenza, hardware e incertezza fiscale.
+seoTitle: EasyManager — Da un'app SwiftUI per la ristorazione a un toolkit Swift modulare
+seoDescription: Case study tecnico: un gestionale iPad per ristoranti in SwiftUI e Firestore con stampa fiscale Epson, e la sua reingegnerizzazione in package Swift 6.3 orientati a ordini durevoli, dispositivi e incertezza fiscale.
 kind: package
 lifecycle: in-progress
 authorship: individual
@@ -31,56 +31,58 @@ outcomes:
   - value: "0.1.0"
     label: API versionata
     method: Release 0.1.0 firmata e verificata nel checkout del sorgente successivo
-startingPoint: Un'applicazione SwiftUI per ristoranti del 2023, il cui perimetro di prodotto aveva superato i confini originali.
+startingPoint: Un'applicazione SwiftUI per un ristorante reale, scritta in venti commit nell'aprile 2023, il cui perimetro aveva superato i confini dell'architettura iniziale.
 links:
   - url: https://github.com/samuelesegrini/easymanager
-    label: Applicazione originale
+    label: Applicazione originale (2023)
     relationship: my-repository
 relatedPosts: []
 ---
 
-> EasyManager è un progetto per le operazioni di ristorazione con due storie di codice distinte. Il repository pubblico del 2023 documenta un'applicazione SwiftUI. Il lavoro successivo è una reingegnerizzazione individuale: un toolkit Swift modulare per ordini, hardware e flussi fiscali italiani. Condividono il dominio del problema, non un unico prodotto finito. Il sorgente della reingegnerizzazione successiva non è attualmente collegato pubblicamente né verificabile in modo indipendente in questa anteprima.
+> EasyManager è il progetto con cui il mio percorso comincia, ed è anche quello su cui sto ancora lavorando. Nell'aprile 2023, prima dell'università, ho scritto in venti commit un gestionale iPad per un ristorante vero: presa comande, cucina, cassa, stampa fiscale. Nel 2026 sono tornato sullo stesso dominio con quello che avevo imparato nel frattempo su sistemi distribuiti, hardware e verifica, e l'ho ripensato come toolkit Swift modulare.
+>
+> Le due epoche condividono il problema, non il codice. Il repository pubblico documenta la prima; la seconda è un lavoro individuale in corso, descritto qui nei limiti di ciò che è stato verificato.
 
-## Due epoche, un solo dominio
+## Il problema di un ristorante
 
-L'applicazione originale ha reso concreto il problema del ristorante: un team deve portare un ordine dal tavolo alla preparazione, al pagamento e al documento fiscale senza perderne il significato lungo il percorso. Il repository pubblico è il punto di partenza storico, non una prova che l'architettura a package successiva esistesse già nel 2023.
+Un ordine attraversa quattro mani e tre dispositivi: il cameriere che lo prende al tavolo, la cucina che lo prepara per portate, la cassa che lo chiude con uno o più pagamenti, la stampante fiscale che lo trasforma in un documento con valore legale. Ogni passaggio ha un ciclo di vita e un modo di fallire diverso, e un errore nell'ultimo (uno scontrino doppio, un totale sbagliato) non si annulla con un tap.
 
-Il lavoro successivo affronta una domanda ingegneristica più circoscritta: quali confini permettono a questo flusso di restare comprensibile quando un ordine può sopravvivere a una vista, un dispositivo può rispondere tardi e una mutazione fiscale può essere incerta? È una reingegnerizzazione in corso, separata dall'implementazione storica dell'app originale.
+Il cliente aveva bisogno di un unico strumento su iPad, con ruoli diversi per il personale e integrazione con la stampante fiscale già presente in sala.
 
-## Cosa ha mostrato l'applicazione originale
+## L'applicazione del 2023
 
-L'aumento del perimetro dell'app ha reso visibili i confini. Un'operazione di ristorazione non è una sola schermata: presa comande, cucina, inventario, loyalty, prenotazioni, checkout, dispositivi e registrazioni fiscali hanno cicli di vita e modalità di fallimento differenti. Tenere insieme questi aspetti faceva sì che modifiche locali portassero conseguenze nascoste altrove.
+L'app è SwiftUI puro con architettura MVVM. Sei `ObservableObject` (`RestaurantViewModel`, `AuthenticationViewModel`, `OrderViewModel`, `ProductViewModel`, `PrinterViewModel`, `TableViewModel`) sono creati all'avvio e iniettati come `environmentObject` nella gerarchia delle viste, che è organizzata per postazione: `DiningView` per la sala, `OrdersView` e `OrderSheetView` per la comanda, `CookingView` per la cucina, `CashDesk` con `CheckOut` e `ScontrinoView` per la cassa, un'area amministrativa per prodotti, categorie, coperti, tavoli e utenti.
 
-Questa è l'evidenza utile della prima epoca. Ha mostrato il vocabolario del dominio e i punti di pressione; non giustifica affermazioni secondo cui l'app originale avesse già risolto deployment, compatibilità hardware o certificazione fiscale.
+La persistenza è Cloud Firestore. I modelli sono `struct` `Codable` con `@DocumentID`; i view model aprono `addSnapshotListener` sulle collezioni e ricostruiscono lo stato locale a ogni snapshot, così più iPad in sala vedono lo stesso ordine senza un server applicativo. La decodifica distingue i quattro casi di `DecodingError` e li espone come messaggio, invece di scartare in silenzio un documento malformato.
 
-## Ripensare i confini
+Il dominio è più ricco di quanto sembri. Un tavolo ha uno stato (`libero`, `prenotato`, `in attesa`, `occupato`), il cameriere assegnato e l'ora d'inizio del servizio. Un ordine contiene piatti con portata, aliquota IVA, quantità decimale, un flag di storno e varianti con prezzo proprio; il totale dipende da quali varianti sono selezionate. Un utente ha ruoli e un numero di operatore, che è il dato che la stampante fiscale esige su ogni riga.
 
-Il sorgente successivo traduce questi punti di pressione in prodotti Swift separati. L'API versionata 0.1 documenta e compila 31 prodotti senza dipendenze remote. Nel checkout verificato, il codice delle funzionalità dipende da contratti di dominio e hardware focalizzati invece che da un'unica superficie di servizi modellata sull'applicazione. Questi fatti di architettura e release derivano dalla verifica del sorgente; l'anteprima non li presenta come evidenza GitHub ispezionabile anonimamente.
+## La stampante fiscale come sistema esterno
 
-La concorrenza di Swift è rilevante perché il lavoro sugli ordini e sui dispositivi non può assumere una risposta immediata e unica. Il design usa proprietà esplicite e corsie serializzate per i dispositivi quando un endpoint fisico richiede accesso ordinato. SQL resta al confine della persistenza; DocC descrive i contratti versionati accanto ai package che ne sono responsabili.
+La parte più istruttiva è `PrinterViewModel`. La stampante Epson in sala espone il protocollo ePOS fiscale via HTTP: l'app compone un documento XML in una busta SOAP e lo invia in POST a `fpmate.cgi`. Ho implementato due tipi di documento e le operazioni di chiusura:
 
-## Seguire un ordine attraverso il fallimento
+- il **preconto**, un documento non fiscale (`beginNonFiscal` … `endNonFiscal`) con una riga `printNormal` per piatto e variante, il totale allineato su 46 colonne, che il cliente riceve prima di pagare;
+- lo **scontrino fiscale** (`beginFiscalReceipt`), con una `printRecItem` per riga che porta descrizione, quantità, prezzo unitario e reparto IVA (tre reparti mappati sulle aliquote), e una `printRecTotal` per ogni forma di pagamento: contante, assegno, pagamento elettronico, ticket;
+- i **rapporti X e Z** e la fattura dall'ultimo scontrino, richiesti a fine turno.
 
-Un ordine inizia come bozza, ma un'operazione durevole richiede più di una richiesta nel caso felice. Quando il lavoro è inviato a un dispositivo o a un servizio fiscale, una risposta persa non dimostra che non sia avvenuto nulla. La distinzione utile è quindi tra un'operazione certamente non inviata e una che potrebbe essere già stata eseguita.
+Qui ho incontrato per la prima volta un problema che avrei rivisto nei sistemi distribuiti: la richiesta parte, la risposta può non arrivare, e non sapere se la stampante ha stampato non equivale a sapere che non ha stampato. Nel 2023 l'app registrava l'errore di connessione e lasciava la decisione all'operatore. È il punto di partenza della reingegnerizzazione.
 
-La reingegnerizzazione tratta outbox, acknowledgement e riconciliazione come fasi separate. Un timeout o una risposta malformata deve conservare l'incertezza per il seguito, invece di ritentare silenziosamente una mutazione e rischiare un'azione fiscale duplicata. È un confine di correttezza, non un'affermazione che ogni dispositivo fiscale reale sia stato validato.
+## Cosa ha mostrato la prima epoca
 
-## L'hardware non è un'altra API
+Il perimetro è cresciuto con le richieste del cliente (loyalty, prenotazioni, turni, inventario) e i confini si sono fatti visibili: un'operazione di ristorazione non è una schermata, e ogni area ha tempi e fallimenti propri. Tenere tutto in sei view model condivisi ha reso le modifiche locali portatrici di conseguenze altrove. È l'evidenza utile del 2023: il vocabolario del dominio e i punti di pressione. Non è la prova che l'app avesse già risolto compatibilità hardware o certificazione fiscale.
 
-L'hardware ha tempi, stato di connessione ed effetti collaterali irreversibili. Una corsia per dispositivo serializza l'accesso a uno specifico endpoint; il suo contratto è diverso da quello di un client di rete generico perché due comandi validi singolarmente possono diventare insicuri se intercalati.
+## La reingegnerizzazione
 
-Lo strato fiscale segue la stessa disciplina. Può riportare un esito incompleto o incerto invece di inventare prontezza da uno scambio ambiguo. Il repository contiene lavoro su protocolli e driver, ma la compatibilità con un dispositivo fisico dipende da evidenze esterne al codice sorgente.
+Il lavoro del 2026 pone una domanda più stretta: quali confini permettono a questo flusso di restare comprensibile quando un ordine sopravvive a una vista, un dispositivo risponde tardi e una mutazione fiscale può essere incerta?
 
-## Cosa è rilasciato e cosa non lo è
+La risposta è un insieme di package Swift 6.3 separati per contratto: dominio degli ordini, corsie per i dispositivi, strato fiscale, persistenza SQL al confine, documentazione DocC accanto a ogni API versionata. L'API 0.1.0 documenta e compila 31 prodotti senza dipendenze remote; il codice delle funzionalità dipende da contratti di dominio e hardware focalizzati invece che da una superficie di servizi modellata sull'applicazione.
 
-L'API 0.1.0 è la superficie versionata del package descritta sopra. Questa anteprima pubblica la case study mantenendo scollegato il sorgente successivo, quindi il racconto resta vincolato alle verifiche già svolte senza rivendicare una riproducibilità pubblica indipendente.
+Tre decisioni progettuali reggono il disegno:
 
-**Stato attuale**
+- **Un ordine è una macchina a stati durevole.** Bozza, inviato, riconosciuto, riconciliato: outbox, acknowledgement e riconciliazione sono fasi separate, e un timeout conserva l'incertezza per il passo successivo invece di ritentare in silenzio una mutazione che potrebbe duplicare un documento fiscale.
+- **L'hardware non è un'altra API.** Una corsia per dispositivo serializza l'accesso a un endpoint fisico con Swift Concurrency, perché due comandi validi presi singolarmente diventano insicuri se intercalati.
+- **Lo strato fiscale può rispondere "incerto".** Un esito incompleto è un valore del dominio, non un errore da nascondere.
 
-- La migrazione dell'applicazione è incompleta; i package successivi non affermano che l'app originale abbia adottato ogni nuovo confine.
-- Il sorgente della reingegnerizzazione successiva non è attualmente evidenza pubblica in questa anteprima.
-- Qui non ci sono affermazioni di deployment.
-- Il lavoro 0.2 è non rilasciato.
-- Mancano evidenze di compatibilità con dispositivi fisici e di certificazione fiscale.
+## Cosa è verificabile oggi
 
-Questi limiti fanno parte del lavoro, non sono note da nascondere. Definiscono ciò che può essere valutato onestamente oggi: il repository pubblico originale, i fatti esplicitamente circoscritti qui e le semantiche di fallimento progettate per evitare una falsa certezza. L'ispezione pubblica dei package successivi resta un blocker di lancio.
+Il repository pubblico del 2023 è consultabile per intero. Del lavoro successivo, i fatti di release riportati qui derivano dal checkout verificato del sorgente 0.1; il sorgente stesso non è ancora pubblico, il lavoro 0.2 non è rilasciato, e mancano evidenze di compatibilità con dispositivi fisici e di certificazione fiscale. Queste non sono note a margine: definiscono cosa questa pagina può dimostrare e cosa no.
