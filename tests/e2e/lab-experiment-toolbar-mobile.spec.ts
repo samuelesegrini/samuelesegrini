@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { apriMenu, rigaSulGuscio, vaiDalMenu } from './lab-chrome';
+import { apriMenu, rigaSulGuscio } from './lab-chrome';
 
 /** Sul telefono la barra ha poco spazio: il cambio lingua esce dalla riga e passa nel
  *  pannello del menu, dove c'è margine. Sul desktop resta la cella di sempre. */

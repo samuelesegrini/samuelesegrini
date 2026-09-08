@@ -7,7 +7,7 @@ import { base } from '../../lib/base';
 export async function GET(context: APIContext) {
 	const { posts } = await getPortfolioContent();
 	return rss({
-		title: 'Writing — Software Engineer',
+		title: 'Writing — Samuele Segrini',
 		description: 'Technical decisions, process, and lessons from building.',
 		site: new URL(`${base}/`, context.site!).href,
 		items: getPublishedPosts(posts, 'en').map((post) => ({

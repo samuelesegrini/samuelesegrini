@@ -64,7 +64,7 @@ const sectionNumber = (id: string) => sections.findIndex(s => s.id === id) + 1;
 const accent = project.translationKey === 'easymanager' ? '#cfeaff' : project.translationKey === 'spingo-sustainable-micromobility' ? '#ded1ff' : '#ffd4b8';
 ---
 
-<ExperimentLayout lang={lang} title={`${project.title} — ${copy.projectDetail.eyebrow}`} currentHref={labProjectPath(lang, slug)}
+<ExperimentLayout lang={lang} title={project.seoTitle ?? project.title} currentHref={labProjectPath(lang, slug)}
   sections={sections.map(s => ({ kicker: copy.common.section, value: s.value, detail: s.detail }))}
   itHref={translations('it')} enHref={translations('en')}>
   <a class="case-skip skip-link" href="#caso">{isIt ? 'Vai al caso studio' : 'Skip to case study'}</a>

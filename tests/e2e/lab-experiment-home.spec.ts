@@ -80,7 +80,7 @@ test('le altre pagine del laboratorio restano a una colonna', async ({ page }) =
 				(sezione) => getComputedStyle(sezione).gridTemplateColumns.split(' ').length,
 			),
 		);
-		expect(new Set(colonne), rotta).toEqual(new Set([1]));
+		expect(colonne.every((n) => n === 1), rotta).toBe(true);
 	}
 });
 

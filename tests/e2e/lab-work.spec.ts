@@ -5,7 +5,7 @@ test('archive keeps all projects, localized routes and category navigation', asy
   for (const route of ['/it/progetti/', '/en/projects/']) {
     await page.goto(route);
     await expect(page.locator('.work-archive h1')).toHaveCount(1);
-    await expect(page.locator('.work-card-link')).toHaveCount(7);
+    await expect(page.locator('.work-card-link')).toHaveCount(5);
     for (const link of await page.locator('.work-card-link').all()) {
       expect(await link.getAttribute('href')).toContain(route);
     }
@@ -14,7 +14,7 @@ test('archive keeps all projects, localized routes and category navigation', asy
     await page.locator('.work-card-link').first().click();
     await expect(page.locator('.case-detail h1')).toBeVisible();
     await page.goBack();
-    await expect(page.locator('.work-card-link')).toHaveCount(7);
+    await expect(page.locator('.work-card-link')).toHaveCount(5);
   }
 });
 

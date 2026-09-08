@@ -263,10 +263,11 @@ function legaBarra(shell) {
 function montaIndice(shell) {
   const dati = document.querySelector('#lab-sections')
   const sezioni = dati ? JSON.parse(dati.textContent) : []
-  const bersagli = [...document.querySelectorAll('.home-section')]
+  const bersagli = [...document.querySelectorAll('.stage [data-section]')].sort(
+    (a, b) => Number(a.dataset.section) - Number(b.dataset.section),
+  )
   const carta = shell.querySelector('.shuffle-slot')
   const dettaglio = shell.querySelector('[data-detail]')
-  const marcati = [...document.querySelectorAll('[data-section]')]
   if (!carta || sezioni.length === 0) return
 
   // i listener della pagina precedente vanno sciolti: la barra è la stessa, la pagina no

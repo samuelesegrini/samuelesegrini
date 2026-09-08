@@ -55,7 +55,7 @@
 		"lingua": "Language"
 	},
 	"home": {
-		"title": "Experiment — new home",
+		"title": "Samuele Segrini — Software Engineer",
 		"headline": "Software engineer,",
 		"emphasis": "Swift and reliable systems.",
 		"intro": "I design and build iOS products where the logic holds up as well as the interface. This bar is the menu prototype: it navigates the page and tells you where you are.",
@@ -79,7 +79,7 @@
 		"within": "Within 24 hours"
 	},
 	"work": {
-		"title": "Experiment — project archive",
+		"title": "Projects",
 		"eyebrow": "Archive",
 		"headline": "Projects,",
 		"emphasis": "by how they came about.",
@@ -106,7 +106,7 @@
 		}
 	},
 	"writing": {
-		"title": "Experiment — writing archive",
+		"title": "Writing",
 		"eyebrow": "Archive",
 		"topic": "Topic",
 		"headline": "Writing,",
@@ -117,7 +117,7 @@
 		"many": "articles"
 	},
 	"about": {
-		"title": "Experiment — about",
+		"title": "About",
 		"fallbackTitle": "About",
 		"fallbackExcerpt": "Profile in preparation.",
 		"mailLink": "Email me →",

@@ -10,9 +10,10 @@ import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
 import LabSipario from '../components/lab/LabSipario.astro';
 import LabPiede from '../components/lab/LabPiede.astro';
 import type { LabLocale, ToolbarSection } from '../components/lab/chrome';
-import { experimentLanguages, experimentRoutes, labPaths, mailHref } from '../components/lab/chrome';
+import { experimentLanguages, experimentRoutes, mailHref } from '../components/lab/chrome';
 import { getLabCopy, riempi } from '../lib/lab-copy';
 import { withBase } from '../lib/base';
+import { pageTitle } from '../lib/page-title';
 import { siteConfig } from '../config/site';
 
 interface Props {
@@ -36,7 +37,7 @@ const labels = { ...copy.toolbar, mail: riempi(copy.toolbar.mail) };
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<meta name="robots" content="noindex, nofollow" />
-		<title>{title}</title>
+		<title>{pageTitle(title, siteConfig.name)}</title>
 		<!-- navigazione senza ricaricare: il documento viene sostituito, non richiesto da capo -->
 		<ClientRouter />
 	</head>

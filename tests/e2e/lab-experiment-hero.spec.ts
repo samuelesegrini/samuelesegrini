@@ -91,13 +91,17 @@ test('le altre pagine tengono la hero classica', async ({ page }) => {
 	for (const rotta of ['/it/progetti/', '/it/chi-sono/']) {
 		await page.goto(rotta);
 		await page.waitForTimeout(700);
-		const misura = await page.evaluate(() => ({
-			marchio: Boolean(document.querySelector('.hero-marchio')),
-			media: Boolean(document.querySelector('.hero-media')),
-			titolo: getComputedStyle(document.querySelector('.home-section.hero h1')!).maxWidth,
-		}));
+		const misura = await page.evaluate(() => {
+			const titolo = document.querySelector('.work-hero h1, .about-hero h1');
+			return {
+				marchio: Boolean(document.querySelector('.hero-marchio')),
+				media: Boolean(document.querySelector('.hero-media')),
+				titolo: titolo ? getComputedStyle(titolo).maxWidth : null,
+			};
+		});
 		expect(misura.marchio, `${rotta}: niente marchio gigante`).toBe(false);
 		expect(misura.media, `${rotta}: niente riquadro`).toBe(false);
+		expect(misura.titolo, `${rotta}: c'è un titolo di pagina`).not.toBeNull();
 		expect(misura.titolo, `${rotta}: il titolo tiene la sua misura`).not.toBe('none');
 	}
 });

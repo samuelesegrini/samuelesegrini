@@ -73,7 +73,7 @@ const sezioni = [
 ];
 ---
 
-<ExperimentLayout lang={lang} title={t.title} currentHref={labPaths[lang].about}
+<ExperimentLayout lang={lang} title={profilo?.data.seoTitle ?? t.title} currentHref={labPaths[lang].about}
 	sections={sezioni.map(({ kicker, value, detail }) => ({ kicker, value, detail }))}
 	itHref={labPaths.it.about} enHref={labPaths.en.about}>
 	<a class="work-skip skip-link" href="#racconto">{it ? 'Vai al racconto' : 'Skip to the story'}</a>

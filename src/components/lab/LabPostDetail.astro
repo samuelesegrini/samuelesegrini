@@ -24,7 +24,7 @@ const other = (locale: LabLocale) => { const pair = getTranslationPair(posts, po
 const labels = { back: it ? 'Tutti gli articoli' : 'All articles', body: it ? 'Lettura' : 'Reading', next: it ? 'Continua a leggere' : 'Keep reading', index: it ? 'In questo articolo' : 'In this article', pause: it ? 'Pausa animazioni' : 'Pause animations', resume: it ? 'Attiva animazioni' : 'Enable animations' };
 const sections = [labels.body, labels.next].map(value => ({ kicker: it ? 'Sezione' : 'Section', value, detail: { kicker: it ? 'Articolo' : 'Article', value: value === labels.body ? date : next.title } }));
 ---
-<ExperimentLayout lang={lang} title={post.title} currentHref={labPostPath(lang, slug)} sections={sections} itHref={other('it')} enHref={other('en')}>
+<ExperimentLayout lang={lang} title={post.seoTitle ?? post.title} currentHref={labPostPath(lang, slug)} sections={sections} itHref={other('it')} enHref={other('en')}>
   <a class="case-skip skip-link" href="#articolo">{it ? 'Vai al testo' : 'Skip to text'}</a>
   <article class="case-detail post-detail" style="--case-accent: #ded1ff">
     <header class="scene case-hero" id="inizio" data-section="0"><div class="depth-0 case-backdrop" data-depth="0" aria-hidden="true"></div><div class="depth-2 case-grid" data-depth="2" aria-hidden="true"></div><div class="depth-4" data-depth="4">

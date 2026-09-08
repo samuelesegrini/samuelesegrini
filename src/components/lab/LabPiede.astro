@@ -2,10 +2,10 @@
 /**
  * Il piede del banco di prova: la scena che chiude ogni pagina.
  *
- * La carta finisce e sotto c'è il tavolo scuro. Prima passa il nastro azzurro del
- * contatto, poi l'invito grande a scrivere, poi le quattro pagine appoggiate come carte,
- * ognuna con la tinta della propria sezione. I pezzi visivi (nastro, rigo-indice, scheda,
- * mazzo, sigillo, freccia-scambio) stanno in lab-primitives.css per tornare nelle sezioni.
+ * La carta finisce e sotto c'è il tavolo scuro. L'invito grande a scrivere, poi le
+ * quattro pagine appoggiate come carte, ognuna con la tinta della propria sezione.
+ * I pezzi visivi (rigo-indice, scheda, mazzo, sigillo, freccia-scambio) stanno in
+ * lab-primitives.css per tornare nelle sezioni.
  */
 import { siteConfig } from '../../config/site';
 import { experimentLanguages, labPaths, mailHref, type LabLocale } from './chrome';
@@ -35,7 +35,6 @@ const altrove = [
 const lingue = experimentLanguages(lang, itHref, enHref);
 const anno = new Date().getFullYear();
 const apertura = lang === 'it' ? 'Un progetto, una domanda, un’idea.' : 'A project, a question, an idea.';
-const nastro = [t.invito, apertura, siteConfig.email, lang === 'it' ? 'Risposta entro 24 ore' : 'Reply within 24 hours'];
 const scena = lang === 'it' ? 'Chiusura' : 'Closing';
 const inizio = lang === 'it' ? 'Torna all’inizio' : 'Back to top';
 const anello = `${siteConfig.name} — ${siteConfig.role} — `;
@@ -65,7 +64,7 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 		</div>
 
 		<nav class="piede-navigazione" aria-label={t.navigazione}>
-			<ul class="mazzo" role="list">{pagine.map((pagina, index) => (
+			<ul class="mazzo" role="list">{pagine.map((pagina) => (
 				<li style={`--tinta: ${pagina.tinta}`}>
 					<a class="scheda" href={pagina.href}>
 						<span class="scheda-kicker">{pagina.kicker}</span>

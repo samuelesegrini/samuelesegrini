@@ -31,7 +31,7 @@
 		"lingua": "Lingua"
 	},
 	"home": {
-		"title": "Banco di prova — nuova home",
+		"title": "Samuele Segrini — Software Engineer",
 		"headline": "Software engineer,",
 		"emphasis": "Swift e sistemi affidabili.",
 		"intro": "Progetto e costruisco prodotti iOS in cui la logica regge quanto l’interfaccia. Questa barra è il prototipo del menu: naviga la pagina e racconta dove sei.",
@@ -55,7 +55,7 @@
 		"within": "Entro 24 ore"
 	},
 	"work": {
-		"title": "Banco di prova — archivio progetti",
+		"title": "Progetti",
 		"eyebrow": "Archivio",
 		"headline": "Progetti,",
 		"emphasis": "per come sono nati.",
@@ -70,7 +70,7 @@
 		}
 	},
 	"writing": {
-		"title": "Banco di prova — archivio articoli",
+		"title": "Articoli",
 		"eyebrow": "Archivio",
 		"topic": "Tema",
 		"headline": "Scrittura,",
@@ -81,7 +81,7 @@
 		"many": "articoli"
 	},
 	"about": {
-		"title": "Banco di prova — chi sono",
+		"title": "Chi sono",
 		"fallbackTitle": "Chi sono",
 		"fallbackExcerpt": "Profilo in preparazione.",
 		"mailLink": "Scrivimi →",
