@@ -354,32 +354,47 @@ function montaIndice(shell) {
   }
   carta.setAttribute('aria-label', `${sezioni[0].kicker}: ${sezioni[0].value}`)
 
+  // Quale sezione "possiede" la lettura: l'ultima il cui bordo alto sta sopra una
+  // linea nel viewport. Il rapporto di intersezione sbaglia sulle sezioni lunghe
+  // (un articolo alto migliaia di pixel resta sotto soglia anche quando riempie
+  // lo schermo, e il blocco "prossimo" vince in fondo).
+  let fotogramma = 0
+  const aggiornaDaScroll = () => {
+    fotogramma = 0
+    if (!bersagli.length || Date.now() < shell.__blocco) return
+    const linea = innerHeight * 0.3
+    let migliore = bersagli[0]
+    for (const nodo of bersagli) {
+      if (nodo.getBoundingClientRect().top <= linea) migliore = nodo
+    }
+    const a = Number(migliore.dataset.section)
+    shell.dataset.mode = a === 0 ? 'hero' : 'index'
+    // pagine come l'archivio hanno più tappe di quante ne tenga la barra: l'indice
+    // non può superare l'ultima carta disponibile
+    if (a > 0) mostra(Math.min(a - 1, carte.length - 1))
+  }
+  const inCoda = () => { if (!fotogramma) fotogramma = requestAnimationFrame(aggiornaDaScroll) }
+  let sblocco
+  signal.addEventListener('abort', () => {
+    cancelAnimationFrame(fotogramma)
+    clearTimeout(sblocco)
+  })
+
   carta.addEventListener('click', () => {
     const prossima = (indice + 1) % carte.length
     mostra(prossima, 1)
     shell.dataset.mode = 'index'
     // lo scroll programmato attraversa le sezioni intermedie: senza questa pausa
-    // l'osservatore farebbe sfogliare il mazzo lungo il tragitto
+    // l'aggiornamento da scroll sfoglierebbe il mazzo lungo il tragitto
     shell.__blocco = Date.now() + 1200
     bersagli[prossima + 1]?.scrollIntoView({ block: 'start' })
+    clearTimeout(sblocco)
+    sblocco = setTimeout(aggiornaDaScroll, 1200)
   }, { signal })
 
-  // la carta segue lo scroll, non solo il contrario
-  if (bersagli.length) {
-    const quote = new Map()
-    const spia = new IntersectionObserver(voci => {
-      voci.forEach(voce => quote.set(voce.target, voce.intersectionRatio))
-      if (Date.now() < shell.__blocco) return
-      let migliore = null, massimo = 0
-      quote.forEach((quota, nodo) => { if (quota > massimo) { massimo = quota; migliore = nodo } })
-      if (!migliore || massimo <= 0.25) return
-      const a = Number(migliore.dataset.section)
-      shell.dataset.mode = a === 0 ? 'hero' : 'index'
-      if (a > 0) mostra(a - 1)
-    }, { threshold: [0, 0.25, 0.5, 0.75, 1] })
-    bersagli.forEach(bersaglio => spia.observe(bersaglio))
-    shell.__spia = spia
-  }
+  window.addEventListener('scroll', inCoda, { passive: true, signal })
+  window.addEventListener('resize', inCoda, { signal })
+  aggiornaDaScroll()
 }
 
 function montaBarraSperimentale() {

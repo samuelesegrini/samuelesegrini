@@ -1,8 +1,11 @@
 import { expect, test } from '@playwright/test';
 
+import { attendiCaricato } from './lab-chrome';
+
 test('la stessa superficie cresce dalla hero e lascia spazio ai tre riquadri', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/it/');
+  await attendiCaricato(page);
   const media = page.locator('.hero-media');
   await expect(media.locator('[data-scene]')).toHaveCount(3);
   const initial = await media.boundingBox();
@@ -28,6 +31,7 @@ test('la stessa superficie cresce dalla hero e lascia spazio ai tre riquadri', a
 test('the preview keeps the selected project when moving from its card to the link', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/en/');
+  await attendiCaricato(page);
   await page.locator('.project-entry').nth(1).evaluate(el => el.scrollIntoView({block: 'center', behavior: 'instant'}));
   await page.locator('.project-entry').nth(1).hover();
   const destination = await page.locator('.project-link').nth(1).getAttribute('href');
@@ -43,6 +47,7 @@ test('the preview keeps the selected project when moving from its card to the li
 test('preview link is unavailable in the hero and keyboard accessible once docked', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/it/');
+  await attendiCaricato(page);
   const preview = page.locator('.preview-open');
   await expect(preview).toHaveAttribute('tabindex', '-1');
   await page.locator('.project-link').nth(2).focus();
