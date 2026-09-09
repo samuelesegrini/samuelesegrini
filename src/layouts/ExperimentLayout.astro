@@ -10,7 +10,7 @@ import ExperimentToolbar from '../components/lab/ExperimentToolbar.astro';
 import LabSipario from '../components/lab/LabSipario.astro';
 import LabPiede from '../components/lab/LabPiede.astro';
 import type { LabLocale, ToolbarSection } from '../components/lab/chrome';
-import { experimentLanguages, experimentRoutes, mailHref } from '../components/lab/chrome';
+import { experimentLanguages, experimentRoutes, labPaths, mailHref } from '../components/lab/chrome';
 import { getLabCopy, riempi } from '../lib/lab-copy';
 import { withBase } from '../lib/base';
 import { pageTitle } from '../lib/page-title';
@@ -29,6 +29,10 @@ interface Props {
 const { lang, title, currentHref, sections, itHref, enHref } = Astro.props;
 const copy = await getLabCopy(lang);
 const labels = { ...copy.toolbar, mail: riempi(copy.toolbar.mail) };
+
+// La radice serve la home italiana: il canonico manda a /it/, così le due non si contendono.
+const percorso = Astro.url.pathname;
+const canonico = new URL(percorso === withBase('/') ? labPaths.it.home : percorso, Astro.site).href;
 ---
 
 <!doctype html>
@@ -37,6 +41,7 @@ const labels = { ...copy.toolbar, mail: riempi(copy.toolbar.mail) };
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<meta name="robots" content="noindex, nofollow" />
+		<link rel="canonical" href={canonico} />
 		<title>{pageTitle(title, siteConfig.name)}</title>
 		<!-- navigazione senza ricaricare: il documento viene sostituito, non richiesto da capo -->
 		<ClientRouter />
