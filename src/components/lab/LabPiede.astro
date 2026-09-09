@@ -4,7 +4,7 @@
  *
  * La carta finisce e sotto c'è il tavolo scuro. L'invito grande a scrivere, poi le
  * quattro pagine appoggiate come carte, ognuna con la tinta della propria sezione.
- * I pezzi visivi (rigo-indice, scheda, mazzo, sigillo, freccia-scambio) stanno in
+ * I pezzi visivi (scheda, mazzo, sigillo, freccia-scambio) stanno in
  * lab-primitives.css per tornare nelle sezioni.
  */
 import { siteConfig } from '../../config/site';
@@ -38,7 +38,6 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 
 <footer class="scene piede" id="footer" aria-labelledby="piede-titolo" data-scene="contact">
 	<div class="piede-foglio">
-		<div class="rigo-indice piede-indice"><b>05</b><span>{scena}</span><i></i><span>{siteConfig.role}</span></div>
 
 		<div class="piede-gesto">
 			<a class="piede-invito" href={mailHref} aria-labelledby="piede-titolo" aria-describedby="piede-indirizzo">
@@ -125,7 +124,6 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 	.piede a { color: inherit; text-decoration: none; }
 	.piede a:focus-visible { outline: 3px solid var(--tinta); outline-offset: 5px; }
 	.piede-foglio { display: grid; gap: clamp(48px, 6vw, 88px); padding: clamp(40px, 5vw, 72px) max(24px, 4vw) 174px; }
-	.piede-indice { --inchiostro-tenue: var(--piede-tenue); --inchiostro: var(--piede-carta); }
 
 	/* l'invito: apertura piccola, titolo enorme che sale dalla sua feritoia, indirizzo sotto */
 	.piede-gesto { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 32px; }

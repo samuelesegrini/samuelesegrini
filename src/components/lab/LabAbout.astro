@@ -85,15 +85,13 @@ const sezioni = [
 				<div class="work-topline"><span>{l.topline}</span><span>{l.ruolo}</span></div>
 				<h1>{titolo}</h1>
 				<div class="work-intro"><span>{l.lead}</span><p>{estratto}</p></div>
-				<div class="rigo-indice about-indice"><b>00</b><span>{l.fatti}</span><i></i><span>{siteConfig.name}</span></div>
 				<ul class="mazzo about-fatti" role="list">{fatti.map((fatto) => (
 					<li style={`--tinta: ${fatto.tinta}`}><a class="scheda" href={fatto.href}><span class="scheda-kicker">{fatto.kicker}</span><span class="scheda-titolo">{fatto.valore}</span><span class="scheda-freccia" aria-hidden="true">↓</span></a></li>
 				))}</ul>
 			</div>
 		</header>
 
-		<section class="scene about-racconto" id="racconto" data-section="1" aria-labelledby="racconto-title">
-			<div class="rigo-indice about-indice"><b>01</b><span id="racconto-title">{l.racconto}</span><i></i><span>{capitoli.length} {it ? 'capitoli' : 'chapters'}</span></div>
+		<section class="scene about-racconto" id="racconto" data-section="1" aria-label={l.racconto}>
 			<div class="about-lettura">
 				<aside class="about-rail">
 					<span class="section-kicker">{l.indice}</span>
@@ -109,8 +107,7 @@ const sezioni = [
 			</div>
 		</section>
 
-		<section class="scene about-progetti" id="progetti" data-section="2" aria-labelledby="progetti-title">
-			<div class="rigo-indice about-indice" style="--tinta: var(--orange)"><b>02</b><span id="progetti-title">{l.progetti}</span><i></i><a href={labPaths[lang].work}>{l.archivio} ↗</a></div>
+		<section class="scene about-progetti" id="progetti" data-section="2" aria-label={l.progetti}>
 			<p class="about-sezione-testo">{l.progettiTesto}</p>
 			<ul class="work-cards about-cards">{inEvidenza.map((project) => (
 				<li class="work-card">
@@ -127,8 +124,7 @@ const sezioni = [
 			))}</ul>
 		</section>
 
-		<section class="scene about-articoli" id="articoli" data-section="3" aria-labelledby="articoli-title">
-			<div class="rigo-indice about-indice" style="--tinta: var(--violet)"><b>03</b><span id="articoli-title">{l.articoli}</span><i></i><a href={labPaths[lang].writing}>{l.tuttiArticoli} ↗</a></div>
+		<section class="scene about-articoli" id="articoli" data-section="3" aria-label={l.articoli}>
 			<p class="about-sezione-testo">{l.articoliTesto}</p>
 			<ol class="about-note" role="list">{note.map((post, i) => (
 				<li class="writing-entry">
@@ -141,8 +137,7 @@ const sezioni = [
 			))}</ol>
 		</section>
 
-		<section class="scene about-contatto" id="contatto" data-section="4" aria-labelledby="contatto-title">
-			<div class="rigo-indice about-indice" style="--tinta: var(--blue)"><b>04</b><span id="contatto-title">{l.contatto}</span><i></i><span>{contatto.detailKicker} · {fatti[3].valore}</span></div>
+		<section class="scene about-contatto" id="contatto" data-section="4" aria-label={l.contatto}>
 			<div class="about-biglietto-riga">
 				<p class="about-sezione-testo">{contatto.text}</p>
 				<a class="scheda about-biglietto" href={`mailto:${siteConfig.email}`} style="--tinta: var(--blue)">

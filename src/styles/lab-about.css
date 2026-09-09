@@ -1,14 +1,11 @@
 /* Chi sono: eredita il registro degli archivi (lab-work.css) e delle righe (lab-writing.css),
-   qui c'è solo quello che la pagina aggiunge. La tinta della sezione viaggia sul rigo-indice
-   e sulle schede attraverso --tinta, come negli altri capitoli. */
+   qui c'è solo quello che la pagina aggiunge. La tinta della sezione viaggia sulle
+   schede attraverso --tinta, come negli altri capitoli. */
 .profilo-lab { --inchiostro: #20221f; --inchiostro-tenue: #6b6760; }
 .profilo-lab a { color: inherit; }
 .profilo-lab .about-hero { padding-bottom: 72px; }
-.profilo-lab .about-indice { --inchiostro: #20221f; margin-bottom: 40px; }
-.profilo-lab .about-indice a { text-decoration: none; }
-.profilo-lab .about-indice a:hover { text-decoration: underline; text-underline-offset: 4px; }
-.about-hero .about-indice { margin: 64px 0 22px; }
 /* i quattro fatti: una scheda per sezione, con la sua tinta, e la freccia che porta giù */
+.about-fatti { margin-top: 64px; }
 .about-fatti .scheda { min-height: 168px; color: var(--inchiostro); }
 .about-fatti .scheda-titolo { padding-right: 40px; font-size: clamp(24px, 2.3vw, 34px); }
 .about-note { margin: 0; padding: 0; list-style: none; }
@@ -67,7 +64,6 @@
 }
 @media (max-width: 560px) {
   .profilo-lab .scene { padding-top: 48px; padding-bottom: 72px; }
-  .about-hero .about-indice { margin-top: 44px; }
   .about-fatti .scheda { min-height: 130px; padding: 18px 20px; }
   .about-fatti .scheda-titolo { font-size: 22px; }
   .profilo-lab .about-prosa { font-size: 17px; }

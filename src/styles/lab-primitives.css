@@ -3,13 +3,6 @@
    `--tinta` (il colore della sezione) e un `--inchiostro`, così cambia pelle senza
    cambiare forma. Nessuno di questi dipende da JavaScript. */
 
-/* .rigo-indice: la riga d'apertura di una scena. Numero, nome, un filo che si tende
-   fino al bordo e un'annotazione a destra. È il kicker delle sezioni, steso in orizzontale. */
-.rigo-indice { display: flex; align-items: center; gap: 14px; color: var(--inchiostro-tenue, #6b6760); font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
-.rigo-indice::before { content: ''; flex: none; width: 9px; height: 9px; border-radius: 2px; background: var(--tinta, currentColor); }
-.rigo-indice > i { flex: 1; height: 1px; background: currentColor; opacity: .3; }
-.rigo-indice b { font-weight: 400; color: var(--inchiostro, inherit); }
-
 /* .scheda: la carta del banco. Bordo sottile, angoli larghi, ombra piatta a due strati che
    la fa sembrare appoggiata su un'altra. Il colore è la tinta, l'inchiostro resta scuro. */
 .scheda { --scheda-bordo: color-mix(in srgb, var(--inchiostro, #171713) 28%, var(--tinta, #fff)); position: relative; display: grid; align-content: space-between; gap: 22px; min-height: 200px; padding: 22px 24px; border: 1px solid var(--scheda-bordo); border-radius: 22px; background: var(--tinta, #fffefb); color: var(--inchiostro, #171713); box-shadow: 0 7px 0 -2px color-mix(in srgb, var(--tinta, #fff) 78%, #fff), 0 8px 0 -2px var(--scheda-bordo); }

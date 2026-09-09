@@ -1,9 +1,9 @@
 /* I capitoli della home: scrittura, percorso, contatto.
-   Ogni capitolo apre con un rigo-indice a tutta larghezza, tiene il testo a sinistra
-   (fermo, mentre il resto scorre) e mette a destra il proprio gesto: le note che si
-   impilano, la rotta che si disegna, il biglietto che si inclina. I pezzi comuni
-   (rigo-indice, scheda, mazzo, ventaglio, sigillo, freccia-scambio) vengono
-   da lab-primitives.css; qui c'è solo come ogni capitolo li usa. */
+   Ogni capitolo tiene il testo a sinistra (fermo, mentre il resto scorre) e mette a
+   destra il proprio gesto: le note che si impilano, la rotta che si disegna, il
+   biglietto che si inclina. I pezzi comuni (scheda, mazzo, ventaglio, sigillo,
+   freccia-scambio) vengono da lab-primitives.css; qui c'è solo come ogni capitolo
+   li usa. */
 
 .home-section.home-chapter {
   --tinta: var(--violet);
@@ -16,16 +16,13 @@
   grid-template-rows: auto auto;
   align-content: start;
   gap: clamp(40px, 6vw, 80px) clamp(48px, 6vw, 96px);
-  padding: 0 max(24px, 4vw) 160px;
+  padding: 96px max(24px, 4vw) 160px;
   border-top: 0;
   content-visibility: auto;
   contain-intrinsic-size: auto 1200px;
 }
 .home-chapter.chapter-path { --tinta: var(--acid); }
 .home-chapter.chapter-contact { --tinta: var(--blue); }
-
-/* la riga d'apertura: occupa tutta la larghezza, sopra le due colonne */
-.chapter-indice { grid-column: 1 / -1; padding-top: 96px; }
 
 /* il testo: fermo mentre a destra si scorre */
 .home-chapter .chapter-opening { position: relative; top: auto; min-width: 0; padding-top: 0; }
@@ -133,8 +130,7 @@
   .tappa-dettaglio { grid-column: 2; justify-items: start; text-align: left; padding-top: 6px; }
 }
 @media (max-width: 600px) {
-  .home-section.home-chapter { min-height: auto; padding-bottom: 130px; gap: 36px; }
-  .chapter-indice { padding-top: 64px; }
+  .home-section.home-chapter { min-height: auto; padding-top: 64px; padding-bottom: 130px; gap: 36px; }
   .home-chapter .chapter-opening h2 { font-size: clamp(48px, 13vw, 76px); }
   .home-chapter .chapter-opening p { padding-right: 0; }
   .home-chapter .chapter-ventaglio { transform: scale(.5); bottom: -8px; }
