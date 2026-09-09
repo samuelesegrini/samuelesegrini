@@ -8,16 +8,14 @@
  * lab-primitives.css per tornare nelle sezioni.
  */
 import { siteConfig } from '../../config/site';
-import { experimentLanguages, labPaths, mailHref, type LabLocale } from './chrome';
+import { labPaths, mailHref, type LabLocale } from './chrome';
 import type { LabCopy } from '../../lib/lab-copy';
 
 interface Props {
 	lang: LabLocale;
 	copy: LabCopy;
-	itHref: string;
-	enHref: string;
 }
-const { lang, copy, itHref, enHref } = Astro.props;
+const { lang, copy } = Astro.props;
 const t = copy.footer;
 const percorsi = labPaths[lang];
 const tinte = ['var(--paper)', 'var(--orange)', 'var(--violet)'];
@@ -32,11 +30,9 @@ const altrove = [
 	{ label: 'LinkedIn', href: siteConfig.linkedin },
 	{ label: 'Email', href: mailHref },
 ];
-const lingue = experimentLanguages(lang, itHref, enHref);
 const anno = new Date().getFullYear();
 const apertura = lang === 'it' ? 'Un progetto, una domanda, un’idea.' : 'A project, a question, an idea.';
 const scena = lang === 'it' ? 'Chiusura' : 'Closing';
-const inizio = lang === 'it' ? 'Torna all’inizio' : 'Back to top';
 const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 ---
 
@@ -80,17 +76,10 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 				<span class="piede-etichetta">{t.colofone}</span>
 				<p>{t.fattoCon}<br />{t.caratteri}</p>
 			</div>
-			<nav class="piede-lingua" aria-label={t.lingua}>
-				<span class="piede-etichetta">{t.lingua}</span>
-				<ul class="piede-lingue" role="list">{lingue.map((lingua) => (
-					<li><a href={lingua.href} lang={lingua.label.toLowerCase()} aria-current={lingua.current ? 'true' : undefined}>{lingua.label}</a></li>
-				))}</ul>
-			</nav>
 		</div>
 
 		<div class="piede-chiusura">
 			<span>© {anno} {siteConfig.name}</span>
-			<a class="piede-inizio" href="#inizio">{inizio} <span aria-hidden="true">↑</span></a>
 			<span>{t.diritti}</span>
 		</div>
 	</div>
@@ -160,20 +149,17 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 	.piede-navigazione .scheda-titolo { font-size: clamp(26px, 2.6vw, 40px); }
 
 	/* le tre colonne di servizio */
-	.piede-dettagli { display: grid; grid-template-columns: 1fr 1.3fr auto; gap: 32px; padding-top: clamp(28px, 4vw, 44px); border-top: 1px solid var(--piede-filo); }
+	.piede-dettagli { display: grid; grid-template-columns: 1fr 1.3fr; gap: 32px; padding-top: clamp(28px, 4vw, 44px); border-top: 1px solid var(--piede-filo); }
 	.piede-etichetta { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; color: var(--piede-tenue); font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 	.piede-etichetta::before { content: ''; width: 7px; height: 7px; border-radius: 2px; background: var(--tinta); }
-	.piede-altrove ul, .piede-lingue { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0; padding: 0; list-style: none; }
-	.piede-altrove a, .piede-lingue a { display: inline-flex; align-items: baseline; gap: 6px; min-height: 30px; font-size: 15px; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 6px; transition: text-decoration-color 300ms ease, color 300ms ease; }
-	.piede-altrove a:is(:hover, :focus-visible), .piede-lingue a:is(:hover, :focus-visible), .piede-lingue a[aria-current] { color: var(--tinta); text-decoration-color: var(--tinta); }
+	.piede-altrove ul { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0; padding: 0; list-style: none; }
+	.piede-altrove a { display: inline-flex; align-items: baseline; gap: 6px; min-height: 30px; font-size: 15px; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 6px; transition: text-decoration-color 300ms ease, color 300ms ease; }
+	.piede-altrove a:is(:hover, :focus-visible) { color: var(--tinta); text-decoration-color: var(--tinta); }
 	.piede-altrove a > span { font-size: 12px; }
 	.piede-colofone p { margin: 0; color: var(--piede-tenue); font-size: 14px; line-height: 1.7; }
-	.piede-lingue a[aria-current] { font-weight: 700; }
 
 	/* l'ultima riga sta sopra la barra fissa: il padding del foglio le lascia il posto */
 	.piede-chiusura { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; padding-top: 22px; border-top: 1px solid var(--piede-filo); color: var(--piede-tenue); font: 11px/1.5 var(--mono); letter-spacing: .04em; }
-	.piede-inizio { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 1px solid var(--piede-filo); border-radius: 999px; color: var(--piede-carta); transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease; }
-	.piede-inizio:is(:hover, :focus-visible) { background: var(--tinta); border-color: var(--tinta); color: #171713; }
 
 	/* ingresso: il titolo sale dalla feritoia mentre il piede entra, le carte una alla volta */
 	@keyframes piede-titolo-entra { from { transform: translateY(110%); } to { transform: none; } }
@@ -194,18 +180,17 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 		.piede-navigazione .mazzo { --mazzo-colonne: 2; gap: 12px; }
 		.piede-navigazione .scheda { min-height: 160px; padding: 18px 20px; }
 		.piede-navigazione .scheda-titolo { font-size: clamp(22px, 5vw, 30px); }
-		.piede-dettagli { grid-template-columns: minmax(0, 1fr) auto; gap: 28px 20px; }
-		.piede-colofone { grid-column: 1 / -1; grid-row: 2; }
+		.piede-dettagli { grid-template-columns: minmax(0, 1fr); gap: 28px 20px; }
 	}
 	@media (max-width: 600px) {
 		.piede-foglio { gap: 40px; padding-bottom: 150px; }
 		.piede-invito h2 { font-size: clamp(44px, 15vw, 88px); }
 		.piede-mail { font-size: 16px; }
 		.piede-freccia { font-size: 30px; }
-		.piede-altrove a, .piede-lingue a { min-height: 36px; }
+		.piede-altrove a { min-height: 36px; }
 		.piede-chiusura { font-size: 10px; }
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.piede-mail::after, .piede-inizio, .piede-altrove a, .piede-lingue a { transition: none; }
+		.piede-mail::after, .piede-altrove a { transition: none; }
 	}
 </style>
