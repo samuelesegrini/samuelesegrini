@@ -263,7 +263,11 @@ function legaBarra(shell) {
 function montaIndice(shell) {
   const dati = document.querySelector('#lab-sections')
   const sezioni = dati ? JSON.parse(dati.textContent) : []
-  const bersagli = [...document.querySelectorAll('.stage [data-section]')].sort(
+  // Solo le sezioni del foglio: anche le carte del mazzo portano `data-section`, e la barra
+  // sopravvive alla navigazione. Cercandole da `.stage` le carte della pagina precedente
+  // finivano fra i bersagli e falsavano la lettura, lasciando l'indice fermo su una tappa
+  // che non esiste più.
+  const bersagli = [...document.querySelectorAll('.page-sheet [data-section]')].sort(
     (a, b) => Number(a.dataset.section) - Number(b.dataset.section),
   )
   const carta = shell.querySelector('.shuffle-slot')
