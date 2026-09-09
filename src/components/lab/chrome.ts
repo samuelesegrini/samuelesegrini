@@ -43,7 +43,6 @@ const anatomia = [
 	{ chiave: 'home', preview: 'preview-home', previewHtml: 'SS' },
 	{ chiave: 'work', preview: 'preview-projects', previewHtml: '<i></i><i></i><i></i>' },
 	{ chiave: 'writing', preview: 'preview-writing', previewHtml: '<b>Aa</b><i></i><i></i>' },
-	{ chiave: 'about', preview: 'preview-about', previewHtml: '' },
 ] as const;
 
 export function experimentRoutes(

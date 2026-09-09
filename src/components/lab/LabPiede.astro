@@ -20,8 +20,8 @@ interface Props {
 const { lang, copy, itHref, enHref } = Astro.props;
 const t = copy.footer;
 const percorsi = labPaths[lang];
-const tinte = ['var(--paper)', 'var(--orange)', 'var(--violet)', 'var(--acid)'];
-const pagine = [percorsi.home, percorsi.work, percorsi.writing, percorsi.about].map((href, i) => ({
+const tinte = ['var(--paper)', 'var(--orange)', 'var(--violet)'];
+const pagine = [percorsi.home, percorsi.work, percorsi.writing].map((href, i) => ({
 	href,
 	label: copy.nav[i].label,
 	kicker: copy.nav[i].kicker,
@@ -152,7 +152,7 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 	.piede-sigillo { --sigillo-misura: clamp(110px, 12vw, 168px); --inchiostro: var(--piede-tenue); --tinta: var(--blue); margin-bottom: 10px; }
 
 	/* le quattro pagine, appoggiate come carte */
-	.piede-navigazione .mazzo { --mazzo-colonne: 4; }
+	.piede-navigazione .mazzo { --mazzo-colonne: 3; }
 	/* le carte sono chiare e tengono l'inchiostro scuro, non quello del piede */
 	.piede .scheda { color: var(--inchiostro); }
 	.piede .scheda:focus-visible { outline-color: var(--piede-carta); }
