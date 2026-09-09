@@ -1,0 +1,29 @@
+---
+/**
+ * La copertina di un progetto, sulle schede e in testa al caso di studio. Decide da sé se
+ * l'immagine passa da `astro:assets` o esce diretta da `public/`: vedi src/lib/covers.ts.
+ */
+import { Picture } from 'astro:assets';
+import { coverAsset } from '../../lib/covers';
+import { withBase } from '../../lib/base';
+
+interface Props {
+	src: string;
+	alt: string;
+	width: number;
+	height: number;
+	loading?: 'eager' | 'lazy';
+	decoding?: 'async' | 'auto' | 'sync';
+	fetchpriority?: 'high' | 'low' | 'auto';
+	/** Le larghezze del `srcset`. Solo per i raster: gli SVG non ne hanno bisogno. */
+	widths?: number[];
+	sizes?: string;
+}
+
+const { src, alt, width, height, widths = [640, 960, 1200], sizes = '(max-width: 900px) 100vw, 900px', ...attributi } = Astro.props;
+const asset = coverAsset(src);
+---
+
+{asset
+	? <Picture src={asset} alt={alt} width={width} height={height} widths={widths} sizes={sizes} formats={['avif', 'webp']} {...attributi} />
+	: <img src={withBase(src)} alt={alt} width={width} height={height} {...attributi} />}

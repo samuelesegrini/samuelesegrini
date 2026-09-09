@@ -8,7 +8,7 @@ import { getTranslationPair } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labProjectPath, labPostPath, type LabLocale } from './chrome';
-import { withBase } from '../../lib/base';
+import LabCover from './LabCover.astro';
 import '../../styles/lab-project-detail.css';
 
 interface Props { lang: LabLocale; slug: string }
@@ -90,7 +90,7 @@ const accent = project.translationKey === 'easymanager' ? '#cfeaff' : project.tr
     <!-- Framed artwork expands from a window; the source image is never cropped. -->
     <div class="case-art-scene" data-scene="artwork">
       <figure class="case-art" data-depth="3">
-        <div class="case-art-window" data-art-window data-depth="3"><div class="case-art-float" data-depth="3"><img src={withBase(project.coverImage)} alt={project.coverAlt} width="1200" height="800" fetchpriority="high" loading="eager" /></div></div>
+        <div class="case-art-window" data-art-window data-depth="3"><div class="case-art-float" data-depth="3"><LabCover src={project.coverImage} alt={project.coverAlt} width={1200} height={800} fetchpriority="high" loading="eager" sizes="(max-width: 900px) 100vw, 1200px" /></div></div>
         <figcaption class="depth-4" data-reveal data-depth="4"><span>{ordinal} / {labels.visual}</span><span>{project.title}</span></figcaption>
       </figure>
     </div>

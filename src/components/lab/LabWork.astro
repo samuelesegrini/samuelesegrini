@@ -5,7 +5,7 @@ import { getProjectKinds } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labProjectPath, type LabLocale } from './chrome';
-import { withBase } from '../../lib/base';
+import LabCover from './LabCover.astro';
 import '../../styles/lab-work.css';
 
 interface Props { lang: LabLocale }
@@ -71,7 +71,7 @@ const sezioni = tipi.map((tipo) => {
         <ul class="work-cards">
           {sezione.progetti.map(project => <li class="work-card" data-work-reveal data-depth="3">
             <a class="work-card-link" href={labProjectPath(lang, project.slug)} aria-labelledby={`title-${project.translationKey}`}>
-              <div class="work-card-art depth-3" data-depth="3"><img src={withBase(project.coverImage)} alt={project.coverAlt} width="1200" height="800" loading="lazy" decoding="async" /><span class="work-card-arrow" aria-hidden="true">↗</span></div>
+              <div class="work-card-art depth-3" data-depth="3"><LabCover src={project.coverImage} alt={project.coverAlt} width={1200} height={800} loading="lazy" decoding="async" sizes="(max-width: 700px) 100vw, 420px" widths={[420, 640, 840]} /><span class="work-card-arrow" aria-hidden="true">↗</span></div>
               <div class="work-card-copy depth-4" data-depth="4">
                 <div class="work-card-meta"><span>{project.year} / {stato[project.lifecycle]}</span><span>{project.authorship === 'team' ? (lang === 'it' ? 'Team' : 'Team') : project.authorship === 'individual' ? (lang === 'it' ? 'Individuale' : 'Individual') : (lang === 'it' ? 'Contributo' : 'Contribution')}</span></div>
                 <h3 id={`title-${project.translationKey}`}>{project.title}</h3><p>{project.excerpt}</p>
