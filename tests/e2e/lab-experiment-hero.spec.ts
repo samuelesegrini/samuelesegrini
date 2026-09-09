@@ -96,13 +96,13 @@ test('le altre pagine tengono la hero classica', async ({ page }) => {
 			return {
 				marchio: Boolean(document.querySelector('.hero-marchio')),
 				media: Boolean(document.querySelector('.hero-media')),
-				titolo: titolo ? getComputedStyle(titolo).maxWidth : null,
+				titolo: titolo ? Number.parseFloat(getComputedStyle(titolo).fontSize) : null,
 			};
 		});
 		expect(misura.marchio, `${rotta}: niente marchio gigante`).toBe(false);
 		expect(misura.media, `${rotta}: niente riquadro`).toBe(false);
 		expect(misura.titolo, `${rotta}: c'è un titolo di pagina`).not.toBeNull();
-		expect(misura.titolo, `${rotta}: il titolo tiene la sua misura`).not.toBe('none');
+		expect(misura.titolo, `${rotta}: il titolo tiene la sua misura`).toBeGreaterThan(40);
 	}
 });
 

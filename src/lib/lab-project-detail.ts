@@ -75,7 +75,17 @@ export function initProjectDetail() {
   const updateReading = () => {
     frame = 0;
     let active = 0;
-    chapters.forEach((chapter, index) => { if (chapter && chapter.getBoundingClientRect().top <= innerHeight * .3) active = index; });
+    const line = innerHeight * .3;
+    chapters.forEach((chapter, index) => { if (chapter && chapter.getBoundingClientRect().top <= line) active = index; });
+    const atEnd = scrollY + innerHeight >= document.documentElement.scrollHeight - 8;
+    if (atEnd) {
+      const lastInView = [...chapters.entries()].reverse().find(([, chapter]) => {
+        if (!chapter) return false;
+        const top = chapter.getBoundingClientRect().top;
+        return top < innerHeight && top > -chapter.getBoundingClientRect().height;
+      });
+      if (lastInView) active = lastInView[0];
+    }
     links.forEach((link, index) => index === active ? link.setAttribute('aria-current', 'location') : link.removeAttribute('aria-current'));
     const bounds = prose.getBoundingClientRect();
     progress.style.transform = `scaleX(${Math.max(0, Math.min(1, (innerHeight * .3 - bounds.top) / Math.max(1, bounds.height - innerHeight * .5)))})`;
@@ -83,6 +93,7 @@ export function initProjectDetail() {
   const schedule = () => { if (!frame) frame = requestAnimationFrame(updateReading); };
   window.addEventListener('scroll', schedule, { passive: true, signal });
   window.addEventListener('resize', schedule, { passive: true, signal });
+  window.addEventListener('hashchange', schedule, { signal });
   updateReading();
   dispose = () => {
     controller.abort();
