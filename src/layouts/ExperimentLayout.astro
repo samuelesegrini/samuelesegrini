@@ -157,12 +157,6 @@ const lingue = { it: 'it_IT', en: 'en_GB' } as const;
 
 			.home-section.hero .hero-marchio { align-self: end; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 2vw; margin: 0; max-width: none; font-size: clamp(46px, 9.6vw, 150px); line-height: .82; letter-spacing: -.055em; text-transform: uppercase; }
 			.hero-intro { justify-self: end; max-width: 32ch; margin: 14px 0 0; text-align: right; font-size: 15.5px; }
-			.vetrina .hero-hint { justify-self: start; margin: 0; }
-			/* sopra il telefono la pillola risale in fondo alla hero, ancorata al bordo della
-			   vetrina invece che a una quota fissa. Fra 768 e 1039 la barra arriva quasi al
-			   margine, quindi va tenuta più in alto per non finirle sotto. */
-			@media (min-width: 768px) { .vetrina .hero-hint { position: absolute; left: max(24px, 4vw); bottom: calc(100% + 148px) } }
-			@media (min-width: 1040px) { .vetrina .hero-hint { bottom: calc(100% + 42px) } }
 			.hero-marchio .marchio-riga { white-space: nowrap; }
 			
 			/* la sequenza di ingresso: ogni pezzo sale dalla sua feritoia, il grigio scende nel riquadro */
@@ -187,7 +181,6 @@ const lingue = { it: 'it_IT', en: 'en_GB' } as const;
 			.hero-marchio > .mascherina:nth-child(1) > * { --ritardo: 400ms }
 			.hero-marchio > .mascherina:nth-child(2) > * { --ritardo: 500ms }
 			.hero-intro .mascherina > * { --ritardo: 600ms }
-			.vetrina .hero-hint > * { --ritardo: 700ms }
 			html[data-lab-client-arrival] { --attesa: calc(var(--transizione) * .55); }
 			/* il riquadro è il pezzo più pesante da comporre: arrivando da un'altra pagina
 			   aspetta che la transizione abbia chiuso del tutto (418 + 460 = 878ms contro i
@@ -206,7 +199,6 @@ const lingue = { it: 'it_IT', en: 'en_GB' } as const;
 			@keyframes sfuma { to { opacity: 0 } }
 			@supports (animation-timeline: scroll()) {
 				.hero-media, .hero-meta, .hero-intro,
-				.vetrina .hero-hint,
 				.hero-marchio > .mascherina {
 					animation-timeline: scroll(root block);
 					animation-range: 0 100vh;
@@ -218,11 +210,6 @@ const lingue = { it: 'it_IT', en: 'en_GB' } as const;
 				   fotogramma: senza var() nei keyframe l'animazione può stare sul compositore */
 				@media (min-width: 768px) {
 					.hero-media { translate: 0 var(--richiamo); scale: var(--piccola); animation-name: cresce }
-					/* La pillola è un invito a scorrere e sta ferma in fondo alla hero, mentre il
-					   riquadro cresce fino a passarci sopra: dopo un quinto di schermata è già
-					   sparita, molto prima che il riquadro la raggiunga. Sul telefono il riquadro
-					   non cresce e la pillola sta sotto di lui, quindi lì non serve. */
-					.vetrina .hero-hint { animation-name: sfuma; animation-range: 0 20vh }
 				}
 				.hero-marchio > .mascherina:nth-child(1) { animation-name: deriva-sinistra; animation-range: 7vh 100vh }
 				.hero-marchio > .mascherina:nth-child(2) { animation-name: deriva-destra; animation-range: 7vh 100vh }
@@ -237,7 +224,6 @@ const lingue = { it: 'it_IT', en: 'en_GB' } as const;
 			@media (prefers-reduced-motion: reduce) {
 				/* stessa forma dei selettori qui sopra, altrimenti il nome dell'animazione sopravvive */
 				.hero-media, .hero-meta, .hero-intro,
-				.vetrina .hero-hint,
 				.hero-marchio > .mascherina,
 				.hero-marchio > .mascherina:nth-child(1),
 				.hero-marchio > .mascherina:nth-child(2) { animation: none; animation-timeline: auto }
@@ -263,8 +249,6 @@ const lingue = { it: 'it_IT', en: 'en_GB' } as const;
 			.home-section.hero h1:not(.hero-marchio) { max-width: 19ch; font-size: clamp(46px, 6.6vw, 96px); }
 			.home-section.hero h1 em { font-family: var(--serif); font-weight: 430; font-style: italic; color: #5f8d3f; }
 			.home-section p { max-width: 52ch; margin: 26px 0 0; color: #6b6760; font-size: clamp(16px, 2vw, 20px); line-height: 1.55; }
-			.hero-hint { display: inline-flex; align-items: center; gap: 9px; width: max-content; margin-top: 38px; padding: 9px 14px; border: 1px solid #d3d1ca; border-radius: 999px; color: #6b6760; font: 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-			.hero-hint:before { content: '↓'; font-size: 12px; }
 			.section-rule { width: 96px; height: 10px; margin-top: 34px; border-radius: 6px; }
 			#inizio .section-rule { background: #111; }
 			#scrittura .section-rule { background: var(--violet); }

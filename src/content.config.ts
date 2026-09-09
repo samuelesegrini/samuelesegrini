@@ -126,12 +126,17 @@ const labCopy = defineCollection({
 		}),
 		cv: z.object({ kicker: z.string().min(1), long: z.string().min(1), short: z.string().min(1), aria: z.string().min(1) }),
 		footer: z.object({ invito: z.string().min(1), scrivimi: z.string().min(1), navigazione: z.string().min(1), altrove: z.string().min(1), colofone: z.string().min(1), fattoCon: z.string().min(1), caratteri: z.string().min(1), diritti: z.string().min(1), lingua: z.string().min(1) }),
-		common: z.object({ section: z.string().min(1), hint: z.string().min(1), one: z.string().min(1), many: z.string().min(1), label: z.string().min(1), ready: z.string().min(1) }),
+		common: z.object({ section: z.string().min(1), one: z.string().min(1), many: z.string().min(1), label: z.string().min(1), ready: z.string().min(1) }),
 		home: z.object({
 			title: z.string().min(1), headline: z.string().min(1), emphasis: z.string().min(1), intro: z.string().min(1),
 			work: z.string().min(1), workText: z.string().min(1), allWork: z.string().min(1),
 			writing: z.string().min(1), writingText: z.string().min(1), allWriting: z.string().min(1),
 			path: z.string().min(1), pathText: z.string().min(1), aboutLink: z.string().min(1),
+			/** Le tappe del percorso, in ordine cronologico. `project` è lo slug locale da collegare. */
+			milestones: z.array(z.object({
+				year: z.string().min(1), where: z.string().min(1), label: z.string().min(1),
+				text: z.string().min(1), project: z.string().min(1).optional(),
+			})).min(1),
 			contact: z.string().min(1), contactText: z.string().min(1), mailLink: z.string().min(1),
 			projects: z.string().min(1), articles: z.string().min(1), experience: z.string().min(1),
 			years: z.string().min(1), reply: z.string().min(1), within: z.string().min(1),

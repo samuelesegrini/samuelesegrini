@@ -5,8 +5,8 @@ import '../../styles/lab-home-chapters.css';
 import { getFeaturedProjects, getPublishedPosts } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { siteConfig } from '../../config/site';
-import { getLabCopy, riempi } from '../../lib/lab-copy';
-import { labPaths, labPostPath, type LabLocale } from './chrome';
+import { getLabCopy } from '../../lib/lab-copy';
+import { labPaths, labPostPath, labProjectPath, type LabLocale } from './chrome';
 
 interface Props { lang: LabLocale }
 const { lang } = Astro.props;
@@ -25,8 +25,7 @@ const anni = inArchivio.map((p) => p.year);
 const arco = anni.length && Math.min(...anni) !== Math.max(...anni)
 	? `’${String(Math.min(...anni)).slice(2)}—’${String(Math.max(...anni)).slice(2)}`
 	: `’${String(anni[0] ?? new Date().getFullYear()).slice(2)}`;
-const domande = copy.about.sections.filter((sezione) => sezione.text !== copy.home.contactText);
-const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis, hint: copy.common.hint,
+const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis,
 	mail: copy.home.mailLink, one: copy.common.one, many: copy.common.many };
 
 const sezioni = [
@@ -97,13 +96,13 @@ const sezioni = [
 		</div>
 		<ol class="rotta chapter-steps" role="list">
 			<span class="rotta-linea" aria-hidden="true"><i></i></span>
-			{domande.map((domanda, i) => (
+			{t.milestones.map((tappa, i) => (
 				<li class="tappa">
-					<a href={`${labPaths[lang].about}#${domanda.id}`}>
+					<a href={tappa.project ? labProjectPath(lang, tappa.project) : labPaths[lang].about}>
 						<span class="tappa-nodo" aria-hidden="true"></span>
 						<b class="tappa-numero" aria-hidden="true">{String(i + 1).padStart(2, '0')}</b>
-						<span class="tappa-testo"><strong>{domanda.label}</strong><em>{domanda.text}</em></span>
-						<span class="tappa-dettaglio"><span>{domanda.detailKicker}</span><span>{riempi(domanda.detailValue, { projects: inArchivio.length })}</span></span>
+						<span class="tappa-testo"><strong>{tappa.label}</strong><em>{tappa.text}</em></span>
+						<span class="tappa-dettaglio"><span>{tappa.year}</span><span>{tappa.where}</span></span>
 						<i class="step-arrow" aria-hidden="true">↗</i>
 					</a>
 				</li>

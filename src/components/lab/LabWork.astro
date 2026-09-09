@@ -17,7 +17,7 @@ const ordine = ['app', 'package', 'open-source', 'experiment'];
 const tipi = getProjectKinds(projects, lang).sort((a, b) => ordine.indexOf(a) - ordine.indexOf(b));
 
 const copy = await getLabCopy(lang);
-const t = { ...copy.work, kicker: copy.common.section, em: copy.work.emphasis, hint: copy.common.hint };
+const t = { ...copy.work, kicker: copy.common.section, em: copy.work.emphasis };
 const nome = (tipo: string) => copy.work.kinds[tipo as keyof typeof copy.work.kinds]?.label ?? tipo;
 const descrizioni: Record<string, string> = lang === 'it' ? {
   app: 'Interfacce, interazioni e logica di prodotto: dai prototipi ai progetti universitari.',

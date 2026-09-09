@@ -1,7 +1,7 @@
 {
 	"locale": "it",
-	"description": "Progetto e costruisco prodotti iOS in cui la logica regge quanto l’interfaccia. Progetti, articoli e percorso di Samuele Segrini.",
-	"ticker": "Software engineer · Swift & iOS · Product engineering · Sistemi affidabili ·",
+	"description": "Laureando in Ingegneria Informatica al Politecnico di Milano, sviluppo app iOS in Swift e SwiftUI. Progetti, articoli e percorso di Samuele Segrini.",
+	"ticker": "Swift & SwiftUI · iOS · Politecnico di Milano · Sistemi distribuiti ·",
 	"nav": [
 		{ "label": "Home", "kicker": "01 · Inizio" },
 		{ "label": "Progetti", "kicker": "02 · Lavori selezionati" },
@@ -19,7 +19,7 @@
 		"openMenu": "Apri menu"
 	},
 	"cv": { "kicker": "Curriculum", "long": "Scarica il PDF", "short": "PDF", "aria": "Scarica il curriculum in PDF" },
-	"common": { "section": "Sezione", "hint": "Scorri, oppure usa la barra", "one": "pubblicato", "many": "pubblicati", "label": "Caricamento", "ready": "Pronto" },
+	"common": { "section": "Sezione", "one": "pubblicato", "many": "pubblicati", "label": "Caricamento", "ready": "Pronto" },
 	"footer": {
 		"invito": "Parliamone",
 		"scrivimi": "Scrivimi",
@@ -33,25 +33,32 @@
 	},
 	"home": {
 		"title": "Samuele Segrini — Software Engineer",
-		"headline": "Software engineer,",
-		"emphasis": "Swift e sistemi affidabili.",
-		"intro": "Progetto e costruisco prodotti iOS in cui la logica regge quanto l’interfaccia. Questa barra è il prototipo del menu: naviga la pagina e racconta dove sei.",
+		"headline": "Sviluppatore iOS,",
+		"emphasis": "Swift, SwiftUI, sistemi.",
+		"intro": "Sono laureando in Ingegneria Informatica al Politecnico. Ho costruito da solo un gestionale iOS per un’attività di ristorazione — cassa, sala e cucina, fino alla stampante fiscale — e sistemi distribuiti in Java con altre persone.",
 		"work": "Progetti",
-		"workText": "I progetti selezionati, con il ragionamento che c’è dietro invece della sola schermata finale.",
+		"workText": "Un gestionale iOS usato al banco, un gioco distribuito in Java, un servizio di micromobilità progettato con gli utenti: per ognuno, le decisioni prese.",
 		"allWork": "Tutti i progetti →",
 		"writing": "Scrittura",
-		"writingText": "Note tecniche su ciò che ho dovuto capire davvero: sistemi, vincoli, errori utili.",
+		"writingText": "Note su ciò che ho dovuto capire davvero: architetture, sincronizzazione dei dati, vincoli della piattaforma.",
 		"allWriting": "Tutti gli articoli →",
 		"path": "Percorso",
-		"pathText": "Come ci sono arrivato — gli strumenti, le persone e i problemi che mi hanno formato.",
+		"pathText": "Sei anni in ordine di apparizione: la contabilità, l’università, il primo cliente vero, il codice che deve reggere in rete e le persone che lo useranno.",
 		"aboutLink": "Chi sono →",
+		"milestones": [
+			{ "year": "2019", "where": "Beta Sistemi · Reti", "label": "Primi stage", "text": "SQL su dati contabili in PROFIS, poi front-end e back-end su applicazioni web per clienti. Prima volta che il codice che scrivevo doveva servire a qualcuno." },
+			{ "year": "2021", "where": "Politecnico di Milano", "label": "Ingegneria", "text": "Dopo il diploma in Sistemi Informativi Aziendali, 100/100. Algoritmi, reti e architetture: le fondamenta che stanno sotto a tutto il resto." },
+			{ "year": "2022—23", "where": "Wape S.r.l", "label": "EasyManager", "text": "Un gestionale iOS costruito da solo in Swift e SwiftUI: MVVM, Firebase per utenti, ruoli e ordini in tempo reale, cassa, sala e cucina fino alla stampante fiscale via HTTP/XML.", "project": "easymanager-operazioni-ristorante" },
+			{ "year": "2025", "where": "Progetto di gruppo", "label": "Galaxy Trucker", "text": "Un gioco multiplayer distribuito in Java: server autorevole, client JavaFX e TUI, TCP socket e RMI, e uno stato di gioco che deve restare coerente su più client.", "project": "galaxy-trucker-progetto-java" },
+			{ "year": "2025—26", "where": "Human-computer interaction", "label": "SpinGO", "text": "Un ecosistema per la micromobilità progettato con le persone: ricerca utenti, prototipi dal low al high fidelity, valutazione euristica e usability testing.", "project": "spingo-micromobilita-sostenibile" }
+		],
 		"contact": "Contatto",
-		"contactText": "Aperto a opportunità. Risposta entro 24 ore, fuso orario italiano.",
+		"contactText": "Cerco una prima opportunità come sviluppatore iOS. Risposta entro 24 ore, fuso orario italiano.",
 		"mailLink": "Scrivimi →",
 		"projects": "Progetti",
 		"articles": "Articoli",
-		"experience": "Esperienza",
-		"years": "4 anni",
+		"experience": "Politecnico",
+		"years": "2026",
 		"reply": "Risposta",
 		"within": "Entro 24 ore"
 	},
@@ -87,9 +94,9 @@
 		"fallbackExcerpt": "Profilo in preparazione.",
 		"mailLink": "Scrivimi →",
 		"sections": [
-			{ "id": "percorso", "label": "Percorso", "text": "Dai sistemi distribuiti allo sviluppo iOS: vincoli espliciti, verifiche concrete, attenzione al prodotto.", "detailKicker": "Esperienza", "detailValue": "4 anni" },
-			{ "id": "strumenti", "label": "Strumenti", "text": "Swift e iOS come ancoraggio, più tutto quello che serve perché un sistema resti corretto quando la rete non collabora.", "detailKicker": "Progetti", "detailValue": "{projects} in archivio" },
-			{ "id": "contatto", "label": "Contatto", "text": "Aperto a opportunità. Risposta entro 24 ore, fuso orario italiano.", "detailKicker": "Risposta", "detailValue": "Entro 24 ore" }
+			{ "id": "percorso", "label": "Percorso", "text": "Dai sistemi distribuiti in Java allo sviluppo iOS, passando per ricerca utenti e prototipazione.", "detailKicker": "Politecnico", "detailValue": "Laurea nel 2026" },
+			{ "id": "strumenti", "label": "Strumenti", "text": "Swift, SwiftUI e Firebase per il prodotto; Java, C e SQL per capire cosa succede sotto.", "detailKicker": "Progetti", "detailValue": "{projects} in archivio" },
+			{ "id": "contatto", "label": "Contatto", "text": "Cerco una prima opportunità come sviluppatore iOS. Risposta entro 24 ore, fuso orario italiano.", "detailKicker": "Risposta", "detailValue": "Entro 24 ore" }
 		]
 	},
 	"projectDetail": { "eyebrow": "Progetto", "body": "Case study", "results": "Risultati", "tech": "Tecnologie", "role": "Ruolo", "year": "Anno", "back": "← Tutti i progetti" },

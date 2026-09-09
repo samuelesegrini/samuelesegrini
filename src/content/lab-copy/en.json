@@ -1,7 +1,7 @@
 {
 	"locale": "en",
-	"description": "I design and build iOS products where the logic holds up as well as the interface. Projects, writing and background of Samuele Segrini.",
-	"ticker": "Software engineer · Swift & iOS · Product engineering · Reliable systems ·",
+	"description": "Computer engineering student at Politecnico di Milano, building iOS apps in Swift and SwiftUI. Projects, writing and background of Samuele Segrini.",
+	"ticker": "Swift & SwiftUI · iOS · Politecnico di Milano · Distributed systems ·",
 	"nav": [
 		{
 			"label": "Home",
@@ -38,7 +38,6 @@
 	},
 	"common": {
 		"section": "Section",
-		"hint": "Scroll, or use the bar",
 		"one": "published",
 		"many": "published",
 		"label": "Loading",
@@ -57,25 +56,32 @@
 	},
 	"home": {
 		"title": "Samuele Segrini — Software Engineer",
-		"headline": "Software engineer,",
-		"emphasis": "Swift and reliable systems.",
-		"intro": "I design and build iOS products where the logic holds up as well as the interface. This bar is the menu prototype: it navigates the page and tells you where you are.",
+		"headline": "iOS developer,",
+		"emphasis": "Swift, SwiftUI, systems.",
+		"intro": "I'm finishing a computer engineering degree at Politecnico di Milano. On my own I built an iOS management app for a restaurant — counter, floor and kitchen, down to the fiscal printer — and distributed systems in Java alongside other people.",
 		"work": "Projects",
-		"workText": "Selected projects, with the reasoning behind them rather than the final screen alone.",
+		"workText": "An iOS app used at the counter, a distributed game in Java, a micromobility service designed with its users: for each one, the decisions behind it.",
 		"allWork": "All projects →",
 		"writing": "Writing",
-		"writingText": "Technical notes on what I actually had to understand: systems, constraints, useful mistakes.",
+		"writingText": "Notes on what I actually had to understand: architectures, data synchronisation, platform constraints.",
 		"allWriting": "All articles →",
 		"path": "Path",
-		"pathText": "How I got here — the tools, the people and the problems that shaped me.",
+		"pathText": "Six years in order of appearance: the accounting data, the degree, the first real client, code that has to hold over a network, and the people who will use it.",
 		"aboutLink": "About me →",
+		"milestones": [
+			{ "year": "2019", "where": "Beta Sistemi · Reti", "label": "First internships", "text": "SQL over accounting data in PROFIS, then front-end and back-end work on client web applications. The first time the code I wrote had to be useful to someone." },
+			{ "year": "2021", "where": "Politecnico di Milano", "label": "Engineering", "text": "After a business IT diploma, 100/100. Algorithms, networks and architectures: the foundations underneath everything else." },
+			{ "year": "2022—23", "where": "Wape S.r.l", "label": "EasyManager", "text": "An iOS management app built on my own in Swift and SwiftUI: MVVM, Firebase for users, roles and realtime orders, counter, floor and kitchen down to the fiscal printer over HTTP/XML.", "project": "easymanager-restaurant-operations" },
+			{ "year": "2025", "where": "Team project", "label": "Galaxy Trucker", "text": "A distributed multiplayer game in Java: authoritative server, JavaFX and TUI clients, TCP sockets and RMI, and a game state that has to stay consistent across clients.", "project": "galaxy-trucker-java-project" },
+			{ "year": "2025—26", "where": "Human-computer interaction", "label": "SpinGO", "text": "A micromobility ecosystem designed with people: user research, low- to high-fidelity prototypes, heuristic evaluation and usability testing.", "project": "spingo-sustainable-micromobility" }
+		],
 		"contact": "Contact",
-		"contactText": "Open to opportunities. Reply within 24 hours, Italian time zone.",
+		"contactText": "Looking for a first role in iOS development. Reply within 24 hours, Italian time zone.",
 		"mailLink": "Email me →",
 		"projects": "Projects",
 		"articles": "Articles",
-		"experience": "Experience",
-		"years": "4 years",
+		"experience": "Politecnico",
+		"years": "2026",
 		"reply": "Reply",
 		"within": "Within 24 hours"
 	},
@@ -126,21 +132,21 @@
 			{
 				"id": "path",
 				"label": "Path",
-				"text": "From distributed systems to iOS development: explicit constraints, concrete checks, attention to the product.",
-				"detailKicker": "Experience",
-				"detailValue": "4 years"
+				"text": "From distributed systems in Java to iOS development, by way of user research and prototyping.",
+				"detailKicker": "Politecnico",
+				"detailValue": "Graduating in 2026"
 			},
 			{
 				"id": "tools",
 				"label": "Tools",
-				"text": "Swift and iOS as the anchor, plus whatever it takes for a system to stay correct when the network stops cooperating.",
+				"text": "Swift, SwiftUI and Firebase for the product; Java, C and SQL for what goes on underneath.",
 				"detailKicker": "Projects",
 				"detailValue": "{projects} in the archive"
 			},
 			{
 				"id": "contact",
 				"label": "Contact",
-				"text": "Open to opportunities. Reply within 24 hours, Italian time zone.",
+				"text": "Looking for a first role in iOS development. Reply within 24 hours, Italian time zone.",
 				"detailKicker": "Reply",
 				"detailValue": "Within 24 hours"
 			}
