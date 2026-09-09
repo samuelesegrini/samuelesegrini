@@ -21,7 +21,9 @@
 	"cv": { "kicker": "Curriculum", "long": "Scarica il PDF", "short": "PDF", "aria": "Scarica il curriculum in PDF" },
 	"common": { "section": "Sezione", "one": "pubblicato", "many": "pubblicati", "label": "Caricamento", "ready": "Pronto" },
 	"footer": {
+		"apertura": "Cerco una prima opportunità come sviluppatore iOS",
 		"invito": "Parliamone",
+		"risposta": "Risposta entro 24 ore, fuso orario italiano.",
 		"scrivimi": "Scrivimi",
 		"navigazione": "Pagine",
 		"altrove": "Altrove",
@@ -52,15 +54,10 @@
 			{ "year": "2025", "where": "Progetto di gruppo", "label": "Galaxy Trucker", "text": "Un gioco multiplayer distribuito in Java: server autorevole, client JavaFX e TUI, TCP socket e RMI, e uno stato di gioco che deve restare coerente su più client.", "project": "galaxy-trucker-progetto-java" },
 			{ "year": "2025—26", "where": "Human-computer interaction", "label": "SpinGO", "text": "Un ecosistema per la micromobilità progettato con le persone: ricerca utenti, prototipi dal low al high fidelity, valutazione euristica e usability testing.", "project": "spingo-micromobilita-sostenibile" }
 		],
-		"contact": "Contatto",
-		"contactText": "Cerco una prima opportunità come sviluppatore iOS. Risposta entro 24 ore, fuso orario italiano.",
-		"mailLink": "Scrivimi →",
 		"projects": "Progetti",
 		"articles": "Articoli",
 		"experience": "Politecnico",
-		"years": "2026",
-		"reply": "Risposta",
-		"within": "Entro 24 ore"
+		"years": "2026"
 	},
 	"work": {
 		"title": "Progetti",

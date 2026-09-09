@@ -82,8 +82,7 @@
 .case-next-link:hover > span { transform: translate(5px, -5px); }
 .case-next-bottom { font-size: 12px; border-top: 1px solid #62665c; padding-top: 24px; }
 .case-detail a:focus-visible, .case-detail button:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
-.case-skip { position: fixed; top: 10px; left: 10px; z-index: 200; padding: 12px 20px; background: #fff; color: #20221f; transform: translateY(-200%); }
-.case-skip:focus { transform: none; }
+.case-skip { background: #fff; color: #20221f; }
 @keyframes case-float { 50% { transform: translateY(-4px); } }
 @keyframes case-open { from { clip-path: inset(0 6% round 24px); } to { clip-path: inset(0 0 round 24px); } }
 @media (prefers-reduced-motion: no-preference) and (pointer: fine) {

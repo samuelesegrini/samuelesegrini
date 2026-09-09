@@ -14,12 +14,14 @@ import type { LabCopy } from '../../lib/lab-copy';
 interface Props {
 	lang: LabLocale;
 	copy: LabCopy;
+	/** 'liscio' è il tavolo nudo; 'impronta' ci lascia sopra l'orma tratteggiata. */
+	variante?: 'liscio' | 'impronta';
 }
-const { lang, copy } = Astro.props;
+const { lang, copy, variante = 'liscio' } = Astro.props;
 const t = copy.footer;
 const percorsi = labPaths[lang];
-const tinte = ['var(--paper)', 'var(--orange)', 'var(--violet)'];
-const pagine = [percorsi.home, percorsi.work, percorsi.writing].map((href, i) => ({
+const tinte = ['var(--paper)', 'var(--orange)', 'var(--violet)', 'var(--acid)'];
+const pagine = [percorsi.home, percorsi.work, percorsi.writing, percorsi.about].map((href, i) => ({
 	href,
 	label: copy.nav[i].label,
 	kicker: copy.nav[i].kicker,
@@ -31,22 +33,22 @@ const altrove = [
 	{ label: 'Email', href: mailHref },
 ];
 const anno = new Date().getFullYear();
-const apertura = lang === 'it' ? 'Un progetto, una domanda, un’idea.' : 'A project, a question, an idea.';
-const scena = lang === 'it' ? 'Chiusura' : 'Closing';
 const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 ---
 
-<footer class="scene piede" id="footer" aria-labelledby="piede-titolo" data-scene="contact">
+<footer class="scene piede" id="footer" aria-labelledby="piede-titolo" data-scene="contact" data-variante={variante}>
+	{variante === 'impronta' && <div class="piede-impronta" aria-hidden="true" />}
 	<div class="piede-foglio">
 
 		<div class="piede-gesto">
 			<a class="piede-invito" href={mailHref} aria-labelledby="piede-titolo" aria-describedby="piede-indirizzo">
-				<span class="piede-apertura">{apertura}</span>
+				<span class="piede-apertura">{t.apertura}</span>
 				<h2 id="piede-titolo"><span>{t.invito}</span></h2>
 				<span class="piede-contatto">
 					<span class="piede-mail" id="piede-indirizzo">{siteConfig.email}</span>
 					<span class="freccia-scambio piede-freccia" aria-hidden="true"><span>↗</span><span>↗</span></span>
 				</span>
+				<span class="piede-risposta">{t.risposta}</span>
 			</a>
 			<div class="sigillo piede-sigillo" aria-hidden="true">
 				<svg viewBox="0 0 100 100"><defs><path id="piede-anello" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs><text><textPath href="#piede-anello" textLength="236" lengthAdjust="spacing">{anello}</textPath></text></svg>
@@ -131,6 +133,7 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 	.piede-apertura { color: var(--piede-tenue); font: 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
 	.piede-invito h2 { overflow: clip; margin: 0 0 0 -.05em; padding: .02em 0 .12em; font-size: clamp(64px, 12.5vw, 184px); font-weight: 500; letter-spacing: -.08em; line-height: .92; }
 	.piede-invito h2 > span { display: block; white-space: nowrap; }
+	.piede-risposta { color: var(--piede-tenue); font-size: 14px; }
 	.piede-contatto { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px; }
 	.piede-mail { position: relative; font-size: clamp(18px, 2.4vw, 34px); letter-spacing: -.04em; overflow-wrap: anywhere; }
 	.piede-mail::after { content: ''; position: absolute; left: 0; right: 0; bottom: -5px; height: 2px; background: var(--tinta); transform: scaleX(0); transform-origin: left; transition: transform 600ms var(--ease); }
@@ -139,7 +142,7 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 	.piede-sigillo { --sigillo-misura: clamp(110px, 12vw, 168px); --inchiostro: var(--piede-tenue); --tinta: var(--blue); margin-bottom: 10px; }
 
 	/* le quattro pagine, appoggiate come carte */
-	.piede-navigazione .mazzo { --mazzo-colonne: 3; }
+	.piede-navigazione .mazzo { --mazzo-colonne: 4; }
 	/* le carte sono chiare e tengono l'inchiostro scuro, non quello del piede */
 	.piede .scheda { color: var(--inchiostro); }
 	.piede .scheda:focus-visible { outline-color: var(--piede-carta); }
@@ -158,6 +161,41 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 
 	/* l'ultima riga sta sopra la barra fissa: il padding del foglio le lascia il posto */
 	.piede-chiusura { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; padding-top: 22px; border-top: 1px solid var(--piede-filo); color: var(--piede-tenue); font: 11px/1.5 var(--mono); letter-spacing: .04em; }
+
+	/* l'orma: una sagoma di piede ridotta a puntini, stampata sul tavolo dietro al testo.
+	   Tre maschere sovrapposte — la sfumatura che la fa svanire in alto, la griglia di punti,
+	   la sagoma stessa — intersecate fra loro: restano solo i punti dentro al piede. */
+	.piede-impronta {
+		--punto-passo: clamp(7px, .9vw, 11px);
+		--punto-raggio: calc(var(--punto-passo) * .17);
+		position: absolute;
+		right: clamp(16px, 4vw, 84px);
+		/* sta sopra la barra fissa: l'orma resta intera, non tagliata dal bordo */
+		bottom: 128px;
+		z-index: -1;
+		/* l'orma vive nella fascia fra il mazzo e la riga di chiusura: oltre quell'altezza
+		   le dita finiscono dietro alle carte, che sono opache e se la mangiano */
+		height: clamp(230px, 22vw, 320px);
+		aspect-ratio: 200 / 430;
+		rotate: -13deg;
+		background: var(--tinta);
+		opacity: .42;
+		-webkit-mask-image:
+			linear-gradient(to top, #000 40%, rgba(0, 0, 0, .3) 100%),
+			radial-gradient(circle, #000 var(--punto-raggio), transparent calc(var(--punto-raggio) + .6px)),
+			url('/images/impronta.svg');
+		mask-image:
+			linear-gradient(to top, #000 40%, rgba(0, 0, 0, .3) 100%),
+			radial-gradient(circle, #000 var(--punto-raggio), transparent calc(var(--punto-raggio) + .6px)),
+			url('/images/impronta.svg');
+		mask-size: 100% 100%, var(--punto-passo) var(--punto-passo), contain;
+		mask-repeat: no-repeat, repeat, no-repeat;
+		mask-position: center, center, center;
+		mask-composite: intersect, intersect, add;
+		-webkit-mask-composite: source-in, source-in, source-over;
+	}
+	/* dove le maschere multiple non reggono, meglio niente che un blocco di colore pieno */
+	@supports not (mask-composite: intersect) { .piede-impronta { display: none; } }
 
 	/* ingresso: il titolo sale dalla feritoia mentre il piede entra, le carte una alla volta */
 	@keyframes piede-titolo-entra { from { transform: translateY(110%); } to { transform: none; } }
@@ -181,6 +219,7 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 		.piede-dettagli { grid-template-columns: minmax(0, 1fr); gap: 28px 20px; }
 	}
 	@media (max-width: 600px) {
+		.piede-impronta { right: 4vw; bottom: 172px; height: clamp(190px, 26vh, 260px); opacity: .24; }
 		.piede-foglio { gap: 40px; padding-bottom: 150px; }
 		.piede-invito h2 { font-size: clamp(44px, 15vw, 88px); }
 		.piede-mail { font-size: 16px; }

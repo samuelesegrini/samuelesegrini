@@ -5,7 +5,7 @@ import AxeBuilder from '@axe-core/playwright';
  *  la griglia valga solo dove esiste davvero una colonna di testo, e che nulla finisca
  *  sotto la barra o fuori dallo schermo. */
 
-const sezioni = ['inizio', 'progetti', 'scrittura', 'percorso', 'contatto'] as const;
+const sezioni = ['inizio', 'progetti', 'scrittura', 'percorso'] as const;
 
 const vaiA = async (page: import('@playwright/test').Page, id: string) => {
 	await page.evaluate((s) => {
@@ -90,7 +90,7 @@ test('sul telefono la home si impila senza scorrimento laterale', async ({ page 
 	await page.waitForTimeout(800);
 	expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 
-	for (const id of ['progetti', 'percorso', 'contatto']) {
+	for (const id of ['progetti', 'percorso']) {
 		await vaiA(page, id);
 		const misura = await page.evaluate((s) => {
 			const sezione = document.querySelector(`#${s}`)!;

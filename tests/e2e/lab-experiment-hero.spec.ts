@@ -63,7 +63,7 @@ test('il riquadro non conta come sezione della barra', async ({ page }) => {
 		vetrinaSezione: document.querySelector('.vetrina')!.classList.contains('home-section'),
 		vetrinaNumero: (document.querySelector('.vetrina') as HTMLElement).dataset.section,
 	}));
-	expect(conteggio.numeri, 'le sezioni restano numerate di fila').toEqual(['0', '1', '2', '3', '4']);
+	expect(conteggio.numeri, 'le sezioni restano numerate di fila').toEqual(['0', '1', '2', '3']);
 	expect(conteggio.numeri.length - 1, 'una voce di indice per ogni sezione dopo la hero').toBe(conteggio.voci);
 	expect(conteggio.vetrinaSezione, 'il riquadro non è una sezione').toBe(false);
 	expect(conteggio.vetrinaNumero, 'e non ha un numero').toBeUndefined();
@@ -113,7 +113,6 @@ test('sul telefono la hero è compatta e non prende il ruolo dell\'ultima sezion
 
 	const misura = await page.evaluate(() => {
 		const hero = document.querySelector('.home-section.hero')!;
-		const pillola = document.querySelector('.hero-hint')!.getBoundingClientRect();
 		const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
 		// il piede è l'ultimo figlio del foglio: l'ultima sezione va cercata fra le sezioni
 		const ultima = [...document.querySelectorAll('.home-section')].at(-1)!;
@@ -123,17 +122,13 @@ test('sul telefono la hero è compatta e non prende il ruolo dell\'ultima sezion
 			altezzaUltima: ultima.getBoundingClientRect().height,
 			ultima: ultima.id,
 			altezzaHero: Math.round(hero.getBoundingClientRect().height),
-			// con tutte le righe auto e align-content: stretch la pillola si gonfiava
-			altezzaPillola: Math.round(pillola.height),
-			pillolaSottoIlRiquadro: pillola.top > riquadro.bottom,
 			stacco: Math.round(riquadro.top - hero.getBoundingClientRect().bottom),
 		};
 	});
 
-	expect(misura.ultima, 'l\'ultima sezione è contatto, non la hero').toBe('contatto');
+	expect(misura.ultima, 'l\'ultima sezione è percorso, non la hero').toBe('percorso');
 	expect(misura.fondoHero, 'la hero non porta il fondo dell\'ultima sezione').toBeLessThan(80);
 	expect(misura.altezzaUltima, 'che invece resta alta una schermata').toBeGreaterThan(700);
-	expect(misura.altezzaPillola, 'la pillola resta una pillola').toBeLessThan(48);
 	expect(misura.altezzaHero, 'la hero sta in una schermata').toBeLessThan(844);
 	expect(misura.stacco, 'il riquadro arriva subito dopo').toBeLessThan(90);
 });
@@ -161,8 +156,6 @@ test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ 
 		await page.waitForTimeout(1500);
 		const misura = await page.evaluate(() => {
 			const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
-			const pillola = document.querySelector('.hero-hint')!.getBoundingClientRect();
-			const barra = document.querySelector('.toolbar-shell')!.getBoundingClientRect();
 			const intro = document.querySelector('.hero-intro')!.getBoundingClientRect();
 			const marchio = document.querySelector('.hero-marchio')!.getBoundingClientRect();
 			return {
@@ -171,17 +164,12 @@ test('il riquadro piccolo tiene una misura leggibile su ogni schermo', async ({ 
 				// cresciuto del 30% il riquadro rischia di finire addosso all'intro o al marchio
 				daIntro: riquadro.top - intro.bottom,
 				daMarchio: marchio.top - riquadro.bottom,
-				sovrappostaAllaBarra:
-					pillola.right > barra.left + 4 && pillola.left < barra.right - 4 && pillola.bottom > barra.top + 4,
-				pillolaInSchermo: pillola.top >= 0 && pillola.bottom <= window.innerHeight,
 			};
 		});
 		// la misura piccola è capped: resta la stessa manciata di pixel su ogni schermo
 		expect(misura.larghezza, `${larghezza}: il riquadro non è un francobollo`).toBeGreaterThan(370);
 		expect(misura.larghezza, `${larghezza}: e non è già quasi pieno`).toBeLessThan(700);
 		expect(misura.quota, `${larghezza}: e non invade lo schermo`).toBeLessThan(0.68);
-		expect(misura.sovrappostaAllaBarra, `${larghezza}: la pillola non finisce sotto la barra`).toBe(false);
-		expect(misura.pillolaInSchermo, `${larghezza}: la pillola si vede senza scorrere`).toBe(true);
 		expect(misura.daIntro, `${larghezza}: il riquadro non tocca l'intro`).toBeGreaterThan(0);
 		expect(misura.daMarchio, `${larghezza}: né il marchio`).toBeGreaterThan(0);
 	}
@@ -305,30 +293,3 @@ test('la crescita del riquadro non porta variabili nei fotogrammi', async ({ pag
 	expect(telefono.spostamento, 'né spostato').toBe('none');
 });
 
-test('la pillola sfuma prima che il riquadro le arrivi addosso', async ({ page }) => {
-	await page.setViewportSize({ width: 1280, height: 800 });
-	await page.goto('/it/');
-	await page.waitForTimeout(1800);
-
-	// da fermi si legge
-	expect(
-		await page.evaluate(() => Number(getComputedStyle(document.querySelector('.hero-hint')!).opacity)),
-		'da fermi la pillola si vede',
-	).toBeGreaterThan(0.9);
-
-	// scorrendo, il riquadro cresce fino a passarle sopra: quando succede deve essere già sparita
-	let peggiore = 0;
-	for (let y = 50; y <= 600; y += 50) {
-		await scorriA(page, y);
-		const opacita = await page.evaluate(() => {
-			const riquadro = document.querySelector('.hero-media')!.getBoundingClientRect();
-			const pillola = document.querySelector('.hero-hint')!;
-			const p = pillola.getBoundingClientRect();
-			const sovrapposta =
-				p.right > riquadro.left && p.left < riquadro.right && p.bottom > riquadro.top && p.top < riquadro.bottom;
-			return sovrapposta ? Number(getComputedStyle(pillola).opacity) : 0;
-		});
-		peggiore = Math.max(peggiore, opacita);
-	}
-	expect(peggiore, 'mai leggibile sopra il grigio').toBeLessThan(0.05);
-});

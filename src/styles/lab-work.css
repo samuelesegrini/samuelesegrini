@@ -40,8 +40,7 @@
 .work-card:last-child:nth-child(odd) .work-card-link { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; }
 .work-card:only-child .work-card-copy { padding: 40px; }
 .work-archive a:focus-visible { outline: 3px solid #20221f; outline-offset: 5px; }
-.work-skip { position: fixed; top: 10px; left: 10px; z-index: 200; padding: 12px; background: white; color: #20221f; transform: translateY(-200%); }
-.work-skip:focus { transform: none; }
+.work-skip { background: #fff; color: #20221f; }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .work-card-link:hover .work-card-arrow { transform: translate(3px, -3px) rotate(5deg); }
   .work-card-link { transition: transform .3s ease; }

@@ -33,7 +33,7 @@ test('il piede chiude ogni pagina e lascia spazio alla barra', async ({ page }) 
 		expect(misura.dallaBarra, `${rotta}: la chiusura sta sopra la barra`).toBeGreaterThan(0);
 		expect(misura.sbordaADestra, `${rotta}: non sborda`).toBe(false);
 		expect(misura.larghezzaPagina, `${rotta}: niente scorrimento laterale`).toBeLessThanOrEqual(1280);
-		expect(misura.colonne, `${rotta}: tre destinazioni`).toBe(3);
+		expect(misura.colonne, `${rotta}: quattro destinazioni`).toBe(4);
 	}
 });
 
@@ -49,10 +49,11 @@ test('le voci del piede portano dove dicono', async ({ page }) => {
 	}));
 
 	expect(voci.invito, 'l\'invito grande apre la posta').toMatch(/^mailto:/);
-	expect(voci.pagine, 'le tre rotte italiane').toEqual([
+	expect(voci.pagine, 'le quattro rotte italiane').toEqual([
 		'/it/',
 		'/it/progetti/',
 		'/it/articoli/',
+		'/it/chi-sono/',
 	]);
 	expect(voci.altrove?.length, 'GitHub, LinkedIn ed email').toBe(3);
 });
@@ -110,6 +111,6 @@ test('l’invito funziona da tastiera e resta leggibile senza JavaScript e con m
 	await fallback.goto('/en/');
 	await expect(fallback.locator('.piede-gesto h2 > span')).toHaveCSS('animation-name', 'none');
 	await expect(fallback.locator('.piede-gesto h2')).toBeVisible();
-	await expect(fallback.locator('.piede-navigazione a')).toHaveCount(3);
+	await expect(fallback.locator('.piede-navigazione a')).toHaveCount(4);
 	await context.close();
 });

@@ -26,13 +26,12 @@ const arco = anni.length && Math.min(...anni) !== Math.max(...anni)
 	? `’${String(Math.min(...anni)).slice(2)}—’${String(Math.max(...anni)).slice(2)}`
 	: `’${String(anni[0] ?? new Date().getFullYear()).slice(2)}`;
 const t = { ...copy.home, kicker: copy.common.section, em: copy.home.emphasis,
-	mail: copy.home.mailLink, one: copy.common.one, many: copy.common.many };
+	one: copy.common.one, many: copy.common.many };
 
 const sezioni = [
 	{ kicker: t.kicker, value: t.work, detail: { kicker: t.projects, value: conta(inArchivio.length, t.one, t.many) } },
 	{ kicker: t.kicker, value: t.writing, detail: { kicker: t.articles, value: conta(published.length, t.one, t.many) } },
 	{ kicker: t.kicker, value: t.path, detail: { kicker: t.experience, value: t.years } },
-	{ kicker: t.kicker, value: t.contact, detail: { kicker: t.reply, value: t.within } },
 ];
 ---
 
@@ -111,29 +110,6 @@ const sezioni = [
 		</ol>
 	</section>
 
-	<!-- 04 · Contatto: il biglietto da visita che segue il puntatore -->
-	<section class="home-section home-chapter chapter-contact scene" data-scene="contact" aria-labelledby="contatto-title" id="contatto" data-section="4">
-		<div class="sezione-testo chapter-opening">
-			<h2 id="contatto-title"><span>{t.contact}</span></h2>
-			<p>{t.contactText}</p>
-			<a class="collegamento" href={`mailto:${siteConfig.email}`}>{t.mail}</a>
-			<span class="ventaglio ventaglio-busta chapter-ventaglio" aria-hidden="true"><i></i><i></i><i></i></span>
-		</div>
-		<div class="chapter-channels">
-			<div class="biglietto-scena" data-biglietto>
-				<a class="scheda biglietto" href={`mailto:${siteConfig.email}`}>
-					<span class="biglietto-luce" aria-hidden="true"></span>
-					<span class="scheda-kicker"><span>Email</span><span>{siteConfig.name}</span></span>
-					<span class="biglietto-indirizzo">{siteConfig.email}</span>
-					<span class="biglietto-piede"><span>{t.reply} · {t.within}</span><span class="freccia-scambio" aria-hidden="true"><span>↗</span><span>↗</span></span></span>
-				</a>
-			</div>
-			<ul class="mazzo canali-mazzo" role="list">
-				<li><a class="scheda canale" href={siteConfig.github} rel="me noopener"><span class="scheda-kicker">GitHub</span><span class="scheda-titolo">{siteConfig.github.replace('https://', '')}</span><span class="scheda-freccia" aria-hidden="true">↗</span></a></li>
-				<li><a class="scheda canale" href={siteConfig.linkedin} rel="me noopener"><span class="scheda-kicker">LinkedIn</span><span class="scheda-titolo">{siteConfig.linkedin.replace('https://www.', '').replace(/\/$/, '')}</span><span class="scheda-freccia" aria-hidden="true">↗</span></a></li>
-			</ul>
-		</div>
-	</section>
 </ExperimentLayout>
 
 <script>
@@ -160,28 +136,4 @@ const sezioni = [
   document.addEventListener('astro:page-load', initChapters);
   document.addEventListener('astro:before-swap', () => cleanupChapters?.());
 
-  // Il biglietto si inclina verso il puntatore e la luce lo segue. Solo con mouse e
-  // movimento pieno: altrove resta una carta ferma.
-  let cleanupBiglietto: (() => void) | undefined;
-  function initBiglietto() {
-    cleanupBiglietto?.();
-    const scena = document.querySelector<HTMLElement>('[data-biglietto]');
-    if (!scena || !matchMedia('(pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const carta = scena.firstElementChild as HTMLElement;
-    const controller = new AbortController();
-    const { signal } = controller;
-    scena.addEventListener('pointermove', (event) => {
-      const box = scena.getBoundingClientRect();
-      const x = (event.clientX - box.left) / box.width;
-      const y = (event.clientY - box.top) / box.height;
-      carta.style.setProperty('--rx', `${(0.5 - y) * 10}deg`);
-      carta.style.setProperty('--ry', `${(x - 0.5) * 12}deg`);
-      carta.style.setProperty('--mx', `${x * 100}%`);
-      carta.style.setProperty('--my', `${y * 100}%`);
-    }, { signal });
-    scena.addEventListener('pointerleave', () => { ['--rx', '--ry', '--mx', '--my'].forEach((p) => carta.style.removeProperty(p)); }, { signal });
-    cleanupBiglietto = () => controller.abort();
-  }
-  document.addEventListener('astro:page-load', initBiglietto);
-  document.addEventListener('astro:before-swap', () => cleanupBiglietto?.());
 </script>

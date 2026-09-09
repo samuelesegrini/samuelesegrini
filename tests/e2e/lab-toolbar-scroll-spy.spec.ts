@@ -63,7 +63,7 @@ test('tornando su una pagina già vista l’indice riparte dalla hero e riprende
 	await expect.poll(() => lettura(page).then((stato) => stato.modo)).toBe('index');
 
 	const inFondo = await page.evaluate(() => {
-		document.querySelector('#contatto')!.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior });
+		document.querySelector('#percorso')!.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior });
 		return new Promise<string | null | undefined>((risolvi) =>
 			setTimeout(() => risolvi(document.querySelector('.toolbar-shell [data-detail] b')?.textContent), 500),
 		);

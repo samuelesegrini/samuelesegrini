@@ -1,9 +1,8 @@
-/* I capitoli della home: scrittura, percorso, contatto.
+/* I capitoli della home: scrittura e percorso.
    Ogni capitolo tiene il testo a sinistra (fermo, mentre il resto scorre) e mette a
-   destra il proprio gesto: le note che si impilano, la rotta che si disegna, il
-   biglietto che si inclina. I pezzi comuni (scheda, mazzo, ventaglio, sigillo,
-   freccia-scambio) vengono da lab-primitives.css; qui c'è solo come ogni capitolo
-   li usa. */
+   destra il proprio gesto: le note che si impilano, la rotta che si disegna. I pezzi
+   comuni (scheda, mazzo, ventaglio, sigillo, freccia-scambio) vengono da
+   lab-primitives.css; qui c'è solo come ogni capitolo li usa. */
 
 .home-section.home-chapter {
   --tinta: var(--violet);
@@ -22,7 +21,6 @@
   contain-intrinsic-size: auto 1200px;
 }
 .home-chapter.chapter-path { --tinta: var(--acid); }
-.home-chapter.chapter-contact { --tinta: var(--blue); }
 
 /* il testo: fermo mentre a destra si scorre */
 .home-chapter .chapter-opening { position: relative; top: auto; min-width: 0; padding-top: 0; }
@@ -73,25 +71,6 @@
 .tappa-oggi { padding-bottom: 0; border-bottom: 0; color: #6b6760; }
 .tappa-oggi .tappa-testo strong { font-size: 22px; letter-spacing: -.04em; color: var(--inchiostro); }
 
-/* ─── 04 · il biglietto ────────────────────────────────────────────────────── */
-.chapter-channels { display: grid; gap: 16px; }
-.biglietto-scena { perspective: 1400px; }
-.home-chapter .biglietto { --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%; position: relative; min-height: clamp(280px, 30vw, 380px); padding: clamp(24px, 3vw, 40px); gap: 32px; overflow: clip; color: var(--inchiostro); background: var(--tinta); transform: rotateX(var(--rx)) rotateY(var(--ry)); transform-style: preserve-3d; transition: transform 200ms ease-out, box-shadow 400ms var(--ease); }
-.biglietto-luce { position: absolute; inset: 0; z-index: 0; background: radial-gradient(circle at var(--mx) var(--my), #ffffffb8 0, transparent 38%); pointer-events: none; }
-.biglietto > :not(.biglietto-luce) { position: relative; z-index: 1; }
-.home-chapter .biglietto .scheda-kicker { opacity: 1; color: #3f5b66; }
-.biglietto-indirizzo { font-size: clamp(26px, 3.3vw, 52px); font-weight: 500; letter-spacing: -.06em; line-height: 1; overflow-wrap: anywhere; }
-.biglietto-piede { display: flex; align-items: end; justify-content: space-between; gap: 16px; color: #3f5b66; font: 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-.biglietto-piede .freccia-scambio { --inchiostro: #171713; font-size: 44px; }
-.canali-mazzo { --mazzo-colonne: 2; }
-.canali-mazzo .canale { --tinta: #edf6f9; min-height: 150px; color: var(--inchiostro); }
-.canali-mazzo .scheda-titolo { font-size: clamp(16px, 1.5vw, 20px); font-weight: 500; letter-spacing: -.03em; padding-right: 40px; overflow-wrap: anywhere; }
-.canali-mazzo .scheda-kicker { color: #3f5b66; opacity: 1; }
-@media (min-width: 900px) and (pointer: fine) {
-  .canali-mazzo > li:nth-child(1) .scheda { transform: rotate(-1.5deg) translateY(6px); }
-  .canali-mazzo > li:nth-child(2) .scheda { transform: rotate(1.5deg) translateY(-2px); }
-}
-
 /* ─── impaginazione a due colonne ──────────────────────────────────────────── */
 @media (min-width: 1040px) {
   .home-section.home-chapter { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); }
@@ -102,8 +81,8 @@
 /* ─── movimento ────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: no-preference) {
   .chapter-entered .chapter-opening h2 > span { animation: chapter-title 950ms var(--ease) both; }
-  .chapter-entered .chapter-opening > :not(h2), .chapter-entered > :is(ol, .chapter-channels) { animation: chapter-rise 850ms var(--ease) both; }
-  .chapter-entered > :is(ol, .chapter-channels) { animation-delay: 120ms; }
+  .chapter-entered .chapter-opening > :not(h2), .chapter-entered > ol { animation: chapter-rise 850ms var(--ease) both; }
+  .chapter-entered > ol { animation-delay: 120ms; }
   @keyframes chapter-title { from { transform: translateY(110%) rotate(2deg); } to { transform: none; } }
   @keyframes chapter-rise { from { opacity: .15; transform: translateY(32px); } to { opacity: 1; transform: none; } }
   /* la rotta si disegna e le tappe si accendono mentre entrano nella finestra */
@@ -139,14 +118,11 @@
   .pila-foglio { top: calc(72px + var(--i) * 14px); }
   .home-chapter .nota { min-height: 280px; padding: 22px; gap: 22px; }
   .nota-filigrana { font-size: 46vw; }
-  .nota-piede .freccia-scambio, .biglietto-piede .freccia-scambio { font-size: 32px; }
+  .nota-piede .freccia-scambio { font-size: 32px; }
   .tappa > a, .tappa-oggi { grid-template-columns: 34px minmax(0, 1fr); gap: 8px 14px; padding: 24px 0 28px; }
   .tappa-numero { padding-left: 20px; }
   .home-chapter .step-arrow { display: none; }
   .tappa-dettaglio { grid-column: 2; }
-  .canali-mazzo { --mazzo-colonne: 1; }
-  .home-chapter .biglietto { min-height: 250px; padding: 22px; }
-  .biglietto-indirizzo { font-size: clamp(19px, 6.4vw, 26px); letter-spacing: -.04em; }
 }
 @media (pointer: coarse) {
   .home-chapter a:hover { transform: none; }

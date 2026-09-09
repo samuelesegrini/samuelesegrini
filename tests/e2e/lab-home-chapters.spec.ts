@@ -8,7 +8,7 @@ for (const locale of ['it', 'en']) {
       await page.setViewportSize({ width, height: 1000 });
       await page.goto(`/${locale}/`);
       await page.waitForTimeout(1800);
-      for (const id of ['scrittura', 'percorso', 'contatto']) {
+      for (const id of ['scrittura', 'percorso']) {
         const section = page.locator(`#${id}`);
         await section.evaluate(el => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
         await expect(section.locator('h2')).toBeVisible();
@@ -27,7 +27,7 @@ test('chapter content works without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   await page.goto('/it/');
-  for (const id of ['scrittura', 'percorso', 'contatto']) {
+  for (const id of ['scrittura', 'percorso']) {
     await expect(page.locator(`#${id} h2`)).toBeVisible();
     await expect(page.locator(`#${id} a`).first()).toHaveAttribute('href', /^(\/it\/|mailto:)/);
   }

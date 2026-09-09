@@ -44,7 +44,9 @@
 		"ready": "Ready"
 	},
 	"footer": {
+		"apertura": "Looking for a first role in iOS development",
 		"invito": "Let's talk",
+		"risposta": "Reply within 24 hours, Italian time zone.",
 		"scrivimi": "Write to me",
 		"navigazione": "Pages",
 		"altrove": "Elsewhere",
@@ -75,15 +77,10 @@
 			{ "year": "2025", "where": "Team project", "label": "Galaxy Trucker", "text": "A distributed multiplayer game in Java: authoritative server, JavaFX and TUI clients, TCP sockets and RMI, and a game state that has to stay consistent across clients.", "project": "galaxy-trucker-java-project" },
 			{ "year": "2025—26", "where": "Human-computer interaction", "label": "SpinGO", "text": "A micromobility ecosystem designed with people: user research, low- to high-fidelity prototypes, heuristic evaluation and usability testing.", "project": "spingo-sustainable-micromobility" }
 		],
-		"contact": "Contact",
-		"contactText": "Looking for a first role in iOS development. Reply within 24 hours, Italian time zone.",
-		"mailLink": "Email me →",
 		"projects": "Projects",
 		"articles": "Articles",
 		"experience": "Politecnico",
-		"years": "2026",
-		"reply": "Reply",
-		"within": "Within 24 hours"
+		"years": "2026"
 	},
 	"work": {
 		"title": "Projects",
