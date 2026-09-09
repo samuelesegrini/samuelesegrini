@@ -32,7 +32,10 @@ const labels = { ...copy.toolbar, mail: riempi(copy.toolbar.mail) };
 
 // La radice serve la home italiana: il canonico manda a /it/, così le due non si contendono.
 const percorso = Astro.url.pathname;
-const canonico = new URL(percorso === withBase('/') ? labPaths.it.home : percorso, Astro.site).href;
+const assoluto = (href: string) => new URL(href, Astro.site).href;
+const canonico = assoluto(percorso === withBase('/') ? labPaths.it.home : percorso);
+const titolo = pageTitle(title, siteConfig.name);
+const lingue = { it: 'it_IT', en: 'en_GB' } as const;
 ---
 
 <!doctype html>
@@ -40,8 +43,29 @@ const canonico = new URL(percorso === withBase('/') ? labPaths.it.home : percors
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta name="description" content={copy.description} />
+		<meta name="author" content={siteConfig.name} />
+		<meta name="theme-color" content="#f4f1e9" />
 		<link rel="canonical" href={canonico} />
-		<title>{pageTitle(title, siteConfig.name)}</title>
+
+		<!-- la stessa pagina nell'altra lingua: l'italiano fa da default per chi non combacia -->
+		<link rel="alternate" hreflang="it" href={assoluto(itHref)} />
+		<link rel="alternate" hreflang="en" href={assoluto(enHref)} />
+		<link rel="alternate" hreflang="x-default" href={assoluto(itHref)} />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={siteConfig.name} />
+		<meta property="og:title" content={titolo} />
+		<meta property="og:description" content={copy.description} />
+		<meta property="og:url" content={canonico} />
+		<meta property="og:locale" content={lingue[lang]} />
+		<meta property="og:locale:alternate" content={lingue[lang === 'it' ? 'en' : 'it']} />
+
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={titolo} />
+		<meta name="twitter:description" content={copy.description} />
+
+		<title>{titolo}</title>
 		<!-- navigazione senza ricaricare: il documento viene sostituito, non richiesto da capo -->
 		<ClientRouter />
 	</head>

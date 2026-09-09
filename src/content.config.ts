@@ -109,6 +109,8 @@ const labCopy = defineCollection({
 	loader: glob({ base: './src/content/lab-copy', pattern: '*.json' }),
 	schema: z.object({
 		locale,
+		/** Il riassunto del sito per motori di ricerca e anteprime social. */
+		description: z.string().min(1),
 		ticker: z.string().min(1),
 		nav: z.array(z.object({ label: z.string().min(1), kicker: z.string().min(1) })).length(4),
 		toolbar: z.object({
