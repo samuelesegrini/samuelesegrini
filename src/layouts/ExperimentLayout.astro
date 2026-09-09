@@ -48,7 +48,7 @@ const labels = { ...copy.toolbar, mail: riempi(copy.toolbar.mail) };
 				<!-- le sezioni viaggiano con la pagina: la barra sopravvive allo scambio e le rilegge qui -->
 				<script type="application/json" id="lab-sections" is:inline set:html={JSON.stringify(sections)}></script>
 				<slot />
-				<LabPiede lang={lang} copy={copy} itHref={itHref} enHref={enHref} />
+				<LabPiede lang={lang} copy={copy} />
 			</div>
 			<ExperimentToolbar
 				lang={lang}
