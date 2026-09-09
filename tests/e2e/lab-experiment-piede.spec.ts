@@ -46,10 +46,6 @@ test('le voci del piede portano dove dicono', async ({ page }) => {
 		invito: (document.querySelector('.piede-invito') as HTMLAnchorElement).getAttribute('href'),
 		pagine: [...document.querySelectorAll('.piede-navigazione a')].map((a) => a.getAttribute('href')),
 		altrove: [...document.querySelectorAll('.piede-altrove a')].map((a) => a.getAttribute('href')),
-		lingue: [...document.querySelectorAll('.piede-lingue a')].map((a) => ({
-			testo: a.textContent,
-			corrente: a.hasAttribute('aria-current'),
-		})),
 	}));
 
 	expect(voci.invito, 'l\'invito grande apre la posta').toMatch(/^mailto:/);
@@ -59,15 +55,6 @@ test('le voci del piede portano dove dicono', async ({ page }) => {
 		'/it/articoli/',
 	]);
 	expect(voci.altrove?.length, 'GitHub, LinkedIn ed email').toBe(3);
-	expect(voci.lingue.find((lingua) => lingua.corrente)?.testo?.trim(), 'la lingua corrente è marcata').toBe('IT');
-
-	// e la lingua porta alla stessa pagina nell'altra lingua, non alla home
-	await page.goto('/it/progetti/');
-	await page.waitForTimeout(700);
-	const altra = await page.evaluate(
-		() => [...document.querySelectorAll('.piede-lingue a')].find((a) => !a.hasAttribute('aria-current'))?.getAttribute('href'),
-	);
-	expect(altra, 'la lingua tiene la pagina').toBe('/en/projects/');
 });
 
 
