@@ -121,9 +121,9 @@ const count = String(projects.length).padStart(2, '0');
     @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
       /* la fase "prima" di un intervallo che non parte da 0 non riempie sempre indietro:
          il riposo deve già valere come il primo fotogramma, non come l'ultimo */
-      .exhibition-visual { animation: dock-preview linear both; animation-timeline: scroll(root block); animation-range: 100vh 170vh; }
-      .preview-studies { opacity: 0; animation: reveal-studies linear both; animation-timeline: scroll(root block); animation-range: 115vh 170vh; }
-      .projects-column { opacity: 0; clip-path: inset(0 0 0 100%); animation: reveal-projects linear both; animation-timeline: scroll(root block); animation-range: 100vh 170vh; }
+      .exhibition-visual { animation-name: dock-preview; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: scroll(root block); animation-range: 100vh 170vh; }
+      .preview-studies { opacity: 0; animation-name: reveal-studies; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: scroll(root block); animation-range: 115vh 170vh; }
+      .projects-column { opacity: 0; clip-path: inset(0 0 0 100%); animation-name: reveal-projects; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: scroll(root block); animation-range: 100vh 170vh; }
     }
   }
   @media (max-width: 1039px) {

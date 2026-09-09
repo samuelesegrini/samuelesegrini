@@ -51,7 +51,7 @@
 .about-biglietto-piede .freccia-scambio { --inchiostro: #20221f; font-size: 44px; }
 @media (prefers-reduced-motion: no-preference) and (pointer: fine) {
   @supports (animation-timeline: view()) {
-    .profilo-lab .about-prosa > * { animation: writing-enter linear both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
+    .profilo-lab .about-prosa > * { animation-name: writing-enter; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
   }
 }
 @media (max-width: 1039px) {

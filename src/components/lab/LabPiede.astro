@@ -180,7 +180,7 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 	@keyframes piede-carta-entra { from { opacity: 0; translate: 0 28px; } to { opacity: 1; translate: 0 0; } }
 	@supports (animation-timeline: view()) {
 		@media (prefers-reduced-motion: no-preference) and (pointer: fine) {
-			.piede-invito h2 > span { animation: piede-titolo-entra linear both; animation-timeline: view(); animation-range: entry 0% entry 90%; }
+			.piede-invito h2 > span { animation-name: piede-titolo-entra; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); animation-range: entry 0% entry 90%; }
 		}
 	}
 	@media (prefers-reduced-motion: no-preference) {

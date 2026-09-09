@@ -111,8 +111,8 @@
   @keyframes chapter-rise { from { opacity: .15; transform: translateY(32px); } to { opacity: 1; transform: none; } }
   /* la rotta si disegna e le tappe si accendono mentre entrano nella finestra */
   @supports (animation-timeline: view()) {
-    .rotta-linea i { animation: rotta-disegna linear both; animation-timeline: view(); animation-range: entry 30% exit 60%; }
-    .tappa { animation: tappa-accende linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+    .rotta-linea i { animation-name: rotta-disegna; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); animation-range: entry 30% exit 60%; }
+    .tappa { animation-name: tappa-accende; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
     @keyframes rotta-disegna { to { transform: scaleY(1); } }
     @keyframes tappa-accende { from { opacity: .25; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
   }

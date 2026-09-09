@@ -90,7 +90,7 @@
   .case-detail[data-motion='on'] .case-art { animation: case-float 8s ease-in-out infinite; animation-play-state: paused; }
   .case-detail[data-motion='on'] .case-art-scene[data-visible='true'] .case-art { animation-play-state: running; }
   @supports (animation-timeline: view()) {
-    .case-detail[data-motion='on'] .case-art-window { animation: case-open linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
+    .case-detail[data-motion='on'] .case-art-window { animation-name: case-open; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
   }
 }
 @media (max-width: 900px) {
