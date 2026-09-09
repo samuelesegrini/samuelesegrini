@@ -1,5 +1,5 @@
 <h1 align="center">Samuele Segrini</h1>
-<p align="center">Software Engineer · Swift & iOS · sistemi affidabili</p>
+<p align="center">Software Engineer · Swift & iOS</p>
 
 <p align="center">
   <a href="https://samuelesegrini.github.io/samuelesegrini/it/"><b>Portfolio (IT)</b></a> ·
