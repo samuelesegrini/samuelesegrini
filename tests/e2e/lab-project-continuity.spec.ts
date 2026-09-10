@@ -32,8 +32,12 @@ test('the preview keeps the selected project when moving from its card to the li
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/en/');
   await attendiCaricato(page);
-  await page.locator('.project-entry').nth(1).evaluate(el => el.scrollIntoView({block: 'center', behavior: 'instant'}));
-  await page.locator('.project-entry').nth(1).hover();
+  const entry = page.locator('.project-entry').nth(1);
+  // hovering may scroll the card into view on its own: settle the page first, otherwise the
+  // pointer slides off the card mid-hover and the reading observer takes the choice back
+  await entry.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(400);
+  await entry.hover();
   const destination = await page.locator('.project-link').nth(1).getAttribute('href');
   const preview = page.locator('.preview-open');
   await expect(preview).toHaveAttribute('href', destination!);
