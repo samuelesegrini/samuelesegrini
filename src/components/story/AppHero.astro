@@ -3,6 +3,8 @@
  * L'apertura da app: il segno del progetto in una piastrella, il nome, una promessa grande e
  * centrata, chi e quando, poi le azioni e i dispositivi che salgono dal fondo quadrettato.
  * Nello slot `mark` va il disegno del segno (un svg 64×64), nello slot `devices` le cornici.
+ * Al posto delle cornici, nello slot `shot` va una foto ferma (un ProductShot): si vede intera,
+ * non sale e non si taglia contro il fondo.
  */
 import LinkIcon from '../lab/LinkIcon.astro';
 import Icon from './Icon.astro';
@@ -27,4 +29,5 @@ const { name, title, summary, meta, actions = [], tint = 'violet', id = 'overvie
 		})}</div>}
 	</div>
 	{Astro.slots.has('devices') && <div class="st-ahero-devices"><slot name="devices" /></div>}
+	{Astro.slots.has('shot') && <div class="st-ahero-shot"><slot name="shot" /></div>}
 </header>

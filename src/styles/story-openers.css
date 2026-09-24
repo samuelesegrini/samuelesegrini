@@ -37,6 +37,8 @@
 .st-ahero-side { display: flex; align-items: center; gap: 24px; margin-top: 182px; text-align: left; }
 .st-ahero-side .st-frame-watch { flex: none; width: 184px; }
 .st-ahero-side .st-mono { max-width: 160px; font-size: 11px; line-height: 1.5; color: var(--st-meta); }
+/* la foto al posto delle cornici: ferma e intera, sopra il fondo quadrettato, con il suo respiro sotto */
+.st-ahero-shot { position: relative; width: 100%; margin: 72px 0 clamp(56px, 7vw, 104px); }
 
 /* DocHero */
 .st-dhero { display: grid; grid-template-columns: minmax(0, 580px) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; column-gap: 60px; min-height: min(100svh, 980px); padding: 32px var(--pad) clamp(120px, 18vh, 170px); background-color: var(--ink); background-image: linear-gradient(90deg, rgba(244, 241, 233, .06) 1px, transparent 1px); background-size: 25% 100%; background-origin: content-box; color: #f4f1e9; }
@@ -104,6 +106,7 @@
 	.st-glass .st-pill { justify-content: center; }
 	.st-ahero { padding-top: 72px; }
 	.st-ahero-devices { gap: 16px; height: 400px; margin-top: 48px; }
+	.st-ahero-shot { margin-top: 48px; }
 	.st-ahero-devices > .st-frame-iphone { width: 220px; }
 	.st-ahero-side { flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 120px; }
 	.st-ahero-side .st-frame-watch { width: 120px; }

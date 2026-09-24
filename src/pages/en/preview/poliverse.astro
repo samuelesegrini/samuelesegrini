@@ -7,7 +7,7 @@
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, Device, AppHero, Lockup, HighlightsGallery, ToggleFigure, Stats,
+	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, ToggleFigure, Stats,
 	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
 	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BarCompare, BeforeAfter, ProductShot,
 } from '../../../components/story';
@@ -51,28 +51,7 @@ const sections = [
 			meta="Individual work · SwiftUI · iOS 27 · September 2026"
 			actions={[{ label: 'Read the story', href: '#highlights' }, { label: 'Source on GitHub', href: repo }]}>
 			<img slot="mark" src={icon('orbit')} alt="" width="104" height="104" class="pv-mark" />
-			<Fragment slot="devices">
-				<Device kind="iphone">
-					<div class="pv-phone" role="img" aria-label="Illustration of the Today tab in Italian: the date large, the lesson in progress, what is coming up and the rest of the day">
-						<span class="pv-status st-mono">9:41</span>
-						<span class="pv-hello">Buona giornata!</span>
-						<span class="pv-date"><b>24.09</b><b>GIO</b></span>
-						<span class="pv-kicker">Lezione in corso</span>
-						<span class="pv-card now"><span class="pv-tag">10:15 – 12:15 · Aula 3.1.2</span><b>Ingegneria del Software</b><span class="pv-bar"><i style="width: 38%"></i></span></span>
-						<span class="pv-kicker">In arrivo</span>
-						<span class="pv-row"><i class="c-orange"></i><span><b>Probabilità e Statistica</b><span>Esame · tra 12 giorni</span></span></span>
-						<span class="pv-row"><i class="c-violet"></i><span><b>Tecnologie per il Web</b><span>Consegna · domani 23:59</span></span></span>
-						<span class="pv-accessory"><i></i>Ingegneria del Software · 3.1.2</span>
-						<span class="pv-tabs"><i class="on">Oggi</i><i>Corsi</i><i>Carriera</i><i>Cerca</i></span>
-					</div>
-				</Device>
-				<div class="st-ahero-side">
-					<Device kind="watch">
-						<div class="pv-watch" role="img" aria-label="Illustration of the Watch app: the next lecture"><span class="st-mono">Prossima lezione</span><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></div>
-					</Device>
-					<span class="st-mono">Illustrations of the Italian interface. On the wrist: the day and the next exam, sent from the phone.</span>
-				</div>
-			</Fragment>
+			<ProductShot slot="shot" priority src="/assets/projects/poliverse-devices.png" alt="PoliVerse on iPhone, iPad and Apple Watch" />
 		</AppHero>
 
 		<ScrollIntro id="highlights" index={1} tone="ink2" eyebrow="PoliVerse" title="Get the highlights." />
@@ -113,12 +92,56 @@ const sections = [
 		</Section>
 
 		<Section id="app" eyebrow="PoliVerse · Take a closer look" title="Four tabs." dim="One question each." index={2}>
-			<ProductShot src="/assets/projects/poliverse-devices.png" alt="PoliVerse on iPhone, iPad and Apple Watch" label="The four tabs" captions={[
-				{ title: 'Today', file: 'Features/Shell', text: 'What is on today? The date, the lesson in progress, then what is coming, the timetable, deadlines and exams. Every section can be moved, hidden or redrawn.' },
-				{ title: 'Courses', file: 'Features/Home · WeBeep', text: 'What is new in my courses? Each course gathers its notices, materials, recordings, sittings, forum and syllabus, with unread counts on the way in.' },
-				{ title: 'Career', file: 'Features/Career', text: 'What is due? Rebuilt around what closes next rather than what is already true: enrolments closing, marks to decide, sittings, and the average as a line over time.' },
-				{ title: 'Search', file: 'Features/Search', text: 'Where, and what? One field across courses, agenda and sittings, then rooms with their equipment, free rooms, and the campus map down to floor plans.' },
-			]} />
+			<FeatureExplorer label="Tabs" device="iphone" note="Illustrations of the Italian interface · screenshots to follow" features={[
+				{ title: 'Today', file: 'Features/Shell', tint: 'blue', text: 'What is on today? The date, the lesson in progress, then what is coming, the timetable, deadlines and exams. Every section can be moved, hidden or redrawn.' },
+				{ title: 'Courses', file: 'Features/Home · WeBeep', tint: 'acid', text: 'What is new in my courses? Each course gathers its notices, materials, recordings, sittings, forum and syllabus, with unread counts on the way in.' },
+				{ title: 'Career', file: 'Features/Career', tint: 'violet', text: 'What is due? Rebuilt around what closes next rather than what is already true: enrolments closing, marks to decide, sittings, and the average as a line over time.' },
+				{ title: 'Search', file: 'Features/Search', tint: 'orange', text: 'Where, and what? One field across courses, agenda and sittings, then rooms with their equipment, free rooms, and the campus map down to floor plans.' },
+			]}>
+				<div slot="screen-1" class="pv-phone" role="img" aria-label="Illustration: the Today tab">
+					<span class="pv-hello">Buona giornata!</span>
+					<span class="pv-date"><b>24.09</b><b>GIO</b></span>
+					<span class="pv-kicker">Lezione in corso</span>
+					<span class="pv-card now"><span class="pv-tag">10:15 – 12:15 · Aula 3.1.2</span><b>Ingegneria del Software</b><span class="pv-bar"><i style="width: 38%"></i></span></span>
+					<span class="pv-kicker">Orario</span>
+					<span class="pv-row"><i class="c-violet"></i><span><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></span></span>
+					<span class="pv-row"><i class="c-orange"></i><span><b>Basi di Dati</b><span>14:15 · B.4.2</span></span></span>
+					<span class="pv-kicker">Esami</span>
+					<span class="pv-row"><i class="c-blue"></i><span><b>Probabilità e Statistica</b><span>6 ott · 9:00</span></span></span>
+				</div>
+				<div slot="screen-2" class="pv-phone" role="img" aria-label="Illustration: the Courses tab">
+					<span class="pv-title">Corsi</span>
+					<span class="pv-feature"><span class="pv-tag">In evidenza</span><b>Ingegneria del Software</b>
+						<span class="pv-chips"><i>Avvisi <em>2</em></i><i>Materiali</i><i>Registrazioni</i><i>Appelli</i></span>
+					</span>
+					<span class="pv-kicker">Preferiti</span>
+					<span class="pv-tiles">
+						<span class="c-violet"><b>Reti di Calcolatori</b><em>1 nuovo</em></span>
+						<span class="c-orange"><b>Basi di Dati</b></span>
+						<span class="c-blue"><b>Probabilità e Statistica</b></span>
+						<span class="c-acid"><b>Tecnologie per il Web</b><em>Consegna</em></span>
+					</span>
+				</div>
+				<div slot="screen-3" class="pv-phone" role="img" aria-label="Illustration: the Career tab">
+					<span class="pv-title">Carriera</span>
+					<span class="pv-due c-orange"><span class="pv-tag">Iscrizioni in chiusura</span><b>Probabilità e Statistica</b><span>chiude tra 2 giorni</span></span>
+					<span class="pv-due c-violet"><span class="pv-tag">Voto da decidere</span><b>Basi di Dati</b><span class="pv-grade">27</span></span>
+					<span class="pv-due"><span class="pv-tag">Esame in arrivo</span><b>Reti di Calcolatori</b><span>8 ottobre</span></span>
+					<span class="pv-avg"><span><b>27,4</b><em>media ponderata · dati di esempio</em></span>
+						<svg viewBox="0 0 200 60" aria-hidden="true"><polyline points="0,44 30,40 60,46 90,30 120,34 150,22 200,18" /></svg>
+					</span>
+				</div>
+				<div slot="screen-4" class="pv-phone" role="img" aria-label="Illustration: the Search tab">
+					<span class="pv-title">Cerca</span>
+					<span class="pv-field">Reti</span>
+					<span class="pv-chips"><i>Aule</i><i>Aule libere</i><i>Mappa</i><i>Piano di studi</i></span>
+					<span class="pv-kicker">Risultati</span>
+					<span class="pv-row"><i class="c-violet"></i><span><b>Reti di Calcolatori</b><span>Corso · 10 CFU</span></span></span>
+					<span class="pv-row"><i class="c-blue"></i><span><b>Reti Logiche</b><span>Esame superato · 28</span></span></span>
+					<span class="pv-kicker">Aule libere ora</span>
+					<span class="pv-rooms"><i>3.0.1</i><i>T.1.3</i><i>B.2.4</i><i>+9</i></span>
+				</div>
+			</FeatureExplorer>
 		</Section>
 
 		<Section eyebrow="PoliVerse · Beyond the app" title="Everywhere a student looks." dim="Not only inside the app.">
@@ -434,9 +457,8 @@ const sections = [
 	.pv-mark { width: 104px; height: 104px; filter: drop-shadow(0 14px 24px rgba(15, 61, 110, .28)); }
 	:global(.st-ahero-mark:has(.pv-mark)) { box-shadow: none; background: none; }
 
-	/* Le schermate illustrate dell'interfaccia italiana: il telefono in testa e i passi dell'accesso con CIE. */
+	/* Le schermate illustrate dell'interfaccia italiana: Oggi, Corsi, Carriera e Cerca, e i passi dell'accesso con CIE. */
 	.pv-phone { position: relative; display: flex; flex-direction: column; gap: 9px; width: 100%; height: 100%; padding: 15% 7% 6%; overflow: hidden; background: #f4f1e9; color: #171713; font-size: 12px; text-align: left; }
-	.pv-status { position: absolute; top: 3.2%; left: 13%; font-size: 10px; font-weight: 700; }
 	.pv-hello { font-size: 13px; font-weight: 600; }
 	.pv-date { display: grid; line-height: .92; font-size: 46px; font-weight: 800; letter-spacing: -.04em; font-stretch: 125%; }
 	.pv-title { font-size: 30px; font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: 2px; }
@@ -451,11 +473,25 @@ const sections = [
 	.pv-row > i { width: 6px; align-self: stretch; border-radius: 3px; box-shadow: inset 0 0 0 1.5px #171713; }
 	.pv-row > span { display: grid; }
 	.pv-row span span { color: #5e5a53; font-size: 11px; }
-	.c-violet { background: #ded1ff; } .c-orange { background: #ffd4b8; }
-	.pv-accessory { display: flex; align-items: center; gap: 8px; margin-top: auto; padding: 9px 12px; border-radius: 999px; background: rgba(255, 254, 251, .9); box-shadow: 0 4px 14px rgba(23, 23, 19, .12), inset 0 0 0 1px rgba(23, 23, 19, .12); font-size: 10.5px; font-weight: 600; }
-	.pv-accessory i { width: 7px; height: 7px; border-radius: 50%; background: #2fa84f; }
-	.pv-tabs { display: flex; justify-content: space-around; padding: 9px 6px; border-radius: 999px; background: rgba(255, 254, 251, .92); box-shadow: 0 4px 14px rgba(23, 23, 19, .12), inset 0 0 0 1px rgba(23, 23, 19, .12); font-size: 10px; }
-	.pv-tabs i { font-style: normal; color: #6b6760; } .pv-tabs i.on { color: #0f3d6e; font-weight: 700; }
+	.c-violet { background: #ded1ff; } .c-orange { background: #ffd4b8; } .c-blue { background: #cdefff; } .c-acid { background: #c7ff9f; }
+	.pv-feature { display: grid; gap: 8px; padding: 14px; border-radius: 20px; background: #0f3d6e; color: #fffef9; }
+	.pv-feature .pv-tag { color: #cdefff; } .pv-feature b { font-size: 18px; line-height: 1.05; letter-spacing: -.02em; }
+	.pv-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+	.pv-chips i { padding: 5px 9px; border-radius: 999px; background: rgba(255, 254, 251, .16); font-style: normal; font-size: 10px; font-weight: 600; }
+	.pv-chips em { font-style: normal; margin-left: 3px; padding: 0 5px; border-radius: 999px; background: #ffd4b8; color: #171713; }
+	.pv-phone > .pv-chips i { background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+	.pv-tiles > span { display: grid; align-content: space-between; gap: 10px; min-height: 76px; padding: 10px; border-radius: 16px; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-tiles b { font-size: 11.5px; line-height: 1.15; }
+	.pv-tiles em { justify-self: start; padding: 2px 7px; border-radius: 999px; background: #171713; color: #fffef9; font-style: normal; font-size: 9px; font-weight: 700; }
+	.pv-due { display: grid; gap: 2px; padding: 11px 12px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; position: relative; }
+	.pv-due b { font-size: 14px; letter-spacing: -.02em; } .pv-due > span:last-child { font-size: 11px; color: #3c3a35; }
+	.pv-due .pv-grade { position: absolute; right: 12px; top: 50%; translate: 0 -50%; font-size: 26px; font-weight: 800; color: #171713; }
+	.pv-avg { display: grid; gap: 6px; padding: 12px; border-radius: 16px; background: #171713; color: #fffef9; }
+	.pv-avg b { font-size: 26px; letter-spacing: -.03em; } .pv-avg em { display: block; font-style: normal; font-size: 9.5px; color: #c9c5bc; }
+	.pv-avg svg { width: 100%; height: 44px; } .pv-avg polyline { fill: none; stroke: #c7ff9f; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+	.pv-field { padding: 10px 12px; border-radius: 12px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; font-weight: 600; }
+	.pv-rooms { display: flex; gap: 6px; } .pv-rooms i { padding: 6px 9px; border-radius: 10px; background: #c7ff9f; box-shadow: inset 0 0 0 1.5px #171713; font-style: normal; font-size: 10.5px; font-weight: 700; }
 	.pv-watch { display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 100%; height: 100%; padding: 14%; background: #22221d; color: #f4f1e9; }
 	.pv-watch .st-mono { font-size: 9px; color: #c9c5bc; text-transform: uppercase; } .pv-watch b { font-size: 16px; line-height: 1.1; } .pv-watch > span:last-child { font-size: 11px; color: #c9c5bc; }
 

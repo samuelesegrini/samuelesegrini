@@ -171,15 +171,21 @@ test('the explorer keeps its whole device inside a short window', async ({ page 
 	expect(await page.locator('.st-fx .st-fx-figure > .st-frame').evaluate((el) => el.getBoundingClientRect().height)).toBeLessThanOrEqual(720 - 200);
 });
 
-test('the family shot stands still, fits the window, and names the four tabs', async ({ page }) => {
+test('the hero shows every device in one still picture, whole', async ({ page }) => {
 	for (const width of [390, 1440]) {
 		await page.setViewportSize({ width, height: 844 });
 		await page.goto(poliverse);
 		await arriva(page);
-		const shot = page.locator('#app .st-shot');
+		const shot = page.locator('.st-ahero-shot');
+		// niente entrata e niente deriva con lo scroll: la foto è ferma
 		expect(await shot.evaluate((el) => [el, ...el.querySelectorAll('*')].every((n) => getComputedStyle(n).animationName === 'none'))).toBe(true);
-		expect(await shot.locator('.st-shot-stage').evaluate((el) => el.getBoundingClientRect().height)).toBeLessThan(844);
-		await expect(shot.locator('.st-shot-captions li')).toHaveCount(4);
+		// e intera: sta nella finestra, e il fondo dell'apertura non la taglia
+		const { height, below } = await shot.locator('.st-shot-stage').evaluate((el) => {
+			const r = el.getBoundingClientRect();
+			return { height: r.height, below: el.closest('.st-ahero')!.getBoundingClientRect().bottom - r.bottom };
+		});
+		expect(height).toBeLessThan(844);
+		expect(below).toBeGreaterThan(0);
 	}
 });
 
