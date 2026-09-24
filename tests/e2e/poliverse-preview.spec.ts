@@ -23,6 +23,14 @@ test('the PoliVerse story renders every chapter and indexes them in the dock', a
 	for (const note of await notes.all()) await expect(page.locator((await note.getAttribute('href'))!)).toHaveCount(1);
 });
 
+test('every highlight shows its picture', async ({ page }) => {
+	await page.goto(route);
+	await arriva(page);
+	// la galleria legge gli slot media-1, media-2…: un nome sbagliato lascia la carta senza disegno
+	await expect(page.locator('.st-hg-card')).toHaveCount(5);
+	await expect(page.locator('.st-hg-card > .st-hg-media')).toHaveCount(5);
+});
+
 test('every icon on the page is a file the site serves', async ({ page }) => {
 	await page.goto(route);
 	await arriva(page);

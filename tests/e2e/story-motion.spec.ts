@@ -59,6 +59,33 @@ test('the highlights play when they come into view, and never on their own with 
 	await expect(page.locator('.st-hgallery')).not.toHaveAttribute('data-playing', 'true');
 });
 
+test('the first highlight gathers the six services into the app once it is in view', async ({ page, browser }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const chips = page.locator('.pv-combine .pv-chip');
+	await expect(chips).toHaveCount(6);
+	// fuori vista la carta aspetta il suo turno: i servizi non ci sono ancora
+	expect(await chips.first().evaluate((el) => getComputedStyle(el).opacity)).toBe('0');
+	await page.locator('.st-hgallery').scrollIntoViewIfNeeded();
+	await expect(page.locator('.st-hgallery')).toHaveAttribute('data-inview', '');
+	await expect(page.locator('.st-hg-card').first()).toHaveAttribute('data-current', '');
+	expect(await chips.first().evaluate((el) => getComputedStyle(el).animationName)).toBe('pv-chip-in');
+	// a fine giro sono tutti in orbita, con l'app al centro
+	await expect.poll(() => chips.evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1')), { timeout: 5000 }).toBe(true);
+	await expect.poll(() => page.locator('.pv-core').evaluate((el) => getComputedStyle(el).opacity), { timeout: 5000 }).toBe('1');
+
+	// senza movimento, e senza script, il disegno è già al punto d'arrivo
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.reload();
+	await arriva(page);
+	expect(await chips.evaluateAll((els) => els.map((el) => [getComputedStyle(el).animationName, getComputedStyle(el).opacity]))).toEqual(Array(6).fill(['none', '1']));
+	const context = await browser.newContext({ javaScriptEnabled: false });
+	const still = await context.newPage();
+	await still.goto(poliverse);
+	expect(await still.locator('.pv-combine .pv-chip').evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1'))).toBe(true);
+	await context.close();
+});
+
 test('the numbers count up once they are seen, and keep their value for screen readers', async ({ page }) => {
 	await page.goto(poliverse);
 	await arriva(page);

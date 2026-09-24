@@ -9,7 +9,7 @@ import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
 	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, ToggleFigure, Stats,
 	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
-	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BarCompare, BeforeAfter, ProductShot,
+	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BarCompare, BeforeAfter, ProductShot, Icon,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -31,6 +31,20 @@ const appearances: [string, string][] = [['orbit', 'Default'], ['orbit-dark', 'D
 
 // La rampa del Flavor di partenza, dal diagramma DocC flavor-ramp.svg: dal più profondo al più chiaro.
 const ramp = ['#11777A', '#13758A', '#157099', '#1767A8', '#195BB8', '#1B4BC7', '#1D37D6', '#1F20E5'];
+
+// I sei servizi che PoliVerse tiene insieme (docs/ del repo dell'app), in orbita attorno all'icona in
+// senso orario dall'alto. `dx`/`dy` (in centesimi del disegno) e `r` dicono da dove partono, sparsi.
+const sources = ([
+	{ name: 'Servizi Online', adds: 'courses, career, exams', icon: 'checklist', tint: 'blue', dx: -24, dy: -8, r: -7 },
+	{ name: 'WeBeep', adds: 'materials, notices, forum', icon: 'layers', tint: 'acid', dx: 9, dy: -14, r: 6 },
+	{ name: 'Recordings', adds: 'recorded lectures', icon: 'play', tint: 'violet', dx: 12, dy: 12, r: -5 },
+	{ name: 'Rooms & maps', adds: 'free rooms, floor plans', icon: 'target', tint: 'orange', dx: 22, dy: 6, r: 8 },
+	{ name: 'Syllabus', adds: 'what each course covers', icon: 'doc-text', tint: 'blue', dx: -10, dy: 10, r: 7 },
+	{ name: 'Manifesto', adds: 'your plan and teachers', icon: 'book', tint: 'acid', dx: -13, dy: -12, r: -6 },
+] as const).map((source, i) => {
+	const angle = ((-90 + i * 60) * Math.PI) / 180;
+	return { ...source, x: +(50 + 38 * Math.cos(angle)).toFixed(1), y: +(54 + 36 * Math.sin(angle)).toFixed(1) };
+});
 
 const sections = [
 	{ kicker: 'Chapter 1 of 7', value: 'Highlights', detail: { kicker: 'In short', value: '5 highlights' } },
@@ -57,31 +71,34 @@ const sections = [
 		<ScrollIntro id="highlights" index={1} tone="ink2" eyebrow="PoliVerse" title="Get the highlights." />
 
 		<Section tone="ink2" link={{ label: 'Browse the source', href: repo }}>
-			<HighlightsGallery cards={[
-				{ text: 'The Politecnico has no public API. PoliVerse reads the config the official app reads, so a moved backend costs no release.', meta: 'Service directory · 11 September', name: 'No public API', tone: 'blue' },
+			<HighlightsGallery interval={6000} cards={[
+				{ text: 'Six places a student checks. One app.', meta: 'What PoliVerse brings together', name: 'Six places, one app', tone: 'dark' },
 				{ text: '“Entra con CIE” comes back to the app, not to Safari.', meta: 'CieID hand-off · sourceApp', name: 'CIE login', tone: 'dark' },
 				{ text: 'It opens with content, even offline. A failed refresh never clears the screen.', meta: 'Store · offline copy', name: 'Offline first', tone: 'acid' },
 				{ text: 'It reads, and never writes. A wrong read costs a refresh; a wrong write costs a session.', meta: 'Decision · 22 September', name: 'Read-only on purpose', tone: 'orange' },
 				{ text: 'One colour becomes the whole app, down to the icon on the Home Screen.', meta: 'Personalizza · 36 icons', name: 'Make it yours', tone: 'violet' },
 			]}>
-				<div slot="tile-1" class="pv-json st-mono" aria-hidden="true">
-					<span>GET …/polimi_app/rest/jaf/public/props <em>200 · no auth</em></span>
-					<span>"iae.base_url": "https://api.polimi.it/iae"</span>
-					<span>"libretto.base_url": "…/piano_studente"</span>
-					<span>"ws_aule.base_url": "…/ws_aule"</span>
+				<div slot="media-1" class="pv-combine" aria-hidden="true">
+					<span class="pv-ring"></span>
+					<span class="pv-core"><img src={icon('orbit')} alt="" width="120" height="120" /></span>
+					{sources.map((source, i) => (
+						<span class="pv-chip" style={`--x: ${source.x}%; --y: ${source.y}%; --dx: ${source.dx}; --dy: ${source.dy}; --r: ${source.r}deg; --d: ${i * 70}ms; --tint: var(--${source.tint})`}>
+							<Icon name={source.icon} size={16} stroke={2.2} /><b>{source.name}</b><small>{source.adds}</small>
+						</span>
+					))}
 				</div>
-				<ol slot="tile-2" class="pv-steps st-mono" aria-label="The CIE hand-off in four steps">
+				<ol slot="media-2" class="pv-steps st-mono" aria-label="The CIE hand-off in four steps">
 					<li>catch the CieID link</li><li>re-open it with sourceApp</li><li>card + PIN in CieID</li><li class="ok">back in PoliVerse</li>
 				</ol>
-				<div slot="tile-3" class="pv-fresh" role="img" aria-label="A cached timetable still on screen, with a line saying it is forty minutes old and the refresh failed">
+				<div slot="media-3" class="pv-fresh" role="img" aria-label="A cached timetable still on screen, with a line saying it is forty minutes old and the refresh failed">
 					<span class="pv-fresh-line st-mono"><i></i>Cached copy · 40 min old · refresh failed</span>
 					<span class="pv-fresh-card"><b>12:15</b><span>Reti di Calcolatori</span></span>
 					<span class="pv-fresh-card"><b>14:15</b><span>Basi di Dati</span></span>
 				</div>
-				<ol slot="tile-4" class="pv-nope" aria-label="Actions the app does not perform">
+				<ol slot="media-4" class="pv-nope" aria-label="Actions the app does not perform">
 					<li>Enrol in a sitting</li><li>Refuse a mark</li><li>Post in a forum</li><li>Hand in an assignment</li>
 				</ol>
-				<ul slot="tile-5" class="pv-icon-strip" aria-label="Six of the app icons">
+				<ul slot="media-5" class="pv-icon-strip" aria-label="Six of the app icons">
 					{['orbit', 'dial-mint', 'closeup-coral', 'special-neon', 'special-blueprint', 'special-soft'].map((n) => <li><img src={icon(n)} alt="" width="120" height="120" loading="lazy" /></li>)}
 				</ul>
 			</HighlightsGallery>
@@ -496,9 +513,38 @@ const sections = [
 	.pv-watch .st-mono { font-size: 9px; color: #c9c5bc; text-transform: uppercase; } .pv-watch b { font-size: 16px; line-height: 1.1; } .pv-watch > span:last-child { font-size: 11px; color: #c9c5bc; }
 
 	/* I disegni nelle carte dei punti salienti. */
-	.pv-json { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; font-size: 13px; }
-	.pv-json span { padding: 10px 14px; border-radius: 12px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; overflow-wrap: anywhere; }
-	.pv-json em { font-style: normal; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: #c7ff9f; }
+	/* La prima: i sei servizi, sparsi, entrano in orbita attorno all'app. Senza script o senza
+	   movimento si vede già il punto d'arrivo; con lo script la carta aspetta di essere davanti. */
+	.pv-combine { position: relative; container-type: size; }
+	.pv-ring { position: absolute; left: 12%; top: 18%; width: 76%; height: 72%; border-radius: 50%; box-shadow: inset 0 0 0 1.5px rgba(244, 241, 233, .22); -webkit-mask: conic-gradient(#000 var(--sweep), transparent 0); mask: conic-gradient(#000 var(--sweep), transparent 0); }
+	.pv-core { position: absolute; left: 50%; top: 54%; width: clamp(64px, 13cqw, 116px); translate: -50% -50%; }
+	.pv-core::before { content: ''; position: absolute; inset: -70%; border-radius: 50%; background: radial-gradient(closest-side, rgba(107, 173, 240, .34), transparent); }
+	.pv-core img { position: relative; display: block; width: 100%; height: auto; filter: drop-shadow(0 12px 28px rgba(0, 0, 0, .45)); }
+	.pv-chip { position: absolute; left: var(--x); top: var(--y); translate: -50% -50%; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 10px; padding: 7px 16px 7px 7px; border-radius: 999px; background: #2c2c26; box-shadow: inset 0 0 0 1px rgba(244, 241, 233, .14), 0 10px 24px rgba(0, 0, 0, .35); color: #f4f1e9; white-space: nowrap; }
+	.pv-chip :global(.st-icon) { grid-row: span 2; width: 34px; height: 34px; padding: 8px; border-radius: 50%; background: var(--tint); color: #171713; }
+	.pv-chip b { font-size: 14px; font-weight: 600; line-height: 1.15; }
+	.pv-chip small { font-size: 11.5px; line-height: 1.2; color: #c9c5bc; }
+	@container (max-width: 600px) {
+		.pv-chip { grid-template-columns: auto; justify-items: center; row-gap: 5px; padding: 0; background: none; box-shadow: none; }
+		.pv-chip :global(.st-icon) { grid-row: auto; width: 30px; height: 30px; padding: 7px; }
+		.pv-chip b { font-size: 11px; }
+		.pv-chip small { display: none; }
+	}
+	@property --sweep { syntax: '<angle>'; inherits: false; initial-value: 360deg; }
+	@keyframes pv-chip-in {
+		0% { opacity: 0; transform: translate(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqh)) rotate(var(--r)) scale(.96); }
+		14%, 34% { opacity: 1; transform: translate(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqh)) rotate(var(--r)); }
+		100% { opacity: 1; transform: none; }
+	}
+	@keyframes pv-core-in { 0% { opacity: 0; scale: .6; } 60% { opacity: 1; scale: 1.06; } 100% { opacity: 1; scale: 1; } }
+	@keyframes pv-ring-in { from { --sweep: 0deg; } to { --sweep: 360deg; } }
+	@media (prefers-reduced-motion: no-preference) {
+		:global(.st-hgallery[data-bound]) .pv-chip, :global(.st-hgallery[data-bound]) .pv-core { opacity: 0; }
+		:global(.st-hgallery[data-bound]) .pv-ring { --sweep: 0deg; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-chip { animation: pv-chip-in 2.4s cubic-bezier(.4, 0, .6, 1) var(--d) both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-ring { animation: pv-ring-in 1.3s cubic-bezier(.4, 0, .6, 1) 1.2s both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-core { animation: pv-core-in .9s cubic-bezier(.22, 1, .36, 1) 1.5s both; }
+	}
 	.pv-steps { display: flex; flex-wrap: wrap; align-content: flex-end; gap: 10px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
 	.pv-steps li { padding: 10px 14px; border-radius: 999px; background: #2c2c26; color: #f4f1e9; }
 	.pv-steps li.ok { background: #c7ff9f; color: #171713; }

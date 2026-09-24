@@ -6,6 +6,8 @@
  * quando esce e il pallino attivo si riempie nel tempo della carta; chi tocca i controlli decide
  * lui, e con la riduzione del movimento non parte mai da sola. Senza JavaScript restano una fila
  * che si scorre a mano.
+ * La carta davanti porta `data-current` e la galleria in vista `data-inview`: un disegno animato
+ * dentro una carta può ripartire ogni volta che la sua carta torna davanti.
  */
 interface Card { text: string; meta?: string; name?: string; tone?: 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string; wide?: boolean }
 interface Props { cards: Card[]; label?: string; interval?: number }
@@ -57,7 +59,9 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			const mark = (i: number) => {
 				current = i;
 				dots.forEach((d, k) => d.setAttribute('aria-pressed', String(k === i)));
+				cards.forEach((c, k) => c.toggleAttribute('data-current', k === i));
 			};
+			mark(0);
 			const go = (i: number) => {
 				const left = cards[i].offsetLeft - parseFloat(getComputedStyle(track).paddingLeft);
 				lock = performance.now() + 900;
@@ -87,6 +91,8 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			track.addEventListener('pointerdown', () => { wanted = false; stop(); });
 			// parte quando è in vista per metà, si ferma quando esce
 			new IntersectionObserver(([entry]) => {
+				if (entry.intersectionRatio >= 0.5) root.toggleAttribute('data-inview', true);
+				else if (entry.intersectionRatio < 0.15) root.toggleAttribute('data-inview', false);
 				if (entry.intersectionRatio >= 0.5 && wanted && !timer) start();
 				else if (entry.intersectionRatio < 0.15 && timer) stop();
 			}, { threshold: [0, 0.15, 0.5] }).observe(root);
