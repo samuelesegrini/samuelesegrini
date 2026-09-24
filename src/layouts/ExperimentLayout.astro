@@ -24,9 +24,11 @@ interface Props {
 	/** La stessa pagina nell'altra lingua: il selettore ci porta lì, non alla home. */
 	itHref: string;
 	enHref: string;
+	/** Pagine di prova non elencate: fuori dagli indici dei motori di ricerca. */
+	noindex?: boolean;
 }
 
-const { lang, title, currentHref, sections, itHref, enHref } = Astro.props;
+const { lang, title, currentHref, sections, itHref, enHref, noindex = false } = Astro.props;
 const copy = await getLabCopy(lang);
 const labels = { ...copy.toolbar, mail: riempi(copy.toolbar.mail) };
 
@@ -46,6 +48,7 @@ const lingue = { it: 'it_IT', en: 'en_GB' } as const;
 		<meta name="description" content={copy.description} />
 		<meta name="author" content={siteConfig.name} />
 		<meta name="theme-color" content="#f4f1e9" />
+		{noindex && <meta name="robots" content="noindex" />}
 		<link rel="canonical" href={canonico} />
 
 		<!-- la stessa pagina nell'altra lingua: l'italiano fa da default per chi non combacia -->
