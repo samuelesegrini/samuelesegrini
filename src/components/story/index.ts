@@ -60,3 +60,4 @@ export { default as BarCompare } from './BarCompare.astro';
 export { default as PlusCards } from './PlusCards.astro';
 export { default as ObjectRow } from './ObjectRow.astro';
 export { default as BeforeAfter } from './BeforeAfter.astro';
+export { default as ProductShot } from './ProductShot.astro';

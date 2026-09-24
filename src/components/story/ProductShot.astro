@@ -1,0 +1,41 @@
+---
+/**
+ * La foto di famiglia, come le immagini "su tutti i tuoi dispositivi" di apple.com: una sola
+ * immagine larga su un palco nero con gli angoli arrotondati, e sotto una fila di didascalie.
+ * È ferma di proposito: non sale con lo scroll e non si ritaglia, tiene le proporzioni del file a
+ * ogni larghezza. Un'immagine su fondo nero si fonde col palco; una con lo sfondo trasparente ci
+ * appoggia sopra i dispositivi.
+ * Se `src` punta a `/assets/projects/…` passa da `astro:assets` (AVIF e WebP con le varianti del
+ * `srcset`, vedi src/lib/covers.ts); un percorso di `public/` esce così com'è. Finché il file non
+ * c'è, il palco tiene le proporzioni di `width` e `height` e mostra il segnaposto.
+ */
+import { Picture } from 'astro:assets';
+import { coverAsset } from '../../lib/covers';
+import { withBase } from '../../lib/base';
+interface Caption { title: string; text: string; file?: string }
+interface Props { src?: string; alt: string; width?: number; height?: number; captions?: Caption[]; label?: string }
+const { src, alt, width = 2400, height = 968, captions = [], label = 'In the picture' } = Astro.props;
+const asset = src ? coverAsset(src) : undefined;
+const pubblica = src && !src.startsWith('/assets/') ? withBase(src) : undefined;
+// mai più larga del file: le varianti oltre l'originale sarebbero ingrandimenti
+const top = asset ? Math.min(asset.width, 2400) : 0;
+const widths = asset ? [800, 1200, 1800].filter((w) => w < top).concat(top) : [];
+---
+<figure class="st-shot">
+	<div class:list={['st-shot-stage', { empty: !asset && !pubblica }]} style={!asset && !pubblica ? `aspect-ratio: ${width} / ${height}` : undefined}>
+		{asset
+			? <Picture src={asset} alt={alt} widths={widths} sizes="(max-width: 1248px) calc(100vw - 48px), 1200px" formats={['avif', 'webp']} loading="lazy" decoding="async" />
+			: pubblica
+				? <img src={pubblica} alt={alt} width={width} height={height} loading="lazy" decoding="async" />
+				: <span class="st-frame-empty">[Image · {alt}]</span>}
+	</div>
+	{captions.length > 0 && (
+		<figcaption>
+			<ul class="st-shot-captions" role="list" aria-label={label} style={`--count: ${captions.length}`}>
+				{captions.map((c) => (
+					<li><b>{c.title}</b><span>{c.text}</span>{c.file && <span class="st-shot-file st-mono">{c.file}</span>}</li>
+				))}
+			</ul>
+		</figcaption>
+	)}
+</figure>

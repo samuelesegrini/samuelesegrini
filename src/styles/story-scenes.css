@@ -159,6 +159,17 @@ a.st-object-name:hover { text-decoration-color: currentColor; }
 @keyframes st-ba-hint { 0% { --ba: 50; } 35% { --ba: 34; } 70% { --ba: 63; } 100% { --ba: 50; } }
 .st-ba.hint .st-ba-stage { animation: st-ba-hint 1.8s var(--st-ease); }
 
+/* ProductShot: ferma, e sempre intera */
+.st-shot { display: grid; gap: clamp(32px, 4vw, 56px); margin: 0; }
+.st-shot-stage { overflow: hidden; border-radius: var(--st-radius); background: #000; }
+.st-shot-stage :is(picture, img) { display: block; width: 100%; height: auto; }
+.st-shot-stage.empty { display: grid; place-items: center; }
+.st-shot-stage .st-frame-empty { color: #8b877f; }
+.st-shot-captions { display: grid; grid-template-columns: repeat(var(--count), minmax(0, 1fr)); gap: 32px clamp(20px, 3vw, 40px); margin: 0; padding: 0; list-style: none; }
+.st-shot-captions li { display: grid; align-content: start; justify-items: start; gap: 10px; font-size: 16px; line-height: 1.5; color: var(--st-muted); text-wrap: pretty; }
+.st-shot-captions b { font-size: clamp(19px, 1.6vw, 21px); font-weight: 600; line-height: 1.2; letter-spacing: -.025em; color: var(--st-fg); }
+.st-shot-file { padding: 5px 10px; border-radius: 999px; background: var(--st-sunk); color: var(--st-text2); font-size: 11px; }
+
 /* --- il movimento della serie, dove c'è --- */
 @media (prefers-reduced-motion: no-preference) {
 	@supports (animation-timeline: view()) {
@@ -206,6 +217,7 @@ a.st-object-name:hover { text-decoration-color: currentColor; }
 @media (max-width: 1000px) {
 	.st-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.st-plus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.st-shot-captions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 900px) {
 	.st-scene { grid-template-columns: minmax(0, 1fr); gap: 28px; }
@@ -242,6 +254,8 @@ a.st-object-name:hover { text-decoration-color: currentColor; }
 	.st-plus-card { min-height: 0; }
 	.st-ba-stage, .st-ba figcaption { grid-template-columns: minmax(0, 1fr); }
 	.st-ba-layer { min-height: 280px; }
+	.st-shot-stage { border-radius: 18px; }
+	.st-shot-captions { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
 	.st-plus-card, .st-plus-open, .st-plus-close, .st-object, a.st-object-name, .st-ba-handle > span { transition: none; }

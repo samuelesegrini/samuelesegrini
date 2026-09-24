@@ -11,7 +11,7 @@ import {
 	Story, Section, Device, MediaHero, AppHero, DocHero, Lockup, HighlightsGallery, MediaCards, FeatureExplorer, ToggleFigure, ExplainerFigure,
 	Stats, ThenNow, Lineup, Matrix, Findings, TechSpecs, Limits, Sources, Declaration, CodeSteps, Anatomy, ExplodedStack, Modules, StateMachine,
 	ChangeLog, Principles, Contribution, Faq, KeepExploring, PageIndex,
-	ScrollIntro, StickyScenes, LitText, Bento, BarCompare, PlusCards, ObjectRow, BeforeAfter,
+	ScrollIntro, StickyScenes, LitText, Bento, BarCompare, PlusCards, ObjectRow, BeforeAfter, ProductShot,
 } from '../../../components/story';
 import { labPaths, labPostPath, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -30,7 +30,7 @@ const repo = {
 // il dock fa da indice dei cinque gruppi, come nelle pagine di progetto
 const sections = [
 	{ kicker: 'Group 1 of 5', value: 'Openers', detail: { kicker: 'Sections', value: '5 openers' } },
-	{ kicker: 'Group 2 of 5', value: 'Showcase', detail: { kicker: 'Sections', value: '10 showcases' } },
+	{ kicker: 'Group 2 of 5', value: 'Showcase', detail: { kicker: 'Sections', value: '11 showcases' } },
 	{ kicker: 'Group 3 of 5', value: 'Evidence', detail: { kicker: 'Sections', value: '9 proofs' } },
 	{ kicker: 'Group 4 of 5', value: 'Engineering', detail: { kicker: 'Sections', value: '8 diagrams' } },
 	{ kicker: 'Group 5 of 5', value: 'Closers', detail: { kicker: 'Sections', value: '5 endings' } },
@@ -140,7 +140,7 @@ const tables = [
 		<div class="cat-divider" id="showcase" data-section="2">
 			<span class="st-mono">02 / 05</span>
 			<h2>Showcase</h2>
-			<p>Show the product before explaining it: a gallery, captioned cards, one screen driven by a list, a before and after, a diagram with notes, then the third series: scenes pinned while you scroll, a paragraph that lights up, a bento, the family in a row and a draggable comparison.</p>
+			<p>Show the product before explaining it: a gallery, captioned cards, one screen driven by a list, a before and after, a diagram with notes, then the third series: scenes pinned while you scroll, a paragraph that lights up, a bento, the family in a row, the family in one still picture and a draggable comparison.</p>
 		</div>
 
 		<p class="cat-mark"><code>&lt;HighlightsGallery /&gt;</code><span>v2 of Highlights</span></p>
@@ -374,6 +374,15 @@ const tables = [
 				<Device slot="object-3" kind="ipad"><div class="mock-mini counter" aria-hidden="true"><span class="paper"><i></i><i></i><i></i></span><span class="keys"><i></i><i></i><i class="go"></i></span></div></Device>
 				<div slot="object-4" class="mock-printer-object" aria-hidden="true"><span class="slot"></span><div class="st-receipt st-receipt-paper"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="barcode"></div></div><span class="body"></span></div>
 			</ObjectRow>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;ProductShot /&gt;</code><span>new · one still picture of the family, captions underneath</span></p>
+		<Section eyebrow="EasyManager · The restaurant" title="Three stations." dim="One picture of all of them.">
+			<ProductShot alt="EasyManager on the floor, in the kitchen and at the counter" label="The stations" captions={[
+				{ title: 'Floor', text: 'The dining room and the order pad.' },
+				{ title: 'Kitchen', text: 'The same order, by course.' },
+				{ title: 'Counter', text: 'Pre-bill, payment and reports.' },
+			]} />
 		</Section>
 
 		<p class="cat-mark"><code>&lt;BeforeAfter /&gt;</code><span>new · drag the cut, the arrow keys work too</span></p>

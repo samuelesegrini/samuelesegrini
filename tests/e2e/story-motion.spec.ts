@@ -152,15 +152,35 @@ test('a plus opens its sheet, Escape closes it, and it works without script', as
 });
 
 test('the explorer opens the chosen item instead of swapping it', async ({ page }) => {
-	await page.goto(poliverse);
+	await page.goto(catalogue);
 	await arriva(page);
 	const fx = page.locator('.st-fx');
 	const inner = (i: number) => fx.locator('.st-fx-body-in').nth(i);
 	await expect(inner(0)).toBeVisible();
 	await expect(inner(1)).toBeHidden();
-	await fx.locator('.st-fx-list').getByText('Courses', { exact: true }).click();
+	await fx.locator('.st-fx-list').getByText('Order pad', { exact: true }).click();
 	await expect(inner(1)).toBeVisible();
 	await expect(inner(0)).toBeHidden();
+});
+
+test('the explorer keeps its whole device inside a short window', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto(catalogue);
+	await arriva(page);
+	// fissato sotto la testata e sopra il dock: il dispositivo non si taglia mai in altezza
+	expect(await page.locator('.st-fx .st-fx-figure > .st-frame').evaluate((el) => el.getBoundingClientRect().height)).toBeLessThanOrEqual(720 - 200);
+});
+
+test('the family shot stands still, fits the window, and names the four tabs', async ({ page }) => {
+	for (const width of [390, 1440]) {
+		await page.setViewportSize({ width, height: 844 });
+		await page.goto(poliverse);
+		await arriva(page);
+		const shot = page.locator('#app .st-shot');
+		expect(await shot.evaluate((el) => [el, ...el.querySelectorAll('*')].every((n) => getComputedStyle(n).animationName === 'none'))).toBe(true);
+		expect(await shot.locator('.st-shot-stage').evaluate((el) => el.getBoundingClientRect().height)).toBeLessThan(844);
+		await expect(shot.locator('.st-shot-captions li')).toHaveCount(4);
+	}
 });
 
 // Una passata per pagina e per larghezza. Lo scroll e la misura restano dentro la pagina, con due

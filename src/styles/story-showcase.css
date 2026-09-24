@@ -58,10 +58,14 @@
 .st-fx-item input:checked + .st-fx-card .st-fx-body { grid-template-rows: 1fr; margin-top: 10px; }
 .st-fx-item input:checked + .st-fx-card .st-fx-body-in { opacity: 1; visibility: visible; transition: opacity .34s var(--st-ease) .12s, visibility 0s; }
 .st-fx-file { padding: 5px 10px; border-radius: 999px; background: var(--tint); color: var(--ink); font-size: 11px; }
-.st-fx-figure { position: sticky; top: 96px; display: grid; gap: 16px; margin: 0; }
+.st-fx-figure { position: sticky; top: 96px; display: grid; gap: 16px; margin: 0; --fx-room: calc(100svh - 220px); }
 .st-fx-figure .st-frame { box-shadow: 0 40px 70px -40px rgba(23, 23, 19, .55); }
+/* il dispositivo entra tutto nella finestra, sotto la testata e sopra il dock: è l'altezza
+   che resta a decidere la larghezza, con le proporzioni di ogni cornice */
+.st-fx-figure > .st-frame { justify-self: center; width: min(100%, max(320px, calc(var(--fx-room) * 1.43))); }
+.st-fx-mac .st-fx-figure > .st-frame { width: min(100%, max(320px, calc(var(--fx-room) * 1.6))); }
 /* un iPhone resta della misura di un telefono: centrato nella colonna, invece di riempirla */
-.st-fx-iphone .st-fx-figure > .st-frame-iphone { justify-self: center; width: min(100%, 340px); }
+.st-fx-iphone .st-fx-figure > .st-frame-iphone { width: min(100%, clamp(180px, calc(var(--fx-room) * .46), 340px)); }
 .st-fx .st-frame-screen { background: var(--st-card); color: var(--ink); }
 .st-fx-screen { grid-area: 1 / 1; width: 100%; height: 100%; visibility: hidden; opacity: 0; scale: 1.035; transition: opacity .45s var(--st-ease), scale .6s var(--st-ease), visibility 0s linear .45s; }
 .st-fx-screen > img { width: 100%; height: 100%; object-fit: cover; }
