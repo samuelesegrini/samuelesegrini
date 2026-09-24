@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t"><title id="t">A route that jumps over unnecessary stations along a highway, from the first station to the last in the fewest stops</title>
+<rect width="1200" height="800" rx="48" fill="#C7FF9F"/>
+<rect x="90" y="470" width="1020" height="96" rx="48" fill="#FFFEFB" stroke="#171713" stroke-width="7"/>
+<path d="M150 470Q330 170 520 470Q800 90 1050 470" fill="none" stroke="#171713" stroke-width="10" stroke-linecap="round"/>
+<g stroke="#171713" stroke-width="7">
+<circle cx="150" cy="518" r="42" fill="#171713"/><circle cx="330" cy="518" r="22" fill="#FFFEFB"/><circle cx="520" cy="518" r="42" fill="#FFD4B8"/><circle cx="700" cy="518" r="22" fill="#FFFEFB"/><circle cx="880" cy="518" r="22" fill="#FFFEFB"/><circle cx="1050" cy="518" r="42" fill="#171713"/>
+</g>
+<circle cx="150" cy="518" r="14" fill="#C7FF9F"/><circle cx="1050" cy="518" r="14" fill="#C7FF9F"/>
+<path d="M300 250l20 20 36-40M760 170l20 20 36-40" fill="none" stroke="#171713" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

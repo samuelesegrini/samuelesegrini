@@ -8,7 +8,8 @@
  * lab-primitives.css per tornare nelle sezioni.
  */
 import { siteConfig } from '../../config/site';
-import { labPaths, mailHref, type LabLocale } from './chrome';
+import { labPaths, linkKind, mailHref, type LabLocale } from './chrome';
+import LinkIcon from './LinkIcon.astro';
 import type { LabCopy } from '../../lib/lab-copy';
 
 interface Props {
@@ -71,7 +72,7 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 		<div class="piede-dettagli">
 			<div class="piede-altrove">
 				<span class="piede-etichetta">{t.altrove}</span>
-				<ul role="list">{altrove.map((voce) => <li><a href={voce.href} rel="me noopener">{voce.label}<span aria-hidden="true"> ↗</span></a></li>)}</ul>
+				<ul role="list">{altrove.map((voce) => <li><a href={voce.href} rel="me noopener"><LinkIcon kind={linkKind(voce.href)} />{voce.label}</a></li>)}</ul>
 			</div>
 			<div class="piede-colofone">
 				<span class="piede-etichetta">{t.colofone}</span>
@@ -154,9 +155,8 @@ const anello = `${siteConfig.name} — ${siteConfig.role} — `;
 	.piede-etichetta { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; color: var(--piede-tenue); font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 	.piede-etichetta::before { content: ''; width: 7px; height: 7px; border-radius: 2px; background: var(--tinta); }
 	.piede-altrove ul { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0; padding: 0; list-style: none; }
-	.piede-altrove a { display: inline-flex; align-items: baseline; gap: 6px; min-height: 30px; font-size: 15px; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 6px; transition: text-decoration-color 300ms ease, color 300ms ease; }
+	.piede-altrove a { display: inline-flex; align-items: center; gap: 8px; min-height: 30px; font-size: 15px; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 6px; transition: text-decoration-color 300ms ease, color 300ms ease; }
 	.piede-altrove a:is(:hover, :focus-visible) { color: var(--tinta); text-decoration-color: var(--tinta); }
-	.piede-altrove a > span { font-size: 12px; }
 	.piede-colofone p { margin: 0; color: var(--piede-tenue); font-size: 14px; line-height: 1.7; }
 
 	/* l'ultima riga sta sopra la barra fissa: il padding del foglio le lascia il posto */

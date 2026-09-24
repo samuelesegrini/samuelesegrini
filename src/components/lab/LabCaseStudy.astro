@@ -7,8 +7,9 @@ import LabContentImage from './LabContentImage.astro';
 import { getTranslationPair } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
 import { getLabCopy } from '../../lib/lab-copy';
-import { labPaths, labProjectPath, labPostPath, type LabLocale } from './chrome';
+import { labPaths, labProjectPath, labPostPath, linkKind, type LabLocale } from './chrome';
 import LabCover from './LabCover.astro';
+import LinkIcon from './LinkIcon.astro';
 import '../../styles/lab-project-detail.css';
 
 interface Props { lang: LabLocale; slug: string }
@@ -136,7 +137,7 @@ const accent = project.translationKey === 'easymanager' ? '#cfeaff' : project.tr
       <div class="depth-4 case-resources-content" data-depth="4">
         <h2 id="resources-title" data-reveal data-depth="4">{labels.resources}</h2>
         <ul class="case-stack" aria-label={labels.stack} data-reveal data-depth="4">{project.technologies.map(technology => <li>{technology}</li>)}</ul>
-        {project.links.length > 0 && <div class="case-source-list" data-reveal data-depth="4"><h3>{labels.links}</h3>{project.links.map(link => <a href={link.url} target="_blank" rel="noopener noreferrer"><span><strong>{link.label}</strong><small>{relationship[link.relationship]} / {new URL(link.url).hostname}</small></span><span aria-hidden="true">↗</span></a>)}</div>}
+        {project.links.length > 0 && <div class="case-source-list" data-reveal data-depth="4"><h3>{labels.links}</h3>{project.links.map(link => <a href={link.url} target="_blank" rel="noopener noreferrer"><span><strong>{link.label}</strong><small>{relationship[link.relationship]} / {new URL(link.url).hostname}</small></span><LinkIcon kind={linkKind(link.url)} size="30px" /></a>)}</div>}
         {related.length > 0 && <div class="case-source-list" data-reveal data-depth="4"><h3>{labels.writing}</h3>{related.map(post => <a href={post.href}><span><strong>{post.title}</strong><small>{post.reason}</small></span><span aria-hidden="true">↗</span></a>)}</div>}
       </div>
     </section>

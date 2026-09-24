@@ -66,3 +66,16 @@ export function experimentLanguages(lang: LabLocale, itHref: string, enHref: str
 	] as const;
 }
 
+
+/** Dove porta un collegamento: decide l'icona che lo accompagna. Le rotte interne tengono la freccia. */
+export type LinkKind = 'github' | 'linkedin' | 'mail' | 'pdf' | 'web' | 'inside';
+
+export function linkKind(href: string): LinkKind {
+	if (href.startsWith('mailto:')) return 'mail';
+	if (href.endsWith('.pdf')) return 'pdf';
+	if (!/^https?:/.test(href)) return 'inside';
+	const host = new URL(href).hostname;
+	if (host.endsWith('github.com')) return 'github';
+	if (host.endsWith('linkedin.com')) return 'linkedin';
+	return 'web';
+}

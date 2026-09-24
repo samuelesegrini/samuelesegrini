@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t"><title id="t">A phone showing a riding route to a safe destination, with a bicycle following the same route outside the screen</title>
+<rect width="1200" height="800" rx="48" fill="#DED1FF"/>
+<path d="M80 640C260 640 330 560 420 520" fill="none" stroke="#C7FF9F" stroke-width="44" stroke-linecap="round"/>
+<path d="M80 640C260 640 330 560 420 520" fill="none" stroke="#171713" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 18"/>
+<g fill="none" stroke="#171713" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="170" cy="520" r="62" fill="#FFFEFB"/><circle cx="330" cy="520" r="62" fill="#FFFEFB"/>
+<path d="M170 520l62-104 48 104H170l38-66h92l30 66M222 404h44"/>
+</g>
+<g transform="rotate(6 740 400)">
+<rect x="570" y="90" width="340" height="640" rx="58" fill="#171713"/>
+<rect x="590" y="110" width="300" height="600" rx="42" fill="#FFFEFB"/>
+<path d="M640 620C700 560 660 470 740 430S840 300 800 210" fill="none" stroke="#C7FF9F" stroke-width="30" stroke-linecap="round"/>
+<path d="M640 620C700 560 660 470 740 430S840 300 800 210" fill="none" stroke="#171713" stroke-width="5" stroke-linecap="round"/>
+<circle cx="640" cy="620" r="16" fill="#FFFEFB" stroke="#171713" stroke-width="5"/>
+<circle cx="800" cy="210" r="30" fill="#171713"/><circle cx="800" cy="210" r="12" fill="#C7FF9F"/>
+<rect x="620" y="140" width="120" height="16" rx="8" fill="#171713"/>
+</g>
+</svg>

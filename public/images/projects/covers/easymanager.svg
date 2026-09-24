@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t"><title id="t">An iPad showing the dining room of a restaurant, tables coloured by state, with an order ticket beside it</title>
+<rect width="1200" height="800" rx="48" fill="#CDEFFF"/>
+<g transform="rotate(-4 600 400)">
+<rect x="230" y="150" width="740" height="520" rx="56" fill="#171713"/>
+<rect x="256" y="176" width="688" height="468" rx="34" fill="#FFFEFB"/>
+<rect x="286" y="206" width="170" height="408" rx="18" fill="#F4F1E9"/>
+<rect x="306" y="232" width="110" height="16" rx="8" fill="#171713"/>
+<rect x="306" y="276" width="130" height="36" rx="10" fill="#C7FF9F" stroke="#171713" stroke-width="4"/>
+<rect x="306" y="326" width="130" height="36" rx="10" fill="#FFFEFB" stroke="#171713" stroke-width="4"/>
+<rect x="306" y="376" width="130" height="36" rx="10" fill="#FFFEFB" stroke="#171713" stroke-width="4"/>
+<g stroke="#171713" stroke-width="5">
+<rect x="492" y="220" width="120" height="120" rx="22" fill="#C7FF9F"/>
+<rect x="642" y="220" width="120" height="120" rx="22" fill="#FFD4B8"/>
+<rect x="792" y="220" width="120" height="120" rx="22" fill="#FFFEFB"/>
+<circle cx="552" cy="440" r="62" fill="#DED1FF"/>
+<rect x="642" y="378" width="120" height="120" rx="22" fill="#C7FF9F"/>
+<rect x="792" y="378" width="120" height="120" rx="22" fill="#FFD4B8"/>
+<rect x="492" y="530" width="270" height="72" rx="22" fill="#FFFEFB"/>
+<rect x="792" y="530" width="120" height="72" rx="22" fill="#FFFEFB"/>
+</g>
+</g>
+<g transform="rotate(6 1020 560)">
+<path d="M930 380h180v330l-22-16-22 16-22-16-22 16-22-16-22 16-22-16-26 16Z" fill="#FFFEFB" stroke="#171713" stroke-width="5" stroke-linejoin="round"/>
+<path d="M960 424h120M960 464h90M960 504h110M960 544h70" stroke="#171713" stroke-width="6" stroke-linecap="round"/>
+<path d="M960 604h120" stroke="#171713" stroke-width="10" stroke-linecap="round"/>
+</g>
+</svg>
