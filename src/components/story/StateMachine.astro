@@ -1,0 +1,98 @@
+---
+/**
+ * Una macchina a stati che si biforca: una catena di stati, un bivio tra l'esito atteso (sopra) e
+ * quello incerto (sotto, tratteggiato), la ricongiunzione, e se serve la transizione vietata dal
+ * ramo incerto all'indietro, sbarrata. Sotto, una carta per stato. Il disegno è calcolato qui dai
+ * nomi; chi usa lo screen reader riceve le stesse transizioni come elenco.
+ */
+import { storyId } from '../../lib/story-id';
+interface State { name: string; text: string; tone?: 'paper' | 'blue' | 'orange' | 'dark' | 'acid' | 'violet' }
+type EdgeLabel = string | [string, string];
+interface Props {
+	before: State[];
+	fork: [State, State];
+	after: State[];
+	labels?: { before?: EdgeLabel[]; fork?: [string, string]; join?: [string, string] };
+	forbidden?: string;
+	label?: string;
+}
+const { before, fork, after, labels = {}, forbidden, label = 'State machine' } = Astro.props;
+
+// geometria: una colonna per stato, il bivio occupa una colonna con due righe
+const H = 420, CY = 210, UP = 120, DOWN = 300, NODE = 60, PAD = 64;
+const width = (s: State) => Math.max(150, Math.round(s.name.length * 13 + 60));
+const cols = [...before.map((s) => [s]), [fork[0], fork[1]], ...after.map((s) => [s])];
+const colW = cols.map((c) => Math.max(...c.map(width)));
+const forkCol = before.length;
+const gapAfter = (i: number) => (i === forkCol - 1 ? 144 : i === forkCol ? 116 : 90);
+const xs: number[] = [];
+cols.reduce((x, _, i) => { xs.push(x); return x + colW[i] + gapAfter(i); }, PAD);
+const W = xs[xs.length - 1] + colW[colW.length - 1] + PAD;
+const node = (col: number, s: State, cy: number) => ({ s, x: xs[col] + (colW[col] - width(s)) / 2, y: cy - NODE / 2, w: width(s) });
+const nodes = [
+	...before.map((s, i) => node(i, s, CY)),
+	node(forkCol, fork[0], UP),
+	{ ...node(forkCol, fork[1], DOWN), uncertain: true },
+	...after.map((s, i) => node(forkCol + 1 + i, s, CY)),
+];
+const right = (col: number) => xs[col] + colW[col];
+const lin = (a: number, b: number) => ({ d: `M${right(a)} ${CY}H${xs[b] - 3}`, mid: (right(a) + xs[b]) / 2 });
+const straight = [
+	...before.slice(1).map((_, i) => ({ ...lin(i, i + 1), label: labels.before?.[i] })),
+	...after.slice(1).map((_, i) => ({ ...lin(forkCol + 1 + i, forkCol + 2 + i), label: labels.before?.[before.length - 1 + i] })),
+];
+const sx = right(forkCol - 1), fx = xs[forkCol], jx = right(forkCol), tx = xs[forkCol + 1];
+const curves = [
+	{ d: `M${sx} ${CY - 20}C${sx + 58} ${CY - 20} ${fx - 66} ${UP} ${fx - 3} ${UP}`, cls: '', label: labels.fork?.[0], lx: (sx + fx) / 2, ly: UP - 4 },
+	{ d: `M${sx} ${CY + 20}C${sx + 58} ${CY + 20} ${fx - 66} ${DOWN} ${fx - 3} ${DOWN}`, cls: 'uncertain', label: labels.fork?.[1], lx: (sx + fx) / 2, ly: DOWN + 22 },
+	{ d: `M${jx} ${UP}C${jx + 54} ${UP} ${tx - 50} ${CY - 12} ${tx - 3} ${CY - 12}`, cls: '', label: labels.join?.[0], lx: (jx + tx) / 2, ly: UP - 4 },
+	{ d: `M${jx} ${DOWN}C${jx + 54} ${DOWN} ${tx - 50} ${CY + 12} ${tx - 3} ${CY + 12}`, cls: '', label: labels.join?.[1], lx: jx + 14, ly: DOWN + 26, start: true },
+];
+const lower = nodes[forkCol + 1];
+const back = forbidden ? { d: `M${lower.x + 34} ${DOWN + NODE / 2 + 4}C${lower.x - 6} ${H - 20} ${xs[forkCol - 1] + 40} ${H - 20} ${xs[forkCol - 1] + colW[forkCol - 1] / 2} ${CY + NODE / 2 + 6}`, x: (lower.x + 34 + xs[forkCol - 1] + colW[forkCol - 1] / 2) / 2, y: H - 34 } : null;
+const flat = (l?: EdgeLabel) => (l === undefined ? '' : typeof l === 'string' ? l : l.join(', '));
+const steps = [
+	...before.slice(1).map((s, i) => `${before[i].name} to ${s.name}${labels.before?.[i] ? ` (${flat(labels.before[i])})` : ''}`),
+	`${before[before.length - 1].name} to ${fork[0].name}${labels.fork?.[0] ? ` (${labels.fork[0]})` : ''}`,
+	`${before[before.length - 1].name} to ${fork[1].name}${labels.fork?.[1] ? ` (${labels.fork[1]})` : ''}`,
+	`${fork[0].name} to ${after[0].name}${labels.join?.[0] ? ` (${labels.join[0]})` : ''}`,
+	`${fork[1].name} to ${after[0].name}${labels.join?.[1] ? ` (${labels.join[1]})` : ''}`,
+	...(forbidden ? [`${fork[1].name} back to ${before[before.length - 1].name}: ${forbidden}`] : []),
+];
+const arrow = storyId('arrow');
+const tones = (s: State, i: number) => s.tone ?? (i === nodes.length - 1 ? 'dark' : 'paper');
+---
+<div class="st-states">
+	<figure class="st-states-figure">
+		<div class="st-states-scroll" tabindex="0" role="region" aria-label={label}>
+			<svg viewBox={`0 0 ${W} ${H}`} style={`--w: ${W}px`} aria-hidden="true">
+				<defs>
+					<marker id={arrow} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="ink" /></marker>
+					<marker id={`${arrow}-warn`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="warn" /></marker>
+				</defs>
+				{straight.map((e) => <>
+					<path class="edge" d={e.d} marker-end={`url(#${arrow})`} />
+					{e.label && <text class="edge-label" x={e.mid} y={CY - 12} text-anchor="middle">{typeof e.label === 'string' ? e.label : e.label[0]}</text>}
+					{Array.isArray(e.label) && <text class="edge-label" x={e.mid} y={CY + 24} text-anchor="middle">{e.label[1]}</text>}
+				</>)}
+				{curves.map((c) => <>
+					<path class:list={['edge', c.cls]} d={c.d} marker-end={c.cls ? `url(#${arrow}-warn)` : `url(#${arrow})`} />
+					{c.label && <text class:list={['edge-label', c.cls]} x={c.lx} y={c.ly} text-anchor={'start' in c ? 'start' : 'middle'}>{c.label}</text>}
+				</>)}
+				{back && <>
+					<path class="edge forbidden" d={back.d} marker-end={`url(#${arrow})`} />
+					<g class="never" transform={`translate(${back.x} ${back.y})`}><circle r="15" /><path d="M-6 -6 6 6M6 -6-6 6" /></g>
+					<text class="edge-label" x={back.x + 26} y={back.y + 4}>{forbidden}</text>
+				</>}
+				{nodes.map((n, i) => <g class:list={['node', `tone-${tones(n.s, i)}`, { uncertain: 'uncertain' in n }]}>
+					<rect x={n.x} y={n.y} width={n.w} height={NODE} rx={NODE / 2} />
+					<text x={n.x + n.w / 2} y={n.y + NODE / 2 + 6} text-anchor="middle">{n.s.name}</text>
+				</g>)}
+			</svg>
+		</div>
+		<figcaption class="st-sr">{label}: {steps.join('; ')}.</figcaption>
+	</figure>
+	<ul class="st-states-legend" role="list">
+		{nodes.map((n, i) => <li class={`tone-${tones(n.s, i)}`}><b>{n.s.name}</b><span>{n.s.text}</span></li>)}
+	</ul>
+</div>

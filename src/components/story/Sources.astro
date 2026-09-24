@@ -1,0 +1,29 @@
+---
+/**
+ * Le fonti e i metodi: ogni numero della pagina ha un esponente che porta qui (`#note-N`), con cosa
+ * misura, come è stato preso e dove controllarlo. `checked` è la data dell'ultima verifica:
+ * se manca resta un segnaposto dichiarato, non una data inventata.
+ */
+import Icon from './Icon.astro';
+interface Note { title: string; text: string; source: string; href?: string }
+interface Props { eyebrow?: string; title?: string; lead?: string; checked?: string; notes: Note[]; start?: number }
+const { eyebrow, title = 'Sources and methods.', lead, checked, notes, start = 1 } = Astro.props;
+---
+<div class="st-sources">
+	<div class="st-sources-head">
+		{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}
+		<h2>{title}</h2>
+		{lead && <p>{lead}</p>}
+		<span class="st-mono">Last checked {checked ?? '[date]'}</span>
+	</div>
+	<ol class="st-sources-list" role="list">
+		{notes.map((n, i) => {
+			const external = n.href ? /^https?:/.test(n.href) : false;
+			return <li id={`note-${start + i}`}>
+				<span class="st-sources-num st-mono">{start + i}</span>
+				<span><b>{n.title}</b><span>{n.text}</span></span>
+				{n.href ? <a class="st-mono" href={n.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{n.source}<Icon name={external ? 'external' : 'arrow-right'} size={13} stroke={2.2} /></a> : <span class="st-mono">{n.source}</span>}
+			</li>;
+		})}
+	</ol>
+</div>

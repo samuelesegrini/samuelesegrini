@@ -1,0 +1,57 @@
+---
+/**
+ * La scheda tecnica, seconda versione di Specs: gruppi con il titolo a sinistra e il contenuto a
+ * destra, come le specifiche di un prodotto. Un gruppo può avere voci semplici, codici (le
+ * operazioni), valori grandi (i tempi), conteggi a pastiglia, etichette (i test) e una figura
+ * dallo slot `figure-N` (N è il numero del gruppo, da 1), sotto le voci o di fianco con `figureSide`.
+ */
+interface Group {
+	title: string;
+	items?: { title: string; text?: string; value?: string }[];
+	codes?: { code: string; title: string; text: string; accent?: boolean }[];
+	values?: { label: string; value: string; text?: string }[];
+	counts?: { value: string; label: string; accent?: boolean }[];
+	lead?: string;
+	tags?: string[];
+	note?: string;
+	figureSide?: boolean;
+}
+interface Props { title?: string; eyebrow?: string; meta?: string; groups: Group[]; headingLevel?: 2 | 3 }
+const { title = 'Tech specs', eyebrow, meta, groups, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+const Sub = `h${headingLevel + 1}` as 'h3' | 'h4';
+const figures = await Promise.all(groups.map((_, i) => (Astro.slots.has(`figure-${i + 1}`) ? Astro.slots.render(`figure-${i + 1}`) : Promise.resolve(''))));
+---
+<div class="st-techspecs">
+	<div class="st-techspecs-head">
+		<div>{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}<Heading>{title}</Heading></div>
+		{meta && <span class="st-mono">{meta}</span>}
+	</div>
+	{groups.map((g, i) => (
+		<section class="st-techspecs-group">
+			<Sub>{g.title}</Sub>
+			<div class:list={['st-techspecs-body', { side: g.figureSide && figures[i] }]}>
+				{g.figureSide && figures[i] && <Fragment set:html={figures[i]} />}
+				<div class="st-techspecs-content">
+					{g.items && <ul class:list={['st-ts-items', { values: g.items.some((it) => it.value) }]} role="list">{g.items.map((it) => (
+						<li class:list={{ big: it.value }}>{it.value ? <><b>{it.value}</b><span>{it.title}</span></> : <><b>{it.title}</b>{it.text && <span>{it.text}</span>}</>}</li>
+					))}</ul>}
+					{g.codes && <ul class="st-ts-codes" role="list">{g.codes.map((c) => (
+						<li><span class:list={['st-mono', { accent: c.accent }]}>{c.code}</span><span><b>{c.title}</b><span>{c.text}</span></span></li>
+					))}</ul>}
+					{g.values && <ul class="st-ts-values" role="list">{g.values.map((v) => (
+						<li><span class="st-eyebrow">{v.label}</span><b>{v.value}</b>{v.text && <span>{v.text}</span>}</li>
+					))}</ul>}
+					{g.counts && <ul class="st-ts-counts" role="list">
+						{g.counts.map((c) => <li class:list={{ accent: c.accent }}><b>{c.value}</b><span>{c.label}</span></li>)}
+						{g.note && <li class="note">{g.note}</li>}
+					</ul>}
+					{g.lead && <b class="st-ts-lead">{g.lead}</b>}
+					{g.tags && <ul class="st-ts-tags" role="list">{g.tags.map((t) => <li class="st-tag">{t}</li>)}</ul>}
+					{g.note && !g.counts && <p class="st-ts-note">{g.note}</p>}
+					{!g.figureSide && figures[i] && <Fragment set:html={figures[i]} />}
+				</div>
+			</div>
+		</section>
+	))}
+</div>

@@ -1,14 +1,25 @@
 ---
-/** Il guscio di ogni sezione: titolo, sottotitolo, ancora e posto nell'indice del dock. */
-interface Props { id?: string; title?: string; lead?: string; eyebrow?: string; index?: number; center?: boolean; bleed?: boolean; tone?: 'paper' | 'dark' }
-const { id, title, lead, eyebrow, index, center = false, bleed = false, tone = 'paper' } = Astro.props;
+/**
+ * Il guscio di ogni sezione: titolo, sottotitolo, ancora e posto nell'indice del dock.
+ * `dim` è la seconda riga del titolo, in grigio: la frase che segue l'affermazione. `link` porta
+ * alla fonte (il codice, il documento) in alto a destra; `split` mette il sottotitolo di fianco.
+ */
+import Icon from './Icon.astro';
+import { linkKind } from '../lab/chrome';
+interface Link { label: string; href: string }
+interface Props { id?: string; title?: string; dim?: string; lead?: string; eyebrow?: string; index?: number; center?: boolean; bleed?: boolean; split?: boolean; link?: Link; tone?: 'paper' | 'dark' | 'ink2' | 'sand' }
+const { id, title, dim, lead, eyebrow, index, center = false, bleed = false, split = false, link, tone = 'paper' } = Astro.props;
 const headingId = id ? `${id}-title` : undefined;
+const external = link ? /^https?:/.test(link.href) : false;
 ---
-<section class:list={['st-section', { center, bleed, dark: tone === 'dark' }]} id={id} data-section={index} aria-labelledby={title ? headingId : undefined}>
-	{(eyebrow || title || lead) && <header class="st-head">
-		{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}
-		{title && <h2 id={headingId}>{title}</h2>}
+<section class:list={['st-section', { center, bleed, dark: tone === 'dark', ink2: tone === 'ink2', sand: tone === 'sand' }]} id={id} data-section={index} aria-labelledby={title ? headingId : undefined}>
+	{(eyebrow || title || lead || link) && <header class:list={['st-head', { split, 'has-link': link }]}>
+		{(eyebrow || title) && <div class="st-head-title">
+			{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}
+			{title && <h2 id={headingId}><span>{title}</span>{dim && <> <span class="st-dim">{dim}</span></>}</h2>}
+		</div>}
 		{lead && <p class="st-lead">{lead}</p>}
+		{link && <a class="st-head-link" href={link.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{link.label}<Icon name={linkKind(link.href) === 'inside' ? 'arrow-right' : 'external'} size={16} /></a>}
 	</header>}
 	<slot />
 </section>

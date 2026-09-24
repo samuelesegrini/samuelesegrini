@@ -1,0 +1,34 @@
+---
+/**
+ * L'indice in fondo alla pagina, seconda versione di Topics: il nome del progetto, i capitoli della
+ * pagina in grande, poi i gruppi di collegamenti (codice e fonti, il resto del portfolio), ognuno
+ * con l'icona della destinazione. Una voce `locked` dice che la risorsa esiste ma non è pubblica.
+ */
+import Icon from './Icon.astro';
+import LinkIcon from '../lab/LinkIcon.astro';
+import { linkKind } from '../lab/chrome';
+import type { IconName } from './icons';
+interface Entry { label: string; href?: string; note?: string; locked?: boolean; icon?: IconName }
+interface Props { title: string; primaryLabel?: string; primary: { label: string; href: string }[]; groups: { title: string; links: Entry[] }[] }
+const { title, primaryLabel = 'On this page', primary, groups } = Astro.props;
+---
+<div class="st-index">
+	<h2>{title}</h2>
+	<div class="st-index-grid">
+		<nav aria-label={primaryLabel}>
+			<span class="st-index-label">{primaryLabel}</span>
+			<ul role="list">{primary.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+		</nav>
+		{groups.map((g) => (
+			<div>
+				<span class="st-index-label">{g.title}</span>
+				<ul role="list">{g.links.map((l) => {
+					if (l.locked || !l.href) return <li class="locked"><span class="st-index-link"><Icon name="lock" size={18} />{l.label}</span>{l.note && <span class="st-index-note">{l.note}</span>}</li>;
+					const kind = linkKind(l.href);
+					const external = /^https?:/.test(l.href);
+					return <li><a class="st-index-link" href={l.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{l.icon ? <Icon name={l.icon} size={18} /> : <LinkIcon kind={kind} size="18px" />}{l.label}</a>{l.note && <span class="st-index-note">{l.note}</span>}</li>;
+				})}</ul>
+			</div>
+		))}
+	</div>
+</div>

@@ -1,0 +1,25 @@
+---
+/**
+ * Una figura, un selettore a pillole: la stessa scena in due (o più) versioni, prima e dopo, con
+ * la didascalia che cambia insieme al disegno. I pannelli arrivano dagli slot `panel-1`, `panel-2`…
+ * È un gruppo di radio: funziona senza JavaScript e con la tastiera. I colori seguono la sezione.
+ */
+import { storyId } from '../../lib/story-id';
+interface Option { label: string; lead: string; text: string; tone?: 'acid' | 'orange' | 'blue' | 'violet' }
+interface Props { options: Option[]; label?: string }
+const { options, label = 'Choose a version' } = Astro.props;
+const name = storyId('tf');
+const panels = await Promise.all(options.map((_, i) => (Astro.slots.has(`panel-${i + 1}`) ? Astro.slots.render(`panel-${i + 1}`) : Promise.resolve(''))));
+---
+<div class="st-toggle">
+	<fieldset class="st-segments">
+		<legend class="st-sr">{label}</legend>
+		{options.map((o, i) => <label><input class="st-sr" type="radio" name={name} value={i} checked={i === 0} /><span>{o.label}</span></label>)}
+	</fieldset>
+	<figure>
+		<div class="st-toggle-stage">
+			{options.map((_, i) => <div class="st-toggle-panel" data-tf-panel={i}><Fragment set:html={panels[i]} /></div>)}
+		</div>
+		<figcaption>{options.map((o, i) => <span data-tf-panel={i} style={`--tint: var(--${o.tone ?? 'acid'})`}><b>{o.lead}</b> {o.text}</span>)}</figcaption>
+	</figure>
+</div>

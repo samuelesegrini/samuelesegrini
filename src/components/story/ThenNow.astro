@@ -1,0 +1,31 @@
+---
+/**
+ * Prima e adesso: una lastra con la domanda ("valeva la pena rifarlo?"), la versione con cui si
+ * confronta e una griglia di cambiamenti. Ogni carta dice cosa c'è ora e, in piccolo, cosa c'era
+ * prima; `value` sostituisce l'icona con un numero grande, `tone` la colora.
+ */
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+interface Change { title: string; was: string; value?: string; icon?: IconName; tone?: 'acid' | 'orange' | 'blue' | 'violet' }
+interface Props { title: string; dim?: string; baseline?: string; baselineLabel?: string; changes: Change[]; note?: string; link?: { label: string; href: string }; headingLevel?: 2 | 3 }
+const { title, dim, baseline, baselineLabel = 'Compared with', changes, note, link, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+<div class="st-thennow">
+	<div class="st-thennow-head">
+		<Heading class="st-thennow-title"><span>{title}</span>{dim && <> <span class="st-dim">{dim}</span></>}</Heading>
+		{baseline && <p class="st-thennow-base"><span>{baselineLabel}</span><b>{baseline}</b></p>}
+	</div>
+	<ul class="st-thennow-grid" role="list">
+		{changes.map((c) => (
+			<li class:list={[c.tone && `tone-${c.tone}`]}>
+				{c.value ? <b class="st-thennow-value">{c.value}</b> : c.icon ? <Icon name={c.icon} size={30} stroke={1.8} /> : null}
+				<span><b>{c.title}</b><span class="st-mono">was · {c.was}</span></span>
+			</li>
+		))}
+	</ul>
+	{(note || link) && <div class="st-thennow-foot">
+		{note && <span class="st-mono">{note}</span>}
+		{link && <a class="st-link" href={link.href}>{link.label}<Icon name="arrow-right" size={16} /></a>}
+	</div>}
+</div>

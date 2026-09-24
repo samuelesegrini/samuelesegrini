@@ -1,0 +1,48 @@
+---
+/**
+ * Il confronto tra progetti, seconda versione di Compare: una colonna per progetto (copertina,
+ * stato, nome, una riga, il link) e sotto le stesse domande per tutti, allineate riga per riga con
+ * subgrid. Ogni colonna si legge da sola, anche con lo screen reader: l'etichetta della riga è
+ * nascosta a vista, dove parla l'icona. Un valore `null` diventa un trattino: non c'è, e si dice.
+ */
+import Icon from './Icon.astro';
+import LinkIcon from '../lab/LinkIcon.astro';
+import type { IconName } from './icons';
+interface Column { name: string; summary?: string; image?: string; imageAlt?: string; status?: string; statusTone?: 'acid' | 'violet' | 'blue' | 'orange' | 'paper'; href?: string; cta?: string; current?: boolean }
+type Value = string | { value: string; of?: string; text?: string } | null;
+type Mark = IconName | 'github' | 'web';
+/** `icon` vale per tutta la riga, oppure una per colonna. */
+interface Row { label: string; icon?: Mark | Mark[]; values: Value[] }
+interface Props { columns: Column[]; rows: Row[]; more?: { label: string; href: string }; label?: string }
+const { columns, rows, more, label = 'Comparison' } = Astro.props;
+---
+<div class="st-lineup">
+	<div class="st-lineup-scroll" tabindex="0" role="region" aria-label={label}>
+		<ul class="st-lineup-cols" role="list" style={`--cols: ${columns.length}; --rows: ${rows.length}`}>
+			{columns.map((c, k) => (
+				<li>
+					<div class="st-lineup-head">
+						{c.image && <img src={c.image} alt={c.imageAlt ?? ''} width="1200" height="800" loading="lazy" />}
+						{c.status && <span class={`st-lineup-status st-mono tone-${c.statusTone ?? 'paper'}`}>{c.status}</span>}
+						<h3>{c.name}</h3>
+						{c.summary && <p>{c.summary}</p>}
+						{c.current ? <span class="st-lineup-current">Currently viewing</span> : c.href && <a class="st-link" href={c.href}>{c.cta ?? 'Read the case study'}<span class="st-sr">: {c.name}</span><Icon name="arrow-right" size={15} /></a>}
+					</div>
+					<dl>
+						{rows.map((r) => {
+							const v = r.values[k] ?? null;
+							const icon = Array.isArray(r.icon) ? r.icon[k] : r.icon;
+							return <div class:list={{ number: v !== null && typeof v !== 'string', empty: v === null }}>
+								<dt class="st-sr">{r.label}</dt>
+								{v === null ? <dd><span aria-hidden="true">—</span><span class="st-sr">None</span></dd>
+									: typeof v !== 'string' ? <dd><b>{v.value}{v.of && <span class="of"> / {v.of}</span>}</b>{v.text && <span>{v.text}</span>}</dd>
+									: <dd>{icon === 'github' || icon === 'web' ? <LinkIcon kind={icon} size="32px" /> : icon && <Icon name={icon} size={32} stroke={1.7} />}<span>{v}</span></dd>}
+							</div>;
+						})}
+					</dl>
+				</li>
+			))}
+		</ul>
+	</div>
+	{more && <a class="st-more" href={more.href}>{more.label}<span aria-hidden="true"><Icon name="arrow-right" size={18} stroke={2.4} /></span></a>}
+</div>

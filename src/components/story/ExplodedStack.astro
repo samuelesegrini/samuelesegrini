@@ -1,0 +1,51 @@
+---
+/**
+ * L'architettura esplosa, seconda versione di Layers: le piastre in assonometria, separate e
+ * unite dai tratteggi, con i moduli in rilievo e una nota per piastra, alternata a destra e a
+ * sinistra. La geometria è calcolata in src/lib/story-iso.ts; qui si disegna e basta.
+ * Sotto i 1200px le note tornano un elenco sotto il disegno.
+ */
+import { isoStack, type IsoLayer } from '../../lib/story-iso';
+interface Layer extends IsoLayer { text: string }
+interface Props { layers: Layer[]; label?: string }
+const { layers, label } = Astro.props;
+const stack = isoStack(layers);
+const faces: Record<IsoLayer['tint'], [string, string, string]> = {
+	acid: ['#c7ff9f', '#a9e07f', '#8fc666'],
+	violet: ['#ded1ff', '#c3b1f2', '#ab98e0'],
+	blue: ['#cdefff', '#a9d9ef', '#8cc3dd'],
+	orange: ['#ffd4b8', '#f0b994', '#dfa27a'],
+	paper: ['#f4f1e9', '#dcd8ce', '#c9c5bc'],
+};
+const summary = label ?? `${layers.length} layers pulled apart, from ${layers[0]?.name} on top to ${layers[layers.length - 1]?.name} at the bottom`;
+const pct = (n: number) => `${(n * 100).toFixed(2)}%`;
+---
+<div class="st-exploded">
+	<div class="st-exploded-art" style={`--ratio: ${stack.width} / ${stack.height}`}>
+		<svg viewBox={`0 0 ${stack.width} ${stack.height}`} role="img" aria-label={summary}>
+			{stack.connectors.map((d) => <path class="st-iso-link" d={d} />)}
+			{[...stack.plates].reverse().map((p) => (
+				<g class="st-iso-plate">
+					<polygon points={p.left} fill={faces[p.tint][1]} />
+					<polygon points={p.right} fill={faces[p.tint][2]} />
+					<polygon points={p.top} fill={faces[p.tint][0]} />
+					{p.chips.map((c) => (
+						<g>
+							<polygon points={c.left} fill="#dcd8ce" />
+							<polygon points={c.right} fill="#c9c5bc" />
+							<polygon points={c.top} fill={c.accent ? '#ffd4b8' : '#fffefb'} />
+							<text transform={c.textTransform} style={`font-size: ${c.fontSize}px`}>{c.label}</text>
+						</g>
+					))}
+				</g>
+			))}
+		</svg>
+		<ol class="st-exploded-notes" role="list">
+			{stack.plates.map((p, i) => {
+				const side = i % 2 === 0 ? 'right' : 'left';
+				const [x, y] = p.anchors[side];
+				return <li class={side} style={`--x: ${pct(x)}; --y: ${pct(y)}`}><span class="st-eyebrow">{String(i + 1).padStart(2, '0')} · {p.name}</span><span>{layers[i].text}</span></li>;
+			})}
+		</ol>
+	</div>
+</div>

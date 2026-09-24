@@ -1,0 +1,30 @@
+---
+/**
+ * L'apertura da app: il segno del progetto in una piastrella, il nome, una promessa grande e
+ * centrata, chi e quando, poi le azioni e i dispositivi che salgono dal fondo quadrettato.
+ * Nello slot `mark` va il disegno del segno (un svg 64×64), nello slot `devices` le cornici.
+ */
+import LinkIcon from '../lab/LinkIcon.astro';
+import Icon from './Icon.astro';
+import { linkKind } from '../lab/chrome';
+interface Action { label: string; href: string }
+interface Props { name: string; title: string; summary: string; meta?: string; actions?: Action[]; tint?: 'violet' | 'acid' | 'blue' | 'orange'; id?: string; index?: number | null }
+const { name, title, summary, meta, actions = [], tint = 'violet', id = 'overview', index = 0 } = Astro.props;
+---
+<header class="st-ahero" id={id} data-section={index ?? undefined}>
+	<div class="st-ahero-copy">
+		{Astro.slots.has('mark') && <span class={`st-ahero-mark tone-${tint}`}><slot name="mark" /></span>}
+		<span class="st-ahero-name">{name}</span>
+		<h1>{title}</h1>
+		<p class="st-ahero-summary">{summary}</p>
+		{meta && <span class="st-eyebrow">{meta}</span>}
+		{actions.length > 0 && <div class="st-ahero-actions">{actions.map((a, i) => {
+			const kind = linkKind(a.href);
+			const external = /^https?:/.test(a.href);
+			return <a class:list={['st-ahero-action', { primary: i === 0, outline: i === 1 }]} href={a.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>
+				{kind === 'inside' ? <>{a.label}<Icon name={a.href.startsWith('#') ? 'arrow-down' : 'arrow-right'} size={16} /></> : <><LinkIcon kind={kind} />{a.label}</>}
+			</a>;
+		})}</div>}
+	</div>
+	{Astro.slots.has('devices') && <div class="st-ahero-devices"><slot name="devices" /></div>}
+</header>

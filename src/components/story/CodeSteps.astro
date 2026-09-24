@@ -1,0 +1,107 @@
+---
+/**
+ * Il codice spiegato a passi, seconda versione di CodeSplit: a sinistra i passi, al centro il
+ * sorgente con le righe del passo scelto accese, a destra (slot `preview`) quello che il codice
+ * produce. Nell'anteprima `data-from="N"` fa comparire un elemento dal passo N (da 0) in poi e
+ * `data-until="N"` lo toglie dopo il passo N. I passi sono radio e le regole sono CSS generato:
+ * funziona anche senza JavaScript, che serve solo alle frecce.
+ */
+import { Code } from 'astro:components';
+import type { ComponentProps } from 'astro/types';
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+import { parseLines, storyDark, storyLines } from '../../lib/story-code';
+import { storyId } from '../../lib/story-id';
+interface Step { title: string; text: string; lines: string | number[]; status?: string }
+interface Props {
+	code: string;
+	lang?: ComponentProps<typeof Code>['lang'];
+	file: string;
+	steps: Step[];
+	note?: string;
+	meta?: { label: string; icon?: IconName }[];
+	previewLabel?: string;
+	label?: string;
+}
+const { code, lang = 'xml', file, steps, note, meta = [], previewLabel = 'Preview', label = 'Steps' } = Astro.props;
+const id = storyId('cs');
+const lit = steps.map((s) => parseLines(s.lines));
+const hasPreview = Astro.slots.has('preview');
+const on = (k: number) => `#${id}:has(input[value="${k}"]:checked)`;
+const any = (attr: string, values: number[]) => values.map((v) => `[${attr}="${v}"]`).join(',');
+const rules = steps.flatMap((_, k) => {
+	const later = steps.map((__, j) => j).filter((j) => j > k);
+	const earlier = steps.map((__, j) => j).filter((j) => j < k);
+	return [
+		`${on(k)} .line{opacity:.78}`,
+		lit[k].length ? `${on(k)} .line:is(${any('data-line', lit[k])}){opacity:1;background:rgba(199,255,159,.14);box-shadow:inset 3px 0 0 var(--acid)}` : '',
+		later.length ? `${on(k)} :is(${any('data-from', later)}){display:none}` : '',
+		earlier.length ? `${on(k)} :is(${any('data-until', earlier)}){display:none}` : '',
+		`${on(k)} [data-cs-step="${k}"]{visibility:visible}`,
+	];
+}).filter(Boolean);
+const css = `@supports selector(:has(a)){#${id} .st-pre .line.is-lit{background:none;box-shadow:none}#${id} [data-cs-step]{visibility:hidden}${rules.join('')}}`;
+---
+<div class:list={['st-csteps', { 'no-preview': !hasPreview }]} id={id}>
+	<style is:inline set:html={css}></style>
+	{meta.length > 0 && <ul class="st-cs-meta" role="list">{meta.map((m) => <li>{m.icon && <Icon name={m.icon} size={14} stroke={2.2} />}{m.label}</li>)}</ul>}
+	<fieldset class="st-cs-steps">
+		<legend class="st-sr">{label}</legend>
+		{steps.map((s, i) => (
+			<label>
+				<input class="st-sr" type="radio" name={id} value={i} checked={i === 0} aria-labelledby={`${id}-t${i}`} aria-describedby={`${id}-d${i}`} />
+				<span class="st-cs-step">
+					<span class="st-cs-chip st-mono">Step {i + 1}</span>
+					<span class="st-cs-title" id={`${id}-t${i}`}>{s.title}</span>
+					<span class="st-cs-text" id={`${id}-d${i}`}>{s.text}</span>
+				</span>
+			</label>
+		))}
+	</fieldset>
+	<figure class="st-cs-code">
+		<figcaption class="st-mono"><span><span class="st-cs-led" aria-hidden="true"></span>{file}</span><span class="st-cs-stack">{steps.map((_, i) => <span data-cs-step={i}>Step {i + 1} of {steps.length}</span>)}</span></figcaption>
+		<Code code={code} lang={lang} theme={storyDark} transformers={[storyLines(lit[0])]} />
+		<div class="st-cs-foot">
+			{note && <span class="st-mono">{note}</span>}
+			<span class="st-cs-arrows" data-cs-arrows hidden>
+				<button type="button" class="st-round" data-cs-prev aria-label="Previous step"><Icon name="chevron-left" size={16} stroke={2.4} /></button>
+				<button type="button" class="st-round next" data-cs-next aria-label="Next step"><Icon name="chevron-right" size={16} stroke={2.4} /></button>
+			</span>
+		</div>
+	</figure>
+	{hasPreview && <div class="st-cs-preview">
+		<span class="st-eyebrow">{previewLabel}</span>
+		<div class="st-cs-paper"><slot name="preview" /></div>
+		{steps.some((s) => s.status) && <span class="st-cs-status st-cs-stack">{steps.map((s, i) => <span data-cs-step={i}><span class:list={['st-cs-led', { wait: i === steps.length - 1 }]} aria-hidden="true"></span>{s.status}</span>)}</span>}
+	</div>}
+</div>
+
+<script>
+	// Le frecce spostano la scelta tra i radio dei passi: tutto il resto lo fa il CSS.
+	function montaPassi() {
+		document.querySelectorAll<HTMLElement>('.st-csteps').forEach((root) => {
+			if (root.dataset.bound) return;
+			root.dataset.bound = '1';
+			const radios = [...root.querySelectorAll<HTMLInputElement>('.st-cs-steps input')];
+			const prev = root.querySelector<HTMLButtonElement>('[data-cs-prev]')!;
+			const next = root.querySelector<HTMLButtonElement>('[data-cs-next]')!;
+			root.querySelector('[data-cs-arrows]')?.removeAttribute('hidden');
+			const current = () => Math.max(0, radios.findIndex((r) => r.checked));
+			const sync = () => {
+				prev.disabled = current() === 0;
+				next.disabled = current() === radios.length - 1;
+			};
+			const go = (dir: number) => {
+				const target = radios[Math.min(radios.length - 1, Math.max(0, current() + dir))];
+				target.checked = true;
+				target.dispatchEvent(new Event('change', { bubbles: true }));
+			};
+			prev.addEventListener('click', () => go(-1));
+			next.addEventListener('click', () => go(1));
+			root.addEventListener('change', sync);
+			sync();
+		});
+	}
+	montaPassi();
+	document.addEventListener('astro:page-load', montaPassi);
+</script>

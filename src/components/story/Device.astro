@@ -1,0 +1,15 @@
+---
+/**
+ * Una cornice di dispositivo disegnata in CSS: iPad e Mac di traverso, iPhone e Watch in piedi.
+ * Dentro va un'immagine (`src`), un disegno passato nello slot, oppure un segnaposto dichiarato
+ * con il nome della schermata che manca: meglio un vuoto onesto di uno schermo inventato.
+ */
+interface Props { kind?: 'ipad' | 'iphone' | 'mac' | 'watch'; src?: string; alt?: string; label?: string; class?: string; eager?: boolean }
+const { kind = 'ipad', src, alt = '', label = 'Screen', class: className, eager = false } = Astro.props;
+const hasSlot = Astro.slots.has('default');
+---
+<div class:list={['st-frame', `st-frame-${kind}`, className]}>
+	<div class="st-frame-screen">
+		{src ? <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" /> : hasSlot ? <slot /> : <span class="st-frame-empty">[Screenshot · {label}]</span>}
+	</div>
+</div>

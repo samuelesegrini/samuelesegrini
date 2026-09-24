@@ -1,0 +1,55 @@
+---
+/**
+ * Il progetto come la pagina di un simbolo nella documentazione: a sinistra l'indice dei tipi
+ * con quello corrente evidenziato, a destra il percorso, il genere (classe, struttura), il nome,
+ * l'abstract, le piattaforme, la dichiarazione in codice, la panoramica (slot) e dove se ne parla.
+ */
+import { Code } from 'astro:components';
+import type { ComponentProps } from 'astro/types';
+import Icon from './Icon.astro';
+import { storyLight, storyLines } from '../../lib/story-code';
+interface Sym { name: string; kind: 'S' | 'C' | 'E' | 'P' | 'F'; href?: string; current?: boolean }
+interface Props {
+	project: string;
+	breadcrumb: string[];
+	kind: string;
+	name: string;
+	abstract: string;
+	availability?: { label: string; muted?: boolean }[];
+	declaration: string;
+	lang?: ComponentProps<typeof Code>['lang'];
+	nav?: { title: string; symbols: Sym[] }[];
+	more?: string;
+	mentioned?: { label: string; href: string }[];
+	overviewTitle?: string;
+}
+const { project, breadcrumb, kind, name, abstract, availability = [], declaration, lang = 'swift', nav = [], more, mentioned = [], overviewTitle = 'Overview' } = Astro.props;
+const tint: Record<Sym['kind'], string> = { S: 'blue', C: 'violet', E: 'orange', P: 'acid', F: 'paper' };
+---
+<div class:list={['st-decl', { 'no-nav': nav.length === 0 }]}>
+	{nav.length > 0 && <nav class="st-decl-nav" aria-label={`${project} symbols`}>
+		<span class="st-decl-project"><Icon name="package" size={16} />{project}</span>
+		{nav.map((g) => (
+			<div class="st-decl-group">
+				<span class="st-eyebrow">{g.title}</span>
+				<ul role="list">{g.symbols.map((s) => (
+					<li>{s.href ? <a href={s.href} aria-current={s.current ? 'page' : undefined}><span class={`st-decl-kind st-mono tone-${tint[s.kind]}`} aria-hidden="true">{s.kind}</span>{s.name}</a>
+						: <span class:list={['st-decl-sym', { current: s.current }]} aria-current={s.current ? 'true' : undefined}><span class={`st-decl-kind st-mono tone-${tint[s.kind]}`} aria-hidden="true">{s.kind}</span>{s.name}</span>}</li>
+				))}</ul>
+			</div>
+		))}
+		{more && <span class="st-decl-more"><span class="st-decl-kind st-mono" aria-hidden="true">+</span>{more}</span>}
+	</nav>}
+	<article class="st-decl-main">
+		<span class="st-decl-crumbs st-mono">{breadcrumb.join(' · ')}</span>
+		<span class="st-decl-kindname">{kind}</span>
+		<h2>{name}</h2>
+		<p class="st-decl-abstract">{abstract}</p>
+		{availability.length > 0 && <ul class="st-decl-avail" role="list" aria-label="Availability">{availability.map((a) => <li class:list={['st-mono', { muted: a.muted }]}>{a.label}</li>)}</ul>}
+		<div class="st-decl-code"><Code code={declaration} lang={lang} theme={storyLight} transformers={[storyLines()]} /></div>
+		<div class:list={['st-decl-body', { single: mentioned.length === 0 }]}>
+			<section><h3>{overviewTitle}</h3><div class="st-decl-overview"><slot /></div></section>
+			{mentioned.length > 0 && <section class="st-decl-mentioned"><h3>Mentioned in</h3><ul role="list">{mentioned.map((m) => <li><a href={m.href}><Icon name="doc" size={16} /><span>{m.label}</span></a></li>)}</ul></section>}
+		</div>
+	</article>
+</div>

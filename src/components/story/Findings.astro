@@ -1,0 +1,37 @@
+---
+/**
+ * I problemi trovati, in ordine di gravità e non di frequenza: la gravità in una piastrella, il
+ * problema, chi ha colpito (una barra per le quote, dei pallini per "2 su 7", niente se non è
+ * stato misurato) e cosa cambia nella prossima iterazione.
+ */
+import Icon from './Icon.astro';
+interface Finding {
+	severity: 1 | 2 | 3 | 'unranked';
+	title: string;
+	text: string;
+	/** Una quota (0.28) oppure quante persone su quante ([2, 7]). Assente: non quantificato. */
+	impact?: { share?: number; of?: [number, number]; label: string };
+	fix: string;
+}
+interface Props { items: Finding[]; note?: string; columns?: [string, string, string, string] }
+const { items, note, columns = ['Severity', 'Problem', 'Who it hit', 'Next iteration'] } = Astro.props;
+---
+<div class="st-findings">
+	<div class="st-findings-cols" aria-hidden="true">{columns.map((c) => <span class="st-eyebrow">{c}</span>)}</div>
+	<ol class="st-findings-list" role="list">
+		{items.map((f) => (
+			<li>
+				<span class:list={['st-sev', `sev-${f.severity}`]}>{f.severity === 'unranked' ? <span class="st-mono">Unranked</span> : <><span class="st-sr">Severity </span>{f.severity}</>}</span>
+				<span class="st-findings-problem"><b>{f.title}</b><span>{f.text}</span></span>
+				<span class="st-findings-impact">
+					<span class="st-sr">{columns[2]}: </span>
+					{f.impact?.share !== undefined && <><b>{Math.round(f.impact.share * 100)}%</b><span class="st-bar" aria-hidden="true"><span style={`width: ${f.impact.share * 100}%`}></span></span></>}
+					{f.impact?.of && <><b>{f.impact.of[0]} of {f.impact.of[1]}</b><span class="st-dots" aria-hidden="true">{Array.from({ length: f.impact.of[1] }, (_, k) => <span class:list={{ on: k < f.impact!.of![0] }}></span>)}</span></>}
+					{f.impact ? <span class="st-findings-label">{f.impact.label}</span> : <span class="st-mono st-findings-label">Not quantified</span>}
+				</span>
+				<span class="st-findings-fix"><span class="st-sr">{columns[3]}: </span><Icon name="arrow-right" size={16} stroke={2.4} />{f.fix}</span>
+			</li>
+		))}
+	</ol>
+	{note && <p class="st-findings-note st-mono">{note}</p>}
+</div>

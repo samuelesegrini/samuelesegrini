@@ -1,0 +1,97 @@
+---
+/**
+ * La galleria dei punti forti, seconda versione di Highlights: carte grandi con una frase, una
+ * fonte e un'immagine o un disegno (slot `media-1`, `media-2`…), i pallini per saltare e il tasto
+ * che le fa scorrere da sole. Senza JavaScript restano una fila che si scorre a mano.
+ */
+interface Card { text: string; meta?: string; name?: string; tone?: 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string; wide?: boolean }
+interface Props { cards: Card[]; label?: string; interval?: number }
+const { cards, label = 'Highlights', interval = 3400 } = Astro.props;
+const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
+---
+<div class="st-hgallery" data-hgallery data-interval={interval}>
+	<ul class="st-hg-track" role="list" aria-label={label} tabindex="0" data-hg-track>
+		{cards.map((c, i) => (
+			<li class:list={['st-hg-card', `tone-${c.tone ?? 'paper'}`, { wide: c.wide }]}>
+				<div class="st-hg-copy"><p>{c.text}</p>{c.meta && <span class="st-eyebrow">{c.meta}</span>}</div>
+				{c.image && <img class="st-hg-image" src={c.image} alt={c.imageAlt ?? ''} width="1200" height="800" loading={i === 0 ? 'eager' : 'lazy'} />}
+				{media[i] && <div class="st-hg-media"><Fragment set:html={media[i]} /></div>}
+			</li>
+		))}
+	</ul>
+	<div class="st-hg-controls" data-hg-controls hidden>
+		<div class="st-hg-dots" role="group" aria-label="Choose a highlight">
+			{cards.map((c, i) => <button type="button" aria-label={`Highlight ${i + 1} of ${cards.length}${c.name ? `: ${c.name}` : ''}`} aria-pressed={i === 0 ? 'true' : 'false'} data-hg-dot={i}><span></span></button>)}
+		</div>
+		<button type="button" class="st-hg-play" aria-label="Play the highlights" data-hg-play>
+			<svg class="play" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg>
+			<svg class="pause" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
+		</button>
+	</div>
+</div>
+
+<script>
+	// Pallini e riproduzione: la fila resta scorrevole a mano, lo script la tiene allineata ai pallini.
+	function montaGallerie() {
+		document.querySelectorAll<HTMLElement>('[data-hgallery]').forEach((root) => {
+			if (root.dataset.bound) return;
+			root.dataset.bound = '1';
+			const track = root.querySelector<HTMLElement>('[data-hg-track]')!;
+			const cards = [...track.children] as HTMLElement[];
+			const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-hg-dot]')];
+			const play = root.querySelector<HTMLButtonElement>('[data-hg-play]')!;
+			root.querySelector('[data-hg-controls]')?.removeAttribute('hidden');
+			const every = Number(root.dataset.interval) || 3400;
+			const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+			let current = 0;
+			let timer = 0;
+			// mentre scorre per un pallino o per la riproduzione, lo scorrimento non riassegna il pallino
+			let lock = 0;
+
+			const mark = (i: number) => {
+				current = i;
+				dots.forEach((d, k) => d.setAttribute('aria-pressed', String(k === i)));
+			};
+			const go = (i: number) => {
+				const left = cards[i].offsetLeft - parseFloat(getComputedStyle(track).paddingLeft);
+				lock = performance.now() + 900;
+				track.scrollTo({ left, behavior: reduce() ? 'auto' : 'smooth' });
+				mark(i);
+			};
+			const stop = () => {
+				window.clearInterval(timer);
+				timer = 0;
+				root.dataset.playing = 'false';
+				play.setAttribute('aria-label', 'Play the highlights');
+			};
+			const start = () => {
+				timer = window.setInterval(() => {
+					if (!root.isConnected) return window.clearInterval(timer);
+					go((current + 1) % cards.length);
+				}, every);
+				root.dataset.playing = 'true';
+				play.setAttribute('aria-label', 'Pause the highlights');
+			};
+
+			dots.forEach((d, k) => d.addEventListener('click', () => { stop(); go(k); }));
+			play.addEventListener('click', () => (timer ? stop() : start()));
+			track.addEventListener('pointerdown', stop);
+			// il pallino segue la carta più vicina all'inizio della fila
+			let frame = 0;
+			track.addEventListener('scroll', () => {
+				cancelAnimationFrame(frame);
+				frame = requestAnimationFrame(() => {
+					if (performance.now() < lock) return;
+					const pad = parseFloat(getComputedStyle(track).paddingLeft);
+					const distance = (card: HTMLElement) => Math.abs(card.offsetLeft - pad - track.scrollLeft);
+					const nearest = cards.reduce((best, card, k) => (distance(card) < distance(cards[best]) ? k : best), 0);
+					// in fondo alla fila le ultime carte non arrivano all'inizio: vale l'ultima
+					const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+					mark(atEnd ? cards.length - 1 : nearest);
+				});
+			}, { passive: true });
+		});
+	}
+	montaGallerie();
+	document.addEventListener('astro:page-load', montaGallerie);
+</script>

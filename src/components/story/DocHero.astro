@@ -1,0 +1,47 @@
+---
+/**
+ * L'apertura da documento tecnico: fondo d'inchiostro con la griglia in filigrana, titolo e
+ * abstract a sinistra, la figura 1 a destra, una nota sul metodo e la fascia dei fatti in basso.
+ * Per i progetti da leggere come una relazione: hardware, algoritmi, architetture.
+ */
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+interface Fact { value: string; label: string; icon?: IconName }
+interface Link { label: string; href: string }
+interface Props {
+	eyebrow: string;
+	title: string;
+	abstract: string;
+	note?: { label?: string; text: string };
+	image?: string;
+	imageAlt?: string;
+	figure?: string;
+	caption?: string;
+	facts?: Fact[];
+	back?: Link;
+	position?: { current: number; total: number };
+	id?: string;
+	index?: number | null;
+}
+const { eyebrow, title, abstract, note, image, imageAlt = '', figure = 'Fig. 1', caption, facts = [], back, position, id = 'overview', index = 0 } = Astro.props;
+const two = (n: number) => String(n).padStart(2, '0');
+---
+<header class="st-dhero st-dark" id={id} data-section={index ?? undefined}>
+	{(back || position) && <div class="st-hero-bar">
+		{back && <a class="st-link small" href={back.href}><Icon name="arrow-back" size={16} />{back.label}</a>}
+		{position && <span class="st-mono"><span aria-hidden="true">{two(position.current)} / {two(position.total)}</span><span class="st-sr">Project {position.current} of {position.total}</span></span>}
+	</div>}
+	<div class="st-dhero-copy">
+		<span class="st-eyebrow">{eyebrow}</span>
+		<h1>{title}</h1>
+		<p class="st-dhero-abstract">{abstract}</p>
+		{note && <aside class="st-dhero-note"><b class="st-eyebrow">{note.label ?? 'Note'}</b><span>{note.text}</span></aside>}
+	</div>
+	{image && <figure class="st-dhero-figure">
+		<div><img src={image} alt={imageAlt} width="1200" height="675" fetchpriority="high" /><span class="st-mono" aria-hidden="true">{figure}</span></div>
+		{caption && <figcaption class="st-mono"><span class="st-sr">{figure}: </span>{caption}</figcaption>}
+	</figure>}
+	{facts.length > 0 && <ul class="st-dhero-facts" role="list">{facts.map((f) => (
+		<li>{f.icon && <Icon name={f.icon} size={28} />}<span><b>{f.value}</b><span>{f.label}</span></span></li>
+	))}</ul>}
+</header>

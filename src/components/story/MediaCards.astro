@@ -1,0 +1,30 @@
+---
+/**
+ * Una fila di carte con didascalia: sopra un riquadro colorato con lo schermo o il disegno (slot
+ * `media-1`, `media-2`… oppure `image`), sotto una frase dove l'inizio in grassetto fa da titolo.
+ * Le frecce si spengono ai due capi della fila.
+ */
+import Icon from './Icon.astro';
+interface Item { lead: string; text: string; tone?: 'paper' | 'dark' | 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string; tag?: string }
+interface Props { items: Item[]; label?: string }
+const { items, label = 'Cards' } = Astro.props;
+const media = await Promise.all(items.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
+---
+<div class="st-rail st-mcards" data-rail data-rail-ends>
+	<ul class="st-mc-track" role="list" aria-label={label} tabindex="0" data-rail-track>
+		{items.map((it, i) => (
+			<li>
+				<div class={`st-mc-media tone-${it.tone ?? 'paper'}`}>
+					{it.image && <img src={it.image} alt={it.imageAlt ?? ''} width="1200" height="800" loading="lazy" />}
+					{media[i] && <Fragment set:html={media[i]} />}
+					{it.tag && <span class="st-mc-tag st-mono">{it.tag}</span>}
+				</div>
+				<p><b>{it.lead}</b> {it.text}</p>
+			</li>
+		))}
+	</ul>
+	<div class="st-rail-controls">
+		<button type="button" class="st-round" data-rail-prev aria-label="Previous card"><Icon name="chevron-left" stroke={2.4} /></button>
+		<button type="button" class="st-round" data-rail-next aria-label="Next card"><Icon name="chevron-right" stroke={2.4} /></button>
+	</div>
+</div>

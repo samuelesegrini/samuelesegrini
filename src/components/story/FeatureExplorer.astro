@@ -1,0 +1,41 @@
+---
+/**
+ * Uno schermo, e l'elenco che lo guida: a sinistra le funzioni, a destra l'iPad con la schermata
+ * di quella scelta (slot `screen-1`, `screen-2`… oppure `image`). Funziona senza JavaScript: è un
+ * gruppo di radio, quindi frecce e Tab si comportano come l'utente si aspetta. Fino a otto voci.
+ */
+import Device from './Device.astro';
+import { storyId } from '../../lib/story-id';
+interface Feature { title: string; text: string; file?: string; tint?: 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string }
+interface Props { features: Feature[]; label?: string; device?: 'ipad' | 'mac' | 'iphone'; note?: string }
+const { features, label = 'Features', device = 'ipad', note } = Astro.props;
+const name = storyId('fx');
+const screens = await Promise.all(features.map((_, i) => (Astro.slots.has(`screen-${i + 1}`) ? Astro.slots.render(`screen-${i + 1}`) : Promise.resolve(''))));
+---
+<div class={`st-fx st-fx-${device}`}>
+	<fieldset class="st-fx-list">
+		<legend class="st-sr">{label}</legend>
+		{features.map((f, i) => (
+			<label class="st-fx-item" style={`--tint: var(--${f.tint ?? 'acid'})`}>
+				<input class="st-sr" type="radio" name={name} value={i} checked={i === 0} aria-labelledby={`${name}-t${i}`} aria-describedby={`${name}-d${i}`} />
+				<span class="st-fx-card">
+					<span class="st-fx-head"><span class="st-fx-title" id={`${name}-t${i}`}>{f.title}</span><span class="st-mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span></span>
+					<span class="st-fx-body" id={`${name}-d${i}`}><span>{f.text}</span>{f.file && <span class="st-fx-file st-mono">{f.file}</span>}</span>
+				</span>
+			</label>
+		))}
+	</fieldset>
+	<figure class="st-fx-figure">
+		<Device kind={device}>
+			{features.map((f, i) => (
+				<div class="st-fx-screen" data-fx-screen={i}>
+					{f.image ? <img src={f.image} alt={f.imageAlt ?? ''} loading="lazy" /> : screens[i] ? <Fragment set:html={screens[i]} /> : <span class="st-frame-empty">[Screenshot · {f.title}]</span>}
+				</div>
+			))}
+		</Device>
+		<figcaption>
+			<span class="st-fx-captions">{features.map((f, i) => <span class="st-mono" data-fx-screen={i}>{f.file ? `${f.file} · ` : ''}{f.title}</span>)}</span>
+			{note && <span class="st-mono">{note}</span>}
+		</figcaption>
+	</figure>
+</div>

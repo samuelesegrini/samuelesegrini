@@ -1,0 +1,44 @@
+---
+/**
+ * L'apertura a tutta pagina: un fondo della tinta del progetto, la copertina grande, il nome e la
+ * promessa in basso a sinistra, e una barretta di vetro con i dati essenziali e l'azione.
+ * Sostituisce Hero quando la copertina merita il centro della scena.
+ */
+import Icon from './Icon.astro';
+interface Link { label: string; href: string }
+interface Props {
+	name: string;
+	title: string;
+	image: string;
+	imageAlt: string;
+	tint?: 'blue' | 'acid' | 'violet' | 'orange' | 'paper';
+	meta?: string;
+	detail?: string;
+	action?: Link;
+	back?: Link;
+	/** Il posto del progetto nell'archivio: 1 di 5. */
+	position?: { current: number; total: number };
+	/** Ancora e posto nel dock: l'apertura è la sezione 0. `null` per un'apertura che non fa da indice. */
+	id?: string;
+	index?: number | null;
+}
+const { name, title, image, imageAlt, tint = 'blue', meta, detail, action, back, position, id = 'overview', index = 0 } = Astro.props;
+const two = (n: number) => String(n).padStart(2, '0');
+---
+<header class={`st-mhero tone-${tint}`} id={id} data-section={index ?? undefined}>
+	{(back || position) && <div class="st-hero-bar">
+		{back && <a class="st-link small" href={back.href}><Icon name="arrow-back" size={16} />{back.label}</a>}
+		{position && <span class="st-mono"><span aria-hidden="true">{two(position.current)} / {two(position.total)}</span><span class="st-sr">Project {position.current} of {position.total}</span></span>}
+	</div>}
+	<img class="st-mhero-art" src={image} alt={imageAlt} width="1200" height="800" fetchpriority="high" />
+	<div class="st-mhero-foot">
+		<div class="st-mhero-title">
+			<span class="st-mhero-name">{name}</span>
+			<h1>{title}</h1>
+		</div>
+		{(meta || detail || action) && <div class="st-glass">
+			{(meta || detail) && <p>{meta && <b>{meta}</b>}{detail && <span>{detail}</span>}</p>}
+			{action && <a class="st-pill" href={action.href}>{action.label}<Icon name={action.href.startsWith('#') ? 'arrow-down' : 'arrow-right'} size={16} /></a>}
+		</div>}
+	</div>
+</header>

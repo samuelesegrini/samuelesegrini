@@ -1,9 +1,43 @@
 ---
-/** Cosa la pagina dimostra e cosa no: l'onestà come sezione, non come nota a piè di pagina. */
-interface Props { title?: string; proven: string[]; notProven: string[] }
-const { title = 'What this page can prove, and what it can’t.', proven, notProven } = Astro.props;
+/**
+ * Cosa la pagina dimostra e cosa no: l'onestà come sezione, non come nota a piè di pagina.
+ * Seconda versione: ogni voce può portare la sua fonte (`source`, con `href` se è un link), e in
+ * alto un contatore dice quante cose sono verificate e quante no. Le liste di sole stringhe
+ * della prima versione funzionano ancora.
+ */
+import Icon from './Icon.astro';
+import LinkIcon from '../lab/LinkIcon.astro';
+import { linkKind } from '../lab/chrome';
+import { storyId } from '../../lib/story-id';
+interface Item { text: string; source?: string; href?: string }
+type Entry = string | Item;
+interface Props { title?: string; dim?: string; proven: Entry[]; notProven: Entry[]; provenLabel?: string; notProvenLabel?: string }
+const { title, dim, proven, notProven, provenLabel = 'Verified', notProvenLabel = 'Not demonstrated' } = Astro.props;
+const heading = title ?? 'What this page can prove,';
+const second = title ? dim : (dim ?? 'and what it can’t.');
+const entry = (e: Entry): Item => (typeof e === 'string' ? { text: e } : e);
+const total = proven.length + notProven.length;
+const headingId = storyId('limits');
 ---
-<div class="st-limits"><h2>{title}</h2><div class="cols">
-	<div><span class="st-eyebrow">Verified</span><ul role="list">{proven.map((p) => <li>{p}</li>)}</ul></div>
-	<div><span class="st-eyebrow">Not demonstrated</span><ul role="list">{notProven.map((p) => <li>{p}</li>)}</ul></div>
-</div></div>
+<section class="st-limits2" aria-labelledby={headingId}>
+	<div class="st-limits2-head">
+		<h2 id={headingId}>{heading}{second && <> <span class="st-dim">{second}</span></>}</h2>
+		<div class="st-limits2-meter">
+			<span aria-hidden="true">{Array.from({ length: total }, (_, k) => <span class:list={{ on: k < proven.length }}></span>)}</span>
+			<span class="st-mono">{proven.length} {provenLabel.toLowerCase()} · {notProven.length} {notProvenLabel.toLowerCase()}</span>
+		</div>
+	</div>
+	<div class="st-limits2-cols">
+		{[{ label: provenLabel, list: proven, yes: true }, { label: notProvenLabel, list: notProven, yes: false }].map((col) => (
+			<div class:list={['st-limits2-col', { no: !col.yes }]}>
+				<h3><span class="st-limits2-mark" aria-hidden="true"><Icon name={col.yes ? 'check' : 'minus'} size={col.yes ? 15 : 13} stroke={3} /></span><span class="st-eyebrow">{col.label}</span></h3>
+				<ul role="list">{col.list.map(entry).map((e) => {
+					const external = e.href ? /^https?:/.test(e.href) : false;
+					return <li><b>{e.text}</b>{e.source && (e.href
+						? <a class="st-mono" href={e.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}><LinkIcon kind={linkKind(e.href)} size="14px" />{e.source}</a>
+						: <span class="st-mono">{col.yes && <Icon name="doc" size={14} />}{e.source}</span>)}</li>;
+				})}</ul>
+			</div>
+		))}
+	</div>
+</section>

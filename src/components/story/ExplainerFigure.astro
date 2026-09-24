@@ -1,0 +1,27 @@
+---
+/**
+ * Un diagramma con le note numerate: i numeri stanno sul disegno (`at`, in percentuale), le
+ * spiegazioni in fila accanto, nello stesso ordine. Sotto, il numero della figura e la legenda.
+ * `aside` chiude l'elenco con il dato che riassume (una complessità, un limite).
+ */
+interface Note { title: string; text: string; at: [number, number] }
+interface Legend { label: string; mark: 'line' | 'route' | 'dash' | 'dot'; tone?: 'acid' | 'blue' | 'violet' | 'orange' }
+interface Props { image: string; imageAlt: string; notes: Note[]; caption?: string; legend?: Legend[]; aside?: string; width?: number; height?: number }
+const { image, imageAlt, notes, caption, legend = [], aside, width = 1200, height = 675 } = Astro.props;
+---
+<div class="st-explainer">
+	<figure>
+		<div class="st-explainer-art">
+			<img src={image} alt={imageAlt} width={width} height={height} loading="lazy" />
+			{notes.map((n, i) => <span class="st-badge st-mono" style={`left: ${n.at[0]}%; top: ${n.at[1]}%`} aria-hidden="true">{i + 1}</span>)}
+		</div>
+		{(caption || legend.length > 0) && <figcaption>
+			{caption && <span class="st-mono">{caption}</span>}
+			{legend.length > 0 && <ul class="st-legend" role="list">{legend.map((l) => <li><span class={`st-swatch ${l.mark}`} style={l.tone ? `--tint: var(--${l.tone})` : undefined}></span>{l.label}</li>)}</ul>}
+		</figcaption>}
+	</figure>
+	<ol class="st-explainer-notes" role="list">
+		{notes.map((n, i) => <li><span class="st-badge st-mono" aria-hidden="true">{i + 1}</span><span><b>{n.title}</b><span>{n.text}</span></span></li>)}
+		{aside && <li class="st-explainer-aside st-mono">{aside}</li>}
+	</ol>
+</div>

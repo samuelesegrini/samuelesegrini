@@ -1,0 +1,28 @@
+---
+/**
+ * L'anatomia di un elemento dell'interfaccia: l'oggetto al centro (slot), grande, su un fondo con
+ * i due assi tratteggiati, e quattro richiami ai lati con la linea che li porta al punto giusto.
+ * `measure` disegna la quota sotto l'oggetto; `states` mette in fila le varianti che può assumere.
+ * Sul telefono i richiami diventano un elenco numerato sotto l'oggetto.
+ */
+interface Callout { label: string; text: string; side: 'left' | 'right'; row?: 'top' | 'bottom' }
+interface State { label: string; tone: 'acid' | 'violet' | 'orange' | 'blue' | 'dark' | 'paper'; sample?: string }
+interface Props { callouts: Callout[]; tint?: 'blue' | 'acid' | 'violet' | 'orange' | 'paper'; measure?: string; states?: State[]; statesTitle?: string; statesText?: string; label?: string }
+const { callouts, tint = 'blue', measure, states = [], statesTitle = 'States', statesText, label = 'Anatomy' } = Astro.props;
+const placed = callouts.map((c, i) => ({ ...c, n: String(i + 1).padStart(2, '0'), row: c.row ?? (callouts.filter((d, j) => j < i && d.side === c.side).length === 0 ? 'top' : 'bottom') }));
+---
+<div class="st-anatomy">
+	<figure class={`st-anatomy-figure tone-${tint}`} aria-label={label}>
+		<div class="st-anatomy-subject"><slot /></div>
+		{measure && <span class="st-anatomy-measure st-mono"><span aria-hidden="true"></span>{measure}</span>}
+		<ol class="st-anatomy-callouts" role="list">
+			{placed.map((c) => (
+				<li class={`${c.side} ${c.row}`}><span class="st-eyebrow">{c.n} · {c.label}</span><span>{c.text}</span></li>
+			))}
+		</ol>
+	</figure>
+	{states.length > 0 && <div class="st-anatomy-states">
+		<div><span class="st-eyebrow">{statesTitle}</span>{statesText && <span>{statesText}</span>}</div>
+		<ul role="list">{states.map((s) => <li><span class={`tone-${s.tone}`} aria-hidden="true"><span class="st-mono">{s.sample}</span></span><b>{s.label}</b></li>)}</ul>
+	</div>}
+</div>

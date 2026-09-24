@@ -1,0 +1,47 @@
+---
+/**
+ * I moduli come la pagina "Topics" della documentazione: a sinistra il titolo, due righe su come
+ * è organizzato il codice (slot), i pattern e i rimandi; a destra i gruppi, ognuno con il suo
+ * percorso e i simboli che un lettore incontra per primi. Un simbolo può essere nuovo (`badge`)
+ * o sostituito (`replaced`, barrato); un gruppo può mostrare dei conteggi al posto dei simboli.
+ */
+import Icon from './Icon.astro';
+import LinkIcon from '../lab/LinkIcon.astro';
+import { linkKind } from '../lab/chrome';
+interface Entry { names: string[]; text: string; badge?: string; replaced?: boolean }
+interface Count { label: string; value: string; text?: string; accent?: boolean }
+interface Group { title: string; path?: string; symbols?: Entry[]; counts?: Count[] }
+interface Props { eyebrow?: string; title?: string; patterns?: string[]; seeAlso?: { label: string; href: string }[]; groups: Group[] }
+const { eyebrow, title = 'Topics', patterns = [], seeAlso = [], groups } = Astro.props;
+---
+<div class="st-modules">
+	<div class="st-modules-aside">
+		{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}
+		<h2>{title}</h2>
+		{Astro.slots.has('default') && <div class="st-modules-text"><slot /></div>}
+		{patterns.length > 0 && <section class="st-modules-card"><h3 class="st-eyebrow">Patterns</h3><ul class="st-modules-patterns" role="list">{patterns.map((p) => <li class="st-mono">{p}</li>)}</ul></section>}
+		{seeAlso.length > 0 && <section class="st-modules-card"><h3 class="st-eyebrow">See also</h3><ul role="list">{seeAlso.map((l) => {
+			const kind = linkKind(l.href);
+			const external = /^https?:/.test(l.href);
+			return <li><a href={l.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{kind === 'inside' ? <Icon name="doc" size={16} /> : <LinkIcon kind={kind} size="16px" />}<span>{l.label}</span></a></li>;
+		})}</ul></section>}
+	</div>
+	<div class="st-modules-groups">
+		{groups.map((g) => (
+			<section>
+				<div class="st-modules-head"><h3>{g.title}</h3>{g.path && <span class="st-mono">{g.path}</span>}</div>
+				{g.symbols && <ul class="st-modules-symbols" role="list">{g.symbols.map((e) => (
+					<li class:list={{ replaced: e.replaced }}>
+						<span class="st-modules-names">
+							{e.names.map((n) => e.replaced ? <del class="st-mono">{n}</del> : <code class="st-mono">{n}</code>)}
+							{e.badge && <span class="st-modules-badge st-mono">{e.badge}</span>}
+							{e.replaced && <span class="st-modules-badge st-mono">Replaced</span>}
+						</span>
+						<span class="st-modules-desc">{e.text}</span>
+					</li>
+				))}</ul>}
+				{g.counts && <ul class="st-modules-counts" role="list">{g.counts.map((c) => <li class:list={{ 'tone-violet': c.accent }}><span class="st-eyebrow">{c.label}</span><b>{c.value}</b>{c.text && <span>{c.text}</span>}</li>)}</ul>}
+			</section>
+		))}
+	</div>
+</div>

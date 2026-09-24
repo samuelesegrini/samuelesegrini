@@ -1,7 +1,23 @@
 ---
-/** Domande e risposte richiudibili: le domande che un selezionatore farebbe davvero. */
+/**
+ * Domande e risposte richiudibili: le domande che un selezionatore farebbe davvero.
+ * Seconda versione: con `title` diventa una sezione a due colonne (titolo, sottotitolo e contatto
+ * a sinistra, domande a destra); una risposta aperta chiude le altre (`<details name>`), `open`
+ * dice quale è aperta all'arrivo. Senza `title` resta l'elenco della prima versione.
+ */
+import Icon from './Icon.astro';
+import { storyId } from '../../lib/story-id';
 interface Item { q: string; a: string }
-interface Props { items: Item[] }
-const { items } = Astro.props;
+interface Props { items: Item[]; title?: string; dim?: string; eyebrow?: string; lead?: string; contact?: { label: string; href: string }; open?: number }
+const { items, title, dim, eyebrow, lead, contact, open } = Astro.props;
+const group = storyId('faq');
 ---
-<div class="st-faq">{items.map((i) => <details><summary>{i.q}<span aria-hidden="true">+</span></summary><p>{i.a}</p></details>)}</div>
+<div class:list={{ 'st-faq2': title }}>
+	{title && <div class="st-faq2-head">
+		{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}
+		<h2><span>{title}</span>{dim && <> <span class="st-dim">{dim}</span></>}</h2>
+		{lead && <p>{lead}</p>}
+		{contact && <a class="st-faq2-contact" href={contact.href}><Icon name={contact.href.startsWith('mailto:') ? 'mail' : 'arrow-right'} size={16} />{contact.label}</a>}
+	</div>}
+	<div class="st-faq">{items.map((i, k) => <details name={group} open={k === open}><summary><span>{i.q}</span><span class="st-faq-sign" aria-hidden="true"><Icon name="plus" size={18} stroke={2.4} /></span></summary><p>{i.a}</p></details>)}</div>
+</div>

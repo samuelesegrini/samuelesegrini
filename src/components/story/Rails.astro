@@ -1,16 +1,27 @@
 <script>
-	// I pulsanti ← → delle file orizzontali: scorrono di una carta. Senza JavaScript resta lo scorrimento a mano.
+	// I pulsanti ← → delle file orizzontali: scorrono di una carta e si spengono ai due capi.
+	// Senza JavaScript resta lo scorrimento a mano.
 	function montaRails() {
 		document.querySelectorAll<HTMLElement>('[data-rail]').forEach((rail) => {
 			if (rail.dataset.bound) return;
 			rail.dataset.bound = '1';
 			const track = rail.querySelector<HTMLElement>('[data-rail-track]')!;
+			const prev = rail.querySelector<HTMLButtonElement>('[data-rail-prev]');
+			const next = rail.querySelector<HTMLButtonElement>('[data-rail-next]');
 			const step = (dir: number) => {
 				const item = track.firstElementChild as HTMLElement | null;
 				track.scrollBy({ left: dir * ((item?.offsetWidth ?? 300) + 20), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 			};
-			rail.querySelector('[data-rail-prev]')?.addEventListener('click', () => step(-1));
-			rail.querySelector('[data-rail-next]')?.addEventListener('click', () => step(1));
+			const ends = () => {
+				if (prev) prev.disabled = track.scrollLeft <= 2;
+				if (next) next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+			};
+			prev?.addEventListener('click', () => step(-1));
+			next?.addEventListener('click', () => step(1));
+			if (rail.hasAttribute('data-rail-ends')) {
+				track.addEventListener('scroll', () => requestAnimationFrame(ends), { passive: true });
+				ends();
+			}
 		});
 	}
 	montaRails();

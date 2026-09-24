@@ -1,0 +1,44 @@
+---
+/**
+ * I numeri, seconda versione di Numbers: ogni valore con la sua etichetta, la frase che lo spiega
+ * e il metodo in piccolo, con il rimando alla nota delle fonti (`note`, il numero di Sources).
+ * `feature` mette in risalto un numero con un testo accanto (lo slot); `targets` confronta i
+ * risultati con gli obiettivi fissati prima di misurare.
+ */
+import Icon from './Icon.astro';
+interface Item { label: string; value: string; unit?: string; text: string; method?: string; note?: number; accent?: boolean }
+interface Target { label: string; target: string; value: string; met?: boolean }
+interface Props {
+	items: Item[];
+	feature?: { label: string; value: string; text: string };
+	targets?: { title: string; text?: string; rows: Target[] };
+}
+const { items, feature, targets } = Astro.props;
+---
+<div class="st-stats">
+	<ul class="st-stats-grid" role="list">
+		{items.map((s) => (
+			<li>
+				<span class="st-eyebrow">{s.label}</span>
+				<b class:list={{ accent: s.accent }}>{s.value}{s.unit && <span class="unit"> {s.unit}</span>}</b>
+				<span class="st-stats-text">{s.text}</span>
+				{(s.method || s.note) && <span class="st-stats-method st-mono">{s.method}{s.note && <sup><a href={`#note-${s.note}`} aria-label={`Source ${s.note}`}>{s.note}</a></sup>}</span>}
+			</li>
+		))}
+	</ul>
+	{feature && <div class="st-stats-feature">
+		<div><span class="st-eyebrow">{feature.label}</span><b>{feature.value}</b><span>{feature.text}</span></div>
+		<div class="st-stats-lead"><slot /></div>
+	</div>}
+	{targets && <div class="st-stats-targets">
+		<span class="st-stats-target-icon"><Icon name="target" size={26} stroke={2.2} /></span>
+		<span class="st-stats-target-copy"><b>{targets.title}</b>{targets.text && <span>{targets.text}</span>}</span>
+		<table>
+			<caption class="st-sr">{targets.title}</caption>
+			<thead class="st-sr"><tr><th scope="col">Measure</th><th scope="col">Target</th><th scope="col">Result</th></tr></thead>
+			<tbody>{targets.rows.map((r) => (
+				<tr><th scope="row">{r.label}</th><td class="st-mono">target {r.target}</td><td class:list={{ met: r.met !== false }}>{r.value}{r.met === false && <span class="st-sr"> (missed)</span>}</td></tr>
+			))}</tbody>
+		</table>
+	</div>}
+</div>

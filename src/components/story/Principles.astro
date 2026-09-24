@@ -1,0 +1,33 @@
+---
+/**
+ * Le regole che porto con me, ognuna con la sua ragione e il progetto dove l'ho imparata. Accanto,
+ * una regola disegnata come "non fare / fai": due figure con una scena ciascuna (slot `dont` e
+ * `do`) e una riga che spiega cosa succede.
+ */
+import Icon from './Icon.astro';
+interface Rule { title: string; text: string; source?: string }
+interface Case { title: string; text: string }
+interface Props { rules: Rule[]; example?: { label: string; dont: Case; do: Case } }
+const { rules, example } = Astro.props;
+const hasExample = example && Astro.slots.has('dont') && Astro.slots.has('do');
+---
+<div class:list={['st-principles', { single: !hasExample }]}>
+	<ol class="st-principles-list" role="list">
+		{rules.map((r, i) => (
+			<li><span class="st-mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><span><b>{r.title}</b><span>{r.text}</span>{r.source && <span class="st-mono">{r.source}</span>}</span></li>
+		))}
+	</ol>
+	{hasExample && example && <div class="st-principles-example">
+		<span class="st-eyebrow">{example.label}</span>
+		<figure class="dont">
+			<figcaption><span aria-hidden="true"><Icon name="cross" size={12} stroke={3.4} /></span>{example.dont.title}</figcaption>
+			<div class="st-principles-scene"><slot name="dont" /></div>
+			<p>{example.dont.text}</p>
+		</figure>
+		<figure class="do">
+			<figcaption><span aria-hidden="true"><Icon name="check" size={13} stroke={3.4} /></span>{example.do.title}</figcaption>
+			<div class="st-principles-scene"><slot name="do" /></div>
+			<p>{example.do.text}</p>
+		</figure>
+	</div>}
+</div>

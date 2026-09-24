@@ -1,0 +1,47 @@
+---
+/**
+ * L'apertura di un capitolo: numero e nome, un titolo su due righe (l'affermazione, poi la
+ * conseguenza in grigio o evidenziata), un sottotitolo dove solo le parole che contano sono in
+ * inchiostro (scrivile in <b>), l'approfondimento a comparsa e il capitolo che segue.
+ */
+import Icon from './Icon.astro';
+interface Fact { label: string; value: string; note?: string; accent?: boolean }
+interface Props {
+	id?: string;
+	index?: number;
+	/** Il numero del capitolo nella pastiglia e il suo nome. */
+	number?: string;
+	label?: string;
+	eyebrow?: string;
+	title: string;
+	/** La seconda riga: grigia con `dim`, evidenziata con `marker`. */
+	dim?: string;
+	marker?: string;
+	center?: boolean;
+	tone?: 'paper' | 'dark';
+	deepDive?: string;
+	next?: { label: string; href: string };
+	facts?: Fact[];
+	factsNote?: string;
+}
+const { id, index, number, label, eyebrow, title, dim, marker, center = false, tone = 'paper', deepDive, next, facts = [], factsNote } = Astro.props;
+const headingId = id ? `${id}-title` : undefined;
+const deep = deepDive && Astro.slots.has('deep-dive');
+---
+<section class:list={['st-lockup', { center, 'st-dark': tone === 'dark' }]} id={id} data-section={index} aria-labelledby={headingId}>
+	{(number || label) && <span class="st-lockup-chapter">{number && <span class="st-mono">{number}</span>}{label}</span>}
+	{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}
+	<h2 id={headingId}><span>{title}</span>{dim && <> <span class="st-dim">{dim}</span></>}{marker && <> <mark>{marker}</mark></>}</h2>
+	{Astro.slots.has('default') && <div class="st-lockup-lead"><slot /></div>}
+	{(deep || next) && <div class="st-lockup-actions">
+		{deep && <details class="st-deep">
+			<summary>{deepDive}<span class="st-deep-sign" aria-hidden="true"><Icon name="plus" size={18} stroke={2.4} /></span></summary>
+			<div class="st-deep-body"><slot name="deep-dive" /></div>
+		</details>}
+		{next && <a class="st-link" href={next.href}>{next.label}<Icon name="arrow-right" size={16} /></a>}
+	</div>}
+	{facts.length > 0 && <ul class="st-lockup-facts" role="list">{facts.map((f) => (
+		<li><span class="st-eyebrow">{f.label}</span><b class:list={{ accent: f.accent }}>{f.value}</b>{f.note && <span>{f.note}</span>}</li>
+	))}</ul>}
+	{factsNote && <p class="st-lockup-note st-mono">{factsNote}</p>}
+</section>

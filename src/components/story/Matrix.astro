@@ -1,0 +1,41 @@
+---
+/**
+ * La tabella dei ritrovamenti per fase: ogni riga un problema, ogni colonna un momento in cui
+ * poteva essere visto (trovato, corretto, ricomparso). Quattro stati: sì, no, tornato, non
+ * registrato. L'ultimo esiste per non riempire un buco con un sì o un no inventato.
+ */
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+type Cell = 'yes' | 'no' | 'back' | 'unknown';
+interface Column { label: string; icon: IconName; tone?: 'acid' | 'violet' | 'orange' | 'blue' }
+interface Row { title: string; text?: string; cells: Cell[] }
+interface Props { columns: Column[]; rows: Row[]; label?: string; rowLabel?: string; link?: { label: string; href: string } }
+const { columns, rows, label = 'Findings by stage', rowLabel = 'Finding', link } = Astro.props;
+const names: Record<Cell, string> = { yes: 'Yes', no: 'No', back: 'Came back', unknown: 'Not recorded' };
+const used = (['yes', 'no', 'back', 'unknown'] as Cell[]).filter((c) => rows.some((r) => r.cells.includes(c)));
+---
+<div class="st-matrix">
+	<div class="st-matrix-scroll" tabindex="0" role="region" aria-label={label}>
+		<table>
+			<caption class="st-sr">{label}</caption>
+			<thead>
+				<tr>
+					<th scope="col"><span class="st-eyebrow">{rowLabel}</span></th>
+					{columns.map((c) => <th scope="col"><span class="st-matrix-col"><span class={`st-matrix-icon tone-${c.tone ?? 'violet'}`}><Icon name={c.icon} size={20} /></span>{c.label}</span></th>)}
+				</tr>
+			</thead>
+			<tbody>
+				{rows.map((r) => (
+					<tr>
+						<th scope="row"><b>{r.title}</b>{r.text && <span>{r.text}</span>}</th>
+						{r.cells.map((cell) => <td><span class={`st-mark ${cell}`}>{cell === 'yes' ? <Icon name="check" size={16} stroke={3} /> : cell === 'no' ? <Icon name="minus" size={14} stroke={3} /> : cell === 'back' ? '!' : '?'}</span><span class="st-sr">{names[cell]}</span></td>)}
+					</tr>
+				))}
+			</tbody>
+		</table>
+	</div>
+	<div class="st-matrix-foot">
+		<ul class="st-matrix-legend" role="list" aria-label="Legend">{used.map((c) => <li><span class={`st-mark small ${c}`}></span>{names[c]}</li>)}</ul>
+		{link && <a class="st-link" href={link.href}>{link.label}<Icon name={link.href.startsWith('#') ? 'arrow-down' : 'arrow-right'} size={16} /></a>}
+	</div>
+</div>

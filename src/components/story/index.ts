@@ -20,3 +20,35 @@ export { default as Faq } from './Faq.astro';
 export { default as Limits } from './Limits.astro';
 export { default as FullStory } from './FullStory.astro';
 export { default as Next } from './Next.astro';
+
+// Seconda serie: aperture, vetrina, prove, ingegneria e chiusure. Limits, Faq e Section sono
+// aggiornati sul posto e restano compatibili con la prima.
+export { default as Icon } from './Icon.astro';
+export { default as Device } from './Device.astro';
+export { default as MediaHero } from './MediaHero.astro';
+export { default as AppHero } from './AppHero.astro';
+export { default as DocHero } from './DocHero.astro';
+export { default as Lockup } from './Lockup.astro';
+export { default as HighlightsGallery } from './HighlightsGallery.astro';
+export { default as MediaCards } from './MediaCards.astro';
+export { default as FeatureExplorer } from './FeatureExplorer.astro';
+export { default as ToggleFigure } from './ToggleFigure.astro';
+export { default as ExplainerFigure } from './ExplainerFigure.astro';
+export { default as Stats } from './Stats.astro';
+export { default as ThenNow } from './ThenNow.astro';
+export { default as Lineup } from './Lineup.astro';
+export { default as Matrix } from './Matrix.astro';
+export { default as Findings } from './Findings.astro';
+export { default as TechSpecs } from './TechSpecs.astro';
+export { default as Sources } from './Sources.astro';
+export { default as Declaration } from './Declaration.astro';
+export { default as CodeSteps } from './CodeSteps.astro';
+export { default as Anatomy } from './Anatomy.astro';
+export { default as ExplodedStack } from './ExplodedStack.astro';
+export { default as Modules } from './Modules.astro';
+export { default as StateMachine } from './StateMachine.astro';
+export { default as ChangeLog } from './ChangeLog.astro';
+export { default as Principles } from './Principles.astro';
+export { default as Contribution } from './Contribution.astro';
+export { default as KeepExploring } from './KeepExploring.astro';
+export { default as PageIndex } from './PageIndex.astro';

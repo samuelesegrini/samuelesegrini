@@ -1,0 +1,27 @@
+---
+/**
+ * Il registro delle modifiche, seconda versione di Timeline: dal più recente, una riga per
+ * versione (etichetta, quando) e un cambiamento per riga con il suo tipo. Il pianificato è
+ * tratteggiato: si dice che esiste senza rivendicarlo. In testa la legenda dei tipi usati.
+ */
+type Kind = 'added' | 'changed' | 'fixed' | 'removed' | 'planned' | 'note';
+interface Release { version: string; when: string; style?: 'release' | 'outline' | 'planned'; changes: { kind: Kind; text: string }[] }
+interface Props { releases: Release[]; columns?: [string, string, string] }
+const { releases, columns = ['Version', 'When', 'Changes'] } = Astro.props;
+const names: Record<Kind, string> = { added: 'Added', changed: 'Changed', fixed: 'Fixed', removed: 'Removed', planned: 'Planned', note: 'Note' };
+const order: Kind[] = ['added', 'changed', 'fixed', 'removed', 'planned', 'note'];
+const used = order.filter((k) => k !== 'note' && releases.some((r) => r.changes.some((c) => c.kind === k)));
+---
+<div class="st-changelog">
+	<ul class="st-changelog-legend" role="list" aria-label="Kinds of change">{used.map((k) => <li class={`st-kind ${k} st-mono`}>{names[k]}</li>)}</ul>
+	<div class="st-changelog-cols" aria-hidden="true">{columns.map((c) => <span class="st-eyebrow">{c}</span>)}</div>
+	<ol class="st-changelog-list" role="list">
+		{releases.map((r) => (
+			<li>
+				<span class={`st-version st-mono ${r.style ?? 'release'}`}><span class="st-sr">{columns[0]} </span>{r.version}</span>
+				<span class:list={['st-changelog-when', { muted: r.style === 'planned' }]}>{r.when}</span>
+				<ul role="list">{r.changes.map((c) => <li class:list={{ muted: c.kind === 'planned' || c.kind === 'note' }}><span class={`st-kind ${c.kind} st-mono`}>{names[c.kind]}</span><span>{c.text}</span></li>)}</ul>
+			</li>
+		))}
+	</ol>
+</div>
