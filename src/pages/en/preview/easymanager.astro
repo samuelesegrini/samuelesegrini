@@ -46,9 +46,20 @@ const screens = [
 		</nav>
 
 		<header class="pp-hero" id="overview" data-section="0">
-			<span class="pp-kicker">iPad app · individual · 2023—2026</span>
-			<h1>EasyManager</h1>
-			<p class="pp-tagline">From the table to the fiscal printer.</p>
+			<div class="pp-hero-copy">
+				<span class="pp-kicker">iPad app · individual · 2023—2026</span>
+				<h1>EasyManager</h1>
+				<p class="pp-tagline">A restaurant’s orders, from the table to the fiscal printer, on the iPads in the room.</p>
+				<dl class="pp-hero-facts">
+					<div><dt>{project.outcomes[0]?.value}</dt><dd>Swift modules</dd></div>
+					<div><dt>{project.outcomes[1]?.value}</dt><dd>dependencies</dd></div>
+					<div><dt>1</dt><dd>real restaurant</dd></div>
+				</dl>
+				<div class="pp-hero-actions">
+					<a class="primary" href="#story">Read the case study ↓</a>
+					{repo && <a href={repo} target="_blank" rel="noopener noreferrer"><LinkIcon kind="github" />View the 2023 code</a>}
+				</div>
+			</div>
 			<img src={withBase(project.coverImage)} alt={project.coverAlt} width="1200" height="800" fetchpriority="high" />
 		</header>
 
@@ -163,11 +174,18 @@ const screens = [
 	.pp-bar b { margin-right: auto; font-size: 20px; letter-spacing: -.04em; }
 	.pp-bar-cta { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 14px; border-radius: 999px; background: #171713; color: #fffef9; font-weight: 600; }
 
-	.pp-hero { display: grid; justify-items: center; gap: 16px; padding: 100px var(--pad) 0; text-align: center; }
+	.pp-hero { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 40px; align-items: center; min-height: calc(100svh - 56px); padding: 40px 0 40px var(--pad); overflow: hidden; }
+	.pp-hero-copy { display: grid; gap: 24px; }
 	.pp-hero .pp-kicker { color: #6b6760; }
-	.pp-hero h1 { margin: 0; font-size: clamp(64px, 11vw, 150px); font-weight: 600; line-height: .9; letter-spacing: -.07em; }
-	.pp-tagline { font-size: clamp(22px, 2.4vw, 34px); font-weight: 500; letter-spacing: -.03em; color: #3b3830; }
-	.pp-hero img { width: min(1100px, 100%); height: auto; margin-top: 44px; border-radius: 40px; }
+	.pp-hero h1 { margin: 0; font-size: clamp(56px, 7.2vw, 104px); font-weight: 600; line-height: .92; letter-spacing: -.07em; }
+	.pp-tagline { font-size: clamp(20px, 1.8vw, 26px); font-weight: 500; line-height: 1.3; letter-spacing: -.02em; color: #3b3830; }
+	.pp-hero-facts { display: flex; flex-wrap: wrap; gap: 36px; margin: 12px 0 0; }
+	.pp-hero-facts dt { font-size: 44px; font-weight: 600; letter-spacing: -.05em; line-height: 1; }
+	.pp-hero-facts dd { margin: 6px 0 0; font-size: 13px; color: #5e5a53; }
+	.pp-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+	.pp-hero-actions a { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 22px; border: 1px solid #171713; border-radius: 999px; font-size: 15px; font-weight: 600; }
+	.pp-hero-actions a.primary { background: #171713; color: #fffef9; }
+	.pp-hero img { width: 100%; max-width: 900px; height: auto; border-radius: 40px; transform: rotate(-3deg) translateX(40px); }
 
 	.pp-section { padding: 150px var(--pad) 0; }
 	.pp-section .center { text-align: center; }
@@ -254,6 +272,7 @@ const screens = [
 		.pp-layers div { grid-auto-flow: row; }
 		.pp-next { grid-template-columns: minmax(0, 1fr); }
 		.pp-next img { grid-column: 1; grid-row: auto; }
-		.pp-hero img { border-radius: 24px; }
+		.pp-hero { grid-template-columns: minmax(0, 1fr); min-height: 0; padding: 48px var(--pad) 0; }
+		.pp-hero img { border-radius: 24px; transform: none; }
 	}
 </style>
