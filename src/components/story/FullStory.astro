@@ -1,0 +1,6 @@
+---
+/** Il testo lungo, dietro una tendina: chi vuole leggere tutto lo trova, chi scorre non lo subisce. */
+interface Props { chapters: number; index?: number; title?: string }
+const { chapters, index, title = 'Read the full story' } = Astro.props;
+---
+<section class="st-story" id="story" data-section={index}><details><summary><h2>{title}</h2><span class="st-eyebrow">{chapters} chapters ↓</span></summary><div class="prosa"><slot /></div></details></section>

@@ -1,0 +1,12 @@
+---
+/** La fila di carte "in breve": una frase forte per carta, scorre di lato con i pulsanti. */
+interface Card { text: string; meta?: string; tone?: 'paper' | 'dark' | 'acid' | 'blue' | 'violet' | 'orange' }
+interface Props { cards: Card[]; label?: string }
+const { cards, label = 'Highlights' } = Astro.props;
+---
+<div class="st-rail" data-rail>
+	<ul class="st-highlights" role="list" aria-label={label} data-rail-track>
+		{cards.map((c) => <li class={`tone-${c.tone ?? 'paper'}`}><p>{c.text}</p>{c.meta && <span class="st-eyebrow">{c.meta}</span>}</li>)}
+	</ul>
+	<div class="st-rail-controls"><button type="button" data-rail-prev aria-label="Previous">←</button><button type="button" data-rail-next aria-label="Next">→</button></div>
+</div>

@@ -1,0 +1,7 @@
+---
+/** Le tappe del progetto in orizzontale, dalla prima all'ultima. */
+interface Step { when: string; title: string; text?: string }
+interface Props { steps: Step[] }
+const { steps } = Astro.props;
+---
+<ol class="st-timeline" role="list">{steps.map((s) => <li><span class="st-eyebrow">{s.when}</span><b>{s.title}</b>{s.text && <p>{s.text}</p>}</li>)}</ol>

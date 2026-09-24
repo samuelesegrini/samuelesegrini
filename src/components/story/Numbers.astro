@@ -1,0 +1,8 @@
+---
+/** I numeri grandi. `method` dice da dove viene il valore: un portfolio non ha un cliente a garantirlo. */
+interface Item { value: string; label: string; method?: string }
+interface Props { items: readonly Item[] }
+const { items } = Astro.props;
+const tones = ['blue', 'acid', 'orange', 'violet'];
+---
+<dl class="st-numbers">{items.map((n, i) => <div><dt class={`ink-${tones[i % tones.length]}`}>{n.value}</dt><dd>{n.label}{n.method && <small>{n.method}</small>}</dd></div>)}</dl>

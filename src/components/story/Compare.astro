@@ -1,0 +1,9 @@
+---
+/** Il confronto a colonne: due ere, due approcci, prima e dopo. L'ultima colonna è quella evidenziata. */
+interface Column { title: string; items: string[] }
+interface Props { columns: Column[] }
+const { columns } = Astro.props;
+---
+<div class="st-compare" style={`--cols: ${columns.length}`}>
+	{columns.map((c, i) => <div class:list={{ featured: i === columns.length - 1 }}><span class="st-eyebrow">{c.title}</span><ul role="list">{c.items.map((it) => <li>{it}</li>)}</ul></div>)}
+</div>

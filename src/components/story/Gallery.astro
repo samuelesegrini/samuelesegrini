@@ -1,0 +1,19 @@
+---
+/** Le schermate in una cornice di dispositivo, a carosello. Senza `src` resta un segnaposto dichiarato. */
+interface Shot { title: string; caption: string; src?: string; alt?: string; device?: 'ipad' | 'iphone' | 'mac' }
+interface Props { shots: Shot[] }
+const { shots } = Astro.props;
+---
+<div class="st-rail" data-rail>
+	<ul class="st-gallery" role="list" data-rail-track>
+		{shots.map((s) => (
+			<li class={`dev-${s.device ?? 'ipad'}`}>
+				<figure>
+					<div class="st-device"><div class="st-screen">{s.src ? <img src={s.src} alt={s.alt ?? ''} loading="lazy" /> : <span>[Screenshot · {s.title}]</span>}</div></div>
+					<figcaption><b>{s.title}</b><span>{s.caption}</span></figcaption>
+				</figure>
+			</li>
+		))}
+	</ul>
+	<div class="st-rail-controls"><button type="button" data-rail-prev aria-label="Previous screen">←</button><button type="button" data-rail-next aria-label="Next screen">→</button></div>
+</div>

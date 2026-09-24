@@ -1,0 +1,12 @@
+---
+/** Testo a sinistra, codice a destra con la linguetta del file: il campione di codice del sito sviluppatori. */
+interface Props { eyebrow?: string; title: string; text: string; code: string; file?: string; language?: string; tone?: 'blue' | 'acid' | 'violet' | 'orange' | 'paper' }
+const { eyebrow, title, text, code, file, language, tone = 'blue' } = Astro.props;
+---
+<div class={`st-code-split tone-${tone}`}>
+	<div>{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}<h3>{title}</h3><p>{text}</p></div>
+	<figure class="st-code">
+		{(file || language) && <figcaption><span>{file}</span><span>{language}</span></figcaption>}
+		<pre><code>{code}</code></pre>
+	</figure>
+</div>

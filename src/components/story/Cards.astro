@@ -1,0 +1,11 @@
+---
+/** Carte con segno, titolo, testo e link: il "cosa c'è di nuovo" e il "da dove iniziare". */
+import LinkIcon from '../lab/LinkIcon.astro';
+import { linkKind } from '../lab/chrome';
+interface Card { title: string; text: string; href: string; cta: string; tone?: 'paper' | 'dark' | 'acid' | 'blue' | 'violet' | 'orange' }
+interface Props { cards: Card[] }
+const { cards } = Astro.props;
+---
+<ul class="st-cards" role="list">{cards.map((c) => { const k = linkKind(c.href); return (
+	<li class={`tone-${c.tone ?? 'paper'}`}><a href={c.href}><span class="st-card-icon"><LinkIcon kind={k} size="22px" /></span><h3>{c.title}</h3><p>{c.text}</p><span class="st-card-cta">{c.cta} →</span></a></li>
+); })}</ul>

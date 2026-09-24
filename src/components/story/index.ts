@@ -1,0 +1,22 @@
+// Le sezioni riusabili dei racconti di progetto. Si importano da qui, nelle pagine o nell'MDX.
+export { default as Story } from './Story.astro';
+export { default as Section } from './Section.astro';
+export { default as Hero } from './Hero.astro';
+export { default as Highlights } from './Highlights.astro';
+export { default as Statement } from './Statement.astro';
+export { default as FeatureGrid } from './FeatureGrid.astro';
+export { default as Gallery } from './Gallery.astro';
+export { default as CodeSplit } from './CodeSplit.astro';
+export { default as Layers } from './Layers.astro';
+export { default as Numbers } from './Numbers.astro';
+export { default as Compare } from './Compare.astro';
+export { default as Specs } from './Specs.astro';
+export { default as Timeline } from './Timeline.astro';
+export { default as Callout } from './Callout.astro';
+export { default as Quote } from './Quote.astro';
+export { default as Cards } from './Cards.astro';
+export { default as Topics } from './Topics.astro';
+export { default as Faq } from './Faq.astro';
+export { default as Limits } from './Limits.astro';
+export { default as FullStory } from './FullStory.astro';
+export { default as Next } from './Next.astro';

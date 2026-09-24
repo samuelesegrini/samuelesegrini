@@ -1,0 +1,9 @@
+---
+/** Cosa la pagina dimostra e cosa no: l'onestà come sezione, non come nota a piè di pagina. */
+interface Props { title?: string; proven: string[]; notProven: string[] }
+const { title = 'What this page can prove, and what it can’t.', proven, notProven } = Astro.props;
+---
+<div class="st-limits"><h2>{title}</h2><div class="cols">
+	<div><span class="st-eyebrow">Verified</span><ul role="list">{proven.map((p) => <li>{p}</li>)}</ul></div>
+	<div><span class="st-eyebrow">Not demonstrated</span><ul role="list">{notProven.map((p) => <li>{p}</li>)}</ul></div>
+</div></div>

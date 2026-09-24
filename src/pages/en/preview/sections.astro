@@ -1,0 +1,85 @@
+---
+/**
+ * Il catalogo delle sezioni dei racconti di progetto: ogni componente con il suo nome e un
+ * esempio. Non elencato, noindex: è un banco di prova per chi scrive le pagine.
+ */
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import { Story, Section, Hero, Highlights, Statement, FeatureGrid, Gallery, CodeSplit, Layers, Numbers, Compare, Specs, Timeline, Callout, Quote, Cards, Topics, Faq, Limits, Next } from '../../../components/story';
+import { labPaths } from '../../../components/lab/chrome';
+import { withBase } from '../../../lib/base';
+
+const cover = withBase('/images/projects/covers/spingo.svg');
+const next = withBase('/images/projects/covers/galaxy-trucker.svg');
+const sections = [{ kicker: 'Catalogue', value: 'Sections', detail: { kicker: 'Components', value: '20' } }];
+const tag = (name: string) => `<${name} />`;
+---
+
+<ExperimentLayout lang="en" title="Story sections (catalogue)" currentHref="/en/preview/sections/" sections={sections} itHref={labPaths.it.home} enHref={labPaths.en.home} noindex>
+	<Story>
+		<Hero eyebrow={tag('Hero') + ' · eyebrow'} title="Project name" summary="One sentence that says what the project does and for whom."
+			facts={[{ value: '109', label: 'survey answers' }, { value: '7', label: 'test sessions' }, { value: '89.2', label: 'SUS score' }]}
+			actions={[{ label: 'Primary action ↓', href: '#', primary: true }, { label: 'Repository', href: 'https://github.com/samuelesegrini' }]}
+			image={cover} imageAlt="Sample cover" />
+
+		<Section eyebrow={tag('Section') + ' + ' + tag('Highlights')} title="The highlights." index={1}>
+			<Highlights cards={[{ text: 'One strong statement per card.', meta: 'tone · blue', tone: 'blue' }, { text: 'Dark cards for the claim that matters most.', meta: 'tone · dark', tone: 'dark' }, { text: 'Scroll sideways or use the buttons.', meta: 'tone · acid', tone: 'acid' }, { text: 'Four to six cards work best.', meta: 'tone · paper' }]} />
+		</Section>
+
+		<Statement>{tag('Statement')}: grey text with <b>the words that matter</b> in ink.</Statement>
+
+		<Section eyebrow={tag('FeatureGrid')} title="Tiles of different sizes." lead="size: small · wide · tall; optional chips (a sequence) or a glyph.">
+			<FeatureGrid tiles={[{ title: 'Wide tile with chips', text: 'Chips draw a sequence of states or steps.', size: 'wide', chips: ['One', 'Two', 'Three'] }, { title: 'Tall tile', text: 'A glyph gives it a focal point.', size: 'tall', tone: 'dark', glyph: '!' }, { title: 'Small tile', text: 'Plain.', tone: 'blue' }, { title: 'Small tile', text: 'Tinted.', tone: 'orange' }]} />
+		</Section>
+
+		<Section eyebrow={tag('Gallery')} title="Screens in a device." lead="device: ipad · iphone · mac. Without src it stays a declared placeholder.">
+			<Gallery shots={[{ title: 'iPhone screen', caption: 'device: iphone', device: 'iphone' }, { title: 'iPhone screen', caption: 'device: iphone', device: 'iphone' }, { title: 'iPad screen', caption: 'device: ipad' }, { title: 'Mac window', caption: 'device: mac', device: 'mac' }]} />
+		</Section>
+
+		<Section eyebrow={tag('CodeSplit')}>
+			<CodeSplit eyebrow="Deep dive" title="Text beside a code listing." text="A file tab and language on top, like a sample on the developer site." file="RouteView.swift" language="Swift" tone="violet"
+				code={'struct RouteView: View {\n    var route: Route\n    var body: some View {\n        Map { MapPolyline(route.line) }\n    }\n}'} />
+		</Section>
+
+		<Section eyebrow={tag('Layers')} title="Architecture as layers.">
+			<Layers layers={[{ label: 'Clients', items: ['JavaFX', 'TUI'] }, { label: 'Network', items: ['Socket', 'RMI'], tone: 'mixed' }, { label: 'Server', items: ['Authoritative game state'], tone: 'dark' }]} />
+		</Section>
+
+		<Section eyebrow={tag('Numbers')} title="By the numbers." tone="dark">
+			<Numbers items={[{ value: '88%', label: 'task success rate', method: 'Usability sessions, 7 participants' }, { value: '89.2', label: 'SUS score' }, { value: '4', label: 'interviews' }]} />
+		</Section>
+
+		<Section eyebrow={tag('Compare')} title="Side by side." center>
+			<Compare columns={[{ title: 'Before', items: ['A point', 'Another point'] }, { title: 'Middle', items: ['A point', 'Another point'] }, { title: 'After · featured', items: ['A point', 'Another point'] }]} />
+		</Section>
+
+		<Section eyebrow={tag('Timeline') + ' + ' + tag('Callout')} title="How it got here.">
+			<Timeline steps={[{ when: 'Week 1', title: 'Research', text: 'Survey and interviews.' }, { when: 'Week 3', title: 'Low-fi', text: 'Paper prototypes.' }, { when: 'Week 6', title: 'Hi-fi', text: 'Figma prototype.' }, { when: 'Week 8', title: 'Testing', text: 'Seven sessions.' }]} />
+			<Callout kind="note">kind: note · a neutral aside.</Callout>
+			<Callout kind="important">kind: important · something the reader must not miss.</Callout>
+			<Callout kind="warning">kind: warning · a limit or a known problem.</Callout>
+			<Callout kind="tip">kind: tip · a shortcut or a suggestion.</Callout>
+		</Section>
+
+		<Section eyebrow={tag('Specs')} title="Tech specs.">
+			<Specs specs={[{ label: 'Role', value: 'Your role' }, { label: 'Team', value: 'Team size' }, { label: 'Duration', value: 'How long' }, { label: 'Stack', value: 'Tools' }]} />
+		</Section>
+
+		<Quote quote="[A judgement only someone else can make about your work.]" name="[Name]" role={tag('Quote') + ' · role, organisation'} />
+
+		<Section eyebrow={tag('Cards')} title="Where to go next.">
+			<Cards cards={[{ title: 'Read the article', text: 'The reasoning behind the decisions.', href: '#', cta: 'Read', tone: 'violet' }, { title: 'Browse the code', text: 'The repository on GitHub.', href: 'https://github.com/samuelesegrini', cta: 'Open' }, { title: 'Write to me', text: 'Questions about this project.', href: 'mailto:samuele.segrini@gmail.com', cta: 'Email', tone: 'blue' }]} />
+		</Section>
+
+		<Section eyebrow={tag('Topics')} title="Topics and see also.">
+			<Topics groups={[{ title: 'Code', links: [{ label: 'Repository', href: 'https://github.com/samuelesegrini', note: 'github.com' }] }, { title: 'See also', links: [{ label: 'Another project', href: '#', note: 'Inside the site' }, { label: 'Course page', href: 'https://www.polimi.it', note: 'External site' }] }]} />
+		</Section>
+
+		<Section eyebrow={tag('Faq')} title="Questions you might ask.">
+			<Faq items={[{ q: 'A question a recruiter would ask?', a: 'A short, honest answer.' }, { q: 'Another question?', a: 'Another answer.' }]} />
+		</Section>
+
+		<Limits title={tag('Limits') + ': what this page can prove.'} proven={['Something verifiable']} notProven={['Something not demonstrated']} />
+
+		<Next title={tag('Next')} href="#" image={next} />
+	</Story>
+</ExperimentLayout>

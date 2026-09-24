@@ -1,0 +1,14 @@
+---
+/** Gruppi di collegamenti, come "Topics" e "See also" della documentazione: ognuno con l'icona della destinazione. */
+import LinkIcon from '../lab/LinkIcon.astro';
+import { linkKind } from '../lab/chrome';
+interface Link { label: string; href: string; note?: string }
+interface Group { title: string; links: Link[] }
+interface Props { groups: Group[] }
+const { groups } = Astro.props;
+---
+<div class="st-topics">{groups.map((g) => (
+	<div><h3>{g.title}</h3><ul role="list">{g.links.map((l) => { const ext = /^https?:/.test(l.href); return (
+		<li><a href={l.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener noreferrer' : undefined}><LinkIcon kind={linkKind(l.href)} size="20px" /><span><strong>{l.label}</strong>{l.note && <small>{l.note}</small>}</span></a></li>
+	); })}</ul></div>
+))}</div>

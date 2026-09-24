@@ -1,0 +1,7 @@
+---
+/** Le note a margine della documentazione: nota, importante, attenzione. */
+interface Props { kind?: 'note' | 'important' | 'warning' | 'tip'; title?: string }
+const { kind = 'note', title } = Astro.props;
+const names = { note: 'Note', important: 'Important', warning: 'Warning', tip: 'Tip' };
+---
+<aside class={`st-callout ${kind}`}><b>{title ?? names[kind]}</b><div><slot /></div></aside>

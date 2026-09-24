@@ -1,0 +1,14 @@
+---
+/** Il guscio di ogni sezione: titolo, sottotitolo, ancora e posto nell'indice del dock. */
+interface Props { id?: string; title?: string; lead?: string; eyebrow?: string; index?: number; center?: boolean; bleed?: boolean; tone?: 'paper' | 'dark' }
+const { id, title, lead, eyebrow, index, center = false, bleed = false, tone = 'paper' } = Astro.props;
+const headingId = id ? `${id}-title` : undefined;
+---
+<section class:list={['st-section', { center, bleed, dark: tone === 'dark' }]} id={id} data-section={index} aria-labelledby={title ? headingId : undefined}>
+	{(eyebrow || title || lead) && <header class="st-head">
+		{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}
+		{title && <h2 id={headingId}>{title}</h2>}
+		{lead && <p class="st-lead">{lead}</p>}
+	</header>}
+	<slot />
+</section>

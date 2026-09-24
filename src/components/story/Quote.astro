@@ -1,0 +1,6 @@
+---
+/** Una citazione di qualcun altro: solo per un giudizio che non puoi dare di te stesso. */
+interface Props { quote: string; name: string; role: string }
+const { quote, name, role } = Astro.props;
+---
+<figure class="st-quote"><blockquote>“{quote}”</blockquote><figcaption><b>{name}</b><span>{role}</span></figcaption></figure>

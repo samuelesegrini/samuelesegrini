@@ -1,0 +1,22 @@
+---
+import LinkIcon from '../lab/LinkIcon.astro';
+import { linkKind } from '../lab/chrome';
+interface Fact { value: string; label: string }
+interface Action { label: string; href: string; primary?: boolean }
+interface Props { eyebrow: string; title: string; summary: string; facts?: Fact[]; actions?: Action[]; image: string; imageAlt: string }
+const { eyebrow, title, summary, facts = [], actions = [], image, imageAlt } = Astro.props;
+---
+<header class="st-hero" id="overview" data-section="0">
+	<div class="st-hero-copy">
+		<span class="st-eyebrow">{eyebrow}</span>
+		<h1>{title}</h1>
+		<p class="st-hero-summary">{summary}</p>
+		{facts.length > 0 && <dl class="st-hero-facts">{facts.map((f) => <div><dt>{f.value}</dt><dd>{f.label}</dd></div>)}</dl>}
+		{actions.length > 0 && <div class="st-actions">{actions.map((a) => {
+			const kind = linkKind(a.href);
+			const external = /^https?:/.test(a.href);
+			return <a class:list={['st-button', { primary: a.primary }]} href={a.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{kind !== 'inside' && <LinkIcon kind={kind} />}{a.label}</a>;
+		})}</div>}
+	</div>
+	<img src={image} alt={imageAlt} width="1200" height="800" fetchpriority="high" />
+</header>

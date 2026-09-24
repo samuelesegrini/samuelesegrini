@@ -1,0 +1,18 @@
+<script>
+	// I pulsanti ← → delle file orizzontali: scorrono di una carta. Senza JavaScript resta lo scorrimento a mano.
+	function montaRails() {
+		document.querySelectorAll<HTMLElement>('[data-rail]').forEach((rail) => {
+			if (rail.dataset.bound) return;
+			rail.dataset.bound = '1';
+			const track = rail.querySelector<HTMLElement>('[data-rail-track]')!;
+			const step = (dir: number) => {
+				const item = track.firstElementChild as HTMLElement | null;
+				track.scrollBy({ left: dir * ((item?.offsetWidth ?? 300) + 20), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+			};
+			rail.querySelector('[data-rail-prev]')?.addEventListener('click', () => step(-1));
+			rail.querySelector('[data-rail-next]')?.addEventListener('click', () => step(1));
+		});
+	}
+	montaRails();
+	document.addEventListener('astro:page-load', montaRails);
+</script>

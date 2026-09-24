@@ -1,0 +1,7 @@
+---
+/** Domande e risposte richiudibili: le domande che un selezionatore farebbe davvero. */
+interface Item { q: string; a: string }
+interface Props { items: Item[] }
+const { items } = Astro.props;
+---
+<div class="st-faq">{items.map((i) => <details><summary>{i.q}<span aria-hidden="true">+</span></summary><p>{i.a}</p></details>)}</div>

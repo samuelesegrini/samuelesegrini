@@ -1,0 +1,5 @@
+---
+interface Props { title: string; href: string; image: string; label?: string }
+const { title, href, image, label = 'Next project' } = Astro.props;
+---
+<a class="st-next" href={href}><span class="st-eyebrow">{label}</span><h2>{title} →</h2><img src={image} alt="" width="1200" height="800" loading="lazy" /></a>

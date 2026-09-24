@@ -1,0 +1,16 @@
+---
+/** Il bento: tessere di misure diverse. `chips` disegna una sequenza di stati, `glyph` un segno grande. */
+interface Tile { title: string; text: string; tone?: 'paper' | 'dark' | 'acid' | 'blue' | 'violet' | 'orange'; size?: 'small' | 'wide' | 'tall'; chips?: string[]; glyph?: string }
+interface Props { tiles: Tile[] }
+const { tiles } = Astro.props;
+const chipTones = ['paper', 'blue', 'orange', 'acid', 'violet'];
+---
+<div class="st-bento">
+	{tiles.map((t) => (
+		<article class:list={['st-tile', `tone-${t.tone ?? 'paper'}`, t.size ?? 'small']}>
+			{t.glyph && <span class="st-glyph" aria-hidden="true">{t.glyph}</span>}
+			{t.chips && <ol class="st-chips" role="list">{t.chips.map((c, i) => <li class={`tone-${chipTones[i % chipTones.length]}`}>{c}</li>)}</ol>}
+			<div><h3>{t.title}</h3><p>{t.text}</p></div>
+		</article>
+	))}
+</div>

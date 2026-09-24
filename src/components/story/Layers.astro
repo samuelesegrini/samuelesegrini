@@ -1,0 +1,15 @@
+---
+/** L'architettura a strati: ogni riga un livello, dall'alto (funzioni) al basso (fondamenta). */
+interface Layer { label?: string; items: string[]; tone?: 'paper' | 'dark' | 'acid' | 'blue' | 'violet' | 'orange' | 'mixed' }
+interface Props { layers: Layer[] }
+const { layers } = Astro.props;
+const mixed = ['acid', 'violet', 'orange', 'blue'];
+---
+<div class="st-layers">
+	{layers.map((l) => (
+		<div class="st-layer">
+			{l.label && <span class="st-eyebrow">{l.label}</span>}
+			<ul role="list">{l.items.map((item, i) => <li class={`tone-${l.tone === 'mixed' ? mixed[i % mixed.length] : l.tone ?? 'paper'}`}>{item}</li>)}</ul>
+		</div>
+	))}
+</div>

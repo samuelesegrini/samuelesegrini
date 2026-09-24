@@ -8,7 +8,7 @@ import { render } from 'astro:content';
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import LabContentLink from '../../../components/lab/LabContentLink.astro';
 import LabContentImage from '../../../components/lab/LabContentImage.astro';
-import LinkIcon from '../../../components/lab/LinkIcon.astro';
+import { Story, Section, Hero, Highlights, Statement, FeatureGrid, Gallery, CodeSplit, Layers, Numbers, Compare, Specs, Timeline, Callout, Topics, Faq, Limits, FullStory, Next } from '../../../components/story';
 import { getPortfolioContent } from '../../../lib/portfolio';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -30,241 +30,108 @@ const sections = [
 	{ kicker: 'Chapter 5 of 6', value: '2023 vs 2026', detail: { kicker: 'Eras', value: 'App → toolkit' } },
 	{ kicker: 'Chapter 6 of 6', value: 'Full story', detail: { kicker: 'Chapters', value: `${chapters} to read` } },
 ];
-const screens = [
-	{ n: 'Dining room', view: 'DiningView', text: 'Tables by state and waiter' },
-	{ n: 'Order pad', view: 'OrderSheetView', text: 'Courses, variants, VAT' },
-	{ n: 'Kitchen', view: 'CookingView', text: 'Dishes by course' },
-];
 ---
 
 <ExperimentLayout lang="en" title="EasyManager (preview)" currentHref={labProjectPath('en', project.slug)} sections={sections}
 	itHref={labProjectPath('it', 'easymanager-operazioni-ristorante')} enHref={labProjectPath('en', project.slug)} noindex>
-	<article class="pp">
+	<Story>
+		<Hero eyebrow="iPad app · individual · 2023—2026" title="EasyManager"
+			summary="A restaurant’s orders, from the table to the fiscal printer, on the iPads in the room."
+			facts={[{ value: project.outcomes[0]?.value ?? '', label: 'Swift modules' }, { value: project.outcomes[1]?.value ?? '', label: 'dependencies' }, { value: '1', label: 'real restaurant' }]}
+			actions={[{ label: 'Read the case study ↓', href: '#story', primary: true }, ...(repo ? [{ label: 'View the 2023 code', href: repo }] : [])]}
+			image={withBase(project.coverImage)} imageAlt={project.coverAlt} />
 
-		<header class="pp-hero" id="overview" data-section="0">
-			<div class="pp-hero-copy">
-				<span class="pp-kicker">iPad app · individual · 2023—2026</span>
-				<h1>EasyManager</h1>
-				<p class="pp-tagline">A restaurant’s orders, from the table to the fiscal printer, on the iPads in the room.</p>
-				<dl class="pp-hero-facts">
-					<div><dt>{project.outcomes[0]?.value}</dt><dd>Swift modules</dd></div>
-					<div><dt>{project.outcomes[1]?.value}</dt><dd>dependencies</dd></div>
-					<div><dt>1</dt><dd>real restaurant</dd></div>
-				</dl>
-				<div class="pp-hero-actions">
-					<a class="primary" href="#story">Read the case study ↓</a>
-					{repo && <a href={repo} target="_blank" rel="noopener noreferrer"><LinkIcon kind="github" />View the 2023 code</a>}
-				</div>
-			</div>
-			<img src={withBase(project.coverImage)} alt={project.coverAlt} width="1200" height="800" fetchpriority="high" />
-		</header>
+		<Section id="highlights" title="The highlights." index={1}>
+			<Highlights cards={[
+				{ text: 'A real restaurant ran on it: counter, floor and kitchen.', meta: '2023 · Wape S.r.l', tone: 'blue' },
+				{ text: 'It talks to a fiscal printer in XML over HTTP.', meta: 'Epson ePOS · SOAP', tone: 'dark' },
+				{ text: 'Rebuilt as 31 Swift packages with zero dependencies.', meta: '2026 · Swift 6.3', tone: 'acid' },
+				{ text: '“Uncertain” is an answer, not an error.', meta: 'Fiscal layer', tone: 'orange' },
+			]} />
+		</Section>
 
-		<section class="pp-section" aria-labelledby="hl" data-section="1">
-			<h2 id="hl">The highlights.</h2>
-			<ul class="pp-highlights" role="list">
-				<li style="--c: var(--blue)"><p>A real restaurant ran on it: counter, floor and kitchen.</p><span class="pp-kicker">2023 · Wape S.r.l</span></li>
-				<li class="dark"><p>It talks to a fiscal printer in XML over HTTP.</p><span class="pp-kicker">Epson ePOS · SOAP</span></li>
-				<li style="--c: var(--acid)"><p>Rebuilt as 31 Swift packages with zero dependencies.</p><span class="pp-kicker">2026 · Swift 6.3</span></li>
-				<li style="--c: var(--orange)"><p>“Uncertain” is an answer, not an error.</p><span class="pp-kicker">Fiscal layer</span></li>
-			</ul>
-		</section>
+		<Statement>An order passes through <b>four pairs of hands</b> and <b>three devices</b>. The last step, a fiscal receipt, <b>can’t be undone with a tap.</b></Statement>
 
-		<p class="pp-statement">An order passes through <b>four pairs of hands</b> and <b>three devices</b>. The last step, a fiscal receipt, <b>can’t be undone with a tap.</b></p>
+		<Section id="how" title="How it holds together." lead="Three decisions give the 2026 toolkit its shape." index={2}>
+			<FeatureGrid tiles={[
+				{ title: 'An order is a durable state machine.', text: 'A timeout keeps the uncertainty for the next step instead of silently retrying, which could print a duplicate receipt.', size: 'wide', chips: ['Draft', 'Sent', 'Acknowledged?', 'Reconciled'] },
+				{ title: 'The fiscal layer may answer “uncertain”.', text: 'The request leaves, the reply may never come. Not knowing whether the printer printed is not the same as knowing it didn’t.', size: 'tall', tone: 'dark', glyph: '?' },
+				{ title: 'Hardware is not just another API.', text: 'One lane per device serialises access with Swift Concurrency: two valid commands become unsafe when interleaved.', size: 'wide', tone: 'violet' },
+			]} />
+		</Section>
 
-		<section class="pp-section" id="how" aria-labelledby="how-t" data-section="2">
-			<h2 id="how-t">How it holds together.</h2>
-			<p class="pp-lead">Three decisions give the 2026 toolkit its shape.</p>
-			<div class="pp-bento">
-				<div class="tile wide light">
-					<div class="states"><span>Draft</span>→<span style="--c: var(--blue)">Sent</span>→<span style="--c: var(--orange)">Acknowledged?</span>→<span style="--c: var(--acid)">Reconciled</span></div>
-					<div><h3>An order is a durable state machine.</h3><p>A timeout keeps the uncertainty for the next step instead of silently retrying, which could print a duplicate receipt.</p></div>
-				</div>
-				<div class="tile tall dark"><span class="big-q" aria-hidden="true">?</span><div><h3>The fiscal layer may answer “uncertain”.</h3><p>The request leaves, the reply may never come. Not knowing whether the printer printed is not the same as knowing it didn’t.</p></div></div>
-				<div class="tile wide violet split"><div><h3>Hardware is not just another API.</h3><p>One lane per device serialises access with Swift Concurrency: two valid commands become unsafe when interleaved.</p></div><div class="lanes" aria-hidden="true"><i></i><i></i><i></i></div></div>
-			</div>
-		</section>
+		<Section id="screens" title="Take a closer look." lead="One iPad per station. Every screen reads the same order in real time." index={3}>
+			<Gallery shots={[
+				{ title: 'Dining room', caption: 'DiningView · tables by state and waiter' },
+				{ title: 'Order pad', caption: 'OrderSheetView · courses, variants, VAT' },
+				{ title: 'Kitchen', caption: 'CookingView · dishes by course' },
+			]} />
+		</Section>
 
-		<section class="pp-section pp-screens" id="screens" aria-labelledby="scr" data-section="3">
-			<h2 id="scr">Take a closer look.</h2>
-			<p class="pp-lead">One iPad per station. Every screen reads the same order in real time.</p>
-			<ul class="pp-carousel" role="list">
-				{screens.map((s) => (
-					<li><figure><div class="device"><div class="screen">[Screenshot · {s.view}]</div></div><figcaption><b>{s.n} · {s.text}</b><span>{s.view}</span></figcaption></figure></li>
-				))}
-			</ul>
-		</section>
+		<Section>
+			<CodeSplit eyebrow="Deep dive · the fiscal printer" title="A receipt is an XML document, sent once."
+				text="The app wraps each receipt in a SOAP envelope and posts it to the Epson printer in the room: one line per dish with its VAT department, one total per payment method."
+				file="fpmate.cgi · request" language="XML"
+				code={'<beginFiscalReceipt />\n<printRecItem description="Risotto"\n  quantity="2" unitPrice="14.00"\n  department="1" />\n<printRecTotal payment="Cash"\n  amount="28.00" />\n<endFiscalReceipt />'} />
+		</Section>
 
-		<section class="pp-deep" aria-labelledby="fp">
-			<div><span class="pp-kicker">Deep dive · the fiscal printer</span><h2 id="fp">A receipt is an XML document, sent once.</h2><p>The app wraps each receipt in a SOAP envelope and posts it to the Epson printer in the room: one line per dish with its VAT department, one total per payment method.</p></div>
-			<pre>&lt;beginFiscalReceipt /&gt;
-&lt;printRecItem description="Risotto"
-  quantity="2" unitPrice="14.00"
-  department="1" /&gt;
-&lt;printRecTotal payment="Cash"
-  amount="28.00" /&gt;
-&lt;endFiscalReceipt /&gt;</pre>
-		</section>
+		<Section title="Built in layers." lead="Feature code depends on narrow contracts, never on the app.">
+			<Layers layers={[
+				{ label: 'Features', items: ['Dining', 'Kitchen', 'Till'] },
+				{ label: 'Contracts', items: ['Order domain', 'Device lanes', 'Fiscal layer'], tone: 'mixed' },
+				{ label: 'Foundation', items: ['SQL persistence · DocC on every versioned API'], tone: 'dark' },
+			]} />
+		</Section>
 
-		<section class="pp-section" aria-labelledby="arch">
-			<h2 id="arch">Built in layers.</h2>
-			<p class="pp-lead">Feature code depends on narrow contracts, never on the app.</p>
-			<div class="pp-layers">
-				<div><span>Dining</span><span>Kitchen</span><span>Till</span></div>
-				<div><span style="--c: var(--acid)">Order domain</span><span style="--c: var(--violet)">Device lanes</span><span style="--c: var(--orange)">Fiscal layer</span></div>
-				<div><span class="dark">SQL persistence · DocC on every versioned API</span></div>
-			</div>
-		</section>
+		<Section id="numbers" title="By the numbers." tone="dark" index={4}>
+			<Numbers items={project.outcomes} />
+		</Section>
 
-		<section class="pp-numbers" aria-labelledby="num" data-section="4">
-			<h2 id="num">By the numbers.</h2>
-			<dl>{project.outcomes.map((o, i) => <div><dt style={`--c: ${['var(--blue)', 'var(--acid)', 'var(--orange)'][i % 3]}`}>{o.value}</dt><dd>{o.label}</dd></div>)}</dl>
-		</section>
+		<Section id="eras" title="Same problem. Two eras." center index={5}>
+			<Compare columns={[
+				{ title: '2023 · The app', items: ['SwiftUI with MVVM, six shared view models', 'Firestore snapshots keep every iPad in sync', 'Pre-bill, fiscal receipt, X and Z reports', 'Connection errors left to the operator'] },
+				{ title: '2026 · The toolkit', items: ['Swift 6.3 packages separated by contract', 'SQL persistence at the boundary, DocC beside every API', 'Outbox, acknowledgement and reconciliation as phases', 'Uncertainty modelled as a domain value'] },
+			]} />
+		</Section>
 
-		<section class="pp-section" id="eras" aria-labelledby="eras-t" data-section="5">
-			<h2 id="eras-t" class="center">Same problem. Two eras.</h2>
-			<div class="pp-eras">
-				<div><span class="pp-kicker">2023 · The app</span><ul><li>SwiftUI with MVVM, six shared view models</li><li>Firestore snapshots keep every iPad in sync</li><li>Pre-bill, fiscal receipt, X and Z reports</li><li>Connection errors left to the operator</li></ul></div>
-				<div class="acid"><span class="pp-kicker">2026 · The toolkit</span><ul><li>Swift 6.3 packages separated by contract</li><li>SQL persistence at the boundary, DocC beside every API</li><li>Outbox, acknowledgement and reconciliation as phases</li><li>Uncertainty modelled as a domain value</li></ul></div>
-			</div>
-		</section>
+		<Section title="How it got here.">
+			<Timeline steps={[
+				{ when: 'April 2023', title: 'Twenty commits', text: 'A SwiftUI app for a real restaurant: floor, kitchen, till, fiscal printer.' },
+				{ when: '2023', title: 'Scope grows', text: 'Loyalty, reservations, shifts, inventory: the seams become visible.' },
+				{ when: '2026', title: 'Re-engineering', text: 'Swift 6.3 packages separated by contract.' },
+				{ when: '0.1.0', title: 'First release', text: '31 products documented and built, no remote dependencies.' },
+			]} />
+			<Callout kind="important">The 0.1 source isn’t public yet; the release facts on this page come from a verified checkout.</Callout>
+		</Section>
 
-		<section class="pp-section" aria-labelledby="role">
-			<h2 id="role">My part.</h2>
-			<dl class="pp-role">
-				<div><dt>Role</dt><dd>{project.role}</dd></div>
-				<div><dt>Team</dt><dd>Individual work</dd></div>
-				<div><dt>Client</dt><dd>Wape S.r.l, a working restaurant</dd></div>
-				<div><dt>Stack</dt><dd>{project.technologies.join(' · ')}</dd></div>
-			</dl>
-		</section>
+		<Section title="My part.">
+			<Specs specs={[
+				{ label: 'Role', value: project.role },
+				{ label: 'Team', value: 'Individual work' },
+				{ label: 'Client', value: 'Wape S.r.l, a working restaurant' },
+				{ label: 'Stack', value: project.technologies.join(' · ') },
+			]} />
+		</Section>
 
-		<section class="pp-proof" aria-labelledby="proof-t">
-			<h2 id="proof-t">What this page can prove, and what it can’t.</h2>
-			<p>The 2023 repository is public. The 0.1 release facts come from a verified checkout of source that isn’t public yet. Physical-device compatibility and fiscal certification are not demonstrated.</p>
-		</section>
+		<Section title="Questions you might ask.">
+			<Faq items={[
+				{ q: 'Did the restaurant actually use it?', a: 'The 2023 app was written for a real restaurant and its fiscal printer. Device compatibility and fiscal certification of the 2026 toolkit are not demonstrated yet.' },
+				{ q: 'Why rebuild instead of fixing the app?', a: 'Six shared view models made local changes carry consequences elsewhere. The re-engineering draws boundaries around orders, devices and the fiscal layer.' },
+				{ q: 'Can I read the code?', a: 'The 2023 application is public on GitHub. The 2026 source is not public yet.' },
+			]} />
+		</Section>
 
-		<section class="pp-story" id="story" data-section="6">
-			<details>
-				<summary><h2>Read the full story</h2><span class="pp-kicker">{chapters} chapters ↓</span></summary>
-				<div class="prosa"><Content components={{ a: LabContentLink, img: LabContentImage }} /></div>
-			</details>
-		</section>
+		<Limits proven={['The 2023 repository, readable in full', 'The 0.1 release facts, from a verified checkout']} notProven={['Physical-device compatibility', 'Fiscal certification', 'The unreleased 0.2 work']} />
 
-		<a class="pp-next" href={labProjectPath('en', next.slug)}>
-			<span class="pp-kicker">Next project</span>
-			<h2>{next.title} →</h2>
-			<img src={withBase(next.coverImage)} alt="" width="1200" height="800" loading="lazy" />
-		</a>
-	</article>
+		<Section title="Explore the work.">
+			<Topics groups={[
+				{ title: 'Code', links: repo ? [{ label: 'Original application (2023)', href: repo, note: 'My repository · github.com' }] : [] },
+				{ title: 'Related projects', links: [{ label: next.title, href: labProjectPath('en', next.slug), note: 'Another system that has to agree across devices' }] },
+			]} />
+		</Section>
+
+		<FullStory chapters={chapters} index={6}><Content components={{ a: LabContentLink, img: LabContentImage }} /></FullStory>
+
+		<Next title={next.title} href={labProjectPath('en', next.slug)} image={withBase(next.coverImage)} />
+	</Story>
 </ExperimentLayout>
-
-<style>
-	.pp { --pad: max(24px, calc((100vw - 1200px) / 2)); color: #171713; }
-	.pp h2 { margin: 0; font-size: clamp(36px, 4vw, 56px); font-weight: 600; letter-spacing: -.055em; line-height: 1.05; }
-	.pp h3 { margin: 0 0 10px; font-size: clamp(24px, 2.2vw, 32px); font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
-	.pp p { margin: 0; }
-	.pp-kicker { font: 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-	.pp-lead { max-width: 60ch; margin-top: 12px !important; font-size: 19px; line-height: 1.55; color: #3b3830; }
-
-
-	.pp-hero { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 40px; align-items: center; min-height: 100svh; padding: 40px 0 40px var(--pad); overflow: hidden; }
-	.pp-hero-copy { display: grid; gap: 24px; }
-	.pp-hero .pp-kicker { color: #6b6760; }
-	.pp-hero h1 { margin: 0; font-size: clamp(56px, 7.2vw, 104px); font-weight: 600; line-height: .92; letter-spacing: -.07em; }
-	.pp-tagline { font-size: clamp(20px, 1.8vw, 26px); font-weight: 500; line-height: 1.3; letter-spacing: -.02em; color: #3b3830; }
-	.pp-hero-facts { display: flex; flex-wrap: wrap; gap: 36px; margin: 12px 0 0; }
-	.pp-hero-facts dt { font-size: 44px; font-weight: 600; letter-spacing: -.05em; line-height: 1; }
-	.pp-hero-facts dd { margin: 6px 0 0; font-size: 13px; color: #5e5a53; }
-	.pp-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
-	.pp-hero-actions a { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 22px; border: 1px solid #171713; border-radius: 999px; font-size: 15px; font-weight: 600; }
-	.pp-hero-actions a.primary { background: #171713; color: #fffef9; }
-	.pp-hero img { width: 100%; max-width: 900px; height: auto; border-radius: 40px; transform: rotate(-3deg) translateX(40px); }
-
-	.pp-section { padding: 150px var(--pad) 0; }
-	.pp-section .center { text-align: center; }
-	.pp-highlights { display: grid; grid-auto-flow: column; grid-auto-columns: min(380px, 80vw); gap: 20px; margin: 36px calc(-1 * var(--pad)) 0 0; padding: 0 var(--pad) 12px 0; overflow-x: auto; scroll-snap-type: x mandatory; list-style: none; }
-	.pp-highlights li { display: grid; align-content: space-between; min-height: 460px; padding: 36px; border-radius: 32px; background: var(--c, #fffefb); scroll-snap-align: start; }
-	.pp-highlights li.dark { background: #171713; color: #f4f1e9; }
-	.pp-highlights p { font-size: 30px; font-weight: 600; line-height: 1.15; letter-spacing: -.04em; }
-
-	.pp-statement { max-width: 22ch; margin: 150px auto 0 !important; padding: 0 24px; font-size: clamp(34px, 4vw, 56px); font-weight: 600; line-height: 1.12; letter-spacing: -.05em; text-align: center; color: #b4b0a6; }
-	.pp-statement b { color: #171713; font-weight: inherit; }
-
-	.pp-bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 40px; }
-	.tile { display: grid; align-content: space-between; gap: 28px; min-height: 340px; padding: 40px; border-radius: 32px; }
-	.tile.wide { grid-column: span 2; }
-	.tile.tall { grid-row: span 2; }
-	.tile.light { background: #fffefb; border: 1px solid #d3d1ca; }
-	.tile.dark { background: #171713; color: #f4f1e9; }
-	.tile.violet { background: var(--violet); }
-	.tile.split { grid-template-columns: 1fr 1fr; align-items: center; }
-	.tile p { font-size: 17px; line-height: 1.55; }
-	.big-q { font-size: 96px; font-weight: 600; line-height: 1; color: var(--orange); }
-	.states { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-	.states span { padding: 12px 18px; border-radius: 999px; background: var(--c, #e8e5dd); font: 13px var(--mono); }
-	.lanes { display: grid; gap: 10px; }
-	.lanes i { height: 40px; border: 2px solid #171713; border-radius: 12px; background: #fffefb; }
-	.lanes i:nth-child(2) { margin-left: 60px; } .lanes i:nth-child(3) { margin-left: 120px; }
-
-	.pp-carousel { display: grid; grid-auto-flow: column; grid-auto-columns: min(820px, 88vw); gap: 28px; margin: 44px calc(-1 * var(--pad)) 0 0; padding: 0 var(--pad) 16px 0; overflow-x: auto; scroll-snap-type: x mandatory; list-style: none; }
-	.pp-carousel li { scroll-snap-align: start; }
-	.pp-carousel figure { display: grid; gap: 16px; margin: 0; }
-	.device { aspect-ratio: 1.43; padding: 16px; border-radius: 40px; background: #171713; }
-	.screen { display: grid; place-items: center; height: 100%; border-radius: 26px; background: #e9ebe1; color: #5e5a53; font: 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-	.pp-carousel figcaption { display: grid; gap: 4px; }
-	.pp-carousel figcaption b { font-size: 20px; letter-spacing: -.03em; }
-	.pp-carousel figcaption span { font: 12px var(--mono); color: #6b6760; }
-
-	.pp-deep { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin: 150px var(--pad) 0; padding: 64px; border-radius: 40px; background: var(--blue); }
-	.pp-deep h2 { margin: 16px 0; font-size: clamp(32px, 3.4vw, 48px); }
-	.pp-deep p { font-size: 18px; line-height: 1.6; }
-	.pp-deep pre { margin: 0; padding: 32px; overflow-x: auto; border-radius: 24px; background: #171713; color: #f4f1e9; font: 14px/1.7 var(--mono); }
-
-	.pp-layers { display: grid; gap: 12px; margin-top: 40px; }
-	.pp-layers div { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 12px; }
-	.pp-layers span { padding: 28px; border: 1px solid #d3d1ca; border-radius: 22px; background: var(--c, #fffefb); font-size: 22px; font-weight: 600; }
-	.pp-layers span.dark { border: 0; background: #171713; color: #f4f1e9; }
-
-	.pp-numbers { margin-top: 150px; padding: 110px var(--pad); background: #171713; color: #f4f1e9; }
-	.pp-numbers dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin: 60px 0 0; }
-	.pp-numbers dl > div { padding-top: 28px; border-top: 1px solid #4a4a44; }
-	.pp-numbers dt { font-size: clamp(64px, 8vw, 120px); font-weight: 600; line-height: 1; letter-spacing: -.07em; color: var(--c); }
-	.pp-numbers dd { margin: 16px 0 0; font-size: 19px; }
-
-	.pp-eras { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 48px; }
-	.pp-eras > div { padding: 44px; border: 1px solid #d3d1ca; border-radius: 32px; background: #fffefb; }
-	.pp-eras > div.acid { border-color: transparent; background: var(--acid); }
-	.pp-eras ul { display: grid; gap: 18px; margin: 28px 0 0; padding: 0; list-style: none; font-size: 19px; line-height: 1.4; }
-
-	.pp-role { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin: 40px 0 0; }
-	.pp-role > div { padding: 32px; border: 1px solid #d3d1ca; border-radius: 28px; background: #fffefb; }
-	.pp-role dt { font: 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: #6b6760; }
-	.pp-role dd { margin: 14px 0 0; font-size: 21px; font-weight: 600; line-height: 1.25; }
-
-	.pp-proof { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin: 150px var(--pad) 0; padding-top: 48px; border-top: 1px solid #d3d1ca; }
-	.pp-proof h2 { font-size: clamp(30px, 3vw, 44px); }
-	.pp-proof p { font-size: 19px; line-height: 1.6; color: #3b3830; }
-
-	.pp-story { margin: 100px var(--pad) 0; border-top: 1px solid #d3d1ca; border-bottom: 1px solid #d3d1ca; }
-	.pp-story summary { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 40px 0; cursor: pointer; list-style: none; }
-	.pp-story summary::-webkit-details-marker { display: none; }
-	.pp-story summary h2 { font-size: clamp(28px, 3vw, 36px); }
-	.pp-story .prosa { max-width: 70ch; margin: 0 auto; padding-bottom: 60px; }
-
-	.pp-next { display: grid; grid-template-columns: 1fr minmax(0, 520px); grid-template-rows: auto 1fr; gap: 24px 60px; align-items: center; margin-top: 120px; padding: 110px var(--pad); background: var(--orange); }
-	.pp-next h2 { grid-row: 2; font-size: clamp(56px, 7vw, 110px); line-height: .92; letter-spacing: -.065em; }
-	.pp-next img { grid-column: 2; grid-row: 1 / 3; width: 100%; height: auto; border-radius: 28px; }
-
-	@media (max-width: 900px) {
-			.pp-bento, .pp-eras, .pp-deep, .pp-proof, .pp-numbers dl { grid-template-columns: minmax(0, 1fr); }
-		.tile.wide, .tile.tall { grid-column: auto; grid-row: auto; }
-		.tile.split { grid-template-columns: minmax(0, 1fr); }
-		.pp-deep { padding: 32px; gap: 32px; }
-		.pp-role { grid-template-columns: 1fr 1fr; }
-		.pp-layers div { grid-auto-flow: row; }
-		.pp-next { grid-template-columns: minmax(0, 1fr); }
-		.pp-next img { grid-column: 1; grid-row: auto; }
-		.pp-hero { grid-template-columns: minmax(0, 1fr); min-height: 0; padding: 48px var(--pad) 0; }
-		.pp-hero img { border-radius: 24px; transform: none; }
-	}
-</style>
