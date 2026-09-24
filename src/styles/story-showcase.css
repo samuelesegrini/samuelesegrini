@@ -52,6 +52,8 @@
 .st-fx-file { padding: 5px 10px; border-radius: 999px; background: var(--tint); color: var(--ink); font-size: 11px; }
 .st-fx-figure { position: sticky; top: 96px; display: grid; gap: 16px; margin: 0; }
 .st-fx-figure .st-frame { box-shadow: 0 40px 70px -40px rgba(23, 23, 19, .55); }
+/* un iPhone resta della misura di un telefono: centrato nella colonna, invece di riempirla */
+.st-fx-iphone .st-fx-figure > .st-frame-iphone { justify-self: center; width: min(100%, 340px); }
 .st-fx .st-frame-screen { background: var(--st-card); color: var(--ink); }
 .st-fx-screen { grid-area: 1 / 1; width: 100%; height: 100%; visibility: hidden; opacity: 0; transition: opacity .45s var(--st-ease), visibility 0s linear .45s; }
 .st-fx-screen > img { width: 100%; height: 100%; object-fit: cover; }

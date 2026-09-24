@@ -1,34 +1,51 @@
 ---
 /**
  * Anteprima non elencata del racconto di PoliVerse, costruita solo con le sezioni della seconda
- * serie. I numeri vengono dal repository (commit e983281); le schermate sono illustrazioni
- * dichiarate, da sostituire con catture vere. Fuori dalla sitemap, noindex.
+ * serie. I numeri vengono dal repository (commit e983281) e hanno la loro nota in fondo; le icone
+ * sono i file veri dell'app; le schermate sono illustrazioni dichiarate dell'interfaccia italiana,
+ * da sostituire con le catture del test ScreenshotSweepUITests. Fuori dalla sitemap, noindex.
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, Device, AppHero, Lockup, HighlightsGallery, FeatureExplorer, Stats, CodeSteps, StateMachine,
-	ExplodedStack, TechSpecs, Limits, Declaration, Faq, KeepExploring, PageIndex,
+	Story, Section, Device, AppHero, Lockup, HighlightsGallery, FeatureExplorer, MediaCards, ToggleFigure, Stats,
+	ChangeLog, ThenNow, Findings, CodeSteps, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
+	Sources, Faq, KeepExploring, PageIndex,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 
 const repo = 'https://github.com/samuelesegrini/PoliVerse';
-const icon = withBase('/images/projects/poliverse-icon.svg');
+const icon = (name: string) => withBase(`/images/projects/poliverse/icons/${name}.svg`);
 const cover = (name: string) => withBase(`/images/projects/covers/${name}.svg`);
 
+// I colori in cui escono Giorno e Vicino: gli stessi da cui parte un Flavor (AppIconChoice).
+const colours: [string, string][] = [
+	['classic', 'Classic'], ['lavender', 'Lavender'], ['indigo', 'Indigo'], ['sky', 'Sky'], ['mint', 'Mint'], ['sage', 'Sage'],
+	['mandarin', 'Mandarin'], ['coral', 'Coral'], ['raspberry', 'Raspberry'], ['coffee', 'Coffee'], ['slate', 'Slate'], ['graphite', 'Graphite'],
+];
+const specials: [string, string][] = [
+	['neon', 'Neon'], ['spectrum', 'Spectrum'], ['leather', 'Leather'], ['holographic', 'Holographic'], ['hyperspace', 'Hyperspace'],
+	['blueprint', 'Blueprint'], ['circuit', 'Circuit'], ['heavens', 'Heavens'], ['observatory', 'Observatory'], ['soft', 'Soft'], ['paper', 'Paper'],
+];
+const appearances: [string, string][] = [['orbit', 'Default'], ['orbit-dark', 'Dark'], ['orbit-clear', 'Clear'], ['orbit-tinted', 'Tinted']];
+
+// La rampa del Flavor di partenza, dal diagramma DocC flavor-ramp.svg: dal più profondo al più chiaro.
+const ramp = ['#11777A', '#13758A', '#157099', '#1767A8', '#195BB8', '#1B4BC7', '#1D37D6', '#1F20E5'];
+
 const sections = [
-	{ kicker: 'Chapter 1 of 6', value: 'Highlights', detail: { kicker: 'In short', value: '5 highlights' } },
-	{ kicker: 'Chapter 2 of 6', value: 'The app', detail: { kicker: 'Tabs', value: 'Today · Courses · Career · Search' } },
-	{ kicker: 'Chapter 3 of 6', value: 'Numbers', detail: { kicker: 'Unit tests', value: '1,220' } },
-	{ kicker: 'Chapter 4 of 6', value: 'Engineering', detail: { kicker: 'Layers', value: '4 pulled apart' } },
-	{ kicker: 'Chapter 5 of 6', value: 'Specs & limits', detail: { kicker: 'Dependencies', value: 'none' } },
-	{ kicker: 'Chapter 6 of 6', value: 'Questions', detail: { kicker: 'Answers', value: '4' } },
+	{ kicker: 'Chapter 1 of 7', value: 'Highlights', detail: { kicker: 'In short', value: '5 highlights' } },
+	{ kicker: 'Chapter 2 of 7', value: 'The app', detail: { kicker: 'Tabs', value: 'Today · Courses · Career · Search' } },
+	{ kicker: 'Chapter 3 of 7', value: 'Make it yours', detail: { kicker: 'Icons', value: '36 to choose from' } },
+	{ kicker: 'Chapter 4 of 7', value: 'Fifteen days', detail: { kicker: 'Commits', value: '309' } },
+	{ kicker: 'Chapter 5 of 7', value: 'Under the hood', detail: { kicker: 'Public API', value: 'none' } },
+	{ kicker: 'Chapter 6 of 7', value: 'Decisions', detail: { kicker: 'Written down', value: '6 rules' } },
+	{ kicker: 'Chapter 7 of 7', value: 'Specs & questions', detail: { kicker: 'Dependencies', value: 'none' } },
 ];
 
 const cieFlow = `web view sees  https://ios.idserver.servizicie.interno.gov.it/…&nextUrl=…
      ↓ cancel
 we open        CIEID://https://ios.idserver…&sourceApp=one.wape.PoliVerse
-     ↓ student taps the card and enters the PIN
+     ↓ the student taps the card and enters the PIN
 CieID opens    one.wape.PoliVerse://https://idserver.servizicie.interno.gov.it/…
      ↓ onOpenURL → CieIDRouter
 we strip to    https://idserver.servizicie.interno.gov.it/…
@@ -38,87 +55,277 @@ login continues`;
 
 <ExperimentLayout lang="en" title="PoliVerse (preview)" currentHref="/en/preview/poliverse/" sections={sections} itHref={labPaths.it.home} enHref={labPaths.en.home} noindex>
 	<Story>
-		<AppHero name="PoliVerse" title="Your whole Politecnico, in one app." tint="blue"
-			summary="An unofficial SwiftUI client for Politecnico di Milano students: timetable, career, courses, WeBeep materials, rooms and campus, on iPhone, iPad, widgets and Apple Watch — and it works offline."
-			meta="Individual work · iOS 27, Swift 6 · September 2026"
+		<AppHero name="PoliVerse" title="Your whole Politecnico. In one app." tint="blue"
+			summary="An unofficial app for Politecnico di Milano students: timetable, courses, WeBeep materials, lesson recordings, exams and rooms, on iPhone, iPad, Apple Watch and the Lock Screen. It opens with content, even offline."
+			meta="Individual work · SwiftUI · iOS 27 · September 2026"
 			actions={[{ label: 'Read the story', href: '#highlights' }, { label: 'Source on GitHub', href: repo }]}>
-			<img slot="mark" src={icon} alt="" width="104" height="104" class="pv-mark" />
+			<img slot="mark" src={icon('orbit')} alt="" width="104" height="104" class="pv-mark" />
 			<Fragment slot="devices">
 				<Device kind="iphone">
-					<div class="pv-today" role="img" aria-label="Illustration of the Today tab: the next lecture, the day's timetable and the next exam">
+					<div class="pv-phone" role="img" aria-label="Illustration of the Today tab in Italian: the date large, the lesson in progress, what is coming up and the rest of the day">
 						<span class="pv-status st-mono">9:41</span>
-						<b class="pv-h">Today</b>
-						<span class="pv-card now"><span class="st-mono">Now · 10:15</span><b>Software Engineering</b><span>Room 3.1.2 · Leonardo</span></span>
-						<span class="pv-row"><i class="violet"></i><span><b>Computer Networks</b><span>12:15 · T.2.1</span></span></span>
-						<span class="pv-row"><i class="orange"></i><span><b>Human–Computer Interaction</b><span>14:15 · B.4.2</span></span></span>
-						<span class="pv-card exam"><span class="st-mono">Next exam · in 12 days</span><b>Probability</b></span>
-						<span class="pv-tabs"><i class="on">Today</i><i>Courses</i><i>Career</i><i>Search</i></span>
+						<span class="pv-hello">Buona giornata!</span>
+						<span class="pv-date"><b>24.09</b><b>GIO</b></span>
+						<span class="pv-kicker">Lezione in corso</span>
+						<span class="pv-card now"><span class="pv-tag">10:15 – 12:15 · Aula 3.1.2</span><b>Ingegneria del Software</b><span class="pv-bar"><i style="width: 38%"></i></span></span>
+						<span class="pv-kicker">In arrivo</span>
+						<span class="pv-row"><i class="c-orange"></i><span><b>Probabilità e Statistica</b><span>Esame · tra 12 giorni</span></span></span>
+						<span class="pv-row"><i class="c-violet"></i><span><b>Tecnologie per il Web</b><span>Consegna · domani 23:59</span></span></span>
+						<span class="pv-accessory"><i></i>Ingegneria del Software · 3.1.2</span>
+						<span class="pv-tabs"><i class="on">Oggi</i><i>Corsi</i><i>Carriera</i><i>Cerca</i></span>
 					</div>
 				</Device>
 				<div class="st-ahero-side">
 					<Device kind="watch">
-						<div class="pv-watch"><span class="st-mono">Next lecture</span><b>Networks</b><span>12:15 · T.2.1</span></div>
+						<div class="pv-watch" role="img" aria-label="Illustration of the Watch app: the next lecture"><span class="st-mono">Prossima lezione</span><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></div>
 					</Device>
-					<span class="st-mono">On the wrist: today's lectures and the next exam, sent from the phone.</span>
+					<span class="st-mono">Illustrations of the Italian interface. On the wrist: the day and the next exam, sent from the phone.</span>
 				</div>
 			</Fragment>
 		</AppHero>
 
 		<Section id="highlights" tone="ink2" title="The highlights." link={{ label: 'Browse the source', href: repo }} index={1}>
 			<HighlightsGallery cards={[
-				{ text: 'The Politecnico has no public API. PoliVerse reads the same config the official app does.', meta: 'Service directory · 2026', name: 'No public API', tone: 'blue' },
+				{ text: 'The Politecnico has no public API. PoliVerse reads the config the official app reads, so a moved backend costs no release.', meta: 'Service directory · 11 September', name: 'No public API', tone: 'blue' },
 				{ text: '“Entra con CIE” comes back to the app, not to Safari.', meta: 'CieID hand-off · sourceApp', name: 'CIE login', tone: 'dark' },
-				{ text: 'Opens with content, even offline. A failed refresh never clears the screen.', meta: 'Store · offline copy', name: 'Offline first', tone: 'acid' },
-				{ text: 'It reads, and never writes: no enrolling, no refusing a mark.', meta: 'Decision · 22 September 2026', name: 'Read-only on purpose', tone: 'orange' },
-				{ text: 'Widgets, a Live Activity, controls and a Watch app share one offline store.', meta: 'App group · Shared types', name: 'Outside the app', tone: 'violet' },
+				{ text: 'It opens with content, even offline. A failed refresh never clears the screen.', meta: 'Store · offline copy', name: 'Offline first', tone: 'acid' },
+				{ text: 'It reads, and never writes. A wrong read costs a refresh; a wrong write costs a session.', meta: 'Decision · 22 September', name: 'Read-only on purpose', tone: 'orange' },
+				{ text: 'One colour becomes the whole app, down to the icon on the Home Screen.', meta: 'Personalizza · 36 icons', name: 'Make it yours', tone: 'violet' },
 			]}>
 				<div slot="media-1" class="pv-json st-mono" aria-hidden="true">
-					<span>GET …/polimi_app/rest/jaf/public/props → 200</span>
+					<span>GET …/polimi_app/rest/jaf/public/props <em>200 · no auth</em></span>
 					<span>"iae.base_url": "https://api.polimi.it/iae"</span>
 					<span>"libretto.base_url": "…/piano_studente"</span>
 					<span>"ws_aule.base_url": "…/ws_aule"</span>
 				</div>
 				<ol slot="media-2" class="pv-steps st-mono" aria-label="The CIE hand-off in four steps">
-					<li>intercept the CieID link</li><li>re-open it with sourceApp</li><li>card + PIN in CieID</li><li class="ok">back in PoliVerse</li>
+					<li>catch the CieID link</li><li>re-open it with sourceApp</li><li>card + PIN in CieID</li><li class="ok">back in PoliVerse</li>
 				</ol>
+				<div slot="media-3" class="pv-fresh" role="img" aria-label="A cached timetable still on screen, with a line saying it is forty minutes old and the refresh failed">
+					<span class="pv-fresh-line st-mono"><i></i>Cached copy · 40 min old · refresh failed</span>
+					<span class="pv-fresh-card"><b>12:15</b><span>Reti di Calcolatori</span></span>
+					<span class="pv-fresh-card"><b>14:15</b><span>Basi di Dati</span></span>
+				</div>
 				<ol slot="media-4" class="pv-nope" aria-label="Actions the app does not perform">
 					<li>Enrol in a sitting</li><li>Refuse a mark</li><li>Post in a forum</li><li>Hand in an assignment</li>
 				</ol>
+				<ul slot="media-5" class="pv-icon-strip" aria-label="Six of the app icons">
+					{['orbit', 'dial-mint', 'closeup-coral', 'special-neon', 'special-blueprint', 'special-soft'].map((n) => <li><img src={icon(n)} alt="" width="120" height="120" loading="lazy" /></li>)}
+				</ul>
 			</HighlightsGallery>
 		</Section>
 
-		<Section id="app" eyebrow="PoliVerse · Take a closer look" title="Four tabs." dim="Everything a semester needs." index={2}>
-			<FeatureExplorer label="Tabs" device="iphone" note="Illustration · screenshots to replace" features={[
-				{ title: 'Today', file: 'Features/Calendar', tint: 'blue', text: 'The next lecture with its room, the rest of the day, and the next exam. The same data feeds the widgets and the Watch.' },
-				{ title: 'Courses', file: 'Features/WeBeep', tint: 'acid', text: 'Every course of the year with its WeBeep materials, recordings and teachers, cached so it opens instantly.' },
-				{ title: 'Career', file: 'Features/Career', tint: 'violet', text: 'The libretto, exam sittings and the study plan, with averages computed from the marks you actually have.' },
-				{ title: 'Search', file: 'Features/Search', tint: 'orange', text: 'One field across courses, agenda and exam sittings, plus free rooms, the campus map, news and notices.' },
+		<Section id="app" eyebrow="PoliVerse · Take a closer look" title="Four tabs." dim="One question each." index={2}>
+			<FeatureExplorer label="Tabs" device="iphone" note="Illustrations of the Italian interface · screenshots to follow" features={[
+				{ title: 'Today', file: 'Features/Shell', tint: 'blue', text: 'What is on today? The date, the lesson in progress, then what is coming, the timetable, deadlines and exams. Every section can be moved, hidden or redrawn.' },
+				{ title: 'Courses', file: 'Features/Home · WeBeep', tint: 'acid', text: 'What is new in my courses? Each course gathers its notices, materials, recordings, sittings, forum and syllabus, with unread counts on the way in.' },
+				{ title: 'Career', file: 'Features/Career', tint: 'violet', text: 'What is due? Rebuilt around what closes next rather than what is already true: enrolments closing, marks to decide, sittings, and the average as a line over time.' },
+				{ title: 'Search', file: 'Features/Search', tint: 'orange', text: 'Where, and what? One field across courses, agenda and sittings, then rooms with their equipment, free rooms, and the campus map down to floor plans.' },
 			]}>
-				<div slot="screen-1" class="pv-screen" role="img" aria-label="Illustration: Today"><b class="pv-h">Today</b><span class="pv-card now"><span class="st-mono">Now</span><b>Software Engineering</b><span>Room 3.1.2</span></span><span class="pv-row"><i class="violet"></i><span><b>Computer Networks</b><span>12:15</span></span></span><span class="pv-row"><i class="orange"></i><span><b>HCI</b><span>14:15</span></span></span></div>
-				<div slot="screen-2" class="pv-screen" role="img" aria-label="Illustration: Courses"><b class="pv-h">Courses</b>{['acid', 'blue', 'violet', 'orange'].map((t) => <span class={`pv-course tone-${t}`}><i></i><i></i></span>)}</div>
-				<div slot="screen-3" class="pv-screen" role="img" aria-label="Illustration: Career"><b class="pv-h">Career</b><span class="pv-avg"><b>27.4</b><span>weighted average · sample data</span></span>{[30, 28, 26, 27].map((m) => <span class="pv-mark-row"><i></i><b class="st-mono">{m}</b></span>)}</div>
-				<div slot="screen-4" class="pv-screen" role="img" aria-label="Illustration: Search"><b class="pv-h">Search</b><span class="pv-field">Networks</span><span class="pv-row"><i class="violet"></i><span><b>Computer Networks</b><span>Course</span></span></span><span class="pv-row"><i class="blue"></i><span><b>Free rooms now</b><span>12 on Leonardo</span></span></span></div>
+				<div slot="screen-1" class="pv-phone" role="img" aria-label="Illustration: the Today tab">
+					<span class="pv-hello">Buona giornata!</span>
+					<span class="pv-date"><b>24.09</b><b>GIO</b></span>
+					<span class="pv-kicker">Lezione in corso</span>
+					<span class="pv-card now"><span class="pv-tag">10:15 – 12:15 · Aula 3.1.2</span><b>Ingegneria del Software</b><span class="pv-bar"><i style="width: 38%"></i></span></span>
+					<span class="pv-kicker">Orario</span>
+					<span class="pv-row"><i class="c-violet"></i><span><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></span></span>
+					<span class="pv-row"><i class="c-orange"></i><span><b>Basi di Dati</b><span>14:15 · B.4.2</span></span></span>
+					<span class="pv-kicker">Esami</span>
+					<span class="pv-row"><i class="c-blue"></i><span><b>Probabilità e Statistica</b><span>6 ott · 9:00</span></span></span>
+				</div>
+				<div slot="screen-2" class="pv-phone" role="img" aria-label="Illustration: the Courses tab">
+					<span class="pv-title">Corsi</span>
+					<span class="pv-feature"><span class="pv-tag">In evidenza</span><b>Ingegneria del Software</b>
+						<span class="pv-chips"><i>Avvisi <em>2</em></i><i>Materiali</i><i>Registrazioni</i><i>Appelli</i></span>
+					</span>
+					<span class="pv-kicker">Preferiti</span>
+					<span class="pv-tiles">
+						<span class="c-violet"><b>Reti di Calcolatori</b><em>1 nuovo</em></span>
+						<span class="c-orange"><b>Basi di Dati</b></span>
+						<span class="c-blue"><b>Probabilità e Statistica</b></span>
+						<span class="c-acid"><b>Tecnologie per il Web</b><em>Consegna</em></span>
+					</span>
+				</div>
+				<div slot="screen-3" class="pv-phone" role="img" aria-label="Illustration: the Career tab">
+					<span class="pv-title">Carriera</span>
+					<span class="pv-due c-orange"><span class="pv-tag">Iscrizioni in chiusura</span><b>Probabilità e Statistica</b><span>chiude tra 2 giorni</span></span>
+					<span class="pv-due c-violet"><span class="pv-tag">Voto da decidere</span><b>Basi di Dati</b><span class="pv-grade">27</span></span>
+					<span class="pv-due"><span class="pv-tag">Esame in arrivo</span><b>Reti di Calcolatori</b><span>8 ottobre</span></span>
+					<span class="pv-avg"><span><b>27,4</b><em>media ponderata · dati di esempio</em></span>
+						<svg viewBox="0 0 200 60" aria-hidden="true"><polyline points="0,44 30,40 60,46 90,30 120,34 150,22 200,18" /></svg>
+					</span>
+				</div>
+				<div slot="screen-4" class="pv-phone" role="img" aria-label="Illustration: the Search tab">
+					<span class="pv-title">Cerca</span>
+					<span class="pv-field">Reti</span>
+					<span class="pv-chips"><i>Aule</i><i>Aule libere</i><i>Mappa</i><i>Piano di studi</i></span>
+					<span class="pv-kicker">Risultati</span>
+					<span class="pv-row"><i class="c-violet"></i><span><b>Reti di Calcolatori</b><span>Corso · 10 CFU</span></span></span>
+					<span class="pv-row"><i class="c-blue"></i><span><b>Reti Logiche</b><span>Esame superato · 28</span></span></span>
+					<span class="pv-kicker">Aule libere ora</span>
+					<span class="pv-rooms"><i>3.0.1</i><i>T.1.3</i><i>B.2.4</i><i>+9</i></span>
+				</div>
 			</FeatureExplorer>
 		</Section>
 
-		<Section id="numbers" tone="dark" eyebrow="PoliVerse · The repository" title="Two weeks, one person." dim="Counted, not estimated." index={3}>
+		<Section eyebrow="PoliVerse · Beyond the app" title="Everywhere a student looks." dim="Not only inside the app.">
+			<MediaCards label="Beyond the app" items={[
+				{ lead: 'Widgets.', text: 'Next lecture, today, career and free rooms. The free-rooms widget fetches its own data, with a button to refresh it.', tone: 'blue', tag: 'WidgetKit' },
+				{ lead: 'The Lock Screen.', text: 'A Live Activity follows the lesson in progress, and the exam on the day of the exam.', tone: 'dark', tag: 'ActivityKit' },
+				{ lead: 'Apple Watch.', text: 'Today’s lectures and the next exam, sent from the phone over WatchConnectivity.', tone: 'violet', tag: 'watchOS' },
+				{ lead: 'Siri and Spotlight.', text: 'Courses, sittings and rooms are things Siri knows, not only screens it can open.', tone: 'acid', tag: 'App Intents' },
+				{ lead: 'Lesson recordings.', text: 'In the system player, resumed where you stopped, and downloadable when the teacher allows it.', tone: 'orange', tag: 'AVKit' },
+			]}>
+				<div slot="media-1" class="pv-widgets" aria-hidden="true">
+					<span class="pv-w"><em>Prossima</em><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></span>
+					<span class="pv-w dark"><em>Aule libere</em><b>12</b><span>Leonardo</span></span>
+				</div>
+				<div slot="media-2" class="pv-live" aria-hidden="true">
+					<span class="pv-live-time st-mono">10:41</span>
+					<span class="pv-live-card"><span><em>Lezione in corso</em><b>Ingegneria del Software</b></span><span class="pv-live-left st-mono">34 min</span><span class="pv-bar"><i style="width: 72%"></i></span></span>
+				</div>
+				<div slot="media-3" class="pv-wrist" aria-hidden="true"><span class="pv-watch small"><span class="st-mono">Esame</span><b>Probabilità</b><span>6 ott · 9:00</span></span></div>
+				<div slot="media-4" class="pv-siri" aria-hidden="true">
+					<span class="pv-ask">“Quando è il prossimo esame?”</span>
+					<span class="pv-answer"><em>Probabilità e Statistica</em><b>6 ottobre, 9:00</b></span>
+				</div>
+				<div slot="media-5" class="pv-player" aria-hidden="true">
+					<span class="pv-player-frame"><i></i></span>
+					<span class="pv-bar"><i style="width: 46%"></i></span>
+					<span class="st-mono">Riprendi da 41:12 · scaricata</span>
+				</div>
+			</MediaCards>
+		</Section>
+
+		<Section id="personalise" tone="dark" center eyebrow="PoliVerse · Personalizza" title="Make it yours." dim="One colour becomes the whole app." index={3}
+			lead="Almost nothing in PoliVerse is drawn in a fixed colour. A look starts from one colour; every card, control and typeface reads it, and every colour is checked for contrast before it is drawn.">
+			<figure class="pv-flavor">
+				<div class="pv-flavor-row">
+					<span class="pv-swatch"><i style="background: #0F3D6E"></i><b>Main</b><span class="st-mono">#0F3D6E</span><em>the colour the student picked</em></span>
+					<span class="pv-arrow" aria-hidden="true">→</span>
+					<span class="pv-swatch"><i style="background: #155B5E"></i><b>Accent</b><span class="st-mono">#155B5E</span><em>hue −0.08 · sat ×0.90 · bri ×0.85</em></span>
+					<span class="pv-arrow" aria-hidden="true">→</span>
+					<span class="pv-swatch"><i style="background: #0E4D29"></i><b>Extra</b><span class="st-mono">#0E4D29</span><em>hue −0.18 · sat ×0.95 · bri ×0.70</em></span>
+				</div>
+				<ol class="pv-ramp" aria-label="The ramp a page hands its colours out from, deepest to palest">
+					{ramp.map((c) => <li style={`background: ${c}`}><span class="st-mono">{c}</span></li>)}
+				</ol>
+				<figcaption><b>Flavor.</b> Accent and Extra sit a step and two steps around the wheel from Main; a page hands out the ramp by position. A grey has no hue to move along, so below 0.12 saturation it only deepens. Values from the app’s own documentation.</figcaption>
+			</figure>
+		</Section>
+
+		<Section tone="dark" center eyebrow="PoliVerse · The icon" title="One planet." dim="Thirty-six ways to wear it."
+			lead="A ringed planet, the -Verse of PoliVerse, with one amber moon for what comes next. It avoids the mortarboard every university app reaches for, uses no SF Symbols, and carries nothing from the Politecnico’s identity.">
+			<ToggleFigure label="Choose an icon shape" options={[
+				{ label: 'Orbita', lead: 'Orbita, the icon that ships.', text: 'In the four appearances iOS asks for: default, dark, clear and tinted.', tone: 'blue' },
+				{ label: 'Giorno', lead: 'Giorno, the day as a dial.', text: 'The moon on the rim of the day, in the twelve colours a Flavor starts from.', tone: 'acid' },
+				{ label: 'Vicino', lead: 'Vicino, the planet up close.', text: 'The planet filling the corner, in the same twelve colours. Paired with a look, the app picks the nearest one.', tone: 'violet' },
+				{ label: 'Special', lead: 'Eleven specials, free for everyone.', text: 'Each a picture of its own rather than a colour of a shape. The icon changes once, when Personalizza closes, because iOS announces every change.', tone: 'orange' },
+			]}>
+				<ul slot="panel-1" class="pv-icons big">
+					{appearances.map(([n, label]) => <li><img src={icon(n)} alt="" width="160" height="160" loading="lazy" /><span>{label}</span></li>)}
+				</ul>
+				<ul slot="panel-2" class="pv-icons">
+					{colours.map(([n, label]) => <li><img src={icon(`dial-${n}`)} alt="" width="96" height="96" loading="lazy" /><span>{label}</span></li>)}
+				</ul>
+				<ul slot="panel-3" class="pv-icons">
+					{colours.map(([n, label]) => <li><img src={icon(`closeup-${n}`)} alt="" width="96" height="96" loading="lazy" /><span>{label}</span></li>)}
+				</ul>
+				<ul slot="panel-4" class="pv-icons">
+					{specials.map(([n, label]) => <li><img src={icon(`special-${n}`)} alt="" width="96" height="96" loading="lazy" /><span>{label}</span></li>)}
+				</ul>
+			</ToggleFigure>
+		</Section>
+
+		<Section id="numbers" eyebrow="PoliVerse · The repository" title="Fifteen days, one person." dim="Counted, not estimated." index={4}>
 			<Stats items={[
-				{ label: 'Commits', value: '309', text: 'from 10 to 24 September 2026', method: 'git rev-list on main, all mine', accent: true },
-				{ label: 'Unit tests', value: '1,220', text: 'plus 49 UI tests', method: '@Test functions in PoliVerseTests' },
-				{ label: 'Swift', value: '89.6', unit: 'k', text: 'lines in 460 files', method: 'app, widgets, Watch and tests' },
-				{ label: 'Dependencies', value: '0', text: 'third-party packages', method: 'Apple frameworks only' },
+				{ label: 'Commits', value: '309', text: 'from 10 to 24 September 2026', method: 'every commit on main, all mine', note: 1, accent: true },
+				{ label: 'Unit tests', value: '1,220', text: 'plus 49 UI tests', method: 'Swift Testing and XCTest', note: 2 },
+				{ label: 'Swift', value: '89.6', unit: 'k', text: 'lines in 460 files', method: 'app, widgets, Watch and tests', note: 3 },
+				{ label: 'Dependencies', value: '0', text: 'third-party packages', method: 'Apple frameworks only', note: 4 },
 			]} feature={{ label: 'Feature areas', value: '17', text: 'one folder each, from Auth to WeBeep' }}>
-				Every <b>Source must supply sample data</b>, derived from one fictional degree so career, timetable and courses agree. The whole app renders without an account, and <b>a screenshot taken in that mode is never mistaken for a real career</b>.
+				The first commit rebuilt the app from scratch; the <b>2023 prototype was a home-screen mockup with hard-coded data and no networking</b>. Every service now ships with sample data derived from one fictional degree, so the whole app renders without an account, and <b>every screen says so while it does</b>.
 			</Stats>
 		</Section>
 
-		<Lockup id="cie" index={4} number="04" label="Signing in" title="CieID doesn’t know who called it." dim="So we tell it."
-			deepDive="Deep dive: why the web view must never follow the link" next={{ label: 'Next: the data layer', href: '#data' }}>
-			Inside a plain web view, <b>CieID returns the authenticated session to Safari</b> and the login is lost. PoliVerse intercepts the hand-off before the web view follows it, and re-opens it with <b>a sourceApp that brings the student back</b>.
-			<Fragment slot="deep-dive"><p>Allow the navigation even once and the hand-off happens without <code>sourceApp</code>, so the return goes to Safari. Both logins, PoliMi OAuth and WeBeep, run on the same <code>AuthWebView</code>, so the handling exists once.</p></Fragment>
+		<Section eyebrow="PoliVerse · Day by day" title="What each day added." dim="Newest first.">
+			<ChangeLog columns={['Day', 'Commits', 'Changes']} releases={[
+				{ version: '24 Sep', when: '6 commits', changes: [
+					{ kind: 'added', text: 'Icons rebuilt in Icon Composer: Orbita, Giorno and Vicino in every colour, and eleven specials.' },
+					{ kind: 'added', text: 'Blueprint and Playful, two special Flavors that redraw every tab.' },
+					{ kind: 'changed', text: 'Each tab answers one question.' },
+				] },
+				{ version: '23 Sep', when: '10 commits', changes: [
+					{ kind: 'added', text: 'Lesson recordings in the system player, resumed where you stopped, downloadable for offline viewing.' },
+					{ kind: 'fixed', text: 'A refreshed token keeps its scope, so the app no longer signs out at every launch.' },
+				] },
+				{ version: '22 Sep', when: '12 commits', changes: [
+					{ kind: 'note', text: 'Reads, never writes: written down as a decision, with its reasons.' },
+					{ kind: 'added', text: 'Apple Watch, exams on the Lock Screen, Siri entities, and on-device summaries of long notices.' },
+				] },
+				{ version: '20–21 Sep', when: '22 commits', changes: [
+					{ kind: 'changed', text: 'Every service behind one Store, instead of nineteen copies.' },
+					{ kind: 'changed', text: 'Career rebuilt around what is due, not what is already true.' },
+				] },
+				{ version: '17 Sep', when: '39 commits', changes: [
+					{ kind: 'added', text: 'UI tests for navigation, search, lifecycle and accessibility audits.' },
+					{ kind: 'changed', text: 'Minimum iOS 27, and 110 model files regrouped by area.' },
+				] },
+				{ version: '15–16 Sep', when: '81 commits', changes: [
+					{ kind: 'added', text: 'The four-tab interface, Personalizza with its gallery of looks, and glass course pages.' },
+					{ kind: 'added', text: 'Widgets, controls and a Live Activity, registered in one bundle.' },
+				] },
+				{ version: '13–14 Sep', when: '58 commits', changes: [
+					{ kind: 'added', text: 'Alerts when an exam changes, when WeBeep posts marks or solutions, and before a deadline.' },
+					{ kind: 'added', text: 'A personal timetable built in the app until the official one arrives, and an English translation.' },
+				] },
+				{ version: '12 Sep', when: '38 commits', changes: [
+					{ kind: 'added', text: 'Campus map down to floor plans, study plan, grade simulation and reminders.' },
+					{ kind: 'fixed', text: 'Stopped re-downloading 13.7 MB on every login.' },
+				] },
+				{ version: '11 Sep', when: '37 commits', changes: [
+					{ kind: 'added', text: 'WeBeep through Moodle web services, news, notifications and free rooms.' },
+					{ kind: 'changed', text: 'Service hosts read from the Politecnico’s own config instead of hard-coded.' },
+					{ kind: 'fixed', text: 'The CIE login stays in the app instead of being lost to Safari.' },
+				] },
+				{ version: '10 Sep', when: '6 commits', style: 'outline', changes: [
+					{ kind: 'added', text: 'Rebuilt from scratch: a real sign-in layer, calendar, career, search, a disk cache and the first 24 tests.' },
+				] },
+			]} />
+		</Section>
+
+		<Lockup id="backend" index={5} number="05" label="Under the hood" title="There is no public API." dim="So it reads what the official app reads."
+			deepDive="Deep dive: how the map was drawn" next={{ label: 'Next: signing in with CIE', href: '#cie' }}
+			facts={[{ label: 'Service config', value: '200', note: 'public, no sign-in' }, { label: 'Path exists', value: '401', accent: true }, { label: 'Path gone', value: '404' }]}
+			factsNote="Probed 11 September 2026">
+			The official web app is a public single-page app, and its bundle carries the route table and every path. On launch the official app fetches <b>one unauthenticated config with every backend’s address</b>. PoliVerse reads the same config, with the current hosts compiled in as fallbacks, so <b>a backend that moves costs a fetch, not a release</b>.
+			<Fragment slot="deep-dive"><p>No proxy and no TLS interception: the web bundle, about 8 MB, is served to anyone who asks. Each path found in it was then probed without credentials. A 401 means the path exists and wants a token; a 404 means it is gone.</p></Fragment>
 		</Lockup>
 
-		<Section eyebrow="PoliVerse · Walkthrough" title="The CIE hand-off," dim="one step at a time.">
+		<Section tone="dark">
+			<ThenNow title="The backend moved." dim="PoliVerse followed." baseline="PoliFemo · hosts hard-coded in 2023" baselineLabel="PoliVerse, compared with"
+				note="From docs/endpoint-status.md, verified 11 September 2026" link={{ label: 'Read the endpoint notes', href: `${repo}/blob/main/docs/endpoint-status.md` }} changes={[
+					{ icon: 'globe', title: 'Hosts read from the official config at launch', was: 'hosts baked into constants' },
+					{ icon: 'swap', title: 'Courses at api.polimi.it/iae/v1/insegn/', was: 'www22.dmz.polimi.it/iae/rest/v1/insegn' },
+					{ icon: 'clock', title: 'Timetable at api.polimi.it/agenda', was: 'polimiapp…/polimi_app/agenda/api/me/{m}/events' },
+					{ icon: 'lock', title: 'Sign-in scopes fetched from /jaf/oauth/params', was: 'a scope list frozen in 2023' },
+					{ value: '9', title: 'scopes added upstream since then, picked up without a release', was: 'agenda among them, missing', tone: 'acid' },
+					{ value: '2', title: 'scopes removed upstream', was: 'still requested', tone: 'orange' },
+				]} />
+		</Section>
+
+		<Section split eyebrow="PoliVerse · Traps" title="Four things that looked like bugs." dim="None of them was ours."
+			lead="Each one looked like a broken endpoint or a crash in the app. Each is written up, with what the app does about it.">
+			<Findings columns={['Severity', 'What looked broken', 'When it shows', 'What PoliVerse does']} note="Severity 1 ends the student’s session or hides their data; severity 2 degrades one feature." items={[
+				{ severity: 1, title: 'A missing scope looks like a dead endpoint.', text: 'A token minted without agenda signs in and works everywhere else, then gets 401 from the timetable.', impact: { label: 'After the paths were already fixed' }, fix: 'Build the sign-in request from the live scope list' },
+				{ severity: 1, title: 'Two refreshes end the session.', text: 'The Politecnico rotates the refresh token, so a second refresh in flight presents one the first just invalidated.', impact: { label: 'Whenever two requests find the token expired together' }, fix: 'TokenStore is an actor: one refresh, everyone awaits it' },
+				{ severity: 2, title: '“Code 6” is not a refusal.', text: 'The exams service answers “Utente non abilitato Code: 6”.', impact: { label: 'Between one exam session and the next' }, fix: 'Report the service as refused, keep the stale copy, never sign out' },
+				{ severity: 2, title: 'Switching career fails upstream.', text: 'careerChange errors for this account, and not only in PoliVerse.', impact: { label: 'In the official app too, reproduced 12 September' }, fix: 'Set the favourite career, then sign in again' },
+			]} />
+		</Section>
+
+		<Section id="cie" split eyebrow="PoliVerse · Signing in" title="CieID doesn’t know who called it." dim="So we tell it."
+			lead="Inside a plain web view, CieID returns the authenticated session to Safari and the login is lost. PoliVerse intercepts the hand-off before the web view follows it, and re-opens it with a sourceApp that brings the student back.">
 			<CodeSteps file="docs/cie-login.md · the flow" code={cieFlow} lang="txt" meta={[{ label: '4 steps', icon: 'lines' }, { label: 'CieIDBridge', icon: 'code' }, { label: 'Card + PIN', icon: 'lock' }]} steps={[
 				{ title: 'Catch the link.', text: 'The login page navigates to the CIE identity provider; the web view sees it first.', lines: '1-2' },
 				{ title: 'Re-open it with sourceApp.', text: 'The navigation is cancelled and opened in CieID with the app’s URL scheme attached.', lines: '3-4' },
@@ -127,22 +334,22 @@ login continues`;
 			]} />
 		</Section>
 
-		<Section id="data" split eyebrow="PoliVerse · The data layer" title="A stale answer with a date" dim="says more than an empty screen."
-			lead="Every Store publishes its cached copy on the first frame, then decides whether a refresh is due. When the refresh fails, what is on screen stays, and the failure is shown beside it.">
+		<Section id="data" split eyebrow="PoliVerse · Freshness" title="A stale answer with a date" dim="says more than an empty screen."
+			lead="The Politecnico’s servers send no ETag, no Last-Modified, no Cache-Control and no push, so freshness is the app’s job. Every Store publishes its cached copy on the first frame, a five-minute window decides whether to fetch, and the app revalidates when it returns to the foreground or comes back online.">
 			<StateMachine label="A load through a Store" forbidden="clear the screen · never"
 				before={[{ name: 'Cached', text: 'The offline copy is published at once.' }, { name: 'Refreshing', text: 'The load window says a fetch is due.' }]}
-				fork={[{ name: 'Fresh', text: 'Decoded, cached, published.', tone: 'blue' }, { name: 'Failed', text: 'Reported beside the stale copy.', tone: 'orange' }]}
-				after={[{ name: 'On screen', text: 'With a date saying how old it is.', tone: 'dark' }]}
+				fork={[{ name: 'Fresh', text: 'Decoded, cached, published, widgets told.', tone: 'blue' }, { name: 'Failed', text: 'Recorded beside the stale copy.', tone: 'orange' }]}
+				after={[{ name: 'On screen', text: 'Silent under 15 minutes old, dated past that.', tone: 'dark' }]}
 				labels={{ before: [['window due', 'cache first']], fork: ['200', 'error'], join: ['publish', 'keep the old copy'] }} />
 		</Section>
 
 		<Section tone="dark" split eyebrow="PoliVerse · Architecture" title="Four layers," dim="pulled apart."
-			lead="Screens never talk to the network. Each service is a Source behind a Store; hosts come from the same directory the official app reads.">
+			lead="Screens never talk to the network. Each service is a Source behind a Store, and one HTTP door leads out, to hosts the official config names.">
 			<ExplodedStack layers={[
-				{ name: 'Features', tint: 'acid', chips: [{ label: 'Today' }, { label: 'Courses' }, { label: 'Career' }], text: 'Seventeen feature folders, routed by ShellState, drawn with one Theme.' },
+				{ name: 'Features', tint: 'acid', chips: [{ label: 'Today' }, { label: 'Courses' }, { label: 'Career' }], text: 'Seventeen feature folders, routed by ShellState, drawn with the look in use.' },
 				{ name: 'Models', tint: 'violet', chips: [{ label: 'Career' }, { label: 'Agenda' }, { label: 'WeBeep' }], text: 'Feature models compose stores into the shapes screens consume.' },
-				{ name: 'Stores', tint: 'blue', chips: [{ label: 'Source → Store → OfflineStore' }], text: 'Cache first, load window, offline copy, and a phase every screen can show.' },
-				{ name: 'Services', tint: 'paper', chips: [{ label: 'PoliMi' }, { label: 'WeBeep' }, { label: 'Rooms', accent: true }], text: 'Servizi Online, Manifesti, WeBeep’s Moodle and the public rooms, through one HTTP door.' },
+				{ name: 'Stores', tint: 'blue', chips: [{ label: 'Source → Store → OfflineStore' }], text: 'Cache first, load window, offline copy in the app group, and a phase every screen can show.' },
+				{ name: 'Services', tint: 'paper', chips: [{ label: 'PoliMi' }, { label: 'WeBeep' }, { label: 'Rooms', accent: true }], text: 'Servizi Online, Manifesti, WeBeep’s Moodle and the public rooms, through PoliMiAPI and PublicHTTP.' },
 			]} />
 		</Section>
 
@@ -151,82 +358,191 @@ login continues`;
 				abstract="Drives one Source: publishes its cached copy at once, refreshes when its load window says so, and never clears what is already on screen."
 				availability={[{ label: 'iOS 27' }, { label: 'Swift 6 · MainActor' }, { label: 'Widgets · Watch' }, { label: 'DocC', muted: true }]}
 				declaration="final class Store<S: Source>"
-				nav={[{ title: 'The data layer', symbols: [{ name: 'Source', kind: 'P' }, { name: 'Store', kind: 'C', current: true }, { name: 'OfflineStore', kind: 'C' }, { name: 'LoadWindow', kind: 'S' }, { name: 'DataStatus', kind: 'E' }] }, { title: 'Sign-in', symbols: [{ name: 'Session', kind: 'C' }, { name: 'CieIDBridge', kind: 'S' }, { name: 'TokenStore', kind: 'C' }] }]}
-				mentioned={[{ label: 'The CIE hand-off', href: '#cie' }, { label: 'A stale answer with a date', href: '#data' }]}>
-				<p>A <code>load()</code> reads the cache and publishes it, decides whether a refresh is due, fetches and decodes, then records the outcome in <code>DataStatus</code> so the app can say <b>how old what it is showing is</b>.</p>
+				nav={[{ title: 'The data layer', symbols: [{ name: 'Source', kind: 'P' }, { name: 'Store', kind: 'C', current: true }, { name: 'OfflineStore', kind: 'C' }, { name: 'LoadWindow', kind: 'S' }, { name: 'DataStatus', kind: 'C' }] }, { title: 'Sign-in', symbols: [{ name: 'Session', kind: 'C' }, { name: 'ServiceDirectory', kind: 'C' }, { name: 'CieIDBridge', kind: 'E' }, { name: 'CieIDRouter', kind: 'C' }] }]}
+				mentioned={[{ label: 'CieID doesn’t know who called it', href: '#cie' }, { label: 'A stale answer with a date', href: '#data' }]}>
+				<p>A <code>load()</code> reads the cache and publishes it, asks the <code>LoadWindow</code> whether a refresh is due, fetches and decodes through the one HTTP door, writes the copy back to the app group and tells the widgets. The outcome lands in <code>DataStatus</code>, so the app can always say <b>how old what it is showing is</b>. A failed load does not mark the window, so the next appearance tries again.</p>
 			</Declaration>
 		</Section>
 
-		<Section id="specs" index={5}>
-			<TechSpecs eyebrow="PoliVerse" meta="Swift 6 · SwiftUI · iOS 27 · watchOS · 2026" groups={[
-				{ title: 'Platforms', items: [{ title: 'iPhone and iPad', text: 'One column of cards on iPhone, two on a regular-width iPad, capped at a readable measure.' }, { title: 'Widgets and Live Activity', text: 'Next lecture, today, career, free rooms, controls, and a Live Activity for the lecture in progress.' }, { title: 'Apple Watch', text: 'Today’s lectures and the next exam, sent over WatchConnectivity.' }] },
-				{ title: 'Code', counts: [{ value: '460', label: 'Swift files' }, { value: '17', label: 'feature areas' }, { value: '0', label: 'dependencies', accent: true }], note: 'Strict concurrency, MainActor by default, synchronized folder groups.' },
-				{ title: 'Accessibility', values: [{ label: 'Brand navy on white', value: '13:1' }, { label: 'Navy on dark, before', value: '1.3:1', text: 'so every accent has a dark twin' }, { label: 'Worst pair now', value: '4.7:1', text: 'in either appearance' }] },
-				{ title: 'Verification', lead: '1,220 unit tests and 49 UI tests', tags: ['CET/CEST timestamp parsing', 'refresh coalescing', 'exam status mapping', 'authcode extraction', 'accessibility audits', 'launch and hitch metrics'] },
-			]} />
+		<Section id="decisions" tone="sand" eyebrow="PoliVerse · Decisions" title="Written down," dim="each with its reason." index={6}>
+			<Principles rules={[
+				{ title: 'Read, never write.', text: 'No enrolling, no refusing a mark, no forum posts, no hand-ins. The write requests are unverified, and a wrong one costs the student a session.', source: 'docs/writes-to-university-systems.md' },
+				{ title: 'Never pass sample data off as real.', text: 'Sample data is on by default and every screen says so; all of it comes from one fictional degree, so career, timetable and courses agree.', source: 'SampleDegree · DataStatusLine' },
+				{ title: 'Keep what is on screen.', text: 'A failed refresh leaves the cached copy in place and says how old it is.', source: 'Store · FreshnessBar' },
+				{ title: 'Nothing leaves the phone on its own.', text: 'No analytics service and no crash reporter. Diagnostics and MetricKit reports stay on the device until the student shares them.', source: 'Diagnostics · docs/field-performance.md' },
+				{ title: 'Borrow nothing that isn’t ours.', text: 'No SF Symbols in the icon, as Apple’s terms require, and nothing from the Politecnico’s identity: the app is unofficial and must not look otherwise.', source: 'design/app-icon/README.md' },
+				{ title: 'Check every colour.', text: 'The brand navy is 13:1 on white but 1.3:1 on the dark background, so every accent has a dark twin. The worst pair is now 4.7:1.', source: 'Theme.swift' },
+			]} example={{ label: 'Rule 03, drawn', dont: { title: 'Don’t clear the screen when a refresh fails', text: 'The student loses what was there, and learns nothing about why.' }, do: { title: 'Keep the copy, and date it', text: 'The cached timetable stays, with a line saying how old it is and that the refresh failed.' } }}>
+				<Fragment slot="dont"><span class="st-state">Cached</span><span class="st-arrow-label">refresh fails →</span><span class="st-state uncertain">Empty screen</span></Fragment>
+				<Fragment slot="do"><span class="st-state">Cached</span><span class="st-arrow-label">refresh fails →</span><span class="st-state dark">Cached · 40 min old</span></Fragment>
+			</Principles>
 		</Section>
 
 		<Limits proven={[
-			{ text: 'The whole app renders on sample data', source: 'Session.useMockData · every Source supplies sample()' },
-			{ text: 'Source, tests and documentation, readable in full', source: 'github.com/samuelesegrini/PoliVerse', href: repo },
+			{ text: 'Every screen renders on sample data, walked by 49 UI tests with accessibility audits at the largest text size', source: 'PoliVerseUITests · AccessibilityAuditUITests' },
+			{ text: 'Hosts and paths mapped against the official client', source: 'docs/endpoint-status.md · 11 September 2026' },
+			{ text: 'Source, tests, DocC and research notes, readable in full', source: 'github.com/samuelesegrini/PoliVerse', href: repo },
 		]} notProven={[
-			{ text: 'Login against a live account', source: 'Implemented, still to be tested' },
+			{ text: 'Sign-in against a live account', source: 'Implemented, still to be tested' },
 			{ text: 'Timetable and career on today’s endpoints', source: 'Both return 404 as of September 2026' },
 			{ text: 'The Watch app on a device', source: 'Builds against the watchOS SDK only' },
+			{ text: 'Performance in the field', source: 'The MetricKit routine is written; it needs a release to report' },
 		]} />
 
-		<Section id="faq" index={6}>
+		<Section id="specs" index={7}>
+			<TechSpecs eyebrow="PoliVerse" meta="Swift 6 · SwiftUI · iOS 27 · watchOS 26 · 2026" groups={[
+				{ title: 'Platforms', items: [{ title: 'iPhone and iPad', text: 'One column on iPhone; on iPad a sidebar and two columns, capped at a readable measure.' }, { title: 'Widgets and Live Activities', text: 'Next lecture, today, career, free rooms and controls; the lesson and the exam on the Lock Screen.' }, { title: 'Apple Watch', text: 'The day and the next exam, sent over WatchConnectivity.' }, { title: 'Siri and Spotlight', text: 'Courses, sittings and rooms as App Intents entities.' }] },
+				{ title: 'Code', counts: [{ value: '460', label: 'Swift files' }, { value: '17', label: 'feature areas' }, { value: '0', label: 'dependencies', accent: true }], note: 'Swift 6 language mode, complete strict concurrency, MainActor by default.' },
+				{ title: 'Accessibility', values: [{ label: 'Brand navy on white', value: '13:1' }, { label: 'Navy on dark, before', value: '1.3:1', text: 'so every accent has a dark twin' }, { label: 'Worst pair now', value: '4.7:1', text: 'in either appearance' }] },
+				{ title: 'Verification', lead: '1,220 unit tests and 49 UI tests', tags: ['CET/CEST timestamps', 'refresh coalescing', 'exam status mapping', 'authcode extraction', 'accessibility audits at AX5', 'launch and hitch metrics'] },
+				{ title: 'Documentation', counts: [{ value: '6', label: 'DocC articles' }, { value: '20', label: 'research notes' }], note: 'Architecture, data layer, sign-in, customisation, widgets and diagnostics, with diagrams in light and dark.' },
+			]} />
+		</Section>
+
+		<Section tone="sand">
+			<Sources eyebrow="PoliVerse" checked="24 September 2026" lead="Every number on the page carries a superscript that lands here: what it counts, and how it was counted." notes={[
+				{ title: '309 commits', text: 'Every commit on main between 10 and 24 September 2026, seven merges included, all authored by me.', source: 'git rev-list --count HEAD at e983281', href: `${repo}/commits/main` },
+				{ title: '1,220 unit tests and 49 UI tests', text: 'Swift Testing @Test functions in PoliVerseTests, and XCTest methods in PoliVerseUITests.', source: 'grep over both test targets at e983281' },
+				{ title: '89.6k lines in 460 files', text: 'Every .swift file in the app, widgets, Watch app, shared code and tests, blank lines and comments included.', source: 'wc -l at e983281' },
+				{ title: 'No dependencies', text: 'The Xcode project references no Swift packages.', source: 'project.pbxproj: no XCRemoteSwiftPackageReference' },
+			]} />
+		</Section>
+
+		<Section id="faq">
 			<Faq eyebrow="PoliVerse" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
 				{ q: 'Is it an official app?', a: 'No. PoliVerse is unofficial and not endorsed by Politecnico di Milano; the icon deliberately carries nothing from its identity.' },
-				{ q: 'Where does the data come from, without a public API?', a: 'From the private backend behind the official app. PoliVerse reads the same public config for its service hosts, so a moved backend needs no release.' },
+				{ q: 'Where does the data come from, without a public API?', a: 'From the backend behind the official app. PoliVerse reads the same public config for its service hosts and its sign-in scopes, so a moved backend needs no release.' },
 				{ q: 'Why can’t I enrol in an exam from it?', a: 'A wrong write costs a student a session; a wrong read costs a refresh. The request shapes are not verified, so writes stay out until they are.' },
+				{ q: 'Why is the interface in Italian?', a: 'Because its students are. PoliVerse is written in Italian first and translated into English; the illustrations on this page show the Italian interface.' },
 				{ q: 'Can I try it without a PoliMi account?', a: 'Yes. Sample data is on by default, and every screen says so while it is.' },
 			]} />
 		</Section>
 
-		<KeepExploring position={{ current: 1, total: 6 }}
+		<KeepExploring
 			next={{ label: 'Next', title: 'EasyManager', text: 'A restaurant’s orders, from the table to the fiscal printer.', href: labProjectPath('en', 'easymanager-restaurant-operations'), image: cover('easymanager'), tone: 'blue' }}
 			previous={{ label: 'Previous', title: 'SpinGO', href: labProjectPath('en', 'spingo-sustainable-micromobility'), image: cover('spingo'), tone: 'violet' }}
 			all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
 
 		<Section tone="sand">
-			<PageIndex title="PoliVerse" primary={[{ label: 'Highlights', href: '#highlights' }, { label: 'The app', href: '#app' }, { label: 'By the numbers', href: '#numbers' }, { label: 'Signing in', href: '#cie' }, { label: 'Specs', href: '#specs' }, { label: 'Questions', href: '#faq' }]}
-				groups={[{ title: 'Code', links: [{ label: 'PoliVerse on GitHub', href: repo, note: 'Source, DocC and docs' }] }, { title: 'More from the portfolio', links: [{ label: 'EasyManager', href: labProjectPath('en', 'easymanager-restaurant-operations') }, { label: 'All projects', href: labPaths.en.work }, { label: 'About me', href: labPaths.en.about, icon: 'person' }] }]} />
+			<PageIndex title="PoliVerse" primary={[{ label: 'Highlights', href: '#highlights' }, { label: 'The app', href: '#app' }, { label: 'Make it yours', href: '#personalise' }, { label: 'Fifteen days', href: '#numbers' }, { label: 'Under the hood', href: '#backend' }, { label: 'Decisions', href: '#decisions' }, { label: 'Specs', href: '#specs' }, { label: 'Questions', href: '#faq' }]}
+				groups={[{ title: 'Code', links: [{ label: 'PoliVerse on GitHub', href: repo, note: 'Source, DocC and research notes' }, { label: 'Endpoint notes', href: `${repo}/blob/main/docs/endpoint-status.md` }, { label: 'Why it never writes', href: `${repo}/blob/main/docs/writes-to-university-systems.md` }] }, { title: 'More from the portfolio', links: [{ label: 'EasyManager', href: labProjectPath('en', 'easymanager-restaurant-operations') }, { label: 'All projects', href: labPaths.en.work }, { label: 'About me', href: labPaths.en.about, icon: 'person' }] }]} />
 		</Section>
 	</Story>
 </ExperimentLayout>
 
 <style>
-	.pv-mark { width: 104px; height: 104px; border-radius: 26px; }
+	/* L'icona dell'app nel posto del marchio: il file ha già gli angoli, niente cornice sopra. */
+	.pv-mark { width: 104px; height: 104px; filter: drop-shadow(0 14px 24px rgba(15, 61, 110, .28)); }
 	:global(.st-ahero-mark:has(.pv-mark)) { box-shadow: none; background: none; }
-	.pv-today, .pv-screen { display: flex; flex-direction: column; gap: 10px; width: 100%; height: 100%; padding: 14% 7% 6%; background: #f4f1e9; color: #171713; font-size: 12px; text-align: left; }
-	.pv-status { position: absolute; top: 3%; left: 12%; font-size: 10px; }
-	.pv-h { font-size: 22px; letter-spacing: -.03em; }
-	.pv-card { display: grid; gap: 3px; padding: 12px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+
+	/* Le schermate illustrate: l'interfaccia italiana di Oggi, Corsi, Carriera e Cerca. */
+	.pv-phone { position: relative; display: flex; flex-direction: column; gap: 9px; width: 100%; height: 100%; padding: 15% 7% 6%; overflow: hidden; background: #f4f1e9; color: #171713; font-size: 12px; text-align: left; }
+	.pv-status { position: absolute; top: 3.2%; left: 13%; font-size: 10px; font-weight: 700; }
+	.pv-hello { font-size: 13px; font-weight: 600; }
+	.pv-date { display: grid; line-height: .92; font-size: 46px; font-weight: 800; letter-spacing: -.04em; font-stretch: 125%; }
+	.pv-title { font-size: 30px; font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: 2px; }
+	.pv-kicker { margin-top: 3px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #5e5a53; }
+	.pv-tag { font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #3c3a35; }
+	.pv-card { display: grid; gap: 4px; padding: 12px; border-radius: 18px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-card b { font-size: 15px; letter-spacing: -.02em; }
 	.pv-card.now { background: #cdefff; }
-	.pv-card.exam { background: #ffd4b8; }
-	.pv-card .st-mono { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
-	.pv-card b { font-size: 14px; }
+	.pv-bar { display: block; height: 5px; border-radius: 3px; background: rgba(23, 23, 19, .15); overflow: hidden; }
+	.pv-bar i { display: block; height: 100%; background: #171713; border-radius: inherit; }
 	.pv-row { display: flex; align-items: center; gap: 10px; }
-	.pv-row > i { width: 6px; align-self: stretch; border-radius: 3px; }
+	.pv-row > i { width: 6px; align-self: stretch; border-radius: 3px; box-shadow: inset 0 0 0 1.5px #171713; }
 	.pv-row > span { display: grid; }
 	.pv-row span span { color: #5e5a53; font-size: 11px; }
-	i.violet { background: #ded1ff; box-shadow: inset 0 0 0 1.5px #171713; } i.orange { background: #ffd4b8; box-shadow: inset 0 0 0 1.5px #171713; } i.blue { background: #cdefff; box-shadow: inset 0 0 0 1.5px #171713; }
-	.pv-tabs { display: flex; justify-content: space-around; margin-top: auto; padding-top: 10px; border-top: 1px solid #d3d1ca; font-size: 10px; }
-	.pv-tabs i { font-style: normal; color: #6b6760; } .pv-tabs i.on { color: #171713; font-weight: 700; }
+	.c-violet { background: #ded1ff; } .c-orange { background: #ffd4b8; } .c-blue { background: #cdefff; } .c-acid { background: #c7ff9f; }
+	.pv-accessory { display: flex; align-items: center; gap: 8px; margin-top: auto; padding: 9px 12px; border-radius: 999px; background: rgba(255, 254, 251, .9); box-shadow: 0 4px 14px rgba(23, 23, 19, .12), inset 0 0 0 1px rgba(23, 23, 19, .12); font-size: 10.5px; font-weight: 600; }
+	.pv-accessory i { width: 7px; height: 7px; border-radius: 50%; background: #2fa84f; }
+	.pv-tabs { display: flex; justify-content: space-around; padding: 9px 6px; border-radius: 999px; background: rgba(255, 254, 251, .92); box-shadow: 0 4px 14px rgba(23, 23, 19, .12), inset 0 0 0 1px rgba(23, 23, 19, .12); font-size: 10px; }
+	.pv-tabs i { font-style: normal; color: #6b6760; } .pv-tabs i.on { color: #0f3d6e; font-weight: 700; }
+	.pv-feature { display: grid; gap: 8px; padding: 14px; border-radius: 20px; background: #0f3d6e; color: #fffef9; }
+	.pv-feature .pv-tag { color: #cdefff; } .pv-feature b { font-size: 18px; line-height: 1.05; letter-spacing: -.02em; }
+	.pv-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+	.pv-chips i { padding: 5px 9px; border-radius: 999px; background: rgba(255, 254, 251, .16); font-style: normal; font-size: 10px; font-weight: 600; }
+	.pv-chips em { font-style: normal; margin-left: 3px; padding: 0 5px; border-radius: 999px; background: #ffd4b8; color: #171713; }
+	.pv-phone > .pv-chips i { background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+	.pv-tiles > span { display: grid; align-content: space-between; gap: 10px; min-height: 76px; padding: 10px; border-radius: 16px; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-tiles b { font-size: 11.5px; line-height: 1.15; }
+	.pv-tiles em { justify-self: start; padding: 2px 7px; border-radius: 999px; background: #171713; color: #fffef9; font-style: normal; font-size: 9px; font-weight: 700; }
+	.pv-due { display: grid; gap: 2px; padding: 11px 12px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; position: relative; }
+	.pv-due b { font-size: 14px; letter-spacing: -.02em; } .pv-due > span:last-child { font-size: 11px; color: #3c3a35; }
+	.pv-due .pv-grade { position: absolute; right: 12px; top: 50%; translate: 0 -50%; font-size: 26px; font-weight: 800; color: #171713; }
+	.pv-avg { display: grid; gap: 6px; padding: 12px; border-radius: 16px; background: #171713; color: #fffef9; }
+	.pv-avg b { font-size: 26px; letter-spacing: -.03em; } .pv-avg em { display: block; font-style: normal; font-size: 9.5px; color: #c9c5bc; }
+	.pv-avg svg { width: 100%; height: 44px; } .pv-avg polyline { fill: none; stroke: #c7ff9f; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+	.pv-field { padding: 10px 12px; border-radius: 12px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; font-weight: 600; }
+	.pv-rooms { display: flex; gap: 6px; } .pv-rooms i { padding: 6px 9px; border-radius: 10px; background: #c7ff9f; box-shadow: inset 0 0 0 1.5px #171713; font-style: normal; font-size: 10.5px; font-weight: 700; }
 	.pv-watch { display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 100%; height: 100%; padding: 14%; background: #22221d; color: #f4f1e9; }
-	.pv-watch .st-mono { font-size: 9px; color: #a9a59b; text-transform: uppercase; } .pv-watch b { font-size: 18px; } .pv-watch span:last-child { font-size: 11px; color: #c9c5bc; }
-	.pv-course { display: grid; gap: 6px; padding: 14px; border-radius: 14px; box-shadow: inset 0 0 0 1.5px #171713; }
-	.pv-course i { height: 7px; width: 70%; border-radius: 4px; background: #171713; } .pv-course i + i { width: 40%; opacity: .4; }
-	.pv-avg { display: grid; padding: 12px; border-radius: 16px; background: #171713; color: #fffef9; } .pv-avg b { font-size: 30px; } .pv-avg span { font-size: 10px; color: #c9c5bc; }
-	.pv-mark-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #d3d1ca; }
-	.pv-mark-row i { width: 60%; height: 7px; border-radius: 4px; background: #b4b0a6; }
-	.pv-field { padding: 10px 12px; border-radius: 12px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-watch .st-mono { font-size: 9px; color: #c9c5bc; text-transform: uppercase; } .pv-watch b { font-size: 16px; line-height: 1.1; } .pv-watch > span:last-child { font-size: 11px; color: #c9c5bc; }
+
+	/* I disegni nelle carte dei punti salienti. */
 	.pv-json { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; font-size: 13px; }
 	.pv-json span { padding: 10px 14px; border-radius: 12px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; overflow-wrap: anywhere; }
+	.pv-json em { font-style: normal; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: #c7ff9f; }
 	.pv-steps { display: flex; flex-wrap: wrap; align-content: flex-end; gap: 10px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
 	.pv-steps li { padding: 10px 14px; border-radius: 999px; background: #2c2c26; color: #f4f1e9; }
 	.pv-steps li.ok { background: #c7ff9f; color: #171713; }
+	.pv-fresh { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+	.pv-fresh-line { display: flex; align-items: center; gap: 8px; align-self: flex-start; padding: 8px 14px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 12px; }
+	.pv-fresh-line i { width: 8px; height: 8px; border-radius: 50%; background: #ffb27a; }
+	.pv-fresh-card { display: flex; gap: 14px; align-items: baseline; padding: 12px 16px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; font-size: 15px; }
 	.pv-nope { display: flex; flex-wrap: wrap; align-content: flex-end; gap: 10px; margin: 0; padding: 0; list-style: none; }
 	.pv-nope li { padding: 12px 18px; border-radius: 999px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; font-weight: 600; text-decoration: line-through; }
+	.pv-icon-strip { display: grid; grid-template-columns: repeat(3, 1fr); align-content: end; gap: clamp(10px, 1.6vw, 18px); margin: 0; padding: 0; list-style: none; max-width: 380px; }
+	.pv-icon-strip img { display: block; width: 100%; height: auto; filter: drop-shadow(0 8px 14px rgba(23, 23, 19, .22)); }
+
+	/* Le carte "fuori dall'app". */
+	.pv-widgets { display: flex; gap: 12px; align-items: center; justify-content: center; height: 100%; }
+	.pv-w { display: grid; align-content: space-between; width: 128px; aspect-ratio: 1; padding: 14px; border-radius: 28px; background: #fffefb; box-shadow: 0 10px 24px rgba(23, 23, 19, .16), inset 0 0 0 1.5px #171713; color: #171713; }
+	.pv-w em { font-style: normal; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #0f3d6e; }
+	.pv-w b { font-size: 15px; line-height: 1.1; } .pv-w span { font-size: 11px; color: #5e5a53; }
+	.pv-w.dark { background: #171713; color: #fffef9; } .pv-w.dark em { color: #c7ff9f; } .pv-w.dark b { font-size: 40px; } .pv-w.dark span { color: #c9c5bc; }
+	.pv-live { display: grid; align-content: center; justify-items: center; gap: 14px; height: 100%; padding: 0 16px; }
+	.pv-live-time { font-size: 44px; font-weight: 700; color: #fffef9; }
+	.pv-live-card { display: grid; grid-template-columns: 1fr auto; gap: 10px; width: min(100%, 300px); padding: 14px; border-radius: 22px; background: rgba(255, 254, 251, .12); color: #fffef9; }
+	.pv-live-card em { display: block; font-style: normal; font-size: 10px; color: #c7ff9f; text-transform: uppercase; letter-spacing: .05em; }
+	.pv-live-card b { font-size: 14px; } .pv-live-left { align-self: center; font-size: 13px; }
+	.pv-live-card .pv-bar { grid-column: 1 / -1; background: rgba(255, 254, 251, .2); } .pv-live-card .pv-bar i { background: #c7ff9f; }
+	.pv-wrist { display: grid; place-items: center; height: 100%; }
+	.pv-watch.small { width: 132px; height: 158px; border-radius: 38px; box-shadow: 0 0 0 9px #171713, 0 16px 30px rgba(23, 23, 19, .3); }
+	.pv-siri { display: flex; flex-direction: column; justify-content: center; gap: 10px; height: 100%; padding: 0 18px; }
+	.pv-ask { align-self: flex-end; padding: 10px 14px; border-radius: 18px 18px 4px 18px; background: #171713; color: #fffef9; font-size: 13px; }
+	.pv-answer { display: grid; align-self: flex-start; padding: 12px 14px; border-radius: 18px 18px 18px 4px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-answer em { font-style: normal; font-size: 11px; color: #5e5a53; } .pv-answer b { font-size: 16px; }
+	.pv-player { display: grid; align-content: center; gap: 10px; height: 100%; padding: 0 18px; }
+	.pv-player-frame { display: grid; place-items: center; aspect-ratio: 16 / 9; border-radius: 14px; background: #171713; }
+	.pv-player-frame i { width: 0; height: 0; border-left: 18px solid #fffef9; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 4px; }
+	.pv-player .st-mono { font-size: 11px; }
+
+	/* Flavor: un colore diventa la tavolozza, poi la rampa. */
+	.pv-flavor { display: grid; gap: 28px; margin: 0; }
+	.pv-flavor-row { display: flex; align-items: stretch; justify-content: center; gap: 14px; flex-wrap: wrap; }
+	.pv-swatch { display: grid; grid-template-columns: 56px 1fr; column-gap: 14px; align-items: center; min-width: 220px; padding: 14px; border-radius: 22px; background: var(--st-card); box-shadow: inset 0 0 0 1px var(--st-rule); text-align: left; }
+	.pv-swatch i { grid-row: 1 / 4; width: 56px; height: 56px; border-radius: 16px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2); }
+	.pv-swatch b { font-size: 16px; } .pv-swatch .st-mono { font-size: 12px; color: var(--st-muted); } .pv-swatch em { font-style: normal; font-size: 12px; color: var(--st-meta); }
+	.pv-arrow { align-self: center; font-size: 22px; color: var(--st-muted); }
+	.pv-ramp { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin: 0; padding: 0; list-style: none; }
+	.pv-ramp li { display: grid; align-items: end; min-height: 96px; padding: 10px; border-radius: 14px; }
+	.pv-ramp .st-mono { font-size: 11px; color: #fff; }
+	.pv-flavor figcaption { max-width: 720px; margin: 0 auto; font-size: 16px; line-height: 1.5; color: var(--st-meta); text-wrap: pretty; }
+	.pv-flavor figcaption b { color: var(--st-fg); }
+
+	/* Le icone vere, dentro il selettore di forma. */
+	.pv-icons { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(14px, 2.4vw, 30px) clamp(10px, 2vw, 24px); margin: 0 auto; padding: 0; width: 100%; max-width: 820px; list-style: none; }
+	.pv-icons.big { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 760px; }
+	.pv-icons li { display: grid; justify-items: center; gap: 10px; font-size: 13px; color: var(--st-meta); }
+	.pv-icons img { display: block; width: 100%; max-width: 104px; height: auto; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .3)); }
+	.pv-icons.big img { max-width: 150px; }
+
+	@media (max-width: 720px) {
+		.pv-icons { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+		.pv-icons.big { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+		.pv-ramp { grid-template-columns: repeat(4, 1fr); }
+		.pv-ramp li { min-height: 64px; }
+		.pv-arrow { display: none; }
+		.pv-swatch { min-width: 0; width: 100%; }
+	}
 </style>
