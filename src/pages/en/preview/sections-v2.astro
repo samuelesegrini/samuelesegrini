@@ -11,6 +11,7 @@ import {
 	Story, Section, Device, MediaHero, AppHero, DocHero, Lockup, HighlightsGallery, MediaCards, FeatureExplorer, ToggleFigure, ExplainerFigure,
 	Stats, ThenNow, Lineup, Matrix, Findings, TechSpecs, Limits, Sources, Declaration, CodeSteps, Anatomy, ExplodedStack, Modules, StateMachine,
 	ChangeLog, Principles, Contribution, Faq, KeepExploring, PageIndex,
+	ScrollIntro, StickyScenes, LitText, Bento, BarCompare, PlusCards, ObjectRow, BeforeAfter,
 } from '../../../components/story';
 import { labPaths, labPostPath, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -28,11 +29,11 @@ const repo = {
 
 // il dock fa da indice dei cinque gruppi, come nelle pagine di progetto
 const sections = [
-	{ kicker: 'Group 1 of 5', value: 'Openers', detail: { kicker: 'Sections', value: '4 openers' } },
-	{ kicker: 'Group 2 of 5', value: 'Showcase', detail: { kicker: 'Sections', value: '5 showcases' } },
-	{ kicker: 'Group 3 of 5', value: 'Evidence', detail: { kicker: 'Sections', value: '8 proofs' } },
+	{ kicker: 'Group 1 of 5', value: 'Openers', detail: { kicker: 'Sections', value: '5 openers' } },
+	{ kicker: 'Group 2 of 5', value: 'Showcase', detail: { kicker: 'Sections', value: '10 showcases' } },
+	{ kicker: 'Group 3 of 5', value: 'Evidence', detail: { kicker: 'Sections', value: '9 proofs' } },
 	{ kicker: 'Group 4 of 5', value: 'Engineering', detail: { kicker: 'Sections', value: '8 diagrams' } },
-	{ kicker: 'Group 5 of 5', value: 'Closers', detail: { kicker: 'Sections', value: '4 endings' } },
+	{ kicker: 'Group 5 of 5', value: 'Closers', detail: { kicker: 'Sections', value: '5 endings' } },
 ];
 
 const fiscal = `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
@@ -132,11 +133,14 @@ const tables = [
 			A request reaches the server and is checked against authoritative state. <b>The sender gets a response, everyone else an event,</b> and the event is the only way a client learns that the world has changed.
 		</Lockup>
 
+		<p class="cat-mark"><code>&lt;ScrollIntro /&gt;</code><span>new · pinned title, 1.3× to 0.8× while the next block arrives</span></p>
+		<ScrollIntro eyebrow="EasyManager · Take a closer look" title="One order." dim="Every station reads it." />
+
 		<!-- 2 · Vetrina -->
 		<div class="cat-divider" id="showcase" data-section="2">
 			<span class="st-mono">02 / 05</span>
 			<h2>Showcase</h2>
-			<p>Show the product before explaining it: a gallery, captioned cards, one screen driven by a list, a before and after, a diagram with notes.</p>
+			<p>Show the product before explaining it: a gallery, captioned cards, one screen driven by a list, a before and after, a diagram with notes, then the third series: scenes pinned while you scroll, a paragraph that lights up, a bento, the family in a row and a draggable comparison.</p>
 		</div>
 
 		<p class="cat-mark"><code>&lt;HighlightsGallery /&gt;</code><span>v2 of Highlights</span></p>
@@ -301,6 +305,87 @@ const tables = [
 				]} />
 		</Section>
 
+		<p class="cat-mark"><code>&lt;StickyScenes /&gt;</code><span>new · pinned stage, one scene every 90vh of scroll</span></p>
+		<Section eyebrow="EasyManager · One order, four stops" title="From the table" dim="to the fiscal printer.">
+			<StickyScenes device="ipad" label="An order from the table to the printer" note="Illustrations · screenshots to replace" steps={[
+				{ title: 'Taken at the table.', text: 'Dishes by course, variants with their own price, a VAT department on every line.', code: 'OrderSheetView.swift', tint: 'orange' },
+				{ title: 'Cooked by course.', text: 'The kitchen sees the same order, regrouped by course for the people who cook it.', code: 'CookingView.swift', tint: 'blue' },
+				{ title: 'Paid at the till.', text: 'A pre-bill, then the payment by method: cash, electronic, cheque or meal voucher.', code: 'CashDesk.swift', tint: 'violet' },
+				{ title: 'Printed as a fiscal receipt.', text: 'The till sends XML over HTTP to the Epson printer. A timeout keeps the question open instead of printing twice.', code: 'POST fpmate.cgi · printerFiscalReceipt', tint: 'acid' },
+			]}>
+<div slot="scene-1" class="mock-screen mock-pad" role="img" aria-label="Illustration: the order pad for table 7, risotto for two in the first course">
+					<div class="mock-menu">
+						<div class="mock-tabs"><span class="on">Course 1</span><span>Course 2</span><span>Course 3</span></div>
+						<div class="mock-dishes"><span class="on"><b>Risotto</b><span class="st-mono">14,00</span></span>{Array.from({ length: 5 }, () => <span><i></i><i></i></span>)}</div>
+						<span class="st-eyebrow">Variants · priced per choice</span>
+					</div>
+					<div class="mock-ticket"><b>Table 7</b><span class="st-eyebrow">Course 1</span><span class="row"><span>Risotto × 2</span><span class="st-mono">28,00</span></span><span class="st-mono dept">dept. 1</span><span class="st-eyebrow">Course 2</span><span class="muted">No dishes yet</span><span class="grow"></span><span class="row total"><span>Total</span><span class="st-mono">28,00</span></span><span class="send">Send to kitchen</span></div>
+				</div>
+<div slot="scene-2" class="mock-screen mock-kitchen" role="img" aria-label="Illustration: the kitchen view, orders grouped by course">
+					<b>Kitchen</b>
+					<div class="mock-courses">
+						<div><span class="st-eyebrow">Course 1</span><span class="ticket"><b class="st-mono">T7</b><span>Risotto × 2</span></span><span class="ticket done"><b class="st-mono">T2</b><i></i></span></div>
+						<div><span class="st-eyebrow">Course 2</span><span class="ticket"><b class="st-mono">T6</b><i></i><i></i></span></div>
+						<div><span class="st-eyebrow">Course 3</span><span class="ticket"><b class="st-mono">T11</b><i></i></span></div>
+					</div>
+				</div>
+<div slot="scene-3" class="mock-screen mock-till" role="img" aria-label="Illustration: the till for table 7, payment methods and the fiscal receipt button">
+					<div class="st-receipt st-receipt-paper"><div class="head">PRE-BILL · TABLE 7</div><div class="rule"></div><div class="row"><span>RISOTTO 2×</span><span>28,00</span></div><div class="rule"></div><div class="row strong"><span>TOTAL</span><span>28,00</span></div></div>
+					<div class="mock-pay"><b>Till · Table 7</b><div class="methods"><span class="on">Cash</span><span>Electronic</span><span>Cheque</span><span>Meal voucher</span></div><span class="grow"></span><span class="pre">Pre-bill</span><span class="print">Print fiscal receipt</span><span class="st-mono">X and Z reports at the end of the shift</span></div>
+				</div>
+				<div slot="scene-4" class="mock-screen mock-printout" role="img" aria-label="Illustration: the fiscal receipt for table 7, beside the request that printed it">
+					<div class="st-receipt st-receipt-paper"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div><div class="row"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div><div class="barcode"></div></div>
+					<div class="mock-request st-mono"><span>POST /cgi-bin/fpmate.cgi</span><span>&lt;printRecItem description="Risotto"</span><span>&nbsp;&nbsp;quantity="2" unitPrice="14,00" /&gt;</span><span class="ok">200 · printed</span></div>
+				</div>
+			</StickyScenes>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;LitText /&gt;</code><span>new · each word lights as it crosses the window</span></p>
+		<Section>
+			<LitText eyebrow="EasyManager · The fiscal layer" tint="orange" text="A timeout is not a failure. When the printer does not answer, *the receipt stays uncertain*, and the next step asks the printer what it recorded *instead of printing it twice*." />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Bento /&gt;</code><span>new · tiles of four sizes, entering row by row</span></p>
+		<Section eyebrow="EasyManager · The 2026 toolkit" title="Rebuilt as packages." dim="Each with one job.">
+			<Bento label="The toolkit, tile by tile" tiles={[
+				{ value: '31', eyebrow: 'Package products', text: 'Documented with DocC and built by the release gate.', tone: 'acid', size: 'large' },
+				{ value: '0', eyebrow: 'Remote dependencies', text: 'Where Cloud Firestore used to sit at the core.', tone: 'dark' },
+				{ eyebrow: 'Swift 6.3', title: 'One lane per device.', text: 'Two valid commands never interleave on the same printer.', tone: 'violet' },
+				{ eyebrow: 'Orders', title: 'Outbox, acknowledgement, reconciliation.', text: 'Three phases of one order, instead of one view model among six.', size: 'wide' },
+				{ eyebrow: 'Persistence', title: 'SQL at the boundary.', text: 'Instead of Firestore snapshots rebuilding state on every iPad.', tone: 'blue', size: 'wide' },
+				{ eyebrow: 'Fiscal layer', title: '“Uncertain” is a value.', text: 'Not knowing whether the printer printed is not the same as knowing it didn’t.', tone: 'orange', size: 'wide' },
+			]}>
+				<div slot="tile-1" class="mock-grid mock-grid-bento" role="img" aria-label="31 package products, three of them the order domain, device lanes and fiscal layer">
+					{Array.from({ length: 31 }, (_, k) => <span class:list={{ core: k < 3 }}></span>)}
+				</div>
+			</Bento>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;ObjectRow /&gt;</code><span>new · the family in a row, from the accessories block</span></p>
+		<Section center eyebrow="EasyManager · The restaurant" title="Counter, floor and kitchen." dim="One order on every device.">
+			<ObjectRow label="The devices in the restaurant" items={[
+				{ name: 'Floor', text: 'The dining room and the order pad.' },
+				{ name: 'Kitchen', text: 'The same order, by course.' },
+				{ name: 'Counter', text: 'Pre-bill, payment and reports.' },
+				{ name: 'Fiscal printer', text: 'Epson, XML over HTTP.', href: repo.easymanager },
+			]}>
+				<Device slot="object-1" kind="ipad"><div class="mock-mini floor" aria-hidden="true">{Array.from({ length: 12 }, (_, k) => <i class={['free', 'occupied', 'waiting', 'booked'][k % 4]}></i>)}</div></Device>
+				<Device slot="object-2" kind="ipad"><div class="mock-mini kitchen" aria-hidden="true">{Array.from({ length: 3 }, () => <span><i></i><i></i></span>)}</div></Device>
+				<Device slot="object-3" kind="ipad"><div class="mock-mini counter" aria-hidden="true"><span class="paper"><i></i><i></i><i></i></span><span class="keys"><i></i><i></i><i class="go"></i></span></div></Device>
+				<div slot="object-4" class="mock-printer-object" aria-hidden="true"><span class="slot"></span><div class="st-receipt st-receipt-paper"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="barcode"></div></div><span class="body"></span></div>
+			</ObjectRow>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;BeforeAfter /&gt;</code><span>new · drag the cut, the arrow keys work too</span></p>
+		<Section split eyebrow="SpinGO · The Garage" title="Add moved to the top." dim="After two people missed it."
+			lead="In the tested prototype Add sat at the bottom of the vehicle list, and two of seven participants edited a vehicle they already had instead of adding one. The redesign puts it first.">
+			<BeforeAfter label="Compare the Garage in the prototype and in the redesign" start={50}
+				before={{ label: 'Prototype', text: 'Add at the bottom of the list.' }} after={{ label: 'Redesign', text: 'Add first, where the eye starts.' }}>
+				<div slot="before" class="mock-ba tone-violet"><Device kind="iphone"><div class="mock-garage" role="img" aria-label="Illustration: the Garage in the prototype, with Add a vehicle at the bottom of the list"><b>Garage</b>{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}<span class="add">+ Add a vehicle</span></div></Device></div>
+				<div slot="after" class="mock-ba tone-acid"><Device kind="iphone"><div class="mock-garage" role="img" aria-label="Illustration: the Garage after the redesign, with Add a vehicle at the top"><b>Garage</b><span class="add">+ Add a vehicle</span>{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}</div></Device></div>
+			</BeforeAfter>
+		</Section>
+
 		<!-- 3 · Prove -->
 		<div class="cat-divider" id="evidence" data-section="3">
 			<span class="st-mono">03 / 05</span>
@@ -319,6 +404,18 @@ const tables = [
 				targets={{ title: 'Targets were set before the first session.', text: 'All three were met.', rows: [{ label: 'Success rate', target: '> 85%', value: '88%' }, { label: 'SUS', target: '> 70', value: '89.2' }, { label: 'Severity 1–2 problems', target: '< 3', value: '2' }] }}>
 				Planning and starting a route was nearly effortless. <b>The Garage was the weak point at 82% and 4.2 of 7</b>, and community reporting sat in between at 89%. A positive average hides where people stalled, which is why the problems are ranked by severity, not by count.
 			</Stats>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;BarCompare /&gt;</code><span>new · one series, a reference line, flags written in words</span></p>
+		<Section eyebrow="SpinGO · Task success" title="Two tasks above the target." dim="One below it."
+			lead="Success rate per task against the 85% target set before the first session. The Garage is the one that missed.">
+			<BarCompare label="Task success by task, against the 85% target" max={100} threshold={{ value: 85, label: 'Target 85%', below: 'below target' }}
+				caption="0–2 scale per task, seven participants · Deliverable 6, usability test" rows={[
+					{ label: 'Plan and start a route', note: 'Navigation', value: 93, display: '93%', emphasis: true },
+					{ label: 'Report to the community', note: 'Community reporting', value: 89, display: '89%' },
+					{ label: 'Manage vehicles', note: 'The Garage', value: 82, display: '82%' },
+					{ label: 'All three tasks', note: 'Average success', value: 88, display: '88%', emphasis: true },
+				]} />
 		</Section>
 
 		<p class="cat-mark"><code>&lt;ThenNow /&gt;</code><span>new · what changed between two eras</span></p>
@@ -577,6 +674,19 @@ const tables = [
 				others={[{ name: 'Manuela Terribile', initials: 'MT', tone: 'violet' }, { name: 'Alessandra Varricchio', initials: 'AV', tone: 'blue' }, { name: 'Diego Zanca', initials: 'DZ', tone: 'orange' }]} />
 		</Section>
 
+		<p class="cat-mark"><code>&lt;PlusCards /&gt;</code><span>new · a plus opens a native popover sheet, no script</span></p>
+		<Section eyebrow="EasyManager · Why it is built this way" title="Three decisions." dim="Open one for the reasoning.">
+			<PlusCards label="Decisions behind the toolkit" cards={[
+				{ eyebrow: 'Fiscal layer', title: '“Uncertain” is an answer, not an error.', text: 'When the printer does not answer, nothing is sent again.', tone: 'orange',
+					detail: 'A timeout keeps the question open for the next step instead of retrying a mutation that could print a second receipt. In 2023 the app recorded the connection error and left the decision to the operator; in the toolkit the outcome is a value, and the next step asks the printer what it recorded before anything is sent again.' },
+				{ eyebrow: 'Devices', title: 'One lane per device.', text: 'Hardware is not just another API.', tone: 'violet',
+					detail: 'Two valid commands become unsafe when they interleave on the same printer: a receipt and an X report sent together. Each physical endpoint gets one lane, so its commands run one at a time, in order: pre-bill, then receipt, then report.' },
+				{ eyebrow: 'Persistence', title: 'SQL at the boundary.', text: 'Not snapshots rebuilt on every iPad.', tone: 'blue',
+					detail: 'In 2023 every iPad rebuilt its state from Firestore snapshots, and six shared view models made a local change carry consequences elsewhere. The toolkit moves persistence to SQL at the boundary and keeps the order domain free of it.',
+					links: [{ label: 'Read the 2023 code', href: repo.easymanager }] },
+			]} />
+		</Section>
+
 		<p class="cat-mark"><code>&lt;Faq title /&gt;</code><span>v2 · questions left, answers right, one open at a time</span></p>
 		<Section>
 			<Faq eyebrow="EasyManager" title="Questions," dim="answered." open={0}
@@ -759,6 +869,29 @@ const tables = [
 	.mock-docs i { width: 22px; height: 30px; border-radius: 3px; background: #f4f1e9; box-shadow: inset 0 0 0 1.5px #171713; }
 	.mock-docs i.warn { background: #ffd4b8; }
 
+	/* terza serie: la scena della stampante, le mini schermate in fila, il confronto del Garage */
+	.mock-printout { display: grid; grid-template-columns: 44% minmax(0, 1fr); gap: 24px; align-items: start; padding: 22px; background: #f4f1e9; }
+	.mock-request { display: grid; gap: 6px; padding: 16px; border-radius: 16px; background: #171713; color: #f4f1e9; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+	.mock-request .ok { justify-self: start; margin-top: 6px; padding: 3px 9px; border-radius: 999px; background: #c7ff9f; color: #171713; }
+	.mock-grid-bento { grid-template-columns: repeat(8, minmax(0, 1fr)); align-content: end; justify-content: stretch; width: 100%; }
+	.mock-mini { display: grid; gap: 6%; width: 100%; height: 100%; padding: 8%; background: #f4f1e9; }
+	.mock-mini.floor { grid-template-columns: repeat(4, minmax(0, 1fr)); align-content: center; }
+	.mock-mini.floor i { aspect-ratio: 1; border-radius: 22%; box-shadow: inset 0 0 0 1.5px #171713; }
+	.mock-mini .free { background: #c7ff9f; } .mock-mini .occupied { background: #ffd4b8; } .mock-mini .waiting { background: #ded1ff; } .mock-mini .booked { background: #cdefff; }
+	.mock-mini.kitchen { grid-template-columns: repeat(3, minmax(0, 1fr)); background: #22221d; }
+	.mock-mini.kitchen span { display: grid; align-content: start; gap: 12%; padding: 12%; border-radius: 12%; background: #fffefb; }
+	.mock-mini.kitchen i { height: 5px; border-radius: 3px; background: #171713; } .mock-mini.kitchen i + i { width: 60%; background: #b4b0a6; }
+	.mock-mini.counter { grid-template-columns: 1fr 1fr; }
+	.mock-mini.counter .paper { display: grid; align-content: start; gap: 10%; padding: 12%; border-radius: 8%; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.mock-mini.counter .paper i { height: 4px; border-radius: 2px; background: #171713; } .mock-mini.counter .paper i:nth-child(2) { width: 70%; background: #b4b0a6; }
+	.mock-mini.counter .keys { display: grid; align-content: end; gap: 10%; }
+	.mock-mini.counter .keys i { height: 18%; min-height: 12px; border-radius: 999px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; } .mock-mini.counter .keys .go { background: #171713; }
+	.mock-printer-object { position: relative; display: grid; justify-items: center; width: 78%; }
+	.mock-printer-object .slot { position: relative; z-index: 2; width: 100%; height: 14px; border-radius: 8px 8px 0 0; background: #171713; }
+	.mock-printer-object .st-receipt-paper { position: relative; z-index: 1; width: 84%; margin-top: -4px; padding: 14px 12px; font-size: 8.5px; box-shadow: 0 1px 0 #d3d1ca; }
+	.mock-printer-object .body { width: 100%; height: 64px; border-radius: 0 0 18px 18px; background: linear-gradient(#34342d, #22221d); }
+	.mock-ba { display: grid; place-items: center; width: 100%; height: 100%; min-height: 520px; padding: 36px 0; }
+	.mock-ba :global(.st-frame-iphone) { width: 220px; }
 	@media (max-width: 900px) {
 		.cat-divider { margin-top: 96px; }
 		.mock-printer { flex-direction: column; align-items: stretch; }

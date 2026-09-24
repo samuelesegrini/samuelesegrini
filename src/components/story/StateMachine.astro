@@ -28,7 +28,7 @@ const gapAfter = (i: number) => (i === forkCol - 1 ? 144 : i === forkCol ? 116 :
 const xs: number[] = [];
 cols.reduce((x, _, i) => { xs.push(x); return x + colW[i] + gapAfter(i); }, PAD);
 const W = xs[xs.length - 1] + colW[colW.length - 1] + PAD;
-const node = (col: number, s: State, cy: number) => ({ s, x: xs[col] + (colW[col] - width(s)) / 2, y: cy - NODE / 2, w: width(s) });
+const node = (col: number, s: State, cy: number) => ({ s, col, x: xs[col] + (colW[col] - width(s)) / 2, y: cy - NODE / 2, w: width(s) });
 const nodes = [
 	...before.map((s, i) => node(i, s, CY)),
 	node(forkCol, fork[0], UP),
@@ -84,7 +84,7 @@ const tones = (s: State, i: number) => s.tone ?? (i === nodes.length - 1 ? 'dark
 					<g class="never" transform={`translate(${back.x} ${back.y})`}><circle r="15" /><path d="M-6 -6 6 6M6 -6-6 6" /></g>
 					<text class="edge-label" x={back.x + 26} y={back.y + 4}>{forbidden}</text>
 				</>}
-				{nodes.map((n, i) => <g class:list={['node', `tone-${tones(n.s, i)}`, { uncertain: 'uncertain' in n }]}>
+				{nodes.map((n, i) => <g class:list={['node', `tone-${tones(n.s, i)}`, { uncertain: 'uncertain' in n }]} style={`--st-i: ${n.col}`}>
 					<rect x={n.x} y={n.y} width={n.w} height={NODE} rx={NODE / 2} />
 					<text x={n.x + n.w / 2} y={n.y + NODE / 2 + 6} text-anchor="middle">{n.s.name}</text>
 				</g>)}

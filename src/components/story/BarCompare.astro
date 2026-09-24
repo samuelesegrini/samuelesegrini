@@ -1,0 +1,36 @@
+---
+/**
+ * Il confronto a barre delle pagine prodotto di apple.com ("fino a 2 volte più veloce"): una riga per
+ * voce, la barra che cresce entrando e il valore scritto sulla punta. Una sola serie: le righe in
+ * evidenza (`emphasis`) in inchiostro, le altre in grigio. Con `threshold` una linea di riferimento
+ * attraversa tutte le righe; chi resta sotto è segnato con un'icona e una parola, mai solo col colore.
+ * Ogni valore è testo: l'elenco è già la tabella dei dati.
+ */
+import Icon from './Icon.astro';
+interface Row { label: string; value: number; display?: string; note?: string; emphasis?: boolean }
+interface Props { rows: Row[]; max?: number; threshold?: { value: number; label: string; below?: string }; caption?: string; label: string }
+const { rows, max, threshold, caption, label } = Astro.props;
+const top = max ?? Math.max(...rows.map((r) => r.value), threshold?.value ?? 0) * 1.08;
+const at = (v: number) => (Math.max(0, Math.min(v, top)) / top).toFixed(4);
+---
+<figure class="st-bars" style={threshold ? `--t: ${at(threshold.value)}` : undefined}>
+	{threshold && <div class="st-bars-head" aria-hidden="true"><span></span><span class="st-bars-scale"><span class="st-bars-tlabel st-mono">{threshold.label}</span></span></div>}
+	<ul class:list={['st-bars-list', { 'has-threshold': threshold }]} role="list" aria-label={label}>
+		{rows.map((r, i) => {
+			const below = threshold && r.value < threshold.value;
+			return (
+				<li class:list={['st-bars-row', { em: r.emphasis, below }]} style={`--v: ${at(r.value)}; --st-i: ${i}`}>
+					<span class="st-bars-label">{r.label}{r.note && <span class="st-bars-note">{r.note}</span>}</span>
+					<span class="st-bars-scale">
+						<span class="st-bars-bar" aria-hidden="true"></span>
+						<span class="st-bars-value">
+							<b>{r.display ?? r.value}</b>
+							{below && <span class="st-bars-flag"><Icon name="warning" size={14} stroke={2.2} />{threshold.below ?? `below ${threshold.label}`}</span>}
+						</span>
+					</span>
+				</li>
+			);
+		})}
+	</ul>
+	{caption && <figcaption class="st-mono">{caption}</figcaption>}
+</figure>

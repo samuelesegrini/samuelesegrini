@@ -10,7 +10,7 @@ const route = '/en/preview/poliverse/';
 test('the PoliVerse story renders every chapter and indexes them in the dock', async ({ page }) => {
 	await page.goto(route);
 	await arriva(page);
-	for (const block of ['.st-ahero', '.st-hgallery', '.st-fx', '.st-mc-track', '.st-toggle', '.st-stats', '.st-changelog', '.st-lockup', '.st-thennow', '.st-findings', '.st-csteps', '.st-states', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-sources', '.st-faq2', '.st-keep', '.st-index']) {
+	for (const block of ['.st-ahero', '.st-intro', '.st-hgallery', '.st-lit', '.st-fx', '.st-bento', '.st-bars', '.st-ba', '.st-toggle', '.st-stats', '.st-changelog', '.st-lockup', '.st-thennow', '.st-findings', '.st-scenes', '.st-states', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-sources', '.st-faq2', '.st-keep', '.st-index']) {
 		await expect(page.locator(`.st-page ${block}`).first(), block).toBeAttached();
 	}
 	const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));

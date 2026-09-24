@@ -1,0 +1,29 @@
+---
+/**
+ * Un paragrafo grande che si accende mentre lo si legge: ogni parola passa dal grigio all'inchiostro
+ * quando attraversa la finestra, come i sottotitoli "con le frasi accese" misurati su apple.com.
+ * Tra asterischi, `*così*`, le parole prendono la tinta del progetto. Lo screen reader legge il
+ * testo intero una volta sola; senza supporto, o con la riduzione del movimento, è già tutto acceso.
+ */
+interface Props { text: string; eyebrow?: string; tint?: 'acid' | 'blue' | 'violet' | 'orange'; center?: boolean }
+const { text, eyebrow, tint = 'acid', center = false } = Astro.props;
+// segmenti alternati: fuori e dentro gli asterischi
+const parts = text.split('*').map((chunk, i) => ({ chunk, em: i % 2 === 1 }));
+const plain = parts.map((p) => p.chunk).join('');
+const tokens = parts.flatMap((p) => p.chunk.split(/(\s+)/).filter(Boolean).map((w) => ({ w, em: p.em, space: /^\s+$/.test(w) })));
+// una parola e la punteggiatura attaccata ("carry" e ",") restano insieme a fine riga
+const groups: { w: string; em: boolean }[][] = [];
+let open = false;
+for (const t of tokens) {
+	if (t.space) { open = false; continue; }
+	if (!open) { groups.push([]); open = true; }
+	groups[groups.length - 1].push({ w: t.w, em: t.em });
+}
+---
+<div class:list={['st-lit', { center }]} style={`--lit-tint: var(--${tint})`}>
+	{eyebrow && <span class="st-eyebrow st-lit-eyebrow">{eyebrow}</span>}
+	<p class="st-lit-text">
+		<span class="st-sr">{plain}</span>
+		<span aria-hidden="true">{groups.map((g, i) => <>{i > 0 && ' '}<span class="st-lit-g">{g.map((t) => <span class:list={['st-lit-w', { em: t.em }]}>{t.w}</span>)}</span></>)}</span>
+	</p>
+</div>

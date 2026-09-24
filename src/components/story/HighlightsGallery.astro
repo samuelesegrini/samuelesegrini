@@ -2,7 +2,10 @@
 /**
  * La galleria dei punti forti, seconda versione di Highlights: carte grandi con una frase, una
  * fonte e un'immagine o un disegno (slot `media-1`, `media-2`…), i pallini per saltare e il tasto
- * che le fa scorrere da sole. Senza JavaScript restano una fila che si scorre a mano.
+ * che le fa scorrere da sole. Come su apple.com parte da sola quando entra nella finestra, si ferma
+ * quando esce e il pallino attivo si riempie nel tempo della carta; chi tocca i controlli decide
+ * lui, e con la riduzione del movimento non parte mai da sola. Senza JavaScript restano una fila
+ * che si scorre a mano.
  */
 interface Card { text: string; meta?: string; name?: string; tone?: 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string; wide?: boolean }
 interface Props { cards: Card[]; label?: string; interval?: number }
@@ -45,6 +48,9 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 			let current = 0;
 			let timer = 0;
+			// se la riproduzione deve girare quando la galleria è in vista: chi usa i controlli lo decide
+			let wanted = !reduce();
+			root.style.setProperty('--hg-every', `${every}ms`);
 			// mentre scorre per un pallino o per la riproduzione, lo scorrimento non riassegna il pallino
 			let lock = 0;
 
@@ -73,9 +79,17 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				play.setAttribute('aria-label', 'Pause the highlights');
 			};
 
-			dots.forEach((d, k) => d.addEventListener('click', () => { stop(); go(k); }));
-			play.addEventListener('click', () => (timer ? stop() : start()));
-			track.addEventListener('pointerdown', stop);
+			dots.forEach((d, k) => d.addEventListener('click', () => { wanted = false; stop(); go(k); }));
+			play.addEventListener('click', () => {
+				wanted = !timer;
+				if (timer) stop(); else start();
+			});
+			track.addEventListener('pointerdown', () => { wanted = false; stop(); });
+			// parte quando è in vista per metà, si ferma quando esce
+			new IntersectionObserver(([entry]) => {
+				if (entry.intersectionRatio >= 0.5 && wanted && !timer) start();
+				else if (entry.intersectionRatio < 0.15 && timer) stop();
+			}, { threshold: [0, 0.15, 0.5] }).observe(root);
 			// il pallino segue la carta più vicina all'inizio della fila
 			let frame = 0;
 			track.addEventListener('scroll', () => {

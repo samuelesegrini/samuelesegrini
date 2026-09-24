@@ -1,0 +1,21 @@
+---
+/**
+ * Il titolo che apre un capitolo restando fermo, come "Get the highlights." su apple.com: entra
+ * grande, si ferma al centro della finestra e si rimpicciolisce mentre arriva la sezione dopo, poi
+ * si spegne. Sulla pagina di iPhone 18 Pro passa da 1,3 a 0,8 volte e resta fermo per più di una
+ * schermata. Qui è CSS (animation-timeline): senza supporto, o con la riduzione del movimento,
+ * resta un titolo grande e basta.
+ */
+interface Props { title: string; dim?: string; eyebrow?: string; id?: string; index?: number; tone?: 'paper' | 'dark' | 'ink2' | 'sand' }
+const { title, dim, eyebrow, id, index, tone = 'paper' } = Astro.props;
+const headingId = id ? `${id}-title` : undefined;
+---
+<section class:list={['st-intro', { [`tone-${tone}`]: tone !== 'paper' }]} id={id} data-section={index} aria-labelledby={headingId}>
+	<div class="st-intro-pin">
+		<h2 class="st-intro-title" id={headingId}>
+			{eyebrow && <span class="st-eyebrow">{eyebrow}</span>}
+			<span class="st-intro-line">{title}</span>
+			{dim && <span class="st-intro-line st-dim">{dim}</span>}
+		</h2>
+	</div>
+</section>

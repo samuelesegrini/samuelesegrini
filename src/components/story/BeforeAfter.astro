@@ -1,0 +1,62 @@
+---
+/**
+ * Prima e dopo con la maniglia, come i confronti delle pagine fotocamera di apple.com: la stessa
+ * scena due volte, sovrapposte, e un cursore che sposta il taglio. Il cursore è un vero controllo
+ * a scorrimento: frecce, trascinamento e lettore di schermo. Entrando, la maniglia fa un piccolo
+ * giro per dire che si muove. Senza JavaScript le due scene stanno affiancate.
+ * Le scene arrivano dagli slot `before` e `after`: un'immagine o un disegno in HTML.
+ */
+import Icon from './Icon.astro';
+interface Side { label: string; text?: string }
+interface Props { before: Side; after: Side; label?: string; start?: number }
+const { before, after, label = 'Compare before and after', start = 50 } = Astro.props;
+const beforeHtml = Astro.slots.has('before') ? await Astro.slots.render('before') : '';
+const afterHtml = Astro.slots.has('after') ? await Astro.slots.render('after') : '';
+---
+<figure class="st-ba" data-ba style={`--ba: ${start}`}>
+	<div class="st-ba-stage">
+		<div class="st-ba-layer st-ba-after"><Fragment set:html={afterHtml} /><span class="st-ba-tag st-mono">{after.label}</span></div>
+		<div class="st-ba-layer st-ba-before"><Fragment set:html={beforeHtml} /><span class="st-ba-tag st-mono">{before.label}</span></div>
+		<span class="st-ba-handle" aria-hidden="true"><span><Icon name="chevron-left" size={16} stroke={2.6} /><Icon name="chevron-right" size={16} stroke={2.6} /></span></span>
+		<input class="st-ba-range" type="range" min="0" max="100" step="1" value={start} aria-label={label} data-before={before.label} data-after={after.label} hidden />
+	</div>
+	<figcaption>
+		<span><b>{before.label}.</b>{before.text && <> {before.text}</>}</span>
+		<span><b>{after.label}.</b>{after.text && <> {after.text}</>}</span>
+	</figcaption>
+</figure>
+
+<script>
+	// Il taglio segue il cursore; entrando la maniglia fa un giro per dire che si trascina.
+	function montaConfronti() {
+		document.querySelectorAll<HTMLElement>('[data-ba]').forEach((fig) => {
+			if (fig.dataset.baBound) return;
+			fig.dataset.baBound = '1';
+			const range = fig.querySelector<HTMLInputElement>('.st-ba-range')!;
+			const set = () => {
+				fig.style.setProperty('--ba', range.value);
+				range.setAttribute('aria-valuetext', `${range.value}% ${range.dataset.before}, ${100 - Number(range.value)}% ${range.dataset.after}`);
+			};
+			range.hidden = false;
+			fig.dataset.baLive = '';
+			set();
+			range.addEventListener('input', () => { fig.classList.remove('hint'); set(); });
+			if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+			const io = new IntersectionObserver(([entry]) => {
+				if (!entry.isIntersecting) return;
+				io.disconnect();
+				fig.classList.add('hint');
+				// solo la fine del giro della maniglia, non quella di altre animazioni nella figura
+				const done = (e: AnimationEvent) => {
+					if (e.animationName !== 'st-ba-hint') return;
+					fig.classList.remove('hint');
+					fig.removeEventListener('animationend', done);
+				};
+				fig.addEventListener('animationend', done);
+			}, { threshold: 0.6 });
+			io.observe(fig);
+		});
+	}
+	montaConfronti();
+	document.addEventListener('astro:page-load', montaConfronti);
+</script>

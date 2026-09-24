@@ -1,0 +1,46 @@
+---
+/**
+ * Carte con il più, come quelle di "Why buy here" su apple.com: una frase per carta, e il più apre
+ * un foglio con il resto. Il foglio è un popover nativo: si apre e si chiude senza JavaScript, Esc e
+ * il clic fuori lo chiudono, il fuoco entra nel foglio e torna al più. Il testo lungo arriva da
+ * `detail` oppure dallo slot `detail-1`, `detail-2`…; un disegno per carta dallo slot `media-1`…
+ */
+import Icon from './Icon.astro';
+import { storyId } from '../../lib/story-id';
+type Tone = 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange';
+interface Card { title: string; text?: string; eyebrow?: string; tone?: Tone; detail?: string; links?: { label: string; href: string }[] }
+interface Props { cards: Card[]; label?: string }
+const { cards, label = 'More to know' } = Astro.props;
+const uid = storyId('plus');
+const details = await Promise.all(cards.map((_, i) => (Astro.slots.has(`detail-${i + 1}`) ? Astro.slots.render(`detail-${i + 1}`) : Promise.resolve(''))));
+const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
+---
+<ul class="st-plus-grid" role="list" aria-label={label}>
+	{cards.map((c, i) => {
+		const id = `${uid}-${i}`;
+		const tone = c.tone ?? 'paper';
+		return (
+			<li class:list={['st-plus-card', `tone-${tone}`]}>
+				<div class="st-plus-copy">
+					{c.eyebrow && <span class="st-eyebrow">{c.eyebrow}</span>}
+					<h3>{c.title}</h3>
+					{c.text && <p>{c.text}</p>}
+				</div>
+				{media[i] && <div class="st-plus-media"><Fragment set:html={media[i]} /></div>}
+				<button class="st-plus-open" type="button" popovertarget={id} aria-label={`More about: ${c.title}`}><Icon name="plus" size={20} stroke={2.4} /></button>
+				<div class="st-plus-sheet" id={id} popover="auto" role="dialog" aria-labelledby={`${id}-title`}>
+					<div class:list={['st-plus-sheet-in', `tone-${tone === 'dark' || tone === 'ink2' ? tone : 'paper'}`]}>
+						<button class="st-plus-close" type="button" popovertarget={id} popovertargetaction="hide" aria-label="Close" autofocus><Icon name="cross" size={18} stroke={2.4} /></button>
+						{c.eyebrow && <span class="st-eyebrow">{c.eyebrow}</span>}
+						<h3 id={`${id}-title`}>{c.title}</h3>
+						<div class="st-plus-detail">{details[i] ? <Fragment set:html={details[i]} /> : <p>{c.detail}</p>}</div>
+						{c.links && c.links.length > 0 && <ul class="st-plus-links" role="list">{c.links.map((l) => {
+							const external = /^https?:/.test(l.href);
+							return <li><a class="st-link" href={l.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{l.label}<Icon name={external ? 'external' : 'arrow-right'} size={16} /></a></li>;
+						})}</ul>}
+					</div>
+				</div>
+			</li>
+		);
+	})}
+</ul>

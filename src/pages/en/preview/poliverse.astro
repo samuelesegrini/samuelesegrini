@@ -7,9 +7,9 @@
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, Device, AppHero, Lockup, HighlightsGallery, FeatureExplorer, MediaCards, ToggleFigure, Stats,
-	ChangeLog, ThenNow, Findings, CodeSteps, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
-	Sources, Faq, KeepExploring, PageIndex,
+	Story, Section, Device, AppHero, Lockup, HighlightsGallery, FeatureExplorer, ToggleFigure, Stats,
+	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
+	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BarCompare, BeforeAfter,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -42,15 +42,6 @@ const sections = [
 	{ kicker: 'Chapter 7 of 7', value: 'Specs & questions', detail: { kicker: 'Dependencies', value: 'none' } },
 ];
 
-const cieFlow = `web view sees  https://ios.idserver.servizicie.interno.gov.it/…&nextUrl=…
-     ↓ cancel
-we open        CIEID://https://ios.idserver…&sourceApp=one.wape.PoliVerse
-     ↓ the student taps the card and enters the PIN
-CieID opens    one.wape.PoliVerse://https://idserver.servizicie.interno.gov.it/…
-     ↓ onOpenURL → CieIDRouter
-we strip to    https://idserver.servizicie.interno.gov.it/…
-     ↓ load into the same web view, which holds the session
-login continues`;
 ---
 
 <ExperimentLayout lang="en" title="PoliVerse (preview)" currentHref="/en/preview/poliverse/" sections={sections} itHref={labPaths.it.home} enHref={labPaths.en.home} noindex>
@@ -84,7 +75,9 @@ login continues`;
 			</Fragment>
 		</AppHero>
 
-		<Section id="highlights" tone="ink2" title="The highlights." link={{ label: 'Browse the source', href: repo }} index={1}>
+		<ScrollIntro id="highlights" index={1} tone="ink2" eyebrow="PoliVerse" title="Get the highlights." />
+
+		<Section tone="ink2" link={{ label: 'Browse the source', href: repo }}>
 			<HighlightsGallery cards={[
 				{ text: 'The Politecnico has no public API. PoliVerse reads the config the official app reads, so a moved backend costs no release.', meta: 'Service directory · 11 September', name: 'No public API', tone: 'blue' },
 				{ text: '“Entra con CIE” comes back to the app, not to Safari.', meta: 'CieID hand-off · sourceApp', name: 'CIE login', tone: 'dark' },
@@ -92,27 +85,31 @@ login continues`;
 				{ text: 'It reads, and never writes. A wrong read costs a refresh; a wrong write costs a session.', meta: 'Decision · 22 September', name: 'Read-only on purpose', tone: 'orange' },
 				{ text: 'One colour becomes the whole app, down to the icon on the Home Screen.', meta: 'Personalizza · 36 icons', name: 'Make it yours', tone: 'violet' },
 			]}>
-				<div slot="media-1" class="pv-json st-mono" aria-hidden="true">
+				<div slot="tile-1" class="pv-json st-mono" aria-hidden="true">
 					<span>GET …/polimi_app/rest/jaf/public/props <em>200 · no auth</em></span>
 					<span>"iae.base_url": "https://api.polimi.it/iae"</span>
 					<span>"libretto.base_url": "…/piano_studente"</span>
 					<span>"ws_aule.base_url": "…/ws_aule"</span>
 				</div>
-				<ol slot="media-2" class="pv-steps st-mono" aria-label="The CIE hand-off in four steps">
+				<ol slot="tile-2" class="pv-steps st-mono" aria-label="The CIE hand-off in four steps">
 					<li>catch the CieID link</li><li>re-open it with sourceApp</li><li>card + PIN in CieID</li><li class="ok">back in PoliVerse</li>
 				</ol>
-				<div slot="media-3" class="pv-fresh" role="img" aria-label="A cached timetable still on screen, with a line saying it is forty minutes old and the refresh failed">
+				<div slot="tile-3" class="pv-fresh" role="img" aria-label="A cached timetable still on screen, with a line saying it is forty minutes old and the refresh failed">
 					<span class="pv-fresh-line st-mono"><i></i>Cached copy · 40 min old · refresh failed</span>
 					<span class="pv-fresh-card"><b>12:15</b><span>Reti di Calcolatori</span></span>
 					<span class="pv-fresh-card"><b>14:15</b><span>Basi di Dati</span></span>
 				</div>
-				<ol slot="media-4" class="pv-nope" aria-label="Actions the app does not perform">
+				<ol slot="tile-4" class="pv-nope" aria-label="Actions the app does not perform">
 					<li>Enrol in a sitting</li><li>Refuse a mark</li><li>Post in a forum</li><li>Hand in an assignment</li>
 				</ol>
-				<ul slot="media-5" class="pv-icon-strip" aria-label="Six of the app icons">
+				<ul slot="tile-5" class="pv-icon-strip" aria-label="Six of the app icons">
 					{['orbit', 'dial-mint', 'closeup-coral', 'special-neon', 'special-blueprint', 'special-soft'].map((n) => <li><img src={icon(n)} alt="" width="120" height="120" loading="lazy" /></li>)}
 				</ul>
 			</HighlightsGallery>
+		</Section>
+
+		<Section>
+			<LitText eyebrow="PoliVerse · In one line" tint="blue" text="PoliVerse puts a student’s whole Politecnico in one place: the day, the courses, the career and the campus, *on every screen they carry*, and *still there without a connection*." />
 		</Section>
 
 		<Section id="app" eyebrow="PoliVerse · Take a closer look" title="Four tabs." dim="One question each." index={2}>
@@ -169,32 +166,32 @@ login continues`;
 		</Section>
 
 		<Section eyebrow="PoliVerse · Beyond the app" title="Everywhere a student looks." dim="Not only inside the app.">
-			<MediaCards label="Beyond the app" items={[
-				{ lead: 'Widgets.', text: 'Next lecture, today, career and free rooms. The free-rooms widget fetches its own data, with a button to refresh it.', tone: 'blue', tag: 'WidgetKit' },
-				{ lead: 'The Lock Screen.', text: 'A Live Activity follows the lesson in progress, and the exam on the day of the exam.', tone: 'dark', tag: 'ActivityKit' },
-				{ lead: 'Apple Watch.', text: 'Today’s lectures and the next exam, sent from the phone over WatchConnectivity.', tone: 'violet', tag: 'watchOS' },
-				{ lead: 'Siri and Spotlight.', text: 'Courses, sittings and rooms are things Siri knows, not only screens it can open.', tone: 'acid', tag: 'App Intents' },
-				{ lead: 'Lesson recordings.', text: 'In the system player, resumed where you stopped, and downloadable when the teacher allows it.', tone: 'orange', tag: 'AVKit' },
+			<Bento label="Beyond the app" tiles={[
+				{ eyebrow: 'WidgetKit', title: 'Widgets.', text: 'Next lecture, today, career and free rooms. The free-rooms widget fetches its own data, with a button to refresh it.', tone: 'blue', size: 'large' },
+				{ eyebrow: 'ActivityKit', title: 'The Lock Screen.', text: 'A Live Activity follows the lesson in progress, and the exam on the day of the exam.', tone: 'dark', size: 'tall' },
+				{ eyebrow: 'watchOS', title: 'Apple Watch.', text: 'Today’s lectures and the next exam, sent from the phone.', tone: 'violet', size: 'tall' },
+				{ eyebrow: 'App Intents', title: 'Siri and Spotlight.', text: 'Courses, sittings and rooms are things Siri knows, not only screens it can open.', tone: 'acid', size: 'wide' },
+				{ eyebrow: 'AVKit', title: 'Lesson recordings.', text: 'In the system player, resumed where you stopped, and downloadable when the teacher allows it.', tone: 'orange', size: 'wide' },
 			]}>
-				<div slot="media-1" class="pv-widgets" aria-hidden="true">
+				<div slot="tile-1" class="pv-widgets" aria-hidden="true">
 					<span class="pv-w"><em>Prossima</em><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></span>
 					<span class="pv-w dark"><em>Aule libere</em><b>12</b><span>Leonardo</span></span>
 				</div>
-				<div slot="media-2" class="pv-live" aria-hidden="true">
+				<div slot="tile-2" class="pv-live" aria-hidden="true">
 					<span class="pv-live-time st-mono">10:41</span>
 					<span class="pv-live-card"><span><em>Lezione in corso</em><b>Ingegneria del Software</b></span><span class="pv-live-left st-mono">34 min</span><span class="pv-bar"><i style="width: 72%"></i></span></span>
 				</div>
-				<div slot="media-3" class="pv-wrist" aria-hidden="true"><span class="pv-watch small"><span class="st-mono">Esame</span><b>Probabilità</b><span>6 ott · 9:00</span></span></div>
-				<div slot="media-4" class="pv-siri" aria-hidden="true">
+				<div slot="tile-3" class="pv-wrist" aria-hidden="true"><span class="pv-watch small"><span class="st-mono">Esame</span><b>Probabilità</b><span>6 ott · 9:00</span></span></div>
+				<div slot="tile-4" class="pv-siri" aria-hidden="true">
 					<span class="pv-ask">“Quando è il prossimo esame?”</span>
 					<span class="pv-answer"><em>Probabilità e Statistica</em><b>6 ottobre, 9:00</b></span>
 				</div>
-				<div slot="media-5" class="pv-player" aria-hidden="true">
+				<div slot="tile-5" class="pv-player" aria-hidden="true">
 					<span class="pv-player-frame"><i></i></span>
 					<span class="pv-bar"><i style="width: 46%"></i></span>
 					<span class="st-mono">Riprendi da 41:12 · scaricata</span>
 				</div>
-			</MediaCards>
+			</Bento>
 		</Section>
 
 		<Section id="personalise" tone="dark" center eyebrow="PoliVerse · Personalizza" title="Make it yours." dim="One colour becomes the whole app." index={3}
@@ -212,6 +209,25 @@ login continues`;
 				</ol>
 				<figcaption><b>Flavor.</b> Accent and Extra sit a step and two steps around the wheel from Main; a page hands out the ramp by position. A grey has no hue to move along, so below 0.12 saturation it only deepens. Values from the app’s own documentation.</figcaption>
 			</figure>
+		</Section>
+
+		<Section tone="dark" eyebrow="PoliVerse · Contrast" title="Every colour, checked." dim="Before it is drawn."
+			lead="The brand navy that reads at 13:1 on white nearly disappears on the dark background, and a white label on a light dark-mode accent drops to 2.4:1. So every accent has a dark twin, and a label on a filled accent turns near-black in dark mode.">
+			<BarCompare label="Contrast ratios in PoliVerse, against the WCAG AA threshold of 4.5:1" max={14} threshold={{ value: 4.5, label: 'AA 4.5:1', below: 'below AA' }}
+				caption="WCAG 2 contrast computed from the colour components in AccentColor and Theme.swift · the worst pair as the README records it" rows={[
+					{ label: 'Brand navy on white', note: '#003352 on #FFFFFF', value: 13.2, display: '13.2:1', emphasis: true },
+					{ label: 'Brand navy on the dark background', note: '#003352 on #1C1C1E, why the twin exists', value: 1.3, display: '1.3:1' },
+					{ label: 'White on the blue accent, dark mode', note: '#FFFFFF on #6BADF0, before', value: 2.4, display: '2.4:1' },
+					{ label: 'Near-black on the same accent', note: '#141414 on #6BADF0, now', value: 7.8, display: '7.8:1', emphasis: true },
+					{ label: 'Worst pair in the app, either appearance', note: 'As the README records it', value: 4.7, display: '4.7:1', emphasis: true },
+				]} />
+			<div class="pv-ba">
+				<BeforeAfter label="Compare a white label and a near-black label on the blue accent in dark mode" start={50}
+					before={{ label: 'White · 2.4:1', text: 'A fixed white label, fine in light mode, fails in dark.' }} after={{ label: 'Near-black · 7.8:1', text: 'In dark mode the label on a filled accent flips.' }}>
+					<div slot="before" class="pv-contrast" aria-hidden="true"><span class="pv-contrast-card"><span class="st-mono">Corso</span><b>Ingegneria del Software</b><span class="pill white"></span></span></div>
+					<div slot="after" class="pv-contrast" aria-hidden="true"><span class="pv-contrast-card"><span class="st-mono">Corso</span><b>Ingegneria del Software</b><span class="pill black"></span></span></div>
+				</BeforeAfter>
+			</div>
 		</Section>
 
 		<Section tone="dark" center eyebrow="PoliVerse · The icon" title="One planet." dim="Thirty-six ways to wear it."
@@ -326,12 +342,39 @@ login continues`;
 
 		<Section id="cie" split eyebrow="PoliVerse · Signing in" title="CieID doesn’t know who called it." dim="So we tell it."
 			lead="Inside a plain web view, CieID returns the authenticated session to Safari and the login is lost. PoliVerse intercepts the hand-off before the web view follows it, and re-opens it with a sourceApp that brings the student back.">
-			<CodeSteps file="docs/cie-login.md · the flow" code={cieFlow} lang="txt" meta={[{ label: '4 steps', icon: 'lines' }, { label: 'CieIDBridge', icon: 'code' }, { label: 'Card + PIN', icon: 'lock' }]} steps={[
-				{ title: 'Catch the link.', text: 'The login page navigates to the CIE identity provider; the web view sees it first.', lines: '1-2' },
-				{ title: 'Re-open it with sourceApp.', text: 'The navigation is cancelled and opened in CieID with the app’s URL scheme attached.', lines: '3-4' },
-				{ title: 'Come back to the app.', text: 'CieID returns to PoliVerse, and CieIDRouter carries the URL from onOpenURL to the live web view.', lines: '5-6' },
-				{ title: 'Finish in the same web view.', text: 'The URL is stripped and loaded where the session lives, so the login simply continues.', lines: '7-9' },
-			]} />
+			<StickyScenes device="iphone" label="Signing in with CIE, in four steps" note="Illustrations of the Italian interface" steps={[
+				{ title: 'Catch the link.', text: 'The sign-in page sends the web view to the CIE identity provider. PoliVerse sees that navigation before the web view follows it.', code: 'https://ios.idserver.servizicie.interno.gov.it/…', tint: 'blue' },
+				{ title: 'Re-open it in CieID.', text: 'The navigation is cancelled and opened in the CieID app instead, with PoliVerse’s own URL scheme attached as the source.', code: 'CIEID://…&sourceApp=one.wape.PoliVerse', tint: 'violet' },
+				{ title: 'Card and PIN, in CieID.', text: 'The student holds the card to the phone and types the PIN. CieID then opens the app named in sourceApp: PoliVerse, not Safari.', code: 'one.wape.PoliVerse://https://idserver…', tint: 'orange' },
+				{ title: 'Back in the same web view.', text: 'CieIDRouter carries the URL from onOpenURL to the web view that holds the session, and the sign-in simply continues.', code: 'onOpenURL → CieIDRouter → AuthWebView', tint: 'acid' },
+			]}>
+				<div slot="scene-1" class="pv-phone pv-signin" role="img" aria-label="Illustration: a sign-in page with two choices, SPID and CIE, and CIE being tapped">
+					<span class="pv-url st-mono">idp · accesso</span>
+					<span class="pv-title">Accesso</span>
+					<span class="pv-hello">Scegli come entrare.</span>
+					<span class="pv-choice">Entra con SPID</span>
+					<span class="pv-choice on">Entra con CIE<i></i></span>
+				</div>
+				<div slot="scene-2" class="pv-phone pv-handoff" role="img" aria-label="Illustration: PoliVerse handing the sign-in to the CieID app, with its own name as the source">
+					<span class="pv-apps"><img src={icon('orbit')} alt="" width="72" height="72" /><span class="pv-arrow-long" aria-hidden="true"></span><span class="pv-card-app"><i></i></span></span>
+					<span class="pv-handoff-line st-mono">sourceApp=<b>one.wape.PoliVerse</b></span>
+					<span class="pv-hello">Apertura di CieID…</span>
+				</div>
+				<div slot="scene-3" class="pv-phone pv-cie" role="img" aria-label="Illustration: an identity app asking to hold the card to the phone, then for the PIN">
+					<span class="pv-title">Avvicina la carta</span>
+					<span class="pv-idcard"><i></i><span></span><span></span></span>
+					<span class="pv-waves" aria-hidden="true"><i></i><i></i><i></i></span>
+					<span class="pv-kicker">Inserisci il PIN</span>
+					<span class="pv-pin">{Array.from({ length: 8 }, (_, k) => <i class:list={{ on: k < 5 }}></i>)}</span>
+				</div>
+				<div slot="scene-4" class="pv-phone pv-back" role="img" aria-label="Illustration: back in PoliVerse, signed in, with the Today tab behind a confirmation">
+					<span class="pv-toast"><i></i>Accesso eseguito</span>
+					<span class="pv-hello">Buona giornata!</span>
+					<span class="pv-date"><b>24.09</b><b>GIO</b></span>
+					<span class="pv-kicker">Lezione in corso</span>
+					<span class="pv-card now"><span class="pv-tag">10:15 – 12:15 · Aula 3.1.2</span><b>Ingegneria del Software</b><span class="pv-bar"><i style="width: 38%"></i></span></span>
+				</div>
+			</StickyScenes>
 		</Section>
 
 		<Section id="data" split eyebrow="PoliVerse · Freshness" title="A stale answer with a date" dim="says more than an empty screen."
@@ -516,6 +559,47 @@ login continues`;
 	.pv-player-frame { display: grid; place-items: center; aspect-ratio: 16 / 9; border-radius: 14px; background: #171713; }
 	.pv-player-frame i { width: 0; height: 0; border-left: 18px solid #fffef9; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 4px; }
 	.pv-player .st-mono { font-size: 11px; }
+
+	/* Le scene dell'accesso con CIE: pagina di accesso, passaggio a CieID, carta e PIN, ritorno. */
+	.pv-url { align-self: center; padding: 5px 12px; border-radius: 999px; background: #e2dfd5; font-size: 9.5px; color: #5e5a53; }
+	.pv-signin { gap: 12px; }
+	.pv-signin .pv-title { margin-top: 18px; }
+	.pv-choice { position: relative; display: grid; place-items: center; height: 46px; margin-top: 6px; border-radius: 14px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; font-size: 13px; font-weight: 700; }
+	.pv-choice.on { background: #171713; color: #fffef9; }
+	.pv-choice.on i { position: absolute; right: 22%; bottom: -12px; width: 26px; height: 26px; border-radius: 50%; background: rgba(205, 239, 255, .55); box-shadow: 0 0 0 6px rgba(205, 239, 255, .3); }
+	.pv-handoff { justify-content: center; align-items: center; gap: 18px; text-align: center; }
+	.pv-apps { display: flex; align-items: center; gap: 12px; }
+	.pv-apps img { width: 64px; height: 64px; }
+	.pv-arrow-long { width: 40px; height: 2px; background: #171713; position: relative; }
+	.pv-arrow-long::after { content: ''; position: absolute; right: -1px; top: -4px; width: 10px; height: 10px; border-top: 2px solid #171713; border-right: 2px solid #171713; rotate: 45deg; }
+	.pv-card-app { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-card-app i { width: 38px; height: 26px; border-radius: 5px; background: #cdefff; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-handoff-line { padding: 8px 12px; border-radius: 10px; background: #171713; color: #f4f1e9; font-size: 9.5px; }
+	.pv-handoff-line b { color: #c7ff9f; font-weight: 500; }
+	.pv-cie { align-items: center; gap: 14px; background: #fffefb; }
+	.pv-cie .pv-title { margin-top: 12px; font-size: 22px; }
+	.pv-idcard { position: relative; display: grid; align-content: end; gap: 6px; width: 70%; aspect-ratio: 1.58; padding: 12px; border-radius: 10px; background: #cdefff; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-idcard i { position: absolute; left: 12px; top: 12px; width: 22%; height: 22%; border-radius: 4px; background: #e3b84c; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-idcard span { height: 5px; border-radius: 3px; background: #171713; } .pv-idcard span + span { width: 60%; background: #8b877f; }
+	.pv-waves { display: flex; gap: 5px; }
+	.pv-waves i { width: 8px; height: 8px; border-radius: 50%; background: #171713; opacity: .25; } .pv-waves i + i { opacity: .5; } .pv-waves i + i + i { opacity: .8; }
+	.pv-pin { display: flex; gap: 7px; }
+	.pv-pin i { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #171713; } .pv-pin i.on { background: #171713; }
+	.pv-toast { display: flex; align-items: center; gap: 8px; align-self: center; margin-bottom: 4px; padding: 9px 14px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 11px; font-weight: 600; }
+	.pv-toast i { width: 8px; height: 8px; border-radius: 50%; background: #c7ff9f; }
+
+	/* Il contrasto: la stessa carta del corso in modalità scura, etichetta bianca o quasi nera. Il
+	   testo dell'etichetta sta nel CSS: è un esempio voluto di contrasto insufficiente, non un testo. */
+	.pv-ba { margin-top: clamp(56px, 7vw, 96px); }
+	.pv-contrast { display: grid; place-items: center; width: 100%; min-height: 360px; padding: 32px 0; background: #000; }
+	/* la carta è centrata: il taglio passa in mezzo all'etichetta, metà bianca e metà quasi nera */
+	.pv-contrast-card { display: grid; justify-items: center; gap: 10px; width: min(420px, 84%); padding: 30px 28px; border-radius: 26px; background: #1c1c1e; color: #f4f1e9; text-align: center; }
+	.pv-contrast-card .st-mono { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #a9a59b; }
+	.pv-contrast-card b { font-size: 22px; letter-spacing: -.03em; }
+	.pv-contrast-card .pill { margin-top: 10px; padding: 14px 44px; border-radius: 999px; background: #6badf0; font-size: 17px; font-weight: 700; }
+	.pv-contrast-card .pill::before { content: 'Apri il corso'; }
+	.pv-contrast-card .pill.white { color: #fff; }
+	.pv-contrast-card .pill.black { color: #141414; }
 
 	/* Flavor: un colore diventa la tavolozza, poi la rampa. */
 	.pv-flavor { display: grid; gap: 28px; margin: 0; }

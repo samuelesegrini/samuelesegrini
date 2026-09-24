@@ -14,13 +14,15 @@ const blocks = [
 	'.st-stats', '.st-thennow', '.st-lineup', '.st-matrix', '.st-findings', '.st-techspecs', '.st-limits2', '.st-sources',
 	'.st-decl', '.st-csteps', '.st-anatomy', '.st-exploded', '.st-modules', '.st-states', '.st-changelog', '.st-principles',
 	'.st-contrib', '.st-faq2', '.st-keep', '.st-index',
+	// la terza serie: dai vuoti dell'analisi e dalle misure del movimento
+	'.st-intro', '.st-scenes', '.st-lit', '.st-bento', '.st-objects-row', '.st-ba', '.st-bars', '.st-plus-grid',
 ];
 
-test('every section of the second series renders, and the dock indexes the five groups', async ({ page }) => {
+test('every section of the second and third series renders, and the dock indexes the five groups', async ({ page }) => {
 	await page.goto(route);
 	await arriva(page);
 	for (const block of blocks) await expect(page.locator(`.st-page ${block}`).first(), block).toBeAttached();
-	expect(blocks).toHaveLength(29);
+	expect(blocks).toHaveLength(37);
 
 	const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
 	expect(sections).toEqual([0, 1, 2, 3, 4, 5]);
