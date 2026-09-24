@@ -163,17 +163,28 @@ test('the explorer opens the chosen item instead of swapping it', async ({ page 
 	await expect(inner(0)).toBeHidden();
 });
 
-test('nothing overflows sideways while the motion runs', async ({ page }) => {
-	for (const route of [poliverse, catalogue]) {
-		for (const width of [390, 1440]) {
+// Una passata per pagina e per larghezza. Lo scroll e la misura restano dentro la pagina, con due
+// fotogrammi a ogni passo perché le animazioni legate allo scroll arrivino al punto: un giro di
+// andata e ritorno con Playwright per ogni passo costava più dei trenta secondi del test.
+for (const route of [poliverse, catalogue]) {
+	for (const width of [390, 1440]) {
+		test(`nothing overflows sideways while the motion runs · ${route} at ${width}`, async ({ page }) => {
 			await page.setViewportSize({ width, height: 844 });
 			await page.goto(route);
 			await arriva(page);
-			const height = await page.evaluate(() => document.documentElement.scrollHeight);
-			for (let y = 0; y < height; y += 1400) {
-				await scrollTo(page, y);
-				expect(await page.evaluate(() => document.documentElement.scrollWidth), `${route} at ${width}, y ${y}`).toBeLessThanOrEqual(width);
-			}
-		}
+			const wide = await page.evaluate(async (limit) => {
+				const frame = () => new Promise((done) => requestAnimationFrame(() => done(null)));
+				const found: string[] = [];
+				for (let y = 0; y < document.documentElement.scrollHeight; y += 1400) {
+					window.scrollTo(0, y);
+					await frame();
+					await frame();
+					const w = document.documentElement.scrollWidth;
+					if (w > limit) found.push(`y ${y}: ${w}px`);
+				}
+				return found;
+			}, width);
+			expect(wide).toEqual([]);
+		});
 	}
-});
+}
