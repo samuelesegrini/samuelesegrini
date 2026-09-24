@@ -21,13 +21,14 @@ const { Content, headings } = await render(document);
 const chapters = headings.filter((h) => h.depth === 2).length;
 const repo = project.links[0]?.url;
 
+// Le carte del dock seguono i capitoli della pagina: la barra in alto non serve più, il dock fa da indice.
 const sections = [
-	{ kicker: 'Section', value: 'Overview', detail: { kicker: 'Year', value: '2023—26' } },
-	{ kicker: 'Section', value: 'Highlights', detail: { kicker: 'Highlights', value: '4' } },
-	{ kicker: 'Section', value: 'How it works', detail: { kicker: 'Decisions', value: '3' } },
-	{ kicker: 'Section', value: 'Screens', detail: { kicker: 'Stations', value: '3' } },
-	{ kicker: 'Section', value: 'Numbers', detail: { kicker: 'Modules', value: '31' } },
-	{ kicker: 'Section', value: 'Full story', detail: { kicker: 'Chapters', value: String(chapters) } },
+	{ kicker: 'Chapter 1 of 6', value: 'Highlights', detail: { kicker: 'In short', value: '4 highlights' } },
+	{ kicker: 'Chapter 2 of 6', value: 'How it works', detail: { kicker: 'Design', value: '3 decisions' } },
+	{ kicker: 'Chapter 3 of 6', value: 'Screens', detail: { kicker: 'Stations', value: '3 iPads' } },
+	{ kicker: 'Chapter 4 of 6', value: 'Numbers', detail: { kicker: 'Modules', value: `${project.outcomes[0]?.value ?? ''} in 0.1` } },
+	{ kicker: 'Chapter 5 of 6', value: '2023 vs 2026', detail: { kicker: 'Eras', value: 'App → toolkit' } },
+	{ kicker: 'Chapter 6 of 6', value: 'Full story', detail: { kicker: 'Chapters', value: `${chapters} to read` } },
 ];
 const screens = [
 	{ n: 'Dining room', view: 'DiningView', text: 'Tables by state and waiter' },
@@ -39,11 +40,6 @@ const screens = [
 <ExperimentLayout lang="en" title="EasyManager (preview)" currentHref={labProjectPath('en', project.slug)} sections={sections}
 	itHref={labProjectPath('it', 'easymanager-operazioni-ristorante')} enHref={labProjectPath('en', project.slug)} noindex>
 	<article class="pp">
-		<nav class="pp-bar" aria-label="EasyManager">
-			<b>EasyManager</b>
-			<a href="#overview">Overview</a><a href="#how">How it works</a><a href="#screens">Screens</a><a href="#eras">2023 vs 2026</a><a href="#story">Full story</a>
-			{repo && <a class="pp-bar-cta" href={repo} target="_blank" rel="noopener noreferrer"><LinkIcon kind="github" />View the 2023 code</a>}
-		</nav>
 
 		<header class="pp-hero" id="overview" data-section="0">
 			<div class="pp-hero-copy">
@@ -124,7 +120,7 @@ const screens = [
 			<dl>{project.outcomes.map((o, i) => <div><dt style={`--c: ${['var(--blue)', 'var(--acid)', 'var(--orange)'][i % 3]}`}>{o.value}</dt><dd>{o.label}</dd></div>)}</dl>
 		</section>
 
-		<section class="pp-section" id="eras" aria-labelledby="eras-t">
+		<section class="pp-section" id="eras" aria-labelledby="eras-t" data-section="5">
 			<h2 id="eras-t" class="center">Same problem. Two eras.</h2>
 			<div class="pp-eras">
 				<div><span class="pp-kicker">2023 · The app</span><ul><li>SwiftUI with MVVM, six shared view models</li><li>Firestore snapshots keep every iPad in sync</li><li>Pre-bill, fiscal receipt, X and Z reports</li><li>Connection errors left to the operator</li></ul></div>
@@ -147,7 +143,7 @@ const screens = [
 			<p>The 2023 repository is public. The 0.1 release facts come from a verified checkout of source that isn’t public yet. Physical-device compatibility and fiscal certification are not demonstrated.</p>
 		</section>
 
-		<section class="pp-story" id="story" data-section="5">
+		<section class="pp-story" id="story" data-section="6">
 			<details>
 				<summary><h2>Read the full story</h2><span class="pp-kicker">{chapters} chapters ↓</span></summary>
 				<div class="prosa"><Content components={{ a: LabContentLink, img: LabContentImage }} /></div>
@@ -170,11 +166,8 @@ const screens = [
 	.pp-kicker { font: 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
 	.pp-lead { max-width: 60ch; margin-top: 12px !important; font-size: 19px; line-height: 1.55; color: #3b3830; }
 
-	.pp-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 28px; height: 56px; padding: 0 var(--pad); border-bottom: 1px solid #d3d1ca; background: rgba(244, 241, 233, .88); backdrop-filter: blur(12px); font-size: 13px; }
-	.pp-bar b { margin-right: auto; font-size: 20px; letter-spacing: -.04em; }
-	.pp-bar-cta { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 14px; border-radius: 999px; background: #171713; color: #fffef9; font-weight: 600; }
 
-	.pp-hero { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 40px; align-items: center; min-height: calc(100svh - 56px); padding: 40px 0 40px var(--pad); overflow: hidden; }
+	.pp-hero { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 40px; align-items: center; min-height: 100svh; padding: 40px 0 40px var(--pad); overflow: hidden; }
 	.pp-hero-copy { display: grid; gap: 24px; }
 	.pp-hero .pp-kicker { color: #6b6760; }
 	.pp-hero h1 { margin: 0; font-size: clamp(56px, 7.2vw, 104px); font-weight: 600; line-height: .92; letter-spacing: -.07em; }
@@ -263,8 +256,7 @@ const screens = [
 	.pp-next img { grid-column: 2; grid-row: 1 / 3; width: 100%; height: auto; border-radius: 28px; }
 
 	@media (max-width: 900px) {
-		.pp-bar a:not(.pp-bar-cta) { display: none; }
-		.pp-bento, .pp-eras, .pp-deep, .pp-proof, .pp-numbers dl { grid-template-columns: minmax(0, 1fr); }
+			.pp-bento, .pp-eras, .pp-deep, .pp-proof, .pp-numbers dl { grid-template-columns: minmax(0, 1fr); }
 		.tile.wide, .tile.tall { grid-column: auto; grid-row: auto; }
 		.tile.split { grid-template-columns: minmax(0, 1fr); }
 		.pp-deep { padding: 32px; gap: 32px; }
