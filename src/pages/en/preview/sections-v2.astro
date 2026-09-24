@@ -1,0 +1,785 @@
+---
+/**
+ * Il catalogo della seconda serie di sezioni: ogni componente con contenuti veri dei progetti,
+ * raggruppato come nel disegno (aperture, vetrina, prove, ingegneria, chiusure). Non elencato,
+ * noindex: è il banco di prova per chi scrive le pagine. I disegni dentro gli slot sono
+ * illustrazioni dichiarate, da sostituire con le schermate vere.
+ */
+import { Code } from 'astro:components';
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import {
+	Story, Section, Device, MediaHero, AppHero, DocHero, Lockup, HighlightsGallery, MediaCards, FeatureExplorer, ToggleFigure, ExplainerFigure,
+	Stats, ThenNow, Lineup, Matrix, Findings, TechSpecs, Limits, Sources, Declaration, CodeSteps, Anatomy, ExplodedStack, Modules, StateMachine,
+	ChangeLog, Principles, Contribution, Faq, KeepExploring, PageIndex,
+} from '../../../components/story';
+import { labPaths, labPostPath, labProjectPath } from '../../../components/lab/chrome';
+import { withBase } from '../../../lib/base';
+import { storyDark } from '../../../lib/story-code';
+
+const cover = (name: string) => withBase(`/images/projects/covers/${name}.svg`);
+const explainer = (name: string) => withBase(`/images/projects/explainers/${name}.svg`);
+const project = (slug: string) => labProjectPath('en', slug);
+const repo = {
+	easymanager: 'https://github.com/samuelesegrini/easymanager',
+	galaxy: 'https://github.com/samuelesegrini/ing-sw-2025-segrini-terribile-varricchio-zanca',
+	spingo: 'https://github.com/milenaramosduran/hci-eco',
+	spingoSite: 'https://milenaramosduran.github.io/hci-eco/',
+};
+
+// il dock fa da indice dei cinque gruppi, come nelle pagine di progetto
+const sections = [
+	{ kicker: 'Group 1 of 5', value: 'Openers', detail: { kicker: 'Sections', value: '4 openers' } },
+	{ kicker: 'Group 2 of 5', value: 'Showcase', detail: { kicker: 'Sections', value: '5 showcases' } },
+	{ kicker: 'Group 3 of 5', value: 'Evidence', detail: { kicker: 'Sections', value: '8 proofs' } },
+	{ kicker: 'Group 4 of 5', value: 'Engineering', detail: { kicker: 'Sections', value: '8 diagrams' } },
+	{ kicker: 'Group 5 of 5', value: 'Closers', detail: { kicker: 'Sections', value: '4 endings' } },
+];
+
+const fiscal = `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body>
+    <printerFiscalReceipt>
+      <beginFiscalReceipt operator="1" />
+      <printRecItem operator="1" description="Risotto"
+        quantity="2" unitPrice="14,00" department="1" />
+      <printRecTotal operator="1" description="Cash"
+        payment="28,00" paymentType="0" />
+      <endFiscalReceipt operator="1" />
+    </printerFiscalReceipt>
+  </s:Body>
+</s:Envelope>`;
+const receiptOnly = fiscal.split('\n').slice(3, 9).map((l) => l.slice(6)).join('\n');
+const tables = [
+	{ n: 1, s: 'free' }, { n: 2, s: 'occupied' }, { n: 3, s: 'booked', round: true }, { n: 4, s: 'waiting' }, { n: 5, s: 'free' },
+	{ n: 6, s: 'occupied' }, { n: 7, s: 'occupied', picked: true }, { n: 8, s: 'free', round: true }, { n: 9, s: 'waiting' }, { n: 10, s: 'booked' },
+	{ n: 11, s: 'occupied', wide: true }, { n: 12, s: 'free' }, { n: 13, s: 'empty', wide: true },
+];
+---
+
+<ExperimentLayout lang="en" title="Story sections, second series (catalogue)" currentHref="/en/preview/sections-v2/" sections={sections} itHref={labPaths.it.home} enHref={labPaths.en.home} noindex>
+	<Story>
+		<!-- 0 · MediaHero -->
+		<MediaHero name="EasyManager" title="From the table to the fiscal printer." image={cover('easymanager')}
+			imageAlt="An iPad showing a restaurant dining room with tables coloured by state, next to an order ticket"
+			meta="iPad app · 2023–2026" detail="Individual work, real restaurant" action={{ label: 'See the catalogue', href: '#openers' }}
+			back={{ label: 'All projects', href: labPaths.en.work }} position={{ current: 1, total: 5 }} />
+		<p class="cat-mark"><code>&lt;MediaHero /&gt;</code><span>new · opener, dock section 0</span></p>
+
+		<!-- 1 · Aperture -->
+		<div class="cat-divider" id="openers" data-section="1">
+			<span class="st-mono">01 / 05</span>
+			<h2>Openers</h2>
+			<p>Four ways to start a page: a tinted cover, an app promise, a technical abstract, and the opener of a chapter.</p>
+		</div>
+
+		<p class="cat-mark"><code>&lt;AppHero /&gt;</code><span>new · opener</span></p>
+		<AppHero id="hero-app" index={null} name="SpinGO" title="Research before code."
+			summary="109 answers, 4 interviews and 7 usability sessions took a micromobility app to an 88% task success rate and a SUS score of 89.2."
+			meta="Team of five · HCI, Politecnico di Milano · 2025–2026"
+			actions={[{ label: 'Read the case study', href: '#findings' }, { label: 'Project website', href: repo.spingoSite }, { label: 'Team repository', href: repo.spingo }]}>
+			<svg slot="mark" viewBox="0 0 64 64" fill="none" stroke="#171713" stroke-width="5" stroke-linecap="round" aria-hidden="true"><path d="M16 48c0-12 32-8 32-22 0-6-4-10-10-10" /><circle cx="16" cy="48" r="5" fill="#c7ff9f" /><circle cx="38" cy="16" r="5" fill="#fffef9" /></svg>
+			<Fragment slot="devices">
+				<Device kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 276 596" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of the route screen: a safe route drawn on a map, with a start button">
+						<rect width="276" height="596" fill="#f4f1e9" />
+						<rect x="148" y="96" width="150" height="170" rx="42" fill="#e3f5d2" />
+						<g stroke="#e2ddd2" stroke-width="18" stroke-linecap="round" fill="none"><path d="M-10 170H290M-10 350H290M72 -10V610M204 -10V610M-10 520 140 420" /></g>
+						<path d="M62 474c0-66 10-86 52-106s92-26 92-96-8-116 8-150" fill="none" stroke="#171713" stroke-width="17" stroke-linecap="round" />
+						<path d="M62 474c0-66 10-86 52-106s92-26 92-96-8-116 8-150" fill="none" stroke="#c7ff9f" stroke-width="10" stroke-linecap="round" />
+						<circle cx="62" cy="474" r="11" fill="#171713" /><circle cx="62" cy="474" r="4" fill="#fffef9" />
+						<circle cx="214" cy="122" r="15" fill="#ded1ff" stroke="#171713" stroke-width="3.5" /><circle cx="214" cy="122" r="5" fill="#171713" />
+						<rect x="16" y="20" width="244" height="64" rx="18" fill="#fffefb" stroke="#171713" stroke-width="2.5" />
+						<text x="34" y="48" class="mock-svg-title">Start a safe route</text>
+						<text x="34" y="68" class="mock-svg-mono">TASK 1 · NAVIGATION</text>
+						<rect x="0" y="498" width="276" height="98" fill="#fffefb" /><path d="M0 498h276" stroke="#171713" stroke-width="2.5" />
+						<rect x="18" y="522" width="176" height="48" rx="24" fill="#171713" />
+						<text x="106" y="552" text-anchor="middle" class="mock-svg-title light">Start</text>
+						<rect x="206" y="522" width="52" height="48" rx="24" fill="#ffd4b8" stroke="#171713" stroke-width="2.5" />
+						<path d="M232 536v10M232 552v.5" stroke="#171713" stroke-width="3" stroke-linecap="round" />
+					</svg>
+				</Device>
+				<div class="st-ahero-side">
+					<Device kind="watch">
+						<div class="mock-watch"><span class="st-mono">Next turn</span><svg viewBox="0 0 48 48" width="50" height="50" fill="none" stroke="#c7ff9f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 42V24a8 8 0 0 1 8-8h18m-8-9 9 9-9 9" /></svg><b>Turn right</b></div>
+					</Device>
+					<span class="st-mono">Companion on the wrist: next turn, haptics, quick reports.</span>
+				</div>
+			</Fragment>
+		</AppHero>
+
+		<p class="cat-mark"><code>&lt;DocHero /&gt;</code><span>new · opener</span></p>
+		<DocHero id="hero-doc" index={null} eyebrow="Case study · Digital logic · 2026" title="Priority Task Queue Manager"
+			abstract="A VHDL component that keeps up to 31 tasks ordered by priority in external RAM, driven by a 15-state finite-state machine and a strict START–DONE handshake with its master."
+			note={{ text: 'Cycle counts and the 603 MHz estimate come from post-synthesis analysis in Vivado.' }}
+			image={explainer('priority-queue-insertion')} imageAlt="Before-and-after comparison of a task inserted after an existing item with the same priority"
+			caption="Insertion shifts only lower priorities; equal ones keep their arrival order."
+			facts={[{ value: '15 states', label: 'Two-process FSM', icon: 'graph' }, { value: '68 cycles', label: 'Worst-case insertion', icon: 'clock' }, { value: '31 max', label: 'Tasks in a 64 KB RAM', icon: 'table' }, { value: '10 of 10', label: 'Functional tests passed', icon: 'check' }]}
+			back={{ label: 'All projects', href: labPaths.en.work }} position={{ current: 4, total: 5 }} />
+
+		<p class="cat-mark"><code>&lt;Lockup /&gt;</code><span>new · chapter opener, paper</span></p>
+		<Lockup id="fiscal-printer" number="03" label="The fiscal printer" title="A receipt is sent once." dim="It can’t be undone."
+			deepDive="Deep dive: the fpmate.cgi request" next={{ label: 'Next: the device lanes', href: '#dark-lockup' }}>
+			The app wraps every receipt in a SOAP envelope and posts it to the Epson printer in the room: <b>one line per dish with its VAT department, one total per payment method.</b> When the reply never comes, the 2023 app left the decision to the operator. <b>The 2026 toolkit keeps that uncertainty as a value</b> and reconciles it on the next step.
+			<Fragment slot="deep-dive">
+				<p>The request goes to <code>fpmate.cgi</code> on the printer’s address in the room. Everything between <code>beginFiscalReceipt</code> and <code>endFiscalReceipt</code> becomes one fiscal document; the payment type on each total is cash, cheque, electronic payment or meal voucher.</p>
+				<p>The walkthrough below builds the same request one step at a time.</p>
+			</Fragment>
+		</Lockup>
+
+		<p class="cat-mark"><code>&lt;Lockup tone="dark" center marker /&gt;</code><span>new · chapter opener, ink</span></p>
+		<Lockup id="dark-lockup" center tone="dark" eyebrow="Galaxy Trucker · Architecture" title="Validated once. Applied once." marker="Seen by everyone."
+			facts={[{ label: 'Request types', value: '31', note: '22 general, 9 during flight' }, { label: 'Response types', value: '34', note: 'Sent back to the requester only' }, { label: 'Events', value: '47', note: '32 general, 15 during flight', accent: true }]}
+			factsNote="Counted in common/message, at submission">
+			A request reaches the server and is checked against authoritative state. <b>The sender gets a response, everyone else an event,</b> and the event is the only way a client learns that the world has changed.
+		</Lockup>
+
+		<!-- 2 · Vetrina -->
+		<div class="cat-divider" id="showcase" data-section="2">
+			<span class="st-mono">02 / 05</span>
+			<h2>Showcase</h2>
+			<p>Show the product before explaining it: a gallery, captioned cards, one screen driven by a list, a before and after, a diagram with notes.</p>
+		</div>
+
+		<p class="cat-mark"><code>&lt;HighlightsGallery /&gt;</code><span>v2 of Highlights</span></p>
+		<Section id="highlights" tone="ink2" title="The highlights." link={{ label: 'View the 2023 code', href: repo.easymanager }}>
+			<HighlightsGallery cards={[
+				{ text: 'A real restaurant ran on it: counter, floor and kitchen.', meta: '2023 · Wape S.r.l', name: 'A real restaurant', tone: 'blue', image: cover('easymanager'), imageAlt: 'An iPad showing the dining room with tables coloured by state, beside an order ticket' },
+				{ text: 'It talks to a fiscal printer in XML over HTTP.', meta: 'Epson ePOS · SOAP', name: 'The fiscal printer', tone: 'dark' },
+				{ text: 'Rebuilt as 31 Swift packages with zero remote dependencies.', meta: '2026 · Swift 6.3', name: '31 packages', tone: 'acid' },
+				{ text: '“Uncertain” is an answer, not an error.', meta: 'Fiscal layer', name: 'Uncertain is an answer', tone: 'orange' },
+				{ text: 'One lane per device, so two valid commands never interleave.', meta: 'Swift Concurrency', name: 'One lane per device', tone: 'violet' },
+			]}>
+				<div slot="media-2" class="mock-printer">
+					<figure class="mock-code">
+						<figcaption class="st-mono"><span>fpmate.cgi · request, abridged</span><span>XML</span></figcaption>
+						<Code code={receiptOnly} lang="xml" theme={storyDark} />
+					</figure>
+					<div class="st-receipt st-receipt-paper mock-tilted" aria-hidden="true">
+						<div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div>
+						<div class="row"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div>
+						<div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div>
+						<div class="barcode"></div>
+					</div>
+				</div>
+				<div slot="media-3" class="mock-packages">
+					<div class="mock-grid" role="img" aria-label="31 package products, three of them the order domain, device lanes and fiscal layer, and no remote dependencies">
+						{Array.from({ length: 31 }, (_, k) => <span class:list={{ core: k < 3 }}></span>)}<span class="none st-mono">0</span>
+					</div>
+					<ul class="mock-legend" aria-hidden="true"><li><span class="core"></span>Order domain, device lanes, fiscal layer</li><li><span></span>Package products</li><li><span class="none"></span>Remote dependencies</li></ul>
+				</div>
+				<div slot="media-4" class="mock-states">
+					<ol class="mock-flow-line" aria-label="Draft, Sent, Acknowledged or not, then Reconciled">
+						<li class="st-state big">Draft</li><li aria-hidden="true">→</li><li class="st-state big">Sent</li><li aria-hidden="true">→</li><li class="st-state big maybe">Acknowledged</li><li aria-hidden="true">→</li><li class="st-state big dark">Reconciled</li>
+					</ol>
+					<p>A timeout keeps the question open for the next step instead of retrying a mutation that could print a second receipt.</p>
+				</div>
+				<div slot="media-5" class="mock-lanes">
+					<div><span class="st-eyebrow">Without a lane</span><span class="mock-lane loose" role="img" aria-label="Two commands overlap"><span class="st-mono dark">receipt</span><span class="st-mono">X report</span><span class="st-mono warn">!</span></span></div>
+					<div><span class="st-eyebrow">Printer lane</span><span class="mock-lane" role="img" aria-label="Pre-bill, then receipt, then X report, one at a time"><span class="st-mono dark">pre-bill</span>→<span class="st-mono dark">receipt</span>→<span class="st-mono">X report</span><span class="st-mono note">one at a time</span></span></div>
+				</div>
+			</HighlightsGallery>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;MediaCards /&gt;</code><span>new · captioned carousel</span></p>
+		<Section eyebrow="SpinGO · Design" title="Three tasks." dim="One companion on the wrist." link={{ label: 'Try the prototypes on the project site', href: repo.spingoSite }}>
+			<MediaCards label="Design tasks" items={[
+				{ lead: 'Plan and start a safe route.', text: 'Navigation reached a 93% success rate and 6.5 out of 7 on the Single Ease Question.', tone: 'violet' },
+				{ lead: 'Manage vehicles in the Garage.', text: 'The weakest task, 82% and 4.2 out of 7: two people edited a vehicle because Add sat at the bottom of the list.', tone: 'acid', tag: 'Add moved to the top' },
+				{ lead: 'Report to the community.', text: 'One rider’s report becomes everyone’s knowledge of the street; 89% success, 5.8 out of 7.', tone: 'blue' },
+				{ lead: 'Keep the phone in the pocket.', text: 'The watch carries the next turn, haptic feedback and a one-tap report.', tone: 'orange' },
+			]}>
+				<Device slot="media-1" kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 212 452" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration: route screen with a safe route on a map">
+						<rect width="212" height="452" fill="#f4f1e9" />
+						<g stroke="#e2ddd2" stroke-width="14" stroke-linecap="round"><path d="M-10 130H230M-10 270H230M56 -10V470M160 -10V470" /></g>
+						<path d="M46 360c0-50 8-66 40-80s70-20 70-72-6-88 6-112" fill="none" stroke="#171713" stroke-width="13" stroke-linecap="round" />
+						<path d="M46 360c0-50 8-66 40-80s70-20 70-72-6-88 6-112" fill="none" stroke="#c7ff9f" stroke-width="7" stroke-linecap="round" />
+						<circle cx="46" cy="360" r="9" fill="#171713" /><circle cx="162" cy="96" r="12" fill="#ded1ff" stroke="#171713" stroke-width="3" />
+						<rect x="12" y="14" width="188" height="48" rx="14" fill="#fffefb" stroke="#171713" stroke-width="2" />
+						<text x="26" y="43" class="mock-svg-title small">Safe route</text>
+						<rect x="12" y="386" width="188" height="44" rx="22" fill="#171713" />
+						<text x="106" y="413" text-anchor="middle" class="mock-svg-title small light">Start</text>
+					</svg>
+				</Device>
+				<Device slot="media-2" kind="iphone">
+					<div class="mock-garage" role="img" aria-label="Illustration: the Garage, with Add a vehicle at the top of the list">
+						<b>Garage</b><span class="add">+ Add a vehicle</span>
+						{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}
+					</div>
+				</Device>
+				<Device slot="media-3" kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 212 452" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration: community screen with reports pinned on a map">
+						<rect width="212" height="452" fill="#f4f1e9" />
+						<g stroke="#e2ddd2" stroke-width="14" stroke-linecap="round"><path d="M-10 110H230M-10 250H230M70 -10V470M150 -10V470" /></g>
+						<g stroke="#171713" stroke-width="2.5" stroke-linejoin="round"><path d="M60 80 74 104H46Z" fill="#ffd4b8" /><path d="M140 170 154 194H126Z" fill="#ffd4b8" /><path d="M96 232 110 256H82Z" fill="#ffd4b8" /></g>
+						<rect x="0" y="300" width="212" height="152" fill="#fffefb" /><path d="M0 300h212" stroke="#171713" stroke-width="2" />
+						<text x="16" y="330" class="mock-svg-title small">Reports nearby</text>
+						<rect x="16" y="346" width="180" height="10" rx="5" fill="#e2ddd2" /><rect x="16" y="346" width="120" height="10" rx="5" fill="#171713" />
+						<rect x="16" y="382" width="180" height="44" rx="22" fill="#ffd4b8" stroke="#171713" stroke-width="2" />
+						<text x="106" y="409" text-anchor="middle" class="mock-svg-title small">New report</text>
+					</svg>
+				</Device>
+				<Device slot="media-4" kind="watch">
+					<div class="mock-watch"><span class="st-mono">Next turn</span><svg viewBox="0 0 48 48" width="50" height="50" fill="none" stroke="#c7ff9f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 42V24a8 8 0 0 1 8-8h18m-8-9 9 9-9 9" /></svg><b>Turn right</b></div>
+				</Device>
+			</MediaCards>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;FeatureExplorer /&gt;</code><span>new · radio list drives one screen</span></p>
+		<Section eyebrow="EasyManager · Take a closer look" title="One iPad per station." dim="Every screen reads the same order.">
+			<FeatureExplorer label="Stations" note="Illustration · screenshots to replace" features={[
+				{ title: 'Dining room', file: 'DiningView.swift', tint: 'acid', text: 'Tables by state and by waiter: free, booked, waiting, occupied. The floor reads it at a glance.' },
+				{ title: 'Order pad', file: 'OrderSheetView.swift', tint: 'orange', text: 'Dishes by course, variants with their own price, a VAT department on every line.' },
+				{ title: 'Kitchen', file: 'CookingView.swift', tint: 'blue', text: 'The same order, regrouped by course for the people who cook it.' },
+				{ title: 'Till', file: 'CashDesk.swift', tint: 'violet', text: 'Pre-bill, payment by method, the fiscal receipt, then X and Z reports at closing.' },
+			]}>
+				<div slot="screen-1" class="mock-screen mock-dining" role="img" aria-label="Illustration: the dining room, thirteen tables coloured by state, table 7 selected">
+					<div class="mock-side"><b>Dining room</b><span class="on">All waiters</span><span>Waiter 01</span><span>Waiter 02</span><span>Waiter 03</span></div>
+					<div class="mock-floor">
+						<div class="mock-tables">{tables.map((t) => <span class:list={['st-mono', t.s, { round: t.round, wide: t.wide, picked: t.picked }]}>{t.n}</span>)}</div>
+						<div class="mock-key"><span><i class="free"></i>Free</span><span><i class="booked"></i>Booked</span><span><i class="waiting"></i>Waiting</span><span><i class="occupied"></i>Occupied</span></div>
+					</div>
+				</div>
+				<div slot="screen-2" class="mock-screen mock-pad" role="img" aria-label="Illustration: the order pad for table 7, risotto for two in the first course">
+					<div class="mock-menu">
+						<div class="mock-tabs"><span class="on">Course 1</span><span>Course 2</span><span>Course 3</span></div>
+						<div class="mock-dishes"><span class="on"><b>Risotto</b><span class="st-mono">14,00</span></span>{Array.from({ length: 5 }, () => <span><i></i><i></i></span>)}</div>
+						<span class="st-eyebrow">Variants · priced per choice</span>
+					</div>
+					<div class="mock-ticket"><b>Table 7</b><span class="st-eyebrow">Course 1</span><span class="row"><span>Risotto × 2</span><span class="st-mono">28,00</span></span><span class="st-mono dept">dept. 1</span><span class="st-eyebrow">Course 2</span><span class="muted">No dishes yet</span><span class="grow"></span><span class="row total"><span>Total</span><span class="st-mono">28,00</span></span><span class="send">Send to kitchen</span></div>
+				</div>
+				<div slot="screen-3" class="mock-screen mock-kitchen" role="img" aria-label="Illustration: the kitchen view, orders grouped by course">
+					<b>Kitchen</b>
+					<div class="mock-courses">
+						<div><span class="st-eyebrow">Course 1</span><span class="ticket"><b class="st-mono">T7</b><span>Risotto × 2</span></span><span class="ticket done"><b class="st-mono">T2</b><i></i></span></div>
+						<div><span class="st-eyebrow">Course 2</span><span class="ticket"><b class="st-mono">T6</b><i></i><i></i></span></div>
+						<div><span class="st-eyebrow">Course 3</span><span class="ticket"><b class="st-mono">T11</b><i></i></span></div>
+					</div>
+				</div>
+				<div slot="screen-4" class="mock-screen mock-till" role="img" aria-label="Illustration: the till for table 7, payment methods and the fiscal receipt button">
+					<div class="st-receipt st-receipt-paper"><div class="head">PRE-BILL · TABLE 7</div><div class="rule"></div><div class="row"><span>RISOTTO 2×</span><span>28,00</span></div><div class="rule"></div><div class="row strong"><span>TOTAL</span><span>28,00</span></div></div>
+					<div class="mock-pay"><b>Till · Table 7</b><div class="methods"><span class="on">Cash</span><span>Electronic</span><span>Cheque</span><span>Meal voucher</span></div><span class="grow"></span><span class="pre">Pre-bill</span><span class="print">Print fiscal receipt</span><span class="st-mono">X and Z reports at the end of the shift</span></div>
+				</div>
+			</FeatureExplorer>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;ToggleFigure /&gt;</code><span>new · segmented control</span></p>
+		<Section tone="dark" center eyebrow="Galaxy Trucker · One year later" title="One model, not two."
+			lead="In August 2026 I rebuilt the project from the same requirements: 146 commits in four days, with Claude as a collaborator. The client now reads the server’s models directly.">
+			<ToggleFigure label="Choose an era" options={[
+				{ label: '2025 · team', lead: '2025 · LocalGameState.', text: 'A 691-line parallel copy of the game on the client, kept in step by fifteen conversion methods.', tone: 'orange' },
+				{ label: '2026 · rebuild', lead: '2026 · ClientState.', text: 'About 150 lines. The client receives the updated model from the server and asks its views to refresh().', tone: 'acid' },
+			]}>
+				<div slot="panel-1" class="mock-flow">
+					<div class="box"><span class="st-eyebrow">Server</span><b>Game model</b><span>Authoritative, one per game.</span></div>
+					<div class="link"><span class="st-mono">serialise</span><span class="arrow" aria-hidden="true"></span></div>
+					<div class="box tone-orange"><span class="st-eyebrow">Client</span><b>LocalGameState</b><span>A parallel copy of the game, on every client.</span><span class="bits" aria-hidden="true">{Array.from({ length: 15 }, () => <i></i>)}</span><span class="st-mono">691 lines · 15 conversion methods</span></div>
+					<div class="link"><span class="st-mono">read</span><span class="arrow" aria-hidden="true"></span></div>
+					<div class="box"><span class="st-eyebrow">Views</span><b>JavaFX, TUI</b><span>Read the copy.</span></div>
+					<span class="verdict warn st-mono">Two copies of the truth</span>
+				</div>
+				<div slot="panel-2" class="mock-flow">
+					<div class="box"><span class="st-eyebrow">Server</span><b>Game model</b><span>Authoritative, one per game.</span></div>
+					<div class="link good"><span class="st-mono">updated model</span><span class="arrow" aria-hidden="true"></span></div>
+					<div class="box tone-acid"><span class="st-eyebrow">Client</span><b>ClientState</b><span>Holds the model it receives and asks the views to refresh().</span><span class="st-mono">about 150 lines</span></div>
+					<div class="link good"><span class="st-mono">refresh()</span><span class="arrow" aria-hidden="true"></span></div>
+					<div class="box"><span class="st-eyebrow">Views</span><b>JavaFX, TUI</b><span>Draw the model.</span></div>
+					<span class="verdict good st-mono">One model, redrawn</span>
+				</div>
+			</ToggleFigure>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;ExplainerFigure /&gt;</code><span>new · diagram with numbered notes</span></p>
+		<Section split eyebrow="Highway Route Planner · Route planning" title="The graph is never built." dim="Each edge is checked when needed."
+			lead="Stations are nodes; a move exists when at least one vehicle in the departure fleet has the range for it. The highlighted path reaches 50 in the fewest stops.">
+			<ExplainerFigure image={explainer('highway-implicit-graph')} imageAlt="Five highway stations connected by reachability arcs, with the minimum route 20, 30, 50 highlighted"
+				caption="Fig. 2 · Stations at distance 20, 30, 40, 45 and 50" legend={[{ label: 'Possible move', mark: 'line' }, { label: 'Chosen route', mark: 'route' }]}
+				aside="Worst case O(n² · v), with v ≤ 512 vehicles per station." notes={[
+					{ title: 'Stations stay an ordered array.', text: 'Sorted by distance, so every lookup is a binary search.', at: [52.5, 72.5] },
+					{ title: 'A move exists only if a car can make it.', text: 'Distance is compared with the ranges in the departure fleet, on demand.', at: [71.2, 32.3] },
+					{ title: 'Two arrays remember the way back.', text: 'Minimum moves and the chosen predecessor, updated in travel order.', at: [22.5, 34.9] },
+					{ title: 'Ties go to the station nearer the start.', text: 'So 20 → 30 → 50 wins over 20 → 45 → 50, as the specification requires.', at: [90, 78.4] },
+				]} />
+		</Section>
+
+		<!-- 3 · Prove -->
+		<div class="cat-divider" id="evidence" data-section="3">
+			<span class="st-mono">03 / 05</span>
+			<h2>Evidence</h2>
+			<p>Numbers with their method, what changed, how projects compare, what the review found, the specs, the limits and the sources.</p>
+		</div>
+
+		<p class="cat-mark"><code>&lt;Stats /&gt;</code><span>v2 of Numbers · superscripts land in Sources</span></p>
+		<Section tone="dark" eyebrow="SpinGO · Usability testing" title="Seven sessions, three tasks." dim="Every number with its method.">
+			<Stats items={[
+				{ label: 'Average success', value: '88%', text: 'across the three tasks', method: '0–2 scale per task, 7 users, 14 points maximum', note: 1, accent: true },
+				{ label: 'SUS score', value: '89.2', text: 'grade A', method: 'System Usability Scale, all 7 participants', note: 2 },
+				{ label: 'Needfinding', value: '109', text: 'questionnaire responses', method: 'Adaptive questionnaire, Deliverable 1', note: 3 },
+				{ label: 'Reaction to hazards', value: '7.8', unit: 's', text: 'mean, while navigating', method: 'Navigation task, timed in session', note: 4 },
+			]} feature={{ label: 'Strongest task', value: '93%', text: 'navigation success, 6.5 of 7 on ease' }}
+				targets={{ title: 'Targets were set before the first session.', text: 'All three were met.', rows: [{ label: 'Success rate', target: '> 85%', value: '88%' }, { label: 'SUS', target: '> 70', value: '89.2' }, { label: 'Severity 1–2 problems', target: '< 3', value: '2' }] }}>
+				Planning and starting a route was nearly effortless. <b>The Garage was the weak point at 82% and 4.2 of 7</b>, and community reporting sat in between at 89%. A positive average hides where people stalled, which is why the problems are ranked by severity, not by count.
+			</Stats>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;ThenNow /&gt;</code><span>new · what changed between two eras</span></p>
+		<Section tone="dark">
+			<ThenNow title="Worth the rebuild?" dim="Here’s what changed." baseline="2023 · the SwiftUI app" baselineLabel="The 2026 toolkit, compared with"
+				note="0.1 facts from a verified checkout · source not yet public" link={{ label: 'Read how the rebuild was scoped', href: project('easymanager-restaurant-operations') }} changes={[
+					{ icon: 'package', title: 'Swift 6.3 packages, separated by contract', was: 'SwiftUI with MVVM, six shared view models' },
+					{ icon: 'database', title: 'SQL persistence at the boundary', was: 'Firestore snapshots rebuilding state on every iPad' },
+					{ value: '0', title: 'remote package dependencies', was: 'Cloud Firestore at the core', tone: 'acid' },
+					{ icon: 'graph', title: 'Outbox, acknowledgement and reconciliation as phases', was: 'an OrderViewModel, one of six shared' },
+					{ value: '?', title: 'Uncertainty is a domain value', was: 'connection errors left to the operator', tone: 'orange' },
+					{ value: '31', title: 'documented products, DocC beside each API', was: 'one iPad app, twenty commits in April 2023' },
+				]} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Lineup /&gt;</code><span>v2 of Compare · subgrid rows</span></p>
+		<Section title="Keep exploring the work." link={{ label: 'All five projects', href: labPaths.en.work }}>
+			<Lineup label="Three projects compared" more={{ label: 'Compare all five projects', href: labPaths.en.work }} columns={[
+				{ name: 'EasyManager', summary: 'A restaurant’s orders, from the table to the fiscal printer.', image: cover('easymanager'), imageAlt: 'EasyManager cover: an iPad with the dining room and an order ticket', status: 'In progress', statusTone: 'acid', current: true },
+				{ name: 'Galaxy Trucker', summary: 'A board game turned into a four-player distributed system.', image: cover('galaxy-trucker'), imageAlt: 'Galaxy Trucker cover: a spaceship built from square tiles', status: 'Archived', href: project('galaxy-trucker-java-project') },
+				{ name: 'SpinGO', summary: 'Micromobility research that ended in a tested prototype.', image: cover('spingo'), imageAlt: 'SpinGO cover: a phone with a riding route and a bicycle', status: 'Prototype', statusTone: 'violet', href: project('spingo-sustainable-micromobility') },
+			]} rows={[
+				{ label: 'Platform', icon: ['tablet', 'tree', 'devices'], values: ['iPad app, then a Swift toolkit', 'Java client–server game', 'Phone app with a watch companion'] },
+				{ label: 'Team', icon: ['person', 'people', 'people'], values: ['Individual work', 'Team of four', 'Team of five'] },
+				{ label: 'Stack', icon: 'code', values: ['Swift 6.3, SwiftUI, SQL, DocC', 'Java 23, JavaFX, Socket and RMI', 'Figma, React 19, TypeScript'] },
+				{ label: 'Scale', values: [{ value: '31', text: 'modules in the 0.1 source' }, { value: '121', of: '314', text: 'commits authored on main' }, { value: '89.2', text: 'SUS score, grade A' }] },
+				{ label: 'What it proves', icon: 'check', values: ['State that survives devices and a fiscal printer', 'One authoritative server, two transports', 'Design decisions measured with users'] },
+				{ label: 'Code', icon: ['github', 'github', 'web'], values: ['My repository, 2023 app', 'Team repository', 'Team repository and website'] },
+			]} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Matrix /&gt;</code><span>new · findings by stage, four honest states</span></p>
+		<Section split eyebrow="SpinGO · Heuristic evaluation" title="What the review caught," dim="and what came back."
+			lead="Another team, GreenBytes, evaluated the prototype before usability testing. Each finding is tracked across the three moments it could be seen.">
+			<Matrix label="Heuristic findings by stage" link={{ label: 'See the problems the tests ranked', href: '#findings' }}
+				columns={[{ label: 'Found in review', icon: 'search', tone: 'violet' }, { label: 'Changed before tests', icon: 'pencil', tone: 'acid' }, { label: 'Seen again in tests', icon: 'person', tone: 'orange' }]} rows={[
+					{ title: 'The tab bar was too small', text: 'Navigation enlarged and clarified', cells: ['yes', 'yes', 'no'] },
+					{ title: 'A back button outside convention', text: 'Controls moved to mobile standards', cells: ['yes', 'yes', 'no'] },
+					{ title: 'Actions without feedback', text: 'Labels and confirmations added', cells: ['yes', 'yes', 'no'] },
+					{ title: 'Points of interest and saved routes looked alike', text: 'The one SUS outlier, at 70, traced back to it', cells: ['yes', 'unknown', 'back'] },
+				]} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Findings /&gt;</code><span>new · ranked by severity</span></p>
+		<Section id="findings" split eyebrow="SpinGO · Usability findings" title="Ranked by severity," dim="not by count."
+			lead="A positive average doesn’t close the research. One user’s 45 seconds stalled in front of a panel describes a mental model the interface doesn’t mirror.">
+			<Findings note="Severity 1 is the most serious. Seven participants aged 16–35, about 45 minutes each, think-aloud and observation." items={[
+				{ severity: 1, title: 'Saved routes lived in two places.', text: 'Viewing sat on Home and managing in Profile, a split that doesn’t exist for the person riding.', impact: { share: 0.28, label: 'failed saved-route management' }, fix: 'Unify viewing and managing' },
+				{ severity: 2, title: 'Add sat at the bottom of the Garage.', text: 'Two people edited a vehicle they already had instead of adding a new one.', impact: { of: [2, 7], label: 'participants' }, fix: 'Move create to the top' },
+				{ severity: 3, title: 'Start was asked twice, and typed by hand.', text: 'Redundant Start buttons, and a starting point entered manually instead of the current position.', fix: 'Smart defaults for the start' },
+				{ severity: 'unranked', title: 'Route and point icons looked alike.', text: 'Traced as the cause of the one SUS score at 70; the other six sat between 82.5 and 100.', impact: { of: [1, 7], label: 'participants' }, fix: 'Differentiate the two icons' },
+			]} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;TechSpecs /&gt;</code><span>v2 of Specs · groups with figures</span></p>
+		<Section>
+			<TechSpecs eyebrow="Priority Task Queue Manager" meta="VHDL · Xilinx Vivado · Artix-7 · 2026" groups={[
+				{ title: 'Interface', items: [{ title: 'START–DONE handshake', text: 'o_done rises only when the result is ready, and waits for i_start to fall.' }, { title: 'Two-bit operation input', text: 'Four operations on one component.' }, { title: 'External RAM', text: 'Synchronous, single-port, write-first, 2 ns read latency.' }] },
+				{ title: 'Operations', codes: [{ code: '00', title: 'Aging', text: 'Every priority value goes up by one, saturating at 11, order unchanged.' }, { code: '01', title: 'Remove head', text: 'Returns its identifier and compacts the rest towards address 1.' }, { code: '10', title: 'Insert', text: 'A backwards scan shifts strictly lower priorities; equal ones keep arrival order.', accent: true }, { code: '11', title: 'Clear', text: 'Writes zero to the count at address 0.' }] },
+				{ title: 'Capacity and memory', figureSide: true, items: [{ value: '31', title: 'tasks at most' }, { title: '64 KB single-port memory', text: '16-bit addresses, 8-bit data.' }, { title: 'Nothing kept locally', text: 'Every comparison reads, compares and rewrites through the memory interface, one clock at a time.' }] },
+				{ title: 'Timing', values: [{ label: 'Worst-case insertion', value: '68 cycles', text: '1.36 µs at 50 MHz' }, { label: 'Critical path', value: '1.658 ns', text: 'estimated maximum 603 MHz' }, { label: 'Required clock', value: '50 MHz', text: 'latency grows linearly with N' }] },
+				{ title: 'Synthesis', counts: [{ value: '91', label: 'LUTs' }, { value: '32', label: 'flip-flops' }, { value: '0', label: 'inferred latches', accent: true }], note: 'Two-process VHDL: combinational next state, sequential commit on the rising edge.' },
+				{ title: 'Verification', lead: '10 of 10 functional tests passed', tags: ['initialisation', 'empty-queue insert', 'priority order', 'FIFO among equals', 'head removal', 'saturating aging', 'clear', 'full and empty queue'] },
+			]}>
+				<figure slot="figure-1" class="st-ts-figure">
+					<svg viewBox="0 0 820 190" role="img" aria-label="Waveform: i_start rises, the controller updates the count, waits one cycle for the RAM write to commit, then raises o_done">
+						<g class="mock-wave-label"><text x="0" y="30">clk</text><text x="0" y="76">i_start</text><text x="0" y="122">o_done</text><text x="0" y="168">phase</text></g>
+						<path d="M110 38h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16h20v-16h20v16" fill="none" stroke="#b4b0a6" stroke-width="2" />
+						<path d="M110 84h40v-16h500v16h160" fill="none" stroke="#171713" stroke-width="2.5" stroke-linejoin="round" />
+						<path d="M110 130h420v-16h160v16h110" fill="none" stroke="#171713" stroke-width="2.5" stroke-linejoin="round" />
+						<rect x="470" y="150" width="60" height="26" rx="6" fill="#c7ff9f" stroke="#171713" stroke-width="1.5" />
+						<g class="mock-wave-phase"><text x="160" y="168">SCAN · SHIFT · WRITE</text><text x="400" y="168">UPDATE</text><text x="477" y="167">WAIT</text><text x="545" y="168">DONE</text></g>
+						<path d="M150 150v26M390 150v26M470 150v26M530 150v26M650 150v26" stroke="#d3d1ca" stroke-width="1.5" />
+						<path d="M500 58v86" stroke="#ffb07a" stroke-width="2" stroke-dasharray="4 4" />
+						<text x="506" y="56" class="mock-wave-phase">RAM[0] written</text>
+					</svg>
+					<figcaption><span><b>WAIT_COMMIT.</b> One extra cycle, 20 ns at 50 MHz, so the count is stable before o_done rises.</span><span class="st-mono">not to scale</span></figcaption>
+				</figure>
+				<ol slot="figure-3" class="st-ts-map" aria-label="Memory map: address 0 holds the count, addresses 1 to N the ordered tasks">
+					<li class="head"><span class="st-mono">0</span><span>count = N</span></li>
+					<li class="hot"><span class="st-mono">1</span><span>highest priority</span></li>
+					<li class="warm"><span class="st-mono">2</span><span>…</span></li>
+					<li><span class="st-mono">N</span><span>lowest, newest last</span></li>
+					<li class="free"><span class="st-mono">≤ 31</span><span>free</span></li>
+				</ol>
+			</TechSpecs>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Limits /&gt;</code><span>v2 · sources and a meter, v1 lists still work</span></p>
+		<Limits proven={[
+			{ text: 'The 2023 application, readable in full', source: 'github.com/samuelesegrini/easymanager', href: repo.easymanager },
+			{ text: 'The 0.1 release: 31 products, no remote dependencies', source: 'Verified checkout of the 0.1 source · signed 0.1.0 release' },
+		]} notProven={[
+			{ text: 'Compatibility with physical devices', source: 'No evidence yet for the 2026 toolkit' },
+			{ text: 'Fiscal certification', source: 'Evidence still missing' },
+			{ text: 'The 0.2 work', source: 'Unreleased · the 0.1 source is not public either' },
+		]} />
+
+		<p class="cat-mark"><code>&lt;Sources /&gt;</code><span>new · where the superscripts land</span></p>
+		<Section tone="sand">
+			<Sources eyebrow="SpinGO" lead="Every number on the page carries a superscript that lands here: what it measures, how it was taken, and where to check it." notes={[
+				{ title: '88% average success', text: 'Each task scored 0–2: complete success, minor problems, major problems or failure. Seven users, 14 points maximum.', source: 'Deliverable 6 · usability test' },
+				{ title: 'SUS 89.2, grade A', text: 'System Usability Scale, answered by all seven after their session. Six scores between 82.5 and 100, one at 70.', source: 'Usability test · questionnaire' },
+				{ title: '109 questionnaire responses', text: 'Adaptive questionnaire shared through university groups and social media; 95.4% aged 18–35, 78% in Milan or its province.', source: 'Deliverable 1 · needfinding' },
+				{ title: '7.8 s reaction to hazards', text: 'Mean reaction time during the navigation task.', source: 'Usability test · navigation' },
+				{ title: '112 of 119 commits', text: 'My share of the project website’s history: React 19, TypeScript, Vite, GSAP.', source: 'github.com/milenaramosduran/hci-eco', href: repo.spingo },
+			]} />
+		</Section>
+
+		<!-- 4 · Ingegneria -->
+		<div class="cat-divider" id="engineering" data-section="4">
+			<span class="st-mono">04 / 05</span>
+			<h2>Engineering</h2>
+			<p>Borrowed from the developer site: a symbol page, code walked through in steps, anatomy, an exploded stack, topics, a state machine, a change log, and rules.</p>
+		</div>
+
+		<p class="cat-mark"><code>&lt;Declaration /&gt;</code><span>new · the project as a symbol page</span></p>
+		<Section>
+			<Declaration project="EasyManager · 2023" breadcrumb={['EasyManager', 'View models', 'PrinterViewModel']} kind="Class" name="PrinterViewModel"
+				abstract="Composes the printer’s documents as XML, wraps them in a SOAP envelope and posts them to the Epson fiscal printer in the room."
+				availability={[{ label: 'iPadOS' }, { label: 'SwiftUI · MVVM' }, { label: 'Epson ePOS fiscal' }, { label: '2023 app', muted: true }]}
+				declaration="class PrinterViewModel: ObservableObject" more="View models: 6 in total"
+				nav={[
+					{ title: 'Views', symbols: [{ name: 'DiningView', kind: 'S' }, { name: 'OrderSheetView', kind: 'S' }, { name: 'CookingView', kind: 'S' }, { name: 'CashDesk', kind: 'S' }] },
+					{ title: 'View models', symbols: [{ name: 'RestaurantViewModel', kind: 'C' }, { name: 'OrderViewModel', kind: 'C' }, { name: 'PrinterViewModel', kind: 'C', current: true }, { name: 'TableViewModel', kind: 'C' }] },
+				]}
+				mentioned={[{ label: 'The fiscal printer as an external system', href: '#fiscal-printer' }, { label: 'What the first era exposed', href: project('easymanager-restaurant-operations') }, { label: 'The walkthrough, step by step', href: '#walkthrough' }]}>
+				<p>Two document types and the closing operations. The <b>pre-bill</b> is non-fiscal, one line per dish and variant. The <b>fiscal receipt</b> carries one <code>printRecItem</code> per line and one <code>printRecTotal</code> per payment method. X and Z reports close the shift.</p>
+			</Declaration>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;CodeSteps /&gt;</code><span>v2 of CodeSplit · radio steps light the lines</span></p>
+		<Section id="walkthrough" eyebrow="EasyManager · Walkthrough" title="Build a receipt," dim="one line at a time.">
+			<CodeSteps file="fpmate.cgi · request, abridged" code={fiscal} lang="xml" note="POST · printer’s address in the room"
+				meta={[{ label: '5 steps', icon: 'lines' }, { label: 'XML over HTTP', icon: 'brackets' }, { label: 'Epson fiscal printer', icon: 'printer' }]} steps={[
+					{ title: 'Wrap it in SOAP.', text: 'The app composes the document inside a SOAP envelope and posts it to fpmate.cgi on the printer in the room.', lines: '1-3, 10-12', status: 'Envelope ready, nothing to print' },
+					{ title: 'Open a fiscal receipt.', text: 'Everything until the closing tag becomes one fiscal document.', lines: '4', status: 'Receipt opened' },
+					{ title: 'One line per dish.', text: 'Description, quantity, unit price and the VAT department the rate maps to.', lines: '5-6', status: 'Line added' },
+					{ title: 'One total per payment method.', text: 'Cash, cheque, electronic payment or meal voucher, each its own total.', lines: '7-8', status: 'Total added' },
+					{ title: 'Close, then wait for the reply.', text: 'If it never comes, the 2023 app records the error and leaves the decision to the operator.', lines: '9', status: 'Sent · waiting for the printer' },
+				]}>
+				<div slot="preview" class="st-receipt">
+					<div class="empty" data-until="0">Nothing printed yet.<br />The envelope is empty.</div>
+					<div data-from="1"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div></div>
+					<div data-from="2"><div class="row lit"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div></div>
+					<div data-from="3"><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div></div>
+					<div data-from="4" class="barcode"></div>
+				</div>
+			</CodeSteps>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Anatomy /&gt;</code><span>new · callouts and states</span></p>
+		<Section split eyebrow="EasyManager · Dining room" title="Anatomy of a table." dim="Four facts on one tile."
+			lead="In the domain a table has a state, an assigned waiter and a service start time. The tile carries all of them.">
+			<Anatomy label="A table tile with its four facts" measure="the whole tile is one tap target" statesText="The four values of the domain, one fill each."
+				callouts={[
+					{ label: 'Number', text: 'The biggest thing on the tile, found from across the room.', side: 'left' },
+					{ label: 'Waiter', text: 'Who owns the table, filterable from the sidebar.', side: 'right' },
+					{ label: 'State', text: 'Named, and repeated as the fill so it reads at a glance.', side: 'right' },
+					{ label: 'Service start', text: 'When the table sat down.', side: 'left' },
+				]}
+				states={[{ label: 'Free', tone: 'acid', sample: '1' }, { label: 'Booked', tone: 'violet', sample: '3' }, { label: 'Waiting', tone: 'orange', sample: '7' }, { label: 'Occupied', tone: 'dark', sample: '2' }]}>
+				<div class="mock-tile" role="img" aria-label="Table 7, waiter 02, service started at 20:14, waiting">
+					<b>7</b><span class="st-mono waiter">W 02</span>
+					<span class="st-mono time"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>20:14</span>
+					<span class="st-mono state">Waiting</span>
+				</div>
+			</Anatomy>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;ExplodedStack /&gt;</code><span>v2 of Layers · isometric, computed</span></p>
+		<Section tone="dark" split eyebrow="EasyManager · The 2026 toolkit" title="Four layers," dim="pulled apart."
+			lead="Feature code depends on focused domain and hardware contracts, not on a service surface modelled after the application.">
+			<ExplodedStack layers={[
+				{ name: 'Features', tint: 'acid', chips: [{ label: 'Dining' }, { label: 'Kitchen' }, { label: 'Till' }], text: 'Dining, kitchen and till, each depending on narrow contracts rather than on the app.' },
+				{ name: 'Contracts', tint: 'violet', chips: [{ label: 'Orders' }, { label: 'Lanes' }, { label: 'Fiscal', accent: true }], text: 'Order domain, device lanes and fiscal layer: the three decisions that shape the toolkit.' },
+				{ name: 'Persistence', tint: 'blue', chips: [{ label: 'SQL at the boundary' }], text: 'SQL at the boundary, with DocC beside every versioned API.' },
+				{ name: 'Hardware', tint: 'paper', chips: [{ label: 'iPad' }, { label: 'iPad' }, { label: 'Printer', accent: true }], text: 'iPads and a fiscal printer, reached one command at a time through a lane per device.' },
+			]} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Modules /&gt;</code><span>new · topics with grouped symbols</span></p>
+		<Section>
+			<Modules eyebrow="Galaxy Trucker · Architecture" patterns={['Command', 'Visitor', 'Adapter', 'MVC']}
+				seeAlso={[{ label: 'Rebuilding Galaxy Trucker with Claude', href: labPostPath('en', 'rebuilding-galaxy-trucker-with-claude') }, { label: 'Team repository', href: repo.galaxy }]}
+				groups={[
+					{ title: 'Coordination', path: 'server/core', symbols: [{ names: ['GameSessionManager'], text: 'Owns the games; several can run in one server process.' }, { names: ['PlayerSessionRegistry'], text: 'Binds identities to sessions, for multi-game support.' }, { names: ['ConnectionMonitorService'], text: 'Heartbeat and disconnections.' }] },
+					{ title: 'Transports', path: 'server · client', symbols: [{ names: ['SocketServerAdapter', 'RMIServerAdapter'], text: 'Symmetric adapters: the protocol is a startup parameter, not a fork in the code.' }, { names: ['SocketNetworkAdapter', 'RMINetworkAdapter'], text: 'The client’s side, seen by the rest of it as one network interface.' }] },
+					{ title: 'Domain', path: 'model/domain', symbols: [{ names: ['FlightBoard'], text: 'Positions with collision prevention; recomputes the leader after every move.' }, { names: ['AdventureCardVisitor'], text: 'Resolves eight card families, each with its own rules.' }] },
+					{ title: 'Messages', path: 'common/message', counts: [{ label: 'Requests', value: '31', text: '22 general, 9 in flight' }, { label: 'Responses', value: '34', text: 'to the requester' }, { label: 'Events', value: '47', text: '32 general, 15 in flight', accent: true }] },
+					{ title: 'Client state', path: 'client', symbols: [{ names: ['ClientState'], text: 'About 150 lines: holds the server’s model and asks the views to refresh().', badge: '2026' }, { names: ['LocalGameState'], text: '691 lines and fifteen conversion methods in the 2025 build.', replaced: true }] },
+				]}>
+				<p>The code is organised by role into three roots, <code>server</code>, <code>client</code> and <code>common</code>. These are the types a reader meets first.</p>
+			</Modules>
+		</Section>
+
+		<p class="cat-mark"><code>&lt;StateMachine /&gt;</code><span>new · the uncertain branch and the forbidden retry</span></p>
+		<Section split eyebrow="EasyManager · Order lifecycle" title="An order is a durable state machine." dim="A timeout keeps the question open."
+			lead="Outbox, acknowledgement and reconciliation are separate phases. Retrying on a timeout could print a second fiscal document, so the uncertainty travels to the next step instead.">
+			<StateMachine label="Order lifecycle" forbidden="silent retry · never"
+				before={[{ name: 'Draft', text: 'Being built on the pad; nothing has left the iPad.' }, { name: 'Sent', text: 'In the outbox, handed to the device.' }]}
+				fork={[{ name: 'Acknowledged', text: 'The device answered.', tone: 'blue' }, { name: 'Uncertain', text: 'No answer yet. Unknown is not the same as failed.', tone: 'orange' }]}
+				after={[{ name: 'Reconciled', text: 'Checked against what the device recorded.', tone: 'dark' }]}
+				labels={{ before: [['send', 'outbox']], fork: ['device answers', 'timeout'], join: ['reconcile', 'reconcile on the next step'] }} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;ChangeLog /&gt;</code><span>v2 of Timeline · newest first</span></p>
+		<Section eyebrow="EasyManager" title="Change log." dim="Newest first, one change per line.">
+			<ChangeLog releases={[
+				{ version: '0.2', when: 'Unreleased', style: 'planned', changes: [{ kind: 'planned', text: 'Work in progress, not published and not claimed on this page.' }] },
+				{ version: '0.1.0', when: '2026 · signed', changes: [
+					{ kind: 'added', text: '31 package products, documented with DocC and built by the release gate.' },
+					{ kind: 'added', text: 'Outbox, acknowledgement and reconciliation as separate phases of an order.' },
+					{ kind: 'added', text: 'A lane per device, serialising access to each physical endpoint.' },
+					{ kind: 'changed', text: 'An incomplete fiscal outcome is a domain value, not an error to hide.' },
+					{ kind: 'changed', text: 'Persistence moves to SQL at the boundary.' },
+					{ kind: 'removed', text: 'Remote package dependencies: none left.' },
+				] },
+				{ version: 'App', when: 'April 2023 · 20 commits', style: 'outline', changes: [
+					{ kind: 'added', text: 'Dining room, order pad, kitchen and till on iPad, for a real restaurant.' },
+					{ kind: 'added', text: 'Fiscal printing over HTTP: pre-bill, receipt, X and Z reports.' },
+					{ kind: 'added', text: 'Firestore snapshots keep every iPad in the room on the same order.' },
+					{ kind: 'note', text: 'Six shared view models make local changes ripple elsewhere; the seams show.' },
+				] },
+			]} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Principles /&gt;</code><span>new · rule, reason, do and don’t</span></p>
+		<Section eyebrow="What I carry forward" title="Rules, each with its reason." dim="Every one earned on a project.">
+			<Principles rules={[
+				{ title: 'Treat distributed behaviour as an integration problem first.', text: 'Explicit contracts and whole-system checks matter more than any class being right on its own.', source: 'Galaxy Trucker' },
+				{ title: 'Count the moment a value becomes visible as part of correctness.', text: 'A signal raised a few nanoseconds early breaks the protocol even when the algorithm is right.', source: 'Priority Task Queue Manager' },
+				{ title: 'Let uncertainty be a value, not an error.', text: 'Not knowing whether the printer printed is not the same as knowing it didn’t.', source: 'EasyManager' },
+				{ title: 'Don’t let a good average close the research.', text: 'Forty-five seconds stalled in front of one panel says more than a SUS of 89.2.', source: 'SpinGO' },
+				{ title: 'Write the checks down before asking for help.', text: 'With requirements and criteria on paper, an automated collaborator speeds things up, and the result stays my responsibility.', source: 'Galaxy Trucker, 2026 rebuild' },
+			]} example={{ label: 'Rule 03, drawn', dont: { title: 'Don’t retry on a timeout', text: 'If the first request did print, the retry prints a second fiscal document.' }, do: { title: 'Do keep the question for the next step', text: 'The next step asks what the printer recorded before anything is sent again.' } }}>
+				<Fragment slot="dont"><span class="st-state">Sent</span><span class="st-arrow-label">timeout →</span><span class="st-state">Sent again</span><span class="st-arrow-label">→</span><span class="mock-docs" role="img" aria-label="Two fiscal documents"><i></i><i class="warn"></i></span></Fragment>
+				<Fragment slot="do"><span class="st-state">Sent</span><span class="st-arrow-label">timeout →</span><span class="st-state uncertain">Uncertain</span><span class="st-arrow-label">→</span><span class="st-state dark">Reconcile</span></Fragment>
+			</Principles>
+		</Section>
+
+		<!-- 5 · Chiusure -->
+		<div class="cat-divider" id="closers" data-section="5">
+			<span class="st-mono">05 / 05</span>
+			<h2>Closers</h2>
+			<p>End on people and next steps: who did what, the questions a reviewer asks, where to go next, and an index of everything.</p>
+		</div>
+
+		<p class="cat-mark"><code>&lt;Contribution /&gt;</code><span>new · my part, drawn to scale</span></p>
+		<Section split eyebrow="Galaxy Trucker · Who did what" title="Four people, one system." dim="My part, drawn to scale."
+			lead="Final project of Software Engineering at Politecnico di Milano, 2024–2025, group GC26. The history below comes from the team repository.">
+			<Contribution total={314} period="February–July 2025" shared="rules, interfaces, tests and delivery." sharedLabel="Shared by all four"
+				note="These are my contributions, not a claim of authorship over the whole."
+				me={{ name: 'Samuele Segrini', initials: 'SS', count: 121, role: 'Developer on the four-person team', tags: ['RMI', 'Commands and events', 'Sessions', 'Heartbeat', 'Construction phase'],
+					text: 'The initial package and model structure, the RMI transport, the internal command and event system, authentication, the heartbeat, the session registry for multi-game support, the construction-phase controller and the game-data loading. Towards submission, cross-cutting fixes: navigation wired to client state, serialisation, the player–ship cycle, double draws, timers.' }}
+				others={[{ name: 'Manuela Terribile', initials: 'MT', tone: 'violet' }, { name: 'Alessandra Varricchio', initials: 'AV', tone: 'blue' }, { name: 'Diego Zanca', initials: 'DZ', tone: 'orange' }]} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;Faq title /&gt;</code><span>v2 · questions left, answers right, one open at a time</span></p>
+		<Section>
+			<Faq eyebrow="EasyManager" title="Questions," dim="answered." open={0}
+				lead="The ones a reviewer asks first. Anything else goes by email." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
+					{ q: 'Did the restaurant actually use it?', a: 'The 2023 app was written for a real restaurant and its fiscal printer. Device compatibility and fiscal certification of the 2026 toolkit are not demonstrated yet.' },
+					{ q: 'Why rebuild instead of fixing the app?', a: 'Six shared view models made local changes carry consequences elsewhere. The re-engineering draws boundaries around orders, devices and the fiscal layer.' },
+					{ q: 'What happens when the printer doesn’t answer?', a: 'In 2023 the app recorded the connection error and left the decision to the operator. In the toolkit the outcome becomes “uncertain” and is reconciled on the next step, instead of being retried.' },
+					{ q: 'Can I read the code?', a: 'The 2023 application is public on GitHub. The 2026 source is not public yet; the release facts on this page come from a verified checkout.' },
+				]} />
+		</Section>
+
+		<p class="cat-mark"><code>&lt;KeepExploring /&gt;</code><span>v2 of Next</span></p>
+		<KeepExploring position={{ current: 1, total: 5 }}
+			next={{ label: 'Next · 02', title: 'Galaxy Trucker', text: 'Four people, one authoritative server, Socket and RMI, a TUI and a GUI.', href: project('galaxy-trucker-java-project'), image: cover('galaxy-trucker'), tone: 'orange' }}
+			previous={{ label: 'Previous · 05', title: 'Highway Route Planner', href: project('highway-route-planner'), image: cover('highway-route-planner'), tone: 'acid' }}
+			all={{ label: 'The archive', title: 'All five projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
+
+		<p class="cat-mark"><code>&lt;PageIndex /&gt;</code><span>v2 of Topics · the index at the foot</span></p>
+		<Section tone="sand">
+			<PageIndex title="EasyManager"
+				primary={[{ label: 'Highlights', href: '#highlights' }, { label: 'Take a closer look', href: '#showcase' }, { label: 'By the numbers', href: '#evidence' }, { label: 'How it holds together', href: '#engineering' }, { label: 'Questions', href: '#closers' }]}
+				groups={[
+					{ title: 'Code and sources', links: [{ label: 'Original application, 2023', href: repo.easymanager, note: 'My repository · github.com' }, { label: 'Toolkit 0.1 source', locked: true, note: 'Not public yet' }] },
+					{ title: 'More from the portfolio', links: [{ label: 'Galaxy Trucker', href: project('galaxy-trucker-java-project') }, { label: 'SpinGO', href: project('spingo-sustainable-micromobility') }, { label: 'All projects', href: labPaths.en.work }, { label: 'Writing', href: labPaths.en.writing }, { label: 'About me', href: labPaths.en.about, icon: 'person' }] },
+				]} />
+		</Section>
+	</Story>
+</ExperimentLayout>
+
+<style>
+	/* il catalogo: separatori dei gruppi e cartellini con il nome del componente */
+	.cat-divider { display: grid; gap: 14px; margin: 150px var(--pad) 0; padding: 40px 0 0; border-top: 1.5px solid #171713; }
+	.cat-divider .st-mono { font-size: 12px; color: #6b6760; }
+	.cat-divider h2 { font-size: clamp(48px, 6vw, 88px) !important; line-height: .95 !important; letter-spacing: -.06em !important; }
+	.cat-divider p { max-width: 58ch; font-size: 19px; line-height: 1.5; color: #3b3830; }
+	.cat-mark { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 20px; margin: 96px var(--pad) 0 !important; padding: 12px 0; border-top: 1px dashed #b4b0a6; font: 12px var(--mono); color: #5e5a53; }
+	.cat-mark code { color: #171713; font: inherit; font-weight: 500; }
+	.cat-mark + :global(:is(.st-section, .st-lockup, .st-limits2, .st-keep)) { margin-top: 0 !important; padding-top: 56px; }
+	.cat-mark + :global(:is(.st-ahero, .st-dhero)) { margin-top: 0; }
+
+	/* illustrazioni negli slot: dichiarate come tali, da sostituire con schermate vere */
+	.mock-fill { display: block; width: 100%; height: 100%; }
+	.mock-svg-title { font: 600 15px var(--sans); letter-spacing: -.02em; fill: #171713; }
+	.mock-svg-title.small { font-size: 13px; }
+	.mock-svg-title.light { fill: #fffef9; }
+	.mock-svg-mono { font: 10px var(--mono); letter-spacing: .08em; fill: #6b6760; }
+	.mock-watch { display: flex; flex-direction: column; justify-content: space-between; width: 100%; height: 100%; padding: 16% 14%; background: #22221d; color: #f4f1e9; }
+	.mock-watch .st-mono { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #a9a59b; }
+	.mock-watch b { font-size: 19px; font-weight: 600; letter-spacing: -.03em; }
+
+	.mock-printer { position: relative; display: flex; align-items: flex-end; gap: 32px; height: 100%; }
+	.mock-code { flex: 0 1 500px; min-width: 0; margin: 0; overflow: hidden; border-radius: 18px; background: #22221d; box-shadow: inset 0 0 0 1px #34342d; }
+	.mock-code figcaption { display: flex; justify-content: space-between; padding: 13px 20px; border-bottom: 1px solid #34342d; font-size: 11px; color: #a9a59b; }
+	.mock-code :global(pre) { margin: 0; padding: 16px 20px 18px; background: #22221d !important; font: 13px/1.75 var(--mono); overflow-x: auto; }
+	.mock-tilted { position: absolute; right: 16px; top: -120px; width: 250px; transform: rotate(2.5deg); }
+	.mock-packages { display: grid; align-content: end; gap: 22px; }
+	.mock-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 52px)); gap: 10px; justify-content: end; }
+	.mock-grid span { aspect-ratio: 1; border-radius: 13px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; }
+	.mock-grid span.core { background: #171713; }
+	.mock-grid span.none { display: grid; place-items: center; background: none; box-shadow: none; border: 2px dashed #171713; font-size: 11px; }
+	.mock-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; margin: 0; padding: 18px 0 0; border-top: 1.5px solid #171713; font-size: 15px; list-style: none; }
+	.mock-legend li { display: flex; align-items: center; gap: 10px; }
+	.mock-legend span { width: 18px; height: 18px; border-radius: 5px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; }
+	.mock-legend span.core { background: #171713; }
+	.mock-legend span.none { background: none; box-shadow: none; border: 2px dashed #171713; }
+	.mock-states { display: grid; align-content: center; gap: 28px; }
+	.mock-flow-line { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0; padding: 0; list-style: none; font-size: 22px; }
+	.mock-states p { max-width: 380px; margin-left: 270px !important; padding-left: 18px; border-left: 2px dashed #171713; font-size: 15px; line-height: 1.5; }
+	.mock-lanes { display: grid; align-content: center; gap: 18px; }
+	.mock-lanes > div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 20px; align-items: center; }
+	.mock-lane { position: relative; display: flex; align-items: center; gap: 10px; height: 84px; padding: 0 20px; border-radius: 20px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; }
+	.mock-lane.loose { background: rgba(255, 254, 251, .55); }
+	.mock-lane .st-mono { display: grid; place-items: center; height: 30px; padding: 0 14px; border-radius: 999px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; font-size: 12px; }
+	.mock-lane .st-mono.dark { background: #171713; color: #fffef9; box-shadow: none; }
+	.mock-lane.loose .st-mono { position: absolute; }
+	.mock-lane.loose .st-mono:nth-child(1) { left: 20px; top: 12px; }
+	.mock-lane.loose .st-mono:nth-child(2) { left: 96px; top: 40px; }
+	.mock-lane.loose .st-mono.warn { left: 212px; top: 26px; width: 32px; height: 32px; padding: 0; border-radius: 50%; background: #ffd4b8; font-size: 15px; }
+	.mock-lane .st-mono.note { margin-left: auto; padding: 0; background: none; box-shadow: none; font-size: 11px; color: #3b3830; }
+
+	.mock-garage { display: flex; flex-direction: column; gap: 10px; width: 100%; height: 100%; padding: 22px 16px; background: #f4f1e9; }
+	.mock-garage b { font-size: 20px; font-weight: 600; letter-spacing: -.03em; }
+	.mock-garage .add { display: flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 13px; font-weight: 600; }
+	.mock-garage .car { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.mock-garage .car > i { width: 30px; height: 30px; border-radius: 9px; }
+	.mock-garage .car > span { display: grid; gap: 5px; }
+	.mock-garage .car > span i { display: block; width: 78px; height: 6px; border-radius: 3px; background: #171713; }
+	.mock-garage .car > span i + i { width: 52px; height: 5px; background: #b4b0a6; }
+
+	.mock-screen { width: 100%; height: 100%; color: #171713; font-size: 13px; }
+	.mock-dining { display: grid; grid-template-columns: 22% minmax(0, 1fr); }
+	.mock-side { display: flex; flex-direction: column; gap: 8px; padding: 20px 12px; border-right: 1.5px solid #171713; background: #f4f1e9; }
+	.mock-side b { font-size: 15px; letter-spacing: -.02em; }
+	.mock-side span { display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 10px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; font-size: 12px; }
+	.mock-side span.on { background: #c7ff9f; font-weight: 600; }
+	.mock-floor { display: flex; flex-direction: column; justify-content: space-between; padding: 22px 24px 18px; }
+	.mock-tables { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+	.mock-tables span { display: grid; place-items: center; aspect-ratio: 1; border-radius: 16px; box-shadow: inset 0 0 0 3px #171713; font-size: 13px; }
+	.mock-tables .free { background: #c7ff9f; }
+	.mock-tables .booked { background: #ded1ff; }
+	.mock-tables .waiting { background: #ffd4b8; }
+	.mock-tables .occupied { background: #171713; color: #fffef9; box-shadow: none; }
+	.mock-tables .empty { background: #fffefb; }
+	.mock-tables .round { border-radius: 50%; }
+	.mock-tables .wide { grid-column: span 2; aspect-ratio: auto; }
+	.mock-tables .picked { box-shadow: 0 0 0 4px #fffefb, 0 0 0 6px #171713; }
+	.mock-key { display: flex; flex-wrap: wrap; gap: 14px; padding-top: 12px; border-top: 1.5px solid #e2ddd2; font-size: 12px; }
+	.mock-key span { display: flex; align-items: center; gap: 6px; }
+	.mock-key i { width: 13px; height: 13px; border-radius: 4px; box-shadow: inset 0 0 0 2px #171713; }
+	.mock-key .free { background: #c7ff9f; } .mock-key .booked { background: #ded1ff; } .mock-key .waiting { background: #ffd4b8; } .mock-key .occupied { background: #171713; }
+	.mock-pad { display: grid; grid-template-columns: minmax(0, 1fr) 34%; }
+	.mock-menu { display: flex; flex-direction: column; gap: 14px; padding: 22px; }
+	.mock-tabs { display: flex; gap: 8px; }
+	.mock-tabs span { padding: 6px 12px; border-radius: 999px; box-shadow: inset 0 0 0 2px #171713; font-weight: 600; font-size: 12px; }
+	.mock-tabs span.on { background: #171713; color: #fffef9; }
+	.mock-dishes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+	.mock-dishes > span { display: grid; align-content: space-between; gap: 6px; aspect-ratio: 1.3; padding: 12px; border-radius: 14px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; }
+	.mock-dishes > span.on { background: #ffd4b8; }
+	.mock-dishes i { display: block; width: 70%; height: 7px; border-radius: 4px; background: #171713; }
+	.mock-dishes i + i { width: 40%; background: #b4b0a6; }
+	.mock-menu .st-eyebrow { color: #6b6760; }
+	.mock-ticket { display: flex; flex-direction: column; gap: 8px; padding: 22px 18px; border-left: 1.5px solid #171713; background: #f4f1e9; }
+	.mock-ticket b { font-size: 15px; }
+	.mock-ticket .st-eyebrow { color: #6b6760; font-size: 10px; }
+	.mock-ticket .row { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+	.mock-ticket .dept { font-size: 10px; color: #6b6760; }
+	.mock-ticket .muted { color: #6b6760; }
+	.mock-ticket .grow, .mock-pay .grow { flex-grow: 1; }
+	.mock-ticket .total { padding-top: 8px; border-top: 1.5px solid #171713; }
+	.mock-ticket .send { display: grid; place-items: center; height: 40px; border-radius: 999px; background: #171713; color: #fffef9; font-weight: 600; }
+	.mock-kitchen { display: flex; flex-direction: column; gap: 14px; padding: 22px; background: #22221d; color: #f4f1e9; }
+	.mock-kitchen > b { font-size: 17px; }
+	.mock-courses { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+	.mock-courses > div { display: flex; flex-direction: column; gap: 10px; }
+	.mock-courses .st-eyebrow { color: #a9a59b; }
+	.mock-courses .ticket { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 14px; background: #fffefb; color: #171713; }
+	.mock-courses .ticket.done { opacity: .8; background: #c7ff9f; }
+	.mock-courses .ticket i { display: block; width: 80%; height: 8px; border-radius: 4px; background: #171713; }
+	.mock-courses .ticket i + i { width: 50%; }
+	.mock-till { display: grid; grid-template-columns: 42% minmax(0, 1fr); gap: 22px; padding: 22px; background: #f4f1e9; }
+	.mock-till .st-receipt-paper { align-self: start; }
+	.mock-pay { display: flex; flex-direction: column; gap: 10px; }
+	.mock-pay b { font-size: 15px; }
+	.mock-pay .methods { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+	.mock-pay .methods span { display: grid; place-items: center; height: 48px; border-radius: 14px; background: #fffefb; box-shadow: inset 0 0 0 2.5px #171713; font-weight: 600; font-size: 12px; text-align: center; }
+	.mock-pay .methods span.on { background: #c7ff9f; }
+	.mock-pay .pre { display: grid; place-items: center; height: 40px; border-radius: 999px; box-shadow: inset 0 0 0 2px #171713; font-weight: 600; }
+	.mock-pay .print { display: grid; place-items: center; height: 44px; border-radius: 999px; background: #171713; color: #fffef9; font-weight: 600; }
+	.mock-pay .st-mono { font-size: 10px; color: #6b6760; text-align: center; }
+
+	.mock-flow { display: grid; grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1.2fr) 90px minmax(0, .8fr); align-items: center; gap: 12px; text-align: left; }
+	.mock-flow .box { display: grid; gap: 10px; padding: 22px; border-radius: 22px; background: #fffefb; color: #171713; }
+	.mock-flow .box .st-eyebrow { color: #6b6760; }
+	.mock-flow .box.tone-orange .st-eyebrow, .mock-flow .box.tone-acid .st-eyebrow { color: #3b3830; }
+	.mock-flow .box b { font-size: 22px; font-weight: 600; letter-spacing: -.03em; }
+	.mock-flow .box > span:not(.st-eyebrow) { font-size: 14px; line-height: 1.45; }
+	.mock-flow .box .st-mono { font-size: 11px; }
+	.mock-flow .bits { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+	.mock-flow .bits i { height: 18px; border-radius: 6px; background: #171713; }
+	.mock-flow .link { display: grid; gap: 8px; justify-items: center; }
+	.mock-flow .link .st-mono { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #a9a59b; }
+	.mock-flow .link.good .st-mono { color: #c7ff9f; }
+	.mock-flow .arrow { position: relative; width: 100%; height: 2.5px; border-radius: 2px; background: #a9a59b; }
+	.mock-flow .arrow::after { content: ''; position: absolute; right: 0; top: -5px; width: 10px; height: 10px; border-top: 2.5px solid #a9a59b; border-right: 2.5px solid #a9a59b; transform: rotate(45deg); }
+	.mock-flow .link.good .arrow, .mock-flow .link.good .arrow::after { border-color: #c7ff9f; background: #c7ff9f; }
+	.mock-flow .link.good .arrow::after { background: none; }
+	.mock-flow .verdict { grid-column: 3; justify-self: start; padding: 6px 12px; border-radius: 999px; background: #171713; font-size: 11px; }
+	.mock-flow .verdict.warn { color: #ffd4b8; box-shadow: inset 0 0 0 1px #ffd4b8; }
+	.mock-flow .verdict.good { color: #c7ff9f; box-shadow: inset 0 0 0 1px #c7ff9f; }
+
+	.mock-wave-label { font: 12px var(--mono); fill: #5e5a53; }
+	.mock-wave-phase { font: 10px var(--mono); fill: #171713; }
+
+	.mock-tile { position: relative; width: clamp(220px, 24vw, 300px); aspect-ratio: 1; border-radius: 44px; background: #ffd4b8; box-shadow: inset 0 0 0 4px #171713, 0 10px 0 -2px #ecbfa3, 0 12px 0 -2px #171713; color: #171713; }
+	.mock-tile > b { position: absolute; left: 9%; top: 5%; font-size: clamp(56px, 6vw, 76px); font-weight: 600; line-height: 1; letter-spacing: -.06em; }
+	.mock-tile .waiter { position: absolute; right: 7%; top: 8%; display: grid; place-items: center; height: 32px; padding: 0 12px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 12px; }
+	.mock-tile .time { position: absolute; left: 9%; bottom: 9%; display: flex; align-items: center; gap: 6px; font-size: 14px; }
+	.mock-tile .state { position: absolute; right: 7%; bottom: 7%; display: grid; place-items: center; height: 32px; padding: 0 12px; border-radius: 999px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; font-size: 12px; }
+	.mock-docs { display: flex; gap: 4px; }
+	.mock-docs i { width: 22px; height: 30px; border-radius: 3px; background: #f4f1e9; box-shadow: inset 0 0 0 1.5px #171713; }
+	.mock-docs i.warn { background: #ffd4b8; }
+
+	@media (max-width: 900px) {
+		.cat-divider { margin-top: 96px; }
+		.mock-printer { flex-direction: column; align-items: stretch; }
+		.mock-code { flex-basis: auto; }
+		.mock-tilted { display: none; }
+		.mock-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; }
+		.mock-grid span { border-radius: 8px; }
+		.mock-legend { font-size: 12px; }
+		.mock-flow-line { font-size: 15px; gap: 8px; }
+		.mock-flow-line :global(.st-state.big) { min-height: 44px; padding: 0 14px; font-size: 15px; }
+		.mock-states p { margin-left: 0 !important; }
+		.mock-lanes > div { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+		.mock-lane { overflow: hidden; }
+		.mock-flow { grid-template-columns: minmax(0, 1fr); }
+		.mock-flow .link { grid-auto-flow: column; justify-content: start; }
+		.mock-flow .arrow { width: 2.5px; height: 28px; }
+		.mock-flow .arrow::after { right: -5px; top: auto; bottom: 0; transform: rotate(135deg); }
+		.mock-flow .verdict { grid-column: 1; }
+		.mock-dining { grid-template-columns: minmax(0, 1fr); }
+		.mock-side { display: none; }
+		.mock-pad, .mock-till { grid-template-columns: minmax(0, 1fr); }
+		.mock-ticket, .mock-till .st-receipt-paper { display: none; }
+	}
+</style>
