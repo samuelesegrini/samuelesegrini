@@ -86,6 +86,27 @@ test('the first highlight gathers the six services into the app once it is in vi
 	await context.close();
 });
 
+test('each big card plays its own entrance when it comes to the front', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	await page.locator('.st-hgallery').scrollIntoViewIfNeeded();
+	await expect(page.locator('.st-hgallery')).toHaveAttribute('data-inview', '');
+	await page.locator('[data-hg-dot="1"]').click();
+	await expect(page.locator('.st-hg-card').nth(1)).toHaveAttribute('data-current', '');
+	// il corso del piano e quello di WeBeep si incontrano, poi il corso si riempie riga per riga
+	expect(await page.locator('.pv-course').evaluate((el) => getComputedStyle(el).animationName)).toBe('pv-in-up');
+	await expect.poll(() => page.locator('.pv-jrow').evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1')), { timeout: 5000 }).toBe(true);
+});
+
+test('without motion every highlight is already complete', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto(poliverse);
+	await arriva(page);
+	const drawn = page.locator('.st-hg-media *');
+	expect(await drawn.evaluateAll((els) => els.filter((el) => getComputedStyle(el).animationName !== 'none').length)).toBe(0);
+	expect(await drawn.evaluateAll((els) => els.filter((el) => getComputedStyle(el).opacity === '0').length)).toBe(0);
+});
+
 test('the numbers count up once they are seen, and keep their value for screen readers', async ({ page }) => {
 	await page.goto(poliverse);
 	await arriva(page);

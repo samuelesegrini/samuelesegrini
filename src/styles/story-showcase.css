@@ -12,6 +12,15 @@
 .st-hg-copy .st-eyebrow { color: var(--st-meta); }
 .st-hg-image { position: absolute; right: -4%; bottom: -22%; width: 78%; max-width: none; height: auto; }
 .st-hg-media { position: absolute; left: clamp(24px, 3.4vw, 48px); right: clamp(24px, 3.4vw, 48px); top: clamp(170px, 16vw, 200px); bottom: clamp(24px, 3vw, 44px); display: grid; }
+/* la frase può aprirsi con un titolo in grassetto: il resto sta un tono sotto */
+.st-hg-copy p:has(.st-hg-lead) { color: var(--st-muted); }
+.st-hg-lead { color: var(--st-fg); font-weight: inherit; }
+/* il disegno a tutta carta, il testo centrato in alto */
+.st-hg-card.layout-overlay .st-hg-media { inset: 0; }
+.st-hg-card.layout-overlay .st-hg-copy { left: 0; right: 0; max-width: min(640px, calc(100% - 48px)); margin: 0 auto; justify-items: center; text-align: center; }
+/* il disegno a sinistra, il testo a destra a metà altezza */
+.st-hg-card.layout-split .st-hg-media { right: 50%; top: clamp(24px, 3vw, 44px); }
+.st-hg-card.layout-split .st-hg-copy { left: calc(50% + clamp(16px, 2.4vw, 36px)); top: 50%; translate: 0 -50%; }
 .st-hg-controls { display: flex; justify-content: center; align-items: center; gap: 14px; }
 .st-hg-controls[hidden] { display: none; }
 .st-hg-dots { display: flex; align-items: center; gap: 2px; height: 56px; padding: 0 16px; border-radius: 999px; background: var(--st-wash); }
@@ -39,6 +48,7 @@
 .st-mc-tag { position: absolute; left: 22px; top: 22px; padding: 6px 10px; border-radius: 999px; background: var(--ink); color: var(--acid); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
 .st-mcards .st-mc-track p { font-size: 17px; line-height: 1.45; color: var(--st-meta); text-wrap: pretty; }
 .st-mcards p b { color: var(--st-fg); font-weight: 600; }
+.st-mcards .st-mc-note { margin-top: -12px; font-size: 12px; line-height: 1.5; color: var(--st-meta); }
 .st-mcards .st-rail-controls button:disabled { opacity: .45; cursor: default; }
 
 /* FeatureExplorer */
@@ -143,6 +153,9 @@
 
 @media (max-width: 900px) {
 	.st-hg-card { height: 460px; }
+	/* sul telefono la carta divisa torna in colonna: il testo sopra, il disegno sotto */
+	.st-hg-card.layout-split .st-hg-media { right: clamp(24px, 3.4vw, 48px); top: clamp(170px, 16vw, 200px); }
+	.st-hg-card.layout-split .st-hg-copy { left: clamp(24px, 3.4vw, 48px); top: clamp(24px, 3vw, 44px); translate: none; }
 	.st-hg-image { right: -30%; bottom: -8%; width: 150%; }
 	.st-fx, .st-explainer { grid-template-columns: minmax(0, 1fr); }
 	.st-fx-figure { position: static; order: -1; }

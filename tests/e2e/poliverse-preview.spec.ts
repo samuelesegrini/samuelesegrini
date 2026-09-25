@@ -10,7 +10,7 @@ const route = '/en/preview/poliverse/';
 test('the PoliVerse story renders every chapter and indexes them in the dock', async ({ page }) => {
 	await page.goto(route);
 	await arriva(page);
-	for (const block of ['.st-ahero', '.st-ahero-shot .st-shot', '.st-intro', '.st-hgallery', '.st-lit', '.st-fx', '.st-bento', '.st-bars', '.st-ba', '.st-toggle', '.st-stats', '.st-changelog', '.st-lockup', '.st-thennow', '.st-findings', '.st-scenes', '.st-states', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-sources', '.st-faq2', '.st-keep', '.st-index']) {
+	for (const block of ['.st-ahero', '.st-ahero-shot .st-shot', '.st-intro', '.st-hgallery', '.st-lit', '.st-fx', '.st-mcards', '.st-bento', '.st-bars', '.st-ba', '.st-toggle', '.st-stats', '.st-changelog', '.st-lockup', '.st-thennow', '.st-findings', '.st-scenes', '.st-states', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-sources', '.st-faq2', '.st-keep', '.st-index']) {
 		await expect(page.locator(`.st-page ${block}`).first(), block).toBeAttached();
 	}
 	const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
@@ -27,8 +27,19 @@ test('every highlight shows its picture', async ({ page }) => {
 	await page.goto(route);
 	await arriva(page);
 	// la galleria legge gli slot media-1, media-2…: un nome sbagliato lascia la carta senza disegno
-	await expect(page.locator('.st-hg-card')).toHaveCount(5);
-	await expect(page.locator('.st-hg-card > .st-hg-media')).toHaveCount(5);
+	await expect(page.locator('.st-hg-card')).toHaveCount(4);
+	await expect(page.locator('.st-hg-card > .st-hg-media')).toHaveCount(4);
+});
+
+test('the small things each show a piece of the app, and say it in one sentence', async ({ page }) => {
+	await page.goto(route);
+	await arriva(page);
+	const cards = page.locator('.st-mcards .st-mc-track > li');
+	await expect(cards).toHaveCount(6);
+	await expect(page.locator('.st-mcards .st-mc-media > .pv-mini')).toHaveCount(6);
+	for (const card of await cards.all()) await expect(card.locator('p > b')).not.toBeEmpty();
+	// la nota dice il limite com'è: le aule libere si ricavano dalle lezioni prenotate
+	await expect(page.locator('.st-mcards .st-mc-note')).toHaveText('Worked out from booked lessons: an open room can still be locked.');
 });
 
 test('every icon on the page is a file the site serves', async ({ page }) => {

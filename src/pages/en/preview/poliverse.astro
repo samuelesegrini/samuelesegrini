@@ -9,7 +9,7 @@ import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
 	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, ToggleFigure, Stats,
 	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
-	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BarCompare, BeforeAfter, ProductShot, Icon,
+	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BarCompare, BeforeAfter, ProductShot, Icon, MediaCards,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -46,8 +46,37 @@ const sources = ([
 	return { ...source, x: +(50 + 38 * Math.cos(angle)).toFixed(1), y: +(54 + 36 * Math.sin(angle)).toFixed(1) };
 });
 
+// Le righe di un corso come le mostra l'app (CourseDetailView): avvisi, materiali e forum da WeBeep,
+// le registrazioni da recman, il programma dal Manifesto. "N da vedere" è il conteggio dell'app.
+const courseRows = [
+	{ title: 'Avvisi', badge: '2 da vedere', icon: 'mail', tile: 'var(--orange)' },
+	{ title: 'Materiali', badge: '3 da vedere', icon: 'layers', tile: 'var(--acid)' },
+	{ title: 'Registrazioni', icon: 'play', tile: 'var(--violet)' },
+	{ title: 'Forum', icon: 'people', tile: 'var(--blue)' },
+	{ title: 'Programma', icon: 'book', tile: '#ffd4b8' },
+] as const;
+
+// Il muro di icone di Personalizza: Giorno, Vicino e le speciali, intrecciate, quattro file da otto.
+const woven = colours.flatMap(([c], k) => [`dial-${c}`, `closeup-${c}`, ...(specials[k] ? [`special-${specials[k][0]}`] : [])]);
+const wall = [0, 1, 2, 3].map((r) => woven.slice(r * 8, r * 8 + 8));
+
+// La settimana che l'app ricava dagli insegnamenti scelti (PersonalTimetableView): giorno, ora, aula.
+const picks = [
+	{ name: 'Reti di Calcolatori', on: true },
+	{ name: 'Basi di Dati', on: true },
+	{ name: 'Ingegneria del Software', on: true },
+	{ name: 'Tecnologie per il Web', on: false },
+];
+const week = [
+	{ day: 1, from: 2, span: 2, room: 'T.2.1', tint: 'violet' },
+	{ day: 2, from: 1, span: 2, room: '3.1.2', tint: 'blue' },
+	{ day: 3, from: 3, span: 2, room: 'B.4.2', tint: 'orange' },
+	{ day: 4, from: 1, span: 2, room: 'T.2.1', tint: 'violet' },
+	{ day: 5, from: 2, span: 2, room: '3.1.2', tint: 'blue' },
+];
+
 const sections = [
-	{ kicker: 'Chapter 1 of 7', value: 'Highlights', detail: { kicker: 'In short', value: '5 highlights' } },
+	{ kicker: 'Chapter 1 of 7', value: 'Highlights', detail: { kicker: 'In short', value: '4 highlights' } },
 	{ kicker: 'Chapter 2 of 7', value: 'The app', detail: { kicker: 'Tabs', value: 'Today · Courses · Career · Search' } },
 	{ kicker: 'Chapter 3 of 7', value: 'Make it yours', detail: { kicker: 'Icons', value: '36 to choose from' } },
 	{ kicker: 'Chapter 4 of 7', value: 'Fifteen days', detail: { kicker: 'Commits', value: '309' } },
@@ -73,10 +102,9 @@ const sections = [
 		<Section tone="ink2" link={{ label: 'Browse the source', href: repo }}>
 			<HighlightsGallery interval={6000} cards={[
 				{ text: 'Six places a student checks. One app.', meta: 'What PoliVerse brings together', name: 'Six places, one app', tone: 'dark' },
-				{ text: '“Entra con CIE” comes back to the app, not to Safari.', meta: 'CieID hand-off · sourceApp', name: 'CIE login', tone: 'dark' },
-				{ text: 'It opens with content, even offline. A failed refresh never clears the screen.', meta: 'Store · offline copy', name: 'Offline first', tone: 'acid' },
-				{ text: 'It reads, and never writes. A wrong read costs a refresh; a wrong write costs a session.', meta: 'Decision · 22 September', name: 'Read-only on purpose', tone: 'orange' },
-				{ text: 'One colour becomes the whole app, down to the icon on the Home Screen.', meta: 'Personalizza · 36 icons', name: 'Make it yours', tone: 'violet' },
+				{ lead: 'Your courses, with WeBeep inside.', text: 'Matched by the course code.', meta: 'Del piano · WeBeep', name: 'Courses with WeBeep inside', tone: 'paper', layout: 'split' },
+				{ lead: 'Make it yours.', text: 'One colour becomes the whole app, down to the icon.', meta: 'Personalizza · 36 icons', name: 'Make it yours', tone: 'dark', layout: 'overlay' },
+				{ lead: 'It opens with content, even offline.', text: 'A failed refresh clears nothing.', meta: 'Store · offline copy', name: 'Offline first', tone: 'acid', layout: 'split' },
 			]}>
 				<div slot="media-1" class="pv-combine" aria-hidden="true">
 					<span class="pv-ring"></span>
@@ -87,20 +115,25 @@ const sections = [
 						</span>
 					))}
 				</div>
-				<ol slot="media-2" class="pv-steps st-mono" aria-label="The CIE hand-off in four steps">
-					<li>catch the CieID link</li><li>re-open it with sourceApp</li><li>card + PIN in CieID</li><li class="ok">back in PoliVerse</li>
-				</ol>
-				<div slot="media-3" class="pv-fresh" role="img" aria-label="A cached timetable still on screen, with a line saying it is forty minutes old and the refresh failed">
-					<span class="pv-fresh-line st-mono"><i></i>Cached copy · 40 min old · refresh failed</span>
-					<span class="pv-fresh-card"><b>12:15</b><span>Reti di Calcolatori</span></span>
-					<span class="pv-fresh-card"><b>14:15</b><span>Basi di Dati</span></span>
+				<div slot="media-2" class="pv-join" aria-hidden="true">
+					<span class="pv-src plan"><em>Piano di studi</em><b>Ingegneria del Software</b><span><mark>054321</mark> · 10 CFU</span></span>
+					<span class="pv-src webeep"><em>WeBeep</em><b>2026-27 · <mark>054321</mark> · Ing. del Software</b></span>
+					<span class="pv-course">
+						<span class="pv-course-head"><b>Ingegneria del Software</b><span>Del piano · 10 CFU</span></span>
+						{courseRows.map((row, i) => (
+							<span class="pv-jrow" style={`--i: ${i}; --tile: ${row.tile}`}><i><Icon name={row.icon} size={14} stroke={2.2} /></i><b>{row.title}</b>{'badge' in row && <em>{row.badge}</em>}</span>
+						))}
+					</span>
 				</div>
-				<ol slot="media-4" class="pv-nope" aria-label="Actions the app does not perform">
-					<li>Enrol in a sitting</li><li>Refuse a mark</li><li>Post in a forum</li><li>Hand in an assignment</li>
-				</ol>
-				<ul slot="media-5" class="pv-icon-strip" aria-label="Six of the app icons">
-					{['orbit', 'dial-mint', 'closeup-coral', 'special-neon', 'special-blueprint', 'special-soft'].map((n) => <li><img src={icon(n)} alt="" width="120" height="120" loading="lazy" /></li>)}
-				</ul>
+				<div slot="media-3" class="pv-wall" aria-hidden="true">
+					{wall.map((row, r) => <span class="pv-wall-row" style={`--r: ${r}`}>{row.map((name) => <img src={icon(name)} alt="" width="120" height="120" loading="lazy" />)}</span>)}
+				</div>
+				<div slot="media-4" class="pv-fresh" role="img" aria-label="Illustration: the timetable still on screen without a connection, with one line at the bottom saying so">
+					<span class="pv-fresh-card"><b>12:15</b><span>Reti di Calcolatori</span><em>T.2.1</em></span>
+					<span class="pv-fresh-card"><b>14:15</b><span>Basi di Dati</span><em>B.4.2</em></span>
+					<span class="pv-fresh-card"><b>16:15</b><span>Probabilità e Statistica</span><em>3.0.1</em></span>
+					<span class="pv-fresh-line"><i></i>Senza connessione</span>
+				</div>
 			</HighlightsGallery>
 		</Section>
 
@@ -159,6 +192,56 @@ const sections = [
 					<span class="pv-rooms"><i>3.0.1</i><i>T.1.3</i><i>B.2.4</i><i>+9</i></span>
 				</div>
 			</FeatureExplorer>
+		</Section>
+
+		<Section eyebrow="PoliVerse · The small things" title="Small things," dim="that save a walk across campus.">
+			<MediaCards label="Small things PoliVerse does" items={[
+				{ lead: 'A free room, right now.', text: 'Rooms free for the next half hour or longer, campus by campus, with their seats.', note: 'Worked out from booked lessons: an open room can still be locked.', tone: 'paper' },
+				{ lead: 'Your week, before the agenda has it.', text: 'Pick the courses you follow and the app builds the week, with rooms and addresses.', tone: 'blue' },
+				{ lead: 'Your teacher, for your group.', text: 'Degree and plan come from the Manifesto, so each course shows the lecturer and the syllabus for your alphabetical group.', tone: 'paper' },
+				{ lead: 'Deadlines, with the hour that matters.', text: 'WeBeep assignments sit on Today with their course and exact time, so you know whether tonight is still enough.', tone: 'violet' },
+				{ lead: 'What closes next, first.', text: 'Enrolments about to close and marks waiting for your decision come before what is already settled.', tone: 'paper' },
+				{ lead: 'One search across your courses.', text: 'Courses, lessons and exam sittings from one field, with free rooms and teachers one tap away.', tone: 'acid' },
+			]}>
+				<div slot="media-1" class="pv-mini" role="img" aria-label="Illustration: free rooms now, with their seats, and one room's free and busy hours">
+					<span class="pv-seg"><i>30 min</i><i class="on">1 ora</i><i>2 ore</i></span>
+					<b class="pv-mini-title">Libere ora — 12</b>
+					<span class="pv-room"><b>3.0.1</b><span><Icon name="people" size={13} stroke={2.2} />120</span></span>
+					<span class="pv-day" title="8–20"><i style="left: 0; width: 17%"></i><i style="left: 42%; width: 25%"></i><i style="left: 83%; width: 17%"></i></span>
+					<span class="pv-room"><b>T.1.3</b><span><Icon name="people" size={13} stroke={2.2} />80</span></span>
+					<span class="pv-room"><b>B.2.4</b><span><Icon name="people" size={13} stroke={2.2} />64</span></span>
+				</div>
+				<div slot="media-2" class="pv-mini" role="img" aria-label="Illustration: three courses picked, and the week they make, with rooms">
+					<span class="pv-pick">{picks.map((pick) => <span class:list={[{ on: pick.on }]}><i>{pick.on && <Icon name="check" size={11} stroke={3} />}</i>{pick.name}</span>)}</span>
+					<span class="pv-week">
+						{['L', 'M', 'M', 'G', 'V'].map((d, k) => <b style={`grid-column: ${k + 1}`}>{d}</b>)}
+						{week.map((slot) => <i style={`grid-column: ${slot.day}; grid-row: ${slot.from + 1} / span ${slot.span}; background: var(--${slot.tint})`}>{slot.room}</i>)}
+					</span>
+				</div>
+				<div slot="media-3" class="pv-mini" role="img" aria-label="Illustration: a course sheet with a lecturer for each alphabetical group, yours marked">
+					<b class="pv-mini-title">Basi di Dati</b>
+					<span class="pv-kicker">Docenti per scaglione</span>
+					<span class="pv-group"><b>A–K</b><span>Prof. A. R.</span></span>
+					<span class="pv-group mine"><b>L–Z</b><span>Prof. L. C.</span><em>il tuo</em></span>
+					<span class="pv-more">Programma, libri e dettagli<Icon name="chevron-right" size={14} stroke={2.4} /></span>
+				</div>
+				<div slot="media-4" class="pv-mini" role="img" aria-label="Illustration: two WeBeep deadlines on Today, one due tonight at 23:59">
+					<span class="pv-kicker">Scadenze</span>
+					<span class="pv-deadline soon"><i class="c-orange"></i><span><b>Consegna del progetto</b><span>Tecnologie per il Web</span></span><em>oggi<br />23:59</em></span>
+					<span class="pv-deadline"><i class="c-violet"></i><span><b>Homework 2</b><span>Basi di Dati</span></span><em>ven<br />18:00</em></span>
+				</div>
+				<div slot="media-5" class="pv-mini" role="img" aria-label="Illustration: an enrolment closing in two days, then a mark to decide, then an exam">
+					<span class="pv-due c-orange"><span class="pv-tag">Iscrizioni in chiusura</span><b>Probabilità e Statistica</b><span>chiude tra 2 giorni</span></span>
+					<span class="pv-due c-violet"><span class="pv-tag">Voto da decidere</span><b>Basi di Dati</b><span class="pv-grade">27</span></span>
+					<span class="pv-due"><span class="pv-tag">Esame in arrivo</span><b>Reti di Calcolatori</b><span>8 ottobre</span></span>
+				</div>
+				<div slot="media-6" class="pv-mini" role="img" aria-label="Illustration: searching Reti finds a course, a lesson and an exam sitting">
+					<span class="pv-field">Reti</span>
+					<span class="pv-hit"><em>Corso</em><b>Reti di Calcolatori</b><span>10 CFU</span></span>
+					<span class="pv-hit"><em>Lezione</em><b>Reti di Calcolatori</b><span>lun 12:15 · T.2.1</span></span>
+					<span class="pv-hit"><em>Appello</em><b>Reti di Calcolatori</b><span>8 ott · 9:00</span></span>
+				</div>
+			</MediaCards>
 		</Section>
 
 		<Section eyebrow="PoliVerse · Beyond the app" title="Everywhere a student looks." dim="Not only inside the app.">
@@ -502,6 +585,7 @@ const sections = [
 	.pv-tiles b { font-size: 11.5px; line-height: 1.15; }
 	.pv-tiles em { justify-self: start; padding: 2px 7px; border-radius: 999px; background: #171713; color: #fffef9; font-style: normal; font-size: 9px; font-weight: 700; }
 	.pv-due { display: grid; gap: 2px; padding: 11px 12px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; position: relative; }
+	.pv-due.c-orange { background: #ffd4b8; } .pv-due.c-violet { background: #ded1ff; }
 	.pv-due b { font-size: 14px; letter-spacing: -.02em; } .pv-due > span:last-child { font-size: 11px; color: #3c3a35; }
 	.pv-due .pv-grade { position: absolute; right: 12px; top: 50%; translate: 0 -50%; font-size: 26px; font-weight: 800; color: #171713; }
 	.pv-avg { display: grid; gap: 6px; padding: 12px; border-radius: 16px; background: #171713; color: #fffef9; }
@@ -545,17 +629,89 @@ const sections = [
 		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-ring { animation: pv-ring-in 1.3s cubic-bezier(.4, 0, .6, 1) 1.2s both; }
 		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-core { animation: pv-core-in .9s cubic-bezier(.22, 1, .36, 1) 1.5s both; }
 	}
-	.pv-steps { display: flex; flex-wrap: wrap; align-content: flex-end; gap: 10px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
-	.pv-steps li { padding: 10px 14px; border-radius: 999px; background: #2c2c26; color: #f4f1e9; }
-	.pv-steps li.ok { background: #c7ff9f; color: #171713; }
-	.pv-fresh { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
-	.pv-fresh-line { display: flex; align-items: center; gap: 8px; align-self: flex-start; padding: 8px 14px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 12px; }
+	/* La seconda: il corso del piano e quello di WeBeep, riconosciuti dallo stesso codice, diventano un corso solo. */
+	.pv-join { position: relative; display: grid; align-content: center; justify-items: center; }
+	.pv-src { position: absolute; top: 0; display: grid; gap: 2px; padding: 10px 14px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; font-size: 11.5px; color: #3c3a35; }
+	.pv-src.plan { left: 0; rotate: -3deg; }
+	.pv-src.webeep { right: 0; top: 14px; rotate: 2.5deg; }
+	.pv-src em { font: 10px var(--mono); font-style: normal; letter-spacing: .08em; text-transform: uppercase; color: #5e5a53; }
+	.pv-src b { font-size: 13px; color: #171713; }
+	.pv-src mark { padding: 0 4px; border-radius: 5px; background: var(--acid); color: #171713; font-family: var(--mono); }
+	.pv-course { position: relative; display: grid; gap: 2px; width: min(340px, 100%); margin-top: 64px; padding: 14px; border-radius: 22px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713, 0 24px 44px -26px rgba(23, 23, 19, .5); }
+	.pv-course-head { display: grid; gap: 2px; padding: 4px 6px 10px; }
+	.pv-course-head b { font-size: 18px; letter-spacing: -.02em; }
+	.pv-course-head span { font-size: 11.5px; color: #5e5a53; }
+	.pv-jrow { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 7px 6px; border-top: 1px solid rgba(23, 23, 19, .1); font-size: 13.5px; }
+	.pv-jrow i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--tile); color: #171713; }
+	.pv-jrow b { font-weight: 600; }
+	.pv-jrow em { padding: 2px 8px; border-radius: 999px; background: #171713; color: #fffef9; font-style: normal; font-size: 10.5px; font-weight: 700; }
+	/* La terza: il muro di icone, di sbieco, che sfuma sotto il testo. */
+	.pv-wall { position: relative; display: grid; align-content: start; gap: clamp(12px, 1.8vw, 20px); padding-top: clamp(150px, 15vw, 190px); overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 22%, #000 46%); mask-image: linear-gradient(to bottom, transparent 0, transparent 22%, #000 46%); }
+	.pv-wall-row { display: flex; justify-content: center; gap: clamp(12px, 1.8vw, 20px); rotate: -8deg; translate: calc((var(--r) - 1.5) * -4%) 0; }
+	.pv-wall-row img { flex: none; width: clamp(58px, 8.4vw, 104px); height: auto; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .45)); }
+	/* La quarta: l'orario resta, e una riga in fondo dice che manca la connessione. */
+	.pv-fresh { display: grid; align-content: center; gap: 8px; max-width: 360px; }
+	.pv-fresh-card { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 14px; padding: 12px 16px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-fresh-card b { font-size: 15px; } .pv-fresh-card em { font: 11px var(--mono); font-style: normal; color: #5e5a53; }
+	.pv-fresh-line { display: flex; align-items: center; gap: 8px; justify-self: center; margin-top: 8px; padding: 7px 14px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 12px; font-weight: 600; }
 	.pv-fresh-line i { width: 8px; height: 8px; border-radius: 50%; background: #ffb27a; }
-	.pv-fresh-card { display: flex; gap: 14px; align-items: baseline; padding: 12px 16px; border-radius: 16px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; font-size: 15px; }
-	.pv-nope { display: flex; flex-wrap: wrap; align-content: flex-end; gap: 10px; margin: 0; padding: 0; list-style: none; }
-	.pv-nope li { padding: 12px 18px; border-radius: 999px; background: #fffefb; box-shadow: inset 0 0 0 2px #171713; font-weight: 600; text-decoration: line-through; }
-	.pv-icon-strip { display: grid; grid-template-columns: repeat(3, 1fr); align-content: end; gap: clamp(10px, 1.6vw, 18px); margin: 0; padding: 0; list-style: none; max-width: 380px; }
-	.pv-icon-strip img { display: block; width: 100%; height: auto; filter: drop-shadow(0 8px 14px rgba(23, 23, 19, .22)); }
+	/* Le carte piccole: un pezzo d'interfaccia per carta, sempre con lo stesso taglio. */
+	.pv-mini { display: grid; align-content: start; align-self: center; translate: 0 -30px; gap: 9px; width: min(296px, 86%); padding: 16px; border-radius: 22px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713, 0 20px 40px -26px rgba(23, 23, 19, .45); color: #171713; font-size: 12.5px; text-align: left; }
+	.pv-mini-title { font-size: 17px; letter-spacing: -.02em; }
+	.pv-seg { display: flex; gap: 4px; padding: 3px; border-radius: 999px; background: rgba(23, 23, 19, .07); }
+	.pv-seg i { flex: 1; padding: 5px 0; border-radius: 999px; font-style: normal; font-size: 11px; font-weight: 600; text-align: center; color: #3c3a35; }
+	.pv-seg i.on { background: #171713; color: #fffef9; }
+	.pv-room { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-radius: 12px; background: #c7ff9f; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-room b { font: 700 13px var(--mono); } .pv-room span { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; }
+	.pv-day { position: relative; height: 8px; margin: -2px 4px 2px; border-radius: 4px; background: #c7ff9f; box-shadow: inset 0 0 0 1px rgba(23, 23, 19, .35); overflow: hidden; }
+	.pv-day i { position: absolute; top: 0; bottom: 0; background: #b4b0a6; }
+	.pv-pick { display: grid; gap: 5px; }
+	.pv-pick > span { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #5e5a53; }
+	.pv-pick > span.on { color: #171713; font-weight: 600; }
+	.pv-pick i { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 5px; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-pick .on i { background: #171713; color: #c7ff9f; }
+	.pv-week { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: auto repeat(4, 24px); gap: 3px; margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(23, 23, 19, .12); }
+	.pv-week b { grid-row: 1; font: 10px var(--mono); text-align: center; color: #5e5a53; }
+	.pv-week i { display: grid; place-items: center; border-radius: 7px; box-shadow: inset 0 0 0 1.5px #171713; font: 700 9.5px var(--mono); font-style: normal; }
+	.pv-group { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; padding: 9px 10px; border-radius: 12px; box-shadow: inset 0 0 0 1.5px rgba(23, 23, 19, .25); }
+	.pv-group b { font: 700 13px var(--mono); }
+	.pv-group.mine { background: #cdefff; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-group em { padding: 2px 8px; border-radius: 999px; background: #171713; color: #fffef9; font-style: normal; font-size: 10px; font-weight: 700; }
+	.pv-more { display: flex; justify-content: space-between; align-items: center; padding: 8px 2px 0; border-top: 1px solid rgba(23, 23, 19, .12); font-weight: 600; }
+	.pv-deadline { display: grid; grid-template-columns: 6px 1fr auto; align-items: center; gap: 10px; padding: 10px; border-radius: 14px; box-shadow: inset 0 0 0 1.5px rgba(23, 23, 19, .25); }
+	.pv-deadline > i { align-self: stretch; border-radius: 3px; box-shadow: inset 0 0 0 1.5px #171713; }
+	.pv-deadline > span { display: grid; gap: 1px; } .pv-deadline > span span { font-size: 11px; color: #5e5a53; }
+	.pv-deadline em { font: 700 11px/1.25 var(--mono); font-style: normal; text-align: right; }
+	.pv-deadline.soon { box-shadow: inset 0 0 0 1.5px #171713; } .pv-deadline.soon em { color: #a3360d; }
+	.pv-hit { display: grid; grid-template-columns: 58px 1fr; column-gap: 8px; padding: 8px 2px; border-top: 1px solid rgba(23, 23, 19, .12); }
+	.pv-hit em { grid-row: span 2; align-self: start; padding: 2px 0; border-radius: 6px; background: rgba(23, 23, 19, .07); font: 10px var(--mono); font-style: normal; text-align: center; }
+	.pv-hit b { font-size: 13px; } .pv-hit span { font-size: 11px; color: #5e5a53; }
+	@media (max-width: 640px) {
+		.pv-src { padding: 8px 12px; font-size: 10.5px; }
+		.pv-src b { font-size: 12px; }
+		.pv-src.webeep { top: 58px; }
+		.pv-course { margin-top: 118px; }
+		.pv-jrow:nth-child(n + 5) { display: none; }
+	}
+	/* Le carte grandi entrano quando sono davanti e in vista, come la prima; ferme senza movimento o senza script. */
+	@keyframes pv-in-left { from { opacity: 0; translate: -36px 0; } to { opacity: 1; } }
+	@keyframes pv-in-right { from { opacity: 0; translate: 36px 0; } to { opacity: 1; } }
+	@keyframes pv-in-up { from { opacity: 0; translate: 0 22px; } to { opacity: 1; } }
+	@keyframes pv-mark { 0%, 40% { background: transparent; } 100% { background: var(--acid); } }
+	@keyframes pv-slide { from { opacity: 0; translate: calc((var(--r) - 1.5) * -4% + (var(--r) - 1.5) * 12%) 0; } to { opacity: 1; } }
+	@media (prefers-reduced-motion: no-preference) {
+		:global(.st-hgallery[data-bound]) :is(.pv-src, .pv-course, .pv-jrow, .pv-wall-row, .pv-fresh > *) { opacity: 0; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-src.plan { animation: pv-in-left .7s cubic-bezier(.22, 1, .36, 1) .1s both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-src.webeep { animation: pv-in-right .7s cubic-bezier(.22, 1, .36, 1) .25s both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-src mark { animation: pv-mark 1s cubic-bezier(.4, 0, .6, 1) .5s both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-course { animation: pv-in-up .8s cubic-bezier(.22, 1, .36, 1) 1.2s both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-jrow { animation: pv-in-up .6s cubic-bezier(.22, 1, .36, 1) calc(1.5s + var(--i) * 90ms) both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-wall-row { animation: pv-slide 1.4s cubic-bezier(.22, 1, .36, 1) calc(var(--r) * 90ms) both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-fresh > * { animation: pv-in-up .6s cubic-bezier(.22, 1, .36, 1) calc(.15s + var(--k, 0) * 120ms) both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-fresh > :nth-child(2) { --k: 1; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-fresh > :nth-child(3) { --k: 2; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-fresh > :nth-child(4) { --k: 5; }
+	}
 
 	/* Le carte "fuori dall'app". */
 	.pv-widgets { display: flex; gap: 12px; align-items: center; justify-content: center; height: 100%; }

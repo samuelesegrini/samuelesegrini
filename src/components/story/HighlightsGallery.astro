@@ -8,8 +8,11 @@
  * che si scorre a mano.
  * La carta davanti porta `data-current` e la galleria in vista `data-inview`: un disegno animato
  * dentro una carta può ripartire ogni volta che la sua carta torna davanti.
+ * Tre impaginazioni per carta, come nelle gallerie di apple.com: `stack` (il testo in alto, il
+ * disegno sotto), `overlay` (il disegno a tutta carta, il testo centrato sopra) e `split` (il
+ * disegno a sinistra, il testo a destra). Con `lead` la frase si apre con un titolo in grassetto.
  */
-interface Card { text: string; meta?: string; name?: string; tone?: 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string; wide?: boolean }
+interface Card { text: string; lead?: string; meta?: string; name?: string; tone?: 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange'; layout?: 'stack' | 'overlay' | 'split'; image?: string; imageAlt?: string; wide?: boolean }
 interface Props { cards: Card[]; label?: string; interval?: number }
 const { cards, label = 'Highlights', interval = 3400 } = Astro.props;
 const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
@@ -17,8 +20,8 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 <div class="st-hgallery" data-hgallery data-interval={interval}>
 	<ul class="st-hg-track" role="list" aria-label={label} tabindex="0" data-hg-track>
 		{cards.map((c, i) => (
-			<li class:list={['st-hg-card', `tone-${c.tone ?? 'paper'}`, { wide: c.wide }]}>
-				<div class="st-hg-copy"><p>{c.text}</p>{c.meta && <span class="st-eyebrow">{c.meta}</span>}</div>
+			<li class:list={['st-hg-card', `tone-${c.tone ?? 'paper'}`, `layout-${c.layout ?? 'stack'}`, { wide: c.wide }]}>
+				<div class="st-hg-copy"><p>{c.lead && <><b class="st-hg-lead">{c.lead}</b>{' '}</>}{c.text}</p>{c.meta && <span class="st-eyebrow">{c.meta}</span>}</div>
 				{c.image && <img class="st-hg-image" src={c.image} alt={c.imageAlt ?? ''} width="1200" height="800" loading={i === 0 ? 'eager' : 'lazy'} />}
 				{media[i] && <div class="st-hg-media"><Fragment set:html={media[i]} /></div>}
 			</li>
