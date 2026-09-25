@@ -9,7 +9,8 @@ import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
 	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, ToggleFigure, Stats,
 	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
-	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BarCompare, BeforeAfter, ProductShot, Icon, MediaCards,
+	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BeforeAfter, ProductShot, Icon, MediaCards,
+	Statement, ObjectRow, PlusCards,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -77,14 +78,18 @@ const week = [
 	{ day: 5, from: 2, span: 2, room: '3.1.2', tint: 'blue' },
 ];
 
+// Le piastrelle dei sei posti, ognuna del colore e della storta del suo punto nella prima carta.
+const place = (i: number) => `--tint: var(--${sources[i].tint}); --r: ${sources[i].r / 2}deg`;
+
 const sections = [
-	{ kicker: 'Chapter 1 of 7', value: 'Highlights', detail: { kicker: 'In short', value: '4 highlights' } },
-	{ kicker: 'Chapter 2 of 7', value: 'The app', detail: { kicker: 'Tabs', value: 'Today · Courses · Career · Search' } },
-	{ kicker: 'Chapter 3 of 7', value: 'Make it yours', detail: { kicker: 'Icons', value: '36 to choose from' } },
-	{ kicker: 'Chapter 4 of 7', value: 'Fifteen days', detail: { kicker: 'Commits', value: '309' } },
-	{ kicker: 'Chapter 5 of 7', value: 'Under the hood', detail: { kicker: 'Public API', value: 'none' } },
-	{ kicker: 'Chapter 6 of 7', value: 'Decisions', detail: { kicker: 'Written down', value: '6 rules' } },
-	{ kicker: 'Chapter 7 of 7', value: 'Specs & questions', detail: { kicker: 'Dependencies', value: 'none' } },
+	{ kicker: 'Chapter 1 of 8', value: 'Why it exists', detail: { kicker: 'Places', value: '6 to check' } },
+	{ kicker: 'Chapter 2 of 8', value: 'Three promises', detail: { kicker: 'In short', value: '4 highlights' } },
+	{ kicker: 'Chapter 3 of 8', value: 'A day in it', detail: { kicker: 'Tabs', value: 'Today · Courses · Career · Search' } },
+	{ kicker: 'Chapter 4 of 8', value: 'Make it yours', detail: { kicker: 'Icons', value: '36 to choose from' } },
+	{ kicker: 'Chapter 5 of 8', value: 'Fifteen days', detail: { kicker: 'Commits', value: '309' } },
+	{ kicker: 'Chapter 6 of 8', value: 'What it took', detail: { kicker: 'Public API', value: 'none' } },
+	{ kicker: 'Chapter 7 of 8', value: 'The rules', detail: { kicker: 'Written down', value: '6 rules' } },
+	{ kicker: 'Chapter 8 of 8', value: 'Specs & questions', detail: { kicker: 'Dependencies', value: 'none' } },
 ];
 
 ---
@@ -94,12 +99,42 @@ const sections = [
 		<AppHero name="PoliVerse" title="Your whole Politecnico. In one app." tint="blue"
 			summary="An unofficial app for Politecnico di Milano students: timetable, courses, WeBeep materials, lesson recordings, exams and rooms, on iPhone, iPad, Apple Watch and the Lock Screen. It opens with content, even offline."
 			meta="Individual work · SwiftUI · iOS 27 · September 2026"
-			actions={[{ label: 'Read the story', href: '#highlights' }, { label: 'Source on GitHub', href: repo }]}>
+			actions={[{ label: 'Read the story', href: '#why' }, { label: 'Source on GitHub', href: repo }]}>
 			<img slot="mark" src={icon('orbit')} alt="" width="104" height="104" class="pv-mark" />
 			<ProductShot slot="shot" priority src="/assets/projects/poliverse-devices.png" alt="PoliVerse on iPhone, iPad and Apple Watch" />
 		</AppHero>
 
-		<ScrollIntro id="highlights" index={1} tone="ink2" eyebrow="PoliVerse" title="Get the highlights." />
+		<Section id="why" index={1} eyebrow="PoliVerse · Why it exists" title="Six places," dim="before the first lesson.">
+			<Statement>A day at the Politecnico is spread over six places: <b>Servizi Online</b>, <b>WeBeep</b>, <b>the recordings</b>, <b>the rooms</b>, <b>the syllabus</b> and <b>the Manifesto</b>. <b>The official app leaves some of them out.</b></Statement>
+			<ObjectRow label="The six places a student checks" items={sources.map((source) => ({ name: source.name, text: `For ${source.adds}.` }))}>
+				<span slot="object-1" class="pv-place" style={place(0)} aria-hidden="true"><Icon name={sources[0].icon} size={40} stroke={1.8} /></span>
+				<span slot="object-2" class="pv-place" style={place(1)} aria-hidden="true"><Icon name={sources[1].icon} size={40} stroke={1.8} /></span>
+				<span slot="object-3" class="pv-place" style={place(2)} aria-hidden="true"><Icon name={sources[2].icon} size={40} stroke={1.8} /></span>
+				<span slot="object-4" class="pv-place" style={place(3)} aria-hidden="true"><Icon name={sources[3].icon} size={40} stroke={1.8} /></span>
+				<span slot="object-5" class="pv-place" style={place(4)} aria-hidden="true"><Icon name={sources[4].icon} size={40} stroke={1.8} /></span>
+				<span slot="object-6" class="pv-place" style={place(5)} aria-hidden="true"><Icon name={sources[5].icon} size={40} stroke={1.8} /></span>
+			</ObjectRow>
+		</Section>
+
+		<Section>
+			<LitText eyebrow="PoliVerse · So" tint="blue" text="So I built the app I wanted to open: *all six in one place*, on the newest SwiftUI." />
+		</Section>
+
+		<ScrollIntro id="highlights" index={2} tone="ink2" eyebrow="PoliVerse" title="Three promises." />
+
+		<Section tone="ink2">
+			<PlusCards label="The three promises PoliVerse keeps" cards={[
+				{ eyebrow: 'Promise 1', title: 'All of it.', text: 'Six places in one app, on every screen a student carries.', tone: 'acid',
+					detail: 'Servizi Online, WeBeep, the recordings, the rooms, the syllabus and the Manifesto, in four tabs, on iPhone, iPad, Apple Watch, widgets and the Lock Screen, and audited at the largest text size. Keeping it working without a public API is what the sixth chapter is about.',
+					links: [{ label: 'There is no public API', href: '#backend' }, { label: 'CieID doesn’t know who called it', href: '#cie' }] },
+				{ eyebrow: 'Promise 2', title: 'Never empty.', text: 'It opens with the day, even underground.', tone: 'blue',
+					detail: 'The last copy of each answer stays on the phone, in the app group the widgets read too. With no signal the app opens from there, and a refresh that fails keeps what is on screen and says when it was fetched.',
+					links: [{ label: 'A stale answer with a date', href: '#data' }, { label: 'Four layers, pulled apart', href: '#layers' }] },
+				{ eyebrow: 'Promise 3', title: 'Never pretends.', text: 'Sample data says so, and nothing is written on a guess.', tone: 'orange',
+					detail: 'Sample data is on by default and every screen says so while it is. An old copy carries its date. Enrolling in an exam stays out until the request shapes are verified, because a wrong write costs a student a session. And this page ends on what it has not proven yet.',
+					links: [{ label: 'Four things that looked like bugs', href: '#traps' }, { label: 'The rules', href: '#decisions' }] },
+			]} />
+		</Section>
 
 		<Section tone="ink2" link={{ label: 'Browse the source', href: repo }}>
 			<HighlightsGallery interval={6000} cards={[
@@ -301,16 +336,12 @@ const sections = [
 			</HighlightsGallery>
 		</Section>
 
-		<Section>
-			<LitText eyebrow="PoliVerse · Why it exists" tint="blue" text="A day at the Politecnico is spread over six places: Servizi Online, WeBeep, the recordings, the rooms, the syllabi and the Manifesto. *The official app leaves some of them out.* So I built the app I wanted to open: *all six in one place*, on the newest SwiftUI." />
-		</Section>
-
-		<Section id="app" eyebrow="PoliVerse · Take a closer look" title="Four tabs." dim="One question each." index={2}>
+		<Section id="app" eyebrow="PoliVerse · A day in it" title="One day," dim="four questions." index={3}>
 			<FeatureExplorer label="Tabs" device="iphone" note="Illustrations of the Italian interface · screenshots to follow" features={[
-				{ title: 'Today', file: 'Features/Shell', tint: 'blue', text: 'What is on today? The date, the lesson in progress, then what is coming, the timetable, deadlines and exams. Every section can be moved, hidden or redrawn.' },
-				{ title: 'Courses', file: 'Features/Home · WeBeep', tint: 'acid', text: 'What is new in my courses? Each course gathers its notices, materials, recordings, sittings, forum and syllabus, with unread counts on the way in.' },
-				{ title: 'Career', file: 'Features/Career', tint: 'violet', text: 'What is due? Rebuilt around what closes next rather than what is already true: enrolments closing, marks to decide, sittings, and the average as a line over time.' },
-				{ title: 'Search', file: 'Features/Search', tint: 'orange', text: 'Where, and what? One field across courses, agenda and sittings, then rooms with their equipment, free rooms, and the campus map down to floor plans.' },
+				{ title: 'Today', file: 'Features/Shell', tint: 'blue', text: 'In the morning: what is on today? The date, the lesson in progress, then what is coming, the timetable, deadlines and exams. Every section can be moved, hidden or redrawn.' },
+				{ title: 'Courses', file: 'Features/Home · WeBeep', tint: 'acid', text: 'Between lessons: what is new in my courses? Each course gathers its notices, materials, recordings, sittings, forum and syllabus, with unread counts on the way in.' },
+				{ title: 'Career', file: 'Features/Career', tint: 'violet', text: 'In the evening: what is due? Rebuilt around what closes next rather than what is already true: enrolments closing, marks to decide, sittings, and the average as a line over time.' },
+				{ title: 'Search', file: 'Features/Search', tint: 'orange', text: 'Anywhere: where, and what? One field across courses, agenda and sittings, then rooms with their equipment, free rooms, and the campus map down to floor plans.' },
 			]}>
 				<div slot="screen-1" class="pv-phone" role="img" aria-label="Illustration: the Today tab">
 					<span class="pv-hello">Buona giornata!</span>
@@ -437,7 +468,7 @@ const sections = [
 			</Bento>
 		</Section>
 
-		<Section id="personalise" tone="dark" center eyebrow="PoliVerse · Personalizza" title="Make it yours." dim="One colour becomes the whole app." index={3}
+		<Section id="personalise" tone="dark" center eyebrow="PoliVerse · Personalizza" title="Make it yours," dim="without losing a word." index={4}
 			lead="Almost nothing in PoliVerse is drawn in a fixed colour. A look starts from one colour; every card, control and typeface reads it, and every colour is checked for contrast before it is drawn.">
 			<figure class="pv-flavor">
 				<div class="pv-flavor-row">
@@ -452,18 +483,6 @@ const sections = [
 				</ol>
 				<figcaption><b>Flavor.</b> Accent and Extra sit a step and two steps around the wheel from Main; a page hands out the ramp by position. A grey has no hue to move along, so below 0.12 saturation it only deepens. Values from the app’s own documentation.</figcaption>
 			</figure>
-		</Section>
-
-		<Section tone="dark" eyebrow="PoliVerse · Contrast" title="Every colour, checked." dim="Before it is drawn."
-			lead="The brand navy that reads at 13:1 on white nearly disappears on the dark background, and a white label on a light dark-mode accent drops to 2.4:1. So every accent has a dark twin, and a label on a filled accent turns near-black in dark mode.">
-			<BarCompare label="Contrast ratios in PoliVerse, against the WCAG AA threshold of 4.5:1" max={14} threshold={{ value: 4.5, label: 'AA 4.5:1', below: 'below AA' }}
-				caption="WCAG 2 contrast computed from the colour components in AccentColor and Theme.swift · the worst pair as the README records it" rows={[
-					{ label: 'Brand navy on white', note: '#003352 on #FFFFFF', value: 13.2, display: '13.2:1', emphasis: true },
-					{ label: 'Brand navy on the dark background', note: '#003352 on #1C1C1E, why the twin exists', value: 1.3, display: '1.3:1' },
-					{ label: 'White on the blue accent, dark mode', note: '#FFFFFF on #6BADF0, before', value: 2.4, display: '2.4:1' },
-					{ label: 'Near-black on the same accent', note: '#141414 on #6BADF0, now', value: 7.8, display: '7.8:1', emphasis: true },
-					{ label: 'Worst pair in the app, either appearance', note: 'As the README records it', value: 4.7, display: '4.7:1', emphasis: true },
-				]} />
 			<div class="pv-ba">
 				<BeforeAfter label="Compare a white label and a near-black label on the blue accent in dark mode" start={50}
 					before={{ label: 'White · 2.4:1', text: 'A fixed white label, fine in light mode, fails in dark.' }} after={{ label: 'Near-black · 7.8:1', text: 'In dark mode the label on a filled accent flips.' }}>
@@ -496,7 +515,7 @@ const sections = [
 			</ToggleFigure>
 		</Section>
 
-		<Section id="numbers" eyebrow="PoliVerse · The repository" title="Fifteen days, one person." dim="Counted, not estimated." index={4}>
+		<Section id="numbers" eyebrow="PoliVerse · The repository" title="Fifteen days, one person." dim="And no public API." index={5}>
 			<Stats items={[
 				{ label: 'Commits', value: '309', text: 'from 10 to 24 September 2026', method: 'every commit on main, all mine', note: 1, accent: true },
 				{ label: 'Unit tests', value: '1,220', text: 'plus 49 UI tests', method: 'Swift Testing and XCTest', note: 2 },
@@ -507,7 +526,7 @@ const sections = [
 			</Stats>
 		</Section>
 
-		<Lockup id="backend" index={5} number="05" label="Under the hood" title="There is no public API." dim="So it reads what the official app reads."
+		<Lockup id="backend" index={6} number="06" label="What it took" title="There is no public API." dim="So it reads what the official app reads."
 			deepDive="Deep dive: how the map was drawn" next={{ label: 'Next: signing in with CIE', href: '#cie' }}
 			facts={[{ label: 'Service config', value: '200', note: 'public, no sign-in' }, { label: 'Path exists', value: '401', accent: true }, { label: 'Path gone', value: '404' }]}
 			factsNote="Probed 11 September 2026">
@@ -527,7 +546,7 @@ const sections = [
 				]} />
 		</Section>
 
-		<Section split eyebrow="PoliVerse · Traps" title="Four things that looked like bugs." dim="None of them was ours."
+		<Section id="traps" split eyebrow="PoliVerse · Traps · Never pretends" title="Four things that looked like bugs." dim="None of them was ours."
 			lead="Each one looked like a broken endpoint or a crash in the app. Each is written up, with what the app does about it.">
 			<Findings columns={['Severity', 'What looked broken', 'When it shows', 'What PoliVerse does']} note="Severity 1 ends the student’s session or hides their data; severity 2 degrades one feature." items={[
 				{ severity: 1, title: 'A missing scope looks like a dead endpoint.', text: 'A token minted without agenda signs in and works everywhere else, then gets 401 from the timetable.', impact: { label: 'After the paths were already fixed' }, fix: 'Build the sign-in request from the live scope list' },
@@ -537,7 +556,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section id="cie" split eyebrow="PoliVerse · Signing in" title="CieID doesn’t know who called it." dim="So we tell it."
+		<Section id="cie" split eyebrow="PoliVerse · Signing in · All of it" title="CieID doesn’t know who called it." dim="So we tell it."
 			lead="Inside a plain web view, CieID returns the authenticated session to Safari and the login is lost. PoliVerse intercepts the hand-off before the web view follows it, and re-opens it with a sourceApp that brings the student back.">
 			<StickyScenes device="iphone" label="Signing in with CIE, in four steps" note="Illustrations of the Italian interface" steps={[
 				{ title: 'Catch the link.', text: 'The sign-in page sends the web view to the CIE identity provider. PoliVerse sees that navigation before the web view follows it.', code: 'https://ios.idserver.servizicie.interno.gov.it/…', tint: 'blue' },
@@ -574,7 +593,7 @@ const sections = [
 			</StickyScenes>
 		</Section>
 
-		<Section id="data" split eyebrow="PoliVerse · Offline, underneath" title="A stale answer with a date" dim="says more than an empty screen."
+		<Section id="data" split eyebrow="PoliVerse · Offline · Never empty" title="A stale answer with a date" dim="says more than an empty screen."
 			lead="The Politecnico’s servers send no ETag, no Last-Modified, no Cache-Control and no push, so freshness is the app’s job. Every Store publishes its cached copy on the first frame, a five-minute window decides whether to fetch, and the app revalidates when it returns to the foreground or comes back online.">
 			<StateMachine label="A load through a Store" forbidden="clear the screen · never"
 				before={[{ name: 'Cached', text: 'The offline copy is published at once.' }, { name: 'Refreshing', text: 'The load window says a fetch is due.' }]}
@@ -583,7 +602,7 @@ const sections = [
 				labels={{ before: [['window due', 'cache first']], fork: ['200', 'error'], join: ['publish', 'keep the old copy'] }} />
 		</Section>
 
-		<Section tone="dark" split eyebrow="PoliVerse · Architecture" title="Four layers," dim="pulled apart."
+		<Section id="layers" tone="dark" split eyebrow="PoliVerse · Architecture · Never empty" title="Four layers," dim="pulled apart."
 			lead="Screens never talk to the network. Each service is a Source behind a Store, and one HTTP door leads out, to hosts the official config names.">
 			<ExplodedStack layers={[
 				{ name: 'Features', tint: 'acid', chips: [{ label: 'Today' }, { label: 'Courses' }, { label: 'Career' }], text: 'Seventeen feature folders, routed by ShellState, drawn with the look in use.' },
@@ -604,7 +623,7 @@ const sections = [
 			</Declaration>
 		</Section>
 
-		<Section id="decisions" tone="sand" eyebrow="PoliVerse · Decisions" title="Written down," dim="each with its reason." index={6}>
+		<Section id="decisions" tone="sand" eyebrow="PoliVerse · The rules" title="The promises," dim="written down as rules." index={7}>
 			<Principles rules={[
 				{ title: 'Read, never write.', text: 'No enrolling, no refusing a mark, no forum posts, no hand-ins. The write requests are unverified, and a wrong one costs the student a session.', source: 'docs/writes-to-university-systems.md' },
 				{ title: 'Never pass sample data off as real.', text: 'Sample data is on by default and every screen says so; all of it comes from one fictional degree, so career, timetable and courses agree.', source: 'SampleDegree · DataStatusLine' },
@@ -618,7 +637,7 @@ const sections = [
 			</Principles>
 		</Section>
 
-		<Limits proven={[
+		<Limits title="What’s proven," dim="and what isn’t yet." proven={[
 			{ text: 'Every screen renders on sample data, walked by 49 UI tests with accessibility audits at the largest text size', source: 'PoliVerseUITests · AccessibilityAuditUITests' },
 			{ text: 'Hosts and paths mapped against the official client', source: 'docs/endpoint-status.md · 11 September 2026' },
 			{ text: 'Source, tests, DocC and research notes, readable in full', source: 'github.com/samuelesegrini/PoliVerse', href: repo },
@@ -629,7 +648,7 @@ const sections = [
 			{ text: 'Performance in the field', source: 'The MetricKit routine is written; it needs a release to report' },
 		]} />
 
-		<Section id="specs" index={7}>
+		<Section id="specs" index={8}>
 			<TechSpecs eyebrow="PoliVerse" meta="Swift 6 · SwiftUI · iOS 27 · watchOS 26 · 2026" groups={[
 				{ title: 'Platforms', items: [{ title: 'iPhone and iPad', text: 'One column on iPhone; on iPad a sidebar and two columns, capped at a readable measure.' }, { title: 'Widgets and Live Activities', text: 'Next lecture, today, career, free rooms and controls; the lesson and the exam on the Lock Screen.' }, { title: 'Apple Watch', text: 'The day and the next exam, sent over WatchConnectivity.' }, { title: 'Siri and Spotlight', text: 'Courses, sittings and rooms as App Intents entities.' }] },
 				{ title: 'Code', counts: [{ value: '460', label: 'Swift files' }, { value: '17', label: 'feature areas' }, { value: '0', label: 'dependencies', accent: true }], note: 'Swift 6 language mode, complete strict concurrency, MainActor by default.' },
@@ -710,7 +729,7 @@ const sections = [
 			all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
 
 		<Section tone="sand">
-			<PageIndex title="PoliVerse" primary={[{ label: 'Highlights', href: '#highlights' }, { label: 'The app', href: '#app' }, { label: 'Make it yours', href: '#personalise' }, { label: 'Fifteen days', href: '#numbers' }, { label: 'Under the hood', href: '#backend' }, { label: 'Decisions', href: '#decisions' }, { label: 'Specs', href: '#specs' }, { label: 'Questions', href: '#faq' }]}
+			<PageIndex title="PoliVerse" primary={[{ label: 'Why it exists', href: '#why' }, { label: 'Three promises', href: '#highlights' }, { label: 'A day in it', href: '#app' }, { label: 'Make it yours', href: '#personalise' }, { label: 'Fifteen days', href: '#numbers' }, { label: 'What it took', href: '#backend' }, { label: 'The rules', href: '#decisions' }, { label: 'Specs', href: '#specs' }, { label: 'Questions', href: '#faq' }]}
 				groups={[{ title: 'Code', links: [{ label: 'PoliVerse on GitHub', href: repo, note: 'Source, DocC and research notes' }, { label: 'Endpoint notes', href: `${repo}/blob/main/docs/endpoint-status.md` }, { label: 'Why it never writes', href: `${repo}/blob/main/docs/writes-to-university-systems.md` }] }, { title: 'More from the portfolio', links: [{ label: 'EasyManager', href: labProjectPath('en', 'easymanager-restaurant-operations') }, { label: 'All projects', href: labPaths.en.work }, { label: 'About me', href: labPaths.en.about, icon: 'person' }] }]} />
 		</Section>
 	</Story>
@@ -827,6 +846,8 @@ const sections = [
 	.pv-k-lines { position: relative; height: 2.35em; font-size: clamp(22px, 2vw, 28px); }
 	.pv-k-lines p { position: absolute; inset: 0 0 auto; color: var(--st-muted); }
 	.pv-k-copy .st-hg-body { margin-top: 16px; }
+	/* Perché esiste: i sei posti in fila, ognuno una piastrella del suo colore, appena storta. */
+	.pv-place { display: grid; place-items: center; width: min(112px, 86%); aspect-ratio: 1; border-radius: 28%; background: var(--tint); box-shadow: inset 0 0 0 1.5px #171713, 0 14px 28px rgba(23, 23, 19, .12); color: #171713; rotate: var(--r); }
 	/* La terza: il muro di icone, di sbieco, che sfuma sotto il testo e scorre piano, una fila per verso. */
 	.pv-wall { --icon: clamp(58px, 8.4vw, 104px); --gap: clamp(12px, 1.8vw, 20px); position: relative; isolation: isolate; display: grid; align-content: start; gap: var(--gap); padding-top: clamp(150px, 15vw, 190px); overflow: hidden; }
 	/* la sfumatura sotto il testo è un velo del colore della carta: una maschera sul muro in Safari taglia le file che scorrono */

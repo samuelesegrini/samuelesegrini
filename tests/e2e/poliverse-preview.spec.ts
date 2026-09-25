@@ -10,11 +10,11 @@ const route = '/en/preview/poliverse/';
 test('the PoliVerse story renders every chapter and indexes them in the dock', async ({ page }) => {
 	await page.goto(route);
 	await arriva(page);
-	for (const block of ['.st-ahero', '.st-ahero-shot .st-shot', '.st-intro', '.st-hgallery', '.st-lit', '.st-fx', '.st-mcards', '.st-bento', '.st-bars', '.st-ba', '.st-toggle', '.st-stats', '.st-changelog', '.st-lockup', '.st-thennow', '.st-findings', '.st-scenes', '.st-states', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-sources', '.st-faq2', '.st-keep', '.st-index']) {
+	for (const block of ['.st-ahero', '.st-ahero-shot .st-shot', '.st-intro', '.st-statement', '.st-objects-row', '.st-hgallery', '.st-plus-grid', '.st-lit', '.st-fx', '.st-mcards', '.st-bento', '.st-ba', '.st-toggle', '.st-stats', '.st-changelog', '.st-lockup', '.st-thennow', '.st-findings', '.st-scenes', '.st-states', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-sources', '.st-faq2', '.st-keep', '.st-index']) {
 		await expect(page.locator(`.st-page ${block}`).first(), block).toBeAttached();
 	}
 	const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
-	expect(sections).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+	expect(sections).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
 	await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
 
 	// le cifre in apice portano alle note delle fonti
