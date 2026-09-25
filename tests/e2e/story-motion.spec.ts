@@ -132,16 +132,41 @@ test('the six services keep orbiting the app until the pause button stops them',
 	expect(await moving()).toBe(true);
 });
 
-test('each big card plays its own entrance when it comes to the front', async ({ page }) => {
+test('each big card plays its own entrance the first time it comes to the front, then stays', async ({ page }) => {
 	await page.goto(poliverse);
 	await arriva(page);
-	await page.locator('.st-hgallery').scrollIntoViewIfNeeded();
+	await page.locator('.st-hgallery').evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
 	await expect(page.locator('.st-hgallery')).toHaveAttribute('data-inview', '');
+	const second = page.locator('.st-hg-card').nth(1);
+	// finché non è stata davanti, la seconda carta aspetta al primo fotogramma
+	await expect(second).not.toHaveAttribute('data-played', '');
+	expect(await second.locator('.pv-stage').evaluate((el) => getComputedStyle(el.querySelector('[style*="pvk-grow"]')!).animationPlayState)).toBe('paused');
 	await page.locator('[data-hg-dot="1"]').click();
-	await expect(page.locator('.st-hg-card').nth(1)).toHaveAttribute('data-current', '');
-	// il corso del piano e quello di WeBeep si incontrano, poi il corso si riempie riga per riga
-	expect(await page.locator('.pv-course').evaluate((el) => getComputedStyle(el).animationName)).toBe('pv-in-up');
-	await expect.poll(() => page.locator('.pv-jrow').evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1')), { timeout: 5000 }).toBe(true);
+	await expect(second).toHaveAttribute('data-current', '');
+	await expect(second).toHaveAttribute('data-played', '');
+	// il tempo del disegno va avanti da quando la carta è davanti
+	const time = () => second.locator('[style*="pvk-grow"]').first().evaluate((el) => Number(el.getAnimations()[0]?.currentTime ?? 0));
+	await expect.poll(time, { timeout: 5000 }).toBeGreaterThan(1500);
+	// via e ritorno: la carta resta arrivata e non riparte da capo
+	await page.locator('[data-hg-dot="2"]').click();
+	await expect(page.locator('.st-hg-card').nth(2)).toHaveAttribute('data-played', '');
+	await page.locator('[data-hg-dot="1"]').click();
+	await expect(second).toHaveAttribute('data-current', '');
+	expect(await time()).toBeGreaterThan(1500);
+	// la carta resta davanti il suo tempo: il pallino si riempie in nove secondi
+	expect(await page.locator('.st-hgallery').evaluate((el) => el.style.getPropertyValue('--hg-every'))).toBe('9000ms');
+});
+
+test('a gathered first highlight stays gathered when it comes back', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	await page.locator('.st-hgallery').evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	const chips = page.locator('.pv-combine .pv-chip');
+	await expect.poll(() => chips.evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1')), { timeout: 5000 }).toBe(true);
+	await page.locator('[data-hg-dot="3"]').click();
+	await page.locator('[data-hg-dot="0"]').click();
+	// subito tutti in orbita: nessuno riparte dal suo punto sparso
+	expect(await chips.evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1'))).toBe(true);
 });
 
 test('without motion every highlight is already complete', async ({ page }) => {
@@ -150,7 +175,9 @@ test('without motion every highlight is already complete', async ({ page }) => {
 	await arriva(page);
 	const drawn = page.locator('.st-hg-media *');
 	expect(await drawn.evaluateAll((els) => els.filter((el) => getComputedStyle(el).animationName !== 'none').length)).toBe(0);
-	expect(await drawn.evaluateAll((els) => els.filter((el) => getComputedStyle(el).opacity === '0').length)).toBe(0);
+	// quello che serve solo durante il movimento (la chiave in volo, i corsi scartati, gli stati di
+	// passaggio della riga in fondo) porta data-gone: il resto si vede tutto
+	expect(await drawn.evaluateAll((els) => els.filter((el) => !el.closest('[data-gone]') && getComputedStyle(el).opacity === '0').length)).toBe(0);
 });
 
 test('the numbers count up once they are seen, and keep their value for screen readers', async ({ page }) => {

@@ -36,6 +36,14 @@
 .st-hgallery[data-playing='true'] .st-hg-dots button[aria-pressed='true'] span { background: color-mix(in srgb, var(--st-fg) 28%, transparent); }
 .st-hgallery[data-playing='true'] .st-hg-dots button[aria-pressed='true'] span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--st-fg); transform-origin: left center; animation: st-dot-fill var(--hg-every, 3.4s) linear both; }
 @keyframes st-dot-fill { from { scale: 0 1; } }
+/* sotto la frase, quando serve, una riga di descrizione in corpo piccolo */
+.st-hg-card .st-hg-copy p.st-hg-body { max-width: 400px; font-size: 15px; font-weight: 500; line-height: 1.55; letter-spacing: 0; color: var(--st-muted); text-wrap: pretty; }
+/* I disegni che si muovono da soli. Con lo script aspettano al primo fotogramma finché la loro carta
+   non è stata davanti in vista una volta (data-played), poi arrivano in fondo e ci restano. I giri
+   senza fine girano solo con la carta davanti e in vista, senza pausa, e riprendono da dov'erano. */
+.st-hgallery[data-bound] .st-hg-card:not([data-played]) :is(.st-hg-anim, .st-hg-anim *) { animation-play-state: paused !important; }
+.st-hgallery[data-bound]:is(:not([data-inview]), [data-still]) .st-hg-loop,
+.st-hgallery[data-bound] .st-hg-card:not([data-current]) .st-hg-loop { animation-play-state: paused !important; }
 
 /* MediaCards */
 .st-mc-track { grid-auto-columns: min(384px, 78vw); }
@@ -157,6 +165,7 @@
 	.st-hg-card.layout-split .st-hg-media { right: clamp(24px, 3.4vw, 48px); top: clamp(170px, 16vw, 200px); }
 	.st-hg-card.layout-split .st-hg-copy { left: clamp(24px, 3.4vw, 48px); top: clamp(24px, 3vw, 44px); translate: none; }
 	.st-hg-image { right: -30%; bottom: -8%; width: 150%; }
+	.st-hg-card .st-hg-copy p.st-hg-body { display: none; }
 	.st-fx, .st-explainer { grid-template-columns: minmax(0, 1fr); }
 	.st-fx-figure { position: static; order: -1; }
 	.st-fx figcaption > span:last-child:not(.st-fx-captions) { display: none; }
@@ -166,4 +175,5 @@
 @media (prefers-reduced-motion: reduce) {
 	.st-hg-dots button, .st-hg-dots button span, .st-fx-card, .st-fx-screen, .st-segments label span, .st-toggle-panel, .st-segments[data-thumb]::before, .st-fx-body, .st-fx-body-in { transition: none; }
 	.st-hg-dots button span::after { animation: none !important; }
+	.st-hg-anim, .st-hg-anim *, .st-hg-loop { animation: none !important; }
 }
