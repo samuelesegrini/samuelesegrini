@@ -302,7 +302,7 @@ const sections = [
 		</Section>
 
 		<Section>
-			<LitText eyebrow="PoliVerse · In one line" tint="blue" text="PoliVerse puts a student’s whole Politecnico in one place: the day, the courses, the career and the campus, *on every screen they carry*, and *still there without a connection*." />
+			<LitText eyebrow="PoliVerse · Why it exists" tint="blue" text="A day at the Politecnico is spread over six places: Servizi Online, WeBeep, the recordings, the rooms, the syllabi and the Manifesto. *The official app leaves some of them out.* So I built the app I wanted to open: *all six in one place*, on the newest SwiftUI." />
 		</Section>
 
 		<Section id="app" eyebrow="PoliVerse · Take a closer look" title="Four tabs." dim="One question each." index={2}>
@@ -507,52 +507,6 @@ const sections = [
 			</Stats>
 		</Section>
 
-		<Section eyebrow="PoliVerse · Day by day" title="What each day added." dim="Newest first.">
-			<ChangeLog columns={['Day', 'Commits', 'Changes']} releases={[
-				{ version: '24 Sep', when: '6 commits', changes: [
-					{ kind: 'added', text: 'Icons rebuilt in Icon Composer: Orbita, Giorno and Vicino in every colour, and eleven specials.' },
-					{ kind: 'added', text: 'Blueprint and Playful, two special Flavors that redraw every tab.' },
-					{ kind: 'changed', text: 'Each tab answers one question.' },
-				] },
-				{ version: '23 Sep', when: '10 commits', changes: [
-					{ kind: 'added', text: 'Lesson recordings in the system player, resumed where you stopped, downloadable for offline viewing.' },
-					{ kind: 'fixed', text: 'A refreshed token keeps its scope, so the app no longer signs out at every launch.' },
-				] },
-				{ version: '22 Sep', when: '12 commits', changes: [
-					{ kind: 'note', text: 'Reads, never writes: written down as a decision, with its reasons.' },
-					{ kind: 'added', text: 'Apple Watch, exams on the Lock Screen, Siri entities, and on-device summaries of long notices.' },
-				] },
-				{ version: '20–21 Sep', when: '22 commits', changes: [
-					{ kind: 'changed', text: 'Every service behind one Store, instead of nineteen copies.' },
-					{ kind: 'changed', text: 'Career rebuilt around what is due, not what is already true.' },
-				] },
-				{ version: '17 Sep', when: '39 commits', changes: [
-					{ kind: 'added', text: 'UI tests for navigation, search, lifecycle and accessibility audits.' },
-					{ kind: 'changed', text: 'Minimum iOS 27, and 110 model files regrouped by area.' },
-				] },
-				{ version: '15–16 Sep', when: '81 commits', changes: [
-					{ kind: 'added', text: 'The four-tab interface, Personalizza with its gallery of looks, and glass course pages.' },
-					{ kind: 'added', text: 'Widgets, controls and a Live Activity, registered in one bundle.' },
-				] },
-				{ version: '13–14 Sep', when: '58 commits', changes: [
-					{ kind: 'added', text: 'Alerts when an exam changes, when WeBeep posts marks or solutions, and before a deadline.' },
-					{ kind: 'added', text: 'A personal timetable built in the app until the official one arrives, and an English translation.' },
-				] },
-				{ version: '12 Sep', when: '38 commits', changes: [
-					{ kind: 'added', text: 'Campus map down to floor plans, study plan, grade simulation and reminders.' },
-					{ kind: 'fixed', text: 'Stopped re-downloading 13.7 MB on every login.' },
-				] },
-				{ version: '11 Sep', when: '37 commits', changes: [
-					{ kind: 'added', text: 'WeBeep through Moodle web services, news, notifications and free rooms.' },
-					{ kind: 'changed', text: 'Service hosts read from the Politecnico’s own config instead of hard-coded.' },
-					{ kind: 'fixed', text: 'The CIE login stays in the app instead of being lost to Safari.' },
-				] },
-				{ version: '10 Sep', when: '6 commits', style: 'outline', changes: [
-					{ kind: 'added', text: 'Rebuilt from scratch: a real sign-in layer, calendar, career, search, a disk cache and the first 24 tests.' },
-				] },
-			]} />
-		</Section>
-
 		<Lockup id="backend" index={5} number="05" label="Under the hood" title="There is no public API." dim="So it reads what the official app reads."
 			deepDive="Deep dive: how the map was drawn" next={{ label: 'Next: signing in with CIE', href: '#cie' }}
 			facts={[{ label: 'Service config', value: '200', note: 'public, no sign-in' }, { label: 'Path exists', value: '401', accent: true }, { label: 'Path gone', value: '404' }]}
@@ -620,7 +574,7 @@ const sections = [
 			</StickyScenes>
 		</Section>
 
-		<Section id="data" split eyebrow="PoliVerse · Freshness" title="A stale answer with a date" dim="says more than an empty screen."
+		<Section id="data" split eyebrow="PoliVerse · Offline, underneath" title="A stale answer with a date" dim="says more than an empty screen."
 			lead="The Politecnico’s servers send no ETag, no Last-Modified, no Cache-Control and no push, so freshness is the app’s job. Every Store publishes its cached copy on the first frame, a five-minute window decides whether to fetch, and the app revalidates when it returns to the foreground or comes back online.">
 			<StateMachine label="A load through a Store" forbidden="clear the screen · never"
 				before={[{ name: 'Cached', text: 'The offline copy is published at once.' }, { name: 'Refreshing', text: 'The load window says a fetch is due.' }]}
@@ -682,6 +636,52 @@ const sections = [
 				{ title: 'Accessibility', values: [{ label: 'Brand navy on white', value: '13:1' }, { label: 'Navy on dark, before', value: '1.3:1', text: 'so every accent has a dark twin' }, { label: 'Worst pair now', value: '4.7:1', text: 'in either appearance' }] },
 				{ title: 'Verification', lead: '1,220 unit tests and 49 UI tests', tags: ['CET/CEST timestamps', 'refresh coalescing', 'exam status mapping', 'authcode extraction', 'accessibility audits at AX5', 'launch and hitch metrics'] },
 				{ title: 'Documentation', counts: [{ value: '6', label: 'DocC articles' }, { value: '20', label: 'research notes' }], note: 'Architecture, data layer, sign-in, customisation, widgets and diagnostics, with diagrams in light and dark.' },
+			]} />
+		</Section>
+
+		<Section eyebrow="PoliVerse · Day by day" title="What each day added." dim="Newest first.">
+			<ChangeLog columns={['Day', 'Commits', 'Changes']} releases={[
+				{ version: '24 Sep', when: '6 commits', changes: [
+					{ kind: 'added', text: 'Icons rebuilt in Icon Composer: Orbita, Giorno and Vicino in every colour, and eleven specials.' },
+					{ kind: 'added', text: 'Blueprint and Playful, two special Flavors that redraw every tab.' },
+					{ kind: 'changed', text: 'Each tab answers one question.' },
+				] },
+				{ version: '23 Sep', when: '10 commits', changes: [
+					{ kind: 'added', text: 'Lesson recordings in the system player, resumed where you stopped, downloadable for offline viewing.' },
+					{ kind: 'fixed', text: 'A refreshed token keeps its scope, so the app no longer signs out at every launch.' },
+				] },
+				{ version: '22 Sep', when: '12 commits', changes: [
+					{ kind: 'note', text: 'Reads, never writes: written down as a decision, with its reasons.' },
+					{ kind: 'added', text: 'Apple Watch, exams on the Lock Screen, Siri entities, and on-device summaries of long notices.' },
+				] },
+				{ version: '20–21 Sep', when: '22 commits', changes: [
+					{ kind: 'changed', text: 'Every service behind one Store, instead of nineteen copies.' },
+					{ kind: 'changed', text: 'Career rebuilt around what is due, not what is already true.' },
+				] },
+				{ version: '17 Sep', when: '39 commits', changes: [
+					{ kind: 'added', text: 'UI tests for navigation, search, lifecycle and accessibility audits.' },
+					{ kind: 'changed', text: 'Minimum iOS 27, and 110 model files regrouped by area.' },
+				] },
+				{ version: '15–16 Sep', when: '81 commits', changes: [
+					{ kind: 'added', text: 'The four-tab interface, Personalizza with its gallery of looks, and glass course pages.' },
+					{ kind: 'added', text: 'Widgets, controls and a Live Activity, registered in one bundle.' },
+				] },
+				{ version: '13–14 Sep', when: '58 commits', changes: [
+					{ kind: 'added', text: 'Alerts when an exam changes, when WeBeep posts marks or solutions, and before a deadline.' },
+					{ kind: 'added', text: 'A personal timetable built in the app until the official one arrives, and an English translation.' },
+				] },
+				{ version: '12 Sep', when: '38 commits', changes: [
+					{ kind: 'added', text: 'Campus map down to floor plans, study plan, grade simulation and reminders.' },
+					{ kind: 'fixed', text: 'Stopped re-downloading 13.7 MB on every login.' },
+				] },
+				{ version: '11 Sep', when: '37 commits', changes: [
+					{ kind: 'added', text: 'WeBeep through Moodle web services, news, notifications and free rooms.' },
+					{ kind: 'changed', text: 'Service hosts read from the Politecnico’s own config instead of hard-coded.' },
+					{ kind: 'fixed', text: 'The CIE login stays in the app instead of being lost to Safari.' },
+				] },
+				{ version: '10 Sep', when: '6 commits', style: 'outline', changes: [
+					{ kind: 'added', text: 'Rebuilt from scratch: a real sign-in layer, calendar, career, search, a disk cache and the first 24 tests.' },
+				] },
 			]} />
 		</Section>
 
