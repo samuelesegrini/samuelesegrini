@@ -7,7 +7,9 @@
  * lui, e con la riduzione del movimento non parte mai da sola. Senza JavaScript restano una fila
  * che si scorre a mano.
  * La carta davanti porta `data-current` e la galleria in vista `data-inview`: un disegno animato
- * dentro una carta può ripartire ogni volta che la sua carta torna davanti.
+ * dentro una carta può ripartire ogni volta che la sua carta torna davanti. Dopo il tasto di pausa
+ * la galleria porta `data-still`: anche quello che in una carta si muove da sé si ferma, finché il
+ * tasto non la fa ripartire. Un pallino o un trascinamento fermano solo lo scorrere delle carte.
  * Tre impaginazioni per carta, come nelle gallerie di apple.com: `stack` (il testo in alto, il
  * disegno sotto), `overlay` (il disegno a tutta carta, il testo centrato sopra) e `split` (il
  * disegno a sinistra, il testo a destra). Con `lead` la frase si apre con un titolo in grassetto.
@@ -90,6 +92,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			play.addEventListener('click', () => {
 				wanted = !timer;
 				if (timer) stop(); else start();
+				root.toggleAttribute('data-still', !timer);
 			});
 			track.addEventListener('pointerdown', () => { wanted = false; stop(); });
 			// parte quando è in vista per metà, si ferma quando esce
