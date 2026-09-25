@@ -33,17 +33,27 @@ const appearances: [string, string][] = [['orbit', 'Default'], ['orbit-dark', 'D
 const ramp = ['#11777A', '#13758A', '#157099', '#1767A8', '#195BB8', '#1B4BC7', '#1D37D6', '#1F20E5'];
 
 // I sei servizi che PoliVerse tiene insieme (docs/ del repo dell'app), in orbita attorno all'icona in
-// senso orario dall'alto. `dx`/`dy` (in centesimi del disegno) e `r` dicono da dove partono, sparsi.
+// senso orario dall'alto, un giro ogni `lap` secondi. `angle` è il posto di ciascuno sull'orbita da
+// fermo, `phase` il ritardo negativo che fa partire il giro proprio da lì. `dx`/`dy` (in centesimi del
+// disegno) e `r` dicono da dove partono, sparsi.
+const lap = 40;
 const sources = ([
 	{ name: 'Servizi Online', adds: 'courses, career, exams', icon: 'checklist', tint: 'blue', dx: -24, dy: -8, r: -7 },
-	{ name: 'WeBeep', adds: 'materials, notices, forum', icon: 'layers', tint: 'acid', dx: 9, dy: -14, r: 6 },
-	{ name: 'Recordings', adds: 'recorded lectures', icon: 'play', tint: 'violet', dx: 12, dy: 12, r: -5 },
+	{ name: 'WeBeep', adds: 'materials, notices, forum', icon: 'layers', tint: 'acid', dx: 7, dy: -14, r: 6 },
+	{ name: 'Recordings', adds: 'recorded lectures', icon: 'play', tint: 'violet', dx: 11, dy: 12, r: -5 },
 	{ name: 'Rooms & maps', adds: 'free rooms, floor plans', icon: 'target', tint: 'orange', dx: 22, dy: 6, r: 8 },
-	{ name: 'Syllabus', adds: 'what each course covers', icon: 'doc-text', tint: 'blue', dx: -10, dy: 10, r: 7 },
-	{ name: 'Manifesto', adds: 'your plan and teachers', icon: 'book', tint: 'acid', dx: -13, dy: -12, r: -6 },
+	{ name: 'Syllabus', adds: 'what each course covers', icon: 'doc-text', tint: 'blue', dx: -6, dy: 13, r: 7 },
+	{ name: 'Manifesto', adds: 'your plan and teachers', icon: 'book', tint: 'acid', dx: -12, dy: -12, r: -6 },
 ] as const).map((source, i) => {
-	const angle = ((-90 + i * 60) * Math.PI) / 180;
-	return { ...source, x: +(50 + 38 * Math.cos(angle)).toFixed(1), y: +(54 + 36 * Math.sin(angle)).toFixed(1) };
+	const angle = -90 + i * 60;
+	const radians = (angle * Math.PI) / 180;
+	return {
+		...source,
+		angle,
+		phase: -+((((angle + 360) % 360) / 360) * lap).toFixed(2),
+		x: +(50 + 38 * Math.cos(radians)).toFixed(1),
+		y: +(54 + 36 * Math.sin(radians)).toFixed(1),
+	};
 });
 
 // Le righe di un corso come le mostra l'app (CourseDetailView): avvisi, materiali e forum da WeBeep,
@@ -106,11 +116,11 @@ const sections = [
 				{ lead: 'Make it yours.', text: 'One colour becomes the whole app, down to the icon.', meta: 'Personalizza · 36 icons', name: 'Make it yours', tone: 'dark', layout: 'overlay' },
 				{ lead: 'It opens with content, even offline.', text: 'A failed refresh clears nothing.', meta: 'Store · offline copy', name: 'Offline first', tone: 'acid', layout: 'split' },
 			]}>
-				<div slot="media-1" class="pv-combine" aria-hidden="true">
+				<div slot="media-1" class="pv-combine" style={`--lap: ${lap}s`} aria-hidden="true">
 					<span class="pv-ring"></span>
 					<span class="pv-core"><img src={icon('orbit')} alt="" width="120" height="120" /></span>
 					{sources.map((source, i) => (
-						<span class="pv-chip" style={`--x: ${source.x}%; --y: ${source.y}%; --dx: ${source.dx}; --dy: ${source.dy}; --r: ${source.r}deg; --d: ${i * 70}ms; --tint: var(--${source.tint})`}>
+						<span class="pv-chip" style={`--x: ${source.x}%; --y: ${source.y}%; --pv-angle: ${source.angle}deg; --phase: ${source.phase}s; --dx: ${source.dx}; --dy: ${source.dy}; --r: ${source.r}deg; --d: ${i * 70}ms; --tint: var(--${source.tint})`}>
 							<Icon name={source.icon} size={16} stroke={2.2} /><b>{source.name}</b><small>{source.adds}</small>
 						</span>
 					))}
@@ -597,8 +607,9 @@ const sections = [
 	.pv-watch .st-mono { font-size: 9px; color: #c9c5bc; text-transform: uppercase; } .pv-watch b { font-size: 16px; line-height: 1.1; } .pv-watch > span:last-child { font-size: 11px; color: #c9c5bc; }
 
 	/* I disegni nelle carte dei punti salienti. */
-	/* La prima: i sei servizi, sparsi, entrano in orbita attorno all'app. Senza script o senza
-	   movimento si vede già il punto d'arrivo; con lo script la carta aspetta di essere davanti. */
+	/* La prima: i sei servizi, sparsi, entrano in orbita attorno all'app e ci restano, girando. Senza
+	   script o senza movimento si vede già il punto d'arrivo, fermo; con lo script la carta aspetta di
+	   essere davanti. */
 	.pv-combine { position: relative; container-type: size; }
 	.pv-ring { position: absolute; left: 12%; top: 18%; width: 76%; height: 72%; border-radius: 50%; box-shadow: inset 0 0 0 1.5px rgba(244, 241, 233, .22); -webkit-mask: conic-gradient(#000 var(--sweep), transparent 0); mask: conic-gradient(#000 var(--sweep), transparent 0); }
 	.pv-core { position: absolute; left: 50%; top: 54%; width: clamp(64px, 13cqw, 116px); translate: -50% -50%; }
@@ -608,13 +619,28 @@ const sections = [
 	.pv-chip :global(.st-icon) { grid-row: span 2; width: 34px; height: 34px; padding: 8px; border-radius: 50%; background: var(--tint); color: #171713; }
 	.pv-chip b { font-size: 14px; font-weight: 600; line-height: 1.15; }
 	.pv-chip small { font-size: 11.5px; line-height: 1.2; color: #c9c5bc; }
-	@container (max-width: 600px) {
+	/* Dove seno e coseno si calcolano, ogni servizio sta sull'orbita per angolo, e così ci può girare:
+	   davanti cresce del 6% e si schiarisce, dietro rimpicciolisce e si scurisce. */
+	@supports (translate: calc(cos(0deg) * 1px)) {
+		.pv-chip { left: 50%; top: 54%; translate: calc(-50% + cos(var(--pv-angle)) * var(--rx, 38cqw)) calc(-50% + sin(var(--pv-angle)) * 36cqh); scale: calc(1 + sin(var(--pv-angle)) * .06); filter: brightness(calc(.91 + sin(var(--pv-angle)) * .09)); }
+	}
+	/* Le pillole intere girano senza toccarsi né uscire dalla carta solo da 860 px in su: sotto, icona e nome. */
+	@container (max-width: 860px) {
 		.pv-chip { grid-template-columns: auto; justify-items: center; row-gap: 5px; padding: 0; background: none; box-shadow: none; }
 		.pv-chip :global(.st-icon) { grid-row: auto; width: 30px; height: 30px; padding: 7px; }
 		.pv-chip b { font-size: 11px; }
 		.pv-chip small { display: none; }
 	}
+	/* Sui telefoni più stretti l'orbita si allarga un poco e i nomi si stringono, così passando in basso
+	   due servizi vicini non si sovrappongono. */
+	@container (max-width: 240px) {
+		.pv-ring { left: 8%; width: 84%; }
+		.pv-chip { --rx: 42cqw; }
+		.pv-chip :global(.st-icon) { width: 26px; height: 26px; padding: 6px; }
+		.pv-chip b { font-size: 10px; }
+	}
 	@property --sweep { syntax: '<angle>'; inherits: false; initial-value: 360deg; }
+	@property --pv-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 	@keyframes pv-chip-in {
 		0% { opacity: 0; transform: translate(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqh)) rotate(var(--r)) scale(.96); }
 		14%, 34% { opacity: 1; transform: translate(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqh)) rotate(var(--r)); }
@@ -622,10 +648,13 @@ const sections = [
 	}
 	@keyframes pv-core-in { 0% { opacity: 0; scale: .6; } 60% { opacity: 1; scale: 1.06; } 100% { opacity: 1; scale: 1; } }
 	@keyframes pv-ring-in { from { --sweep: 0deg; } to { --sweep: 360deg; } }
+	@keyframes pv-orbit { from { --pv-angle: 0deg; } to { --pv-angle: 360deg; } }
 	@media (prefers-reduced-motion: no-preference) {
 		:global(.st-hgallery[data-bound]) .pv-chip, :global(.st-hgallery[data-bound]) .pv-core { opacity: 0; }
 		:global(.st-hgallery[data-bound]) .pv-ring { --sweep: 0deg; }
-		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-chip { animation: pv-chip-in 2.4s cubic-bezier(.4, 0, .6, 1) var(--d) both; }
+		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-chip { animation: pv-chip-in 2.4s cubic-bezier(.4, 0, .6, 1) var(--d) both, pv-orbit var(--lap) linear var(--phase) infinite; }
+		/* in pausa, o quando chi legge ha preso i comandi, l'orbita si ferma dov'è: l'ingresso finisce comunque */
+		:global(.st-hgallery[data-inview][data-playing='false'] .st-hg-card[data-current]) .pv-chip { animation-play-state: running, paused; }
 		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-ring { animation: pv-ring-in 1.3s cubic-bezier(.4, 0, .6, 1) 1.2s both; }
 		:global(.st-hgallery[data-inview] .st-hg-card[data-current]) .pv-core { animation: pv-core-in .9s cubic-bezier(.22, 1, .36, 1) 1.5s both; }
 	}

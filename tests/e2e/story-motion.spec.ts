@@ -69,7 +69,7 @@ test('the first highlight gathers the six services into the app once it is in vi
 	await page.locator('.st-hgallery').scrollIntoViewIfNeeded();
 	await expect(page.locator('.st-hgallery')).toHaveAttribute('data-inview', '');
 	await expect(page.locator('.st-hg-card').first()).toHaveAttribute('data-current', '');
-	expect(await chips.first().evaluate((el) => getComputedStyle(el).animationName)).toBe('pv-chip-in');
+	expect(await chips.first().evaluate((el) => getComputedStyle(el).animationName)).toBe('pv-chip-in, pv-orbit');
 	// a fine giro sono tutti in orbita, con l'app al centro
 	await expect.poll(() => chips.evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1')), { timeout: 5000 }).toBe(true);
 	await expect.poll(() => page.locator('.pv-core').evaluate((el) => getComputedStyle(el).opacity), { timeout: 5000 }).toBe('1');
@@ -79,11 +79,35 @@ test('the first highlight gathers the six services into the app once it is in vi
 	await page.reload();
 	await arriva(page);
 	expect(await chips.evaluateAll((els) => els.map((el) => [getComputedStyle(el).animationName, getComputedStyle(el).opacity]))).toEqual(Array(6).fill(['none', '1']));
+	// fermi, ognuno al suo posto sull'orbita, in senso orario dall'alto
+	expect(await chips.evaluateAll((els) => els.map((el) => parseFloat(getComputedStyle(el).getPropertyValue('--pv-angle'))))).toEqual([-90, -30, 30, 90, 150, 210]);
 	const context = await browser.newContext({ javaScriptEnabled: false });
 	const still = await context.newPage();
 	await still.goto(poliverse);
 	expect(await still.locator('.pv-combine .pv-chip').evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1'))).toBe(true);
 	await context.close();
+});
+
+test('the six services keep orbiting the app, and the pause button stops them', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const angle = () => page.locator('.pv-combine .pv-chip').first().evaluate((el) => parseFloat(getComputedStyle(el).getPropertyValue('--pv-angle')));
+	const turned = (from: number, to: number) => (to - from + 360) % 360;
+	// la galleria in cima alla finestra: così la barra in basso non copre il tasto di pausa
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	// il giro parte con l'ingresso e non si ferma: l'angolo continua a crescere
+	const before = await angle();
+	await page.waitForTimeout(500);
+	expect(turned(before, await angle())).toBeGreaterThan(1);
+	// con la pausa l'orbita resta dov'è, e l'ingresso arriva comunque in fondo
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'false');
+	const held = await angle();
+	await page.waitForTimeout(500);
+	expect(await angle()).toBe(held);
+	await expect.poll(() => page.locator('.pv-combine .pv-chip').evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1')), { timeout: 5000 }).toBe(true);
 });
 
 test('each big card plays its own entrance when it comes to the front', async ({ page }) => {
