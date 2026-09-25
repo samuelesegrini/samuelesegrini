@@ -5,7 +5,7 @@
  * sinistra. La geometria è calcolata in src/lib/story-iso.ts; qui si disegna e basta.
  * Sotto i 1200px le note tornano un elenco sotto il disegno.
  */
-import { isoStack, type IsoLayer } from '../../lib/story-iso';
+import { defaultIso, isoStack, type IsoLayer } from '../../lib/story-iso';
 interface Layer extends IsoLayer { text: string }
 interface Props { layers: Layer[]; label?: string }
 const { layers, label } = Astro.props;
@@ -19,13 +19,15 @@ const faces: Record<IsoLayer['tint'], [string, string, string]> = {
 };
 const summary = label ?? `${layers.length} layers pulled apart, from ${layers[0]?.name} on top to ${layers[layers.length - 1]?.name} at the bottom`;
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`;
+// da chiuso ogni piastra sta più vicina al centro della pila: di qui parte l'apertura allo scroll
+const closed = (k: number) => `--dy: ${Math.round(((stack.plates.length - 1) / 2 - k) * defaultIso.spacing * 0.72)}px`;
 ---
 <div class="st-exploded">
 	<div class="st-exploded-art" style={`--ratio: ${stack.width} / ${stack.height}`}>
 		<svg viewBox={`0 0 ${stack.width} ${stack.height}`} role="img" aria-label={summary}>
 			{stack.connectors.map((d) => <path class="st-iso-link" d={d} />)}
-			{[...stack.plates].reverse().map((p) => (
-				<g class="st-iso-plate">
+			{[...stack.plates].reverse().map((p, r) => (
+				<g class="st-iso-plate" style={closed(stack.plates.length - 1 - r)}>
 					<polygon points={p.left} fill={faces[p.tint][1]} />
 					<polygon points={p.right} fill={faces[p.tint][2]} />
 					<polygon points={p.top} fill={faces[p.tint][0]} />

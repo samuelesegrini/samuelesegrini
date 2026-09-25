@@ -23,3 +23,30 @@ const panels = await Promise.all(options.map((_, i) => (Astro.slots.has(`panel-$
 		<figcaption>{options.map((o, i) => <span data-tf-panel={i} style={`--tint: var(--${o.tone ?? 'acid'})`}><b>{o.lead}</b> {o.text}</span>)}</figcaption>
 	</figure>
 </div>
+
+<script>
+	// La pillola scelta scivola da una voce all'altra, come il controllo segmentato di Apple.
+	// Senza script resta lo sfondo della voce scelta; lo script disegna un cursore che si sposta.
+	function montaSegmenti() {
+		document.querySelectorAll<HTMLElement>('.st-segments').forEach((set) => {
+			if (set.dataset.thumbBound) return;
+			set.dataset.thumbBound = '1';
+			const place = (still: boolean) => {
+				const chosen = set.querySelector<HTMLElement>('input:checked + span');
+				if (!chosen) return;
+				// prima si posiziona il gruppo, poi si misura: le distanze sono dal gruppo
+				if (still) set.dataset.thumb = 'still';
+				set.style.setProperty('--seg-x', `${chosen.offsetLeft}px`);
+				set.style.setProperty('--seg-y', `${chosen.offsetTop}px`);
+				set.style.setProperty('--seg-w', `${chosen.offsetWidth}px`);
+				set.style.setProperty('--seg-h', `${chosen.offsetHeight}px`);
+				if (still) requestAnimationFrame(() => requestAnimationFrame(() => { set.dataset.thumb = 'on'; }));
+			};
+			place(true);
+			set.addEventListener('change', () => place(false));
+			new ResizeObserver(() => place(true)).observe(set);
+		});
+	}
+	montaSegmenti();
+	document.addEventListener('astro:page-load', montaSegmenti);
+</script>

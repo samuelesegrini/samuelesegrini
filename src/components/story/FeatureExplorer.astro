@@ -20,7 +20,7 @@ const screens = await Promise.all(features.map((_, i) => (Astro.slots.has(`scree
 				<input class="st-sr" type="radio" name={name} value={i} checked={i === 0} aria-labelledby={`${name}-t${i}`} aria-describedby={`${name}-d${i}`} />
 				<span class="st-fx-card">
 					<span class="st-fx-head"><span class="st-fx-title" id={`${name}-t${i}`}>{f.title}</span><span class="st-mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span></span>
-					<span class="st-fx-body" id={`${name}-d${i}`}><span>{f.text}</span>{f.file && <span class="st-fx-file st-mono">{f.file}</span>}</span>
+					<span class="st-fx-body" id={`${name}-d${i}`}><span class="st-fx-body-in"><span>{f.text}</span>{f.file && <span class="st-fx-file st-mono">{f.file}</span>}</span></span>
 				</span>
 			</label>
 		))}

@@ -1,0 +1,39 @@
+---
+/**
+ * Scene fissate: il blocco resta fermo per qualche schermata e, scorrendo, una scena prende il posto
+ * dell'altra, testo e schermo insieme. È il blocco fissato di apple.com (su MacBook Pro resta fermo
+ * per tre schermate) e i passi accanto a un file dei tutorial di developer.apple.com, guidati dallo
+ * scroll invece che da un clic. Ogni scena ha il suo schermo (slot `scene-1`, `scene-2`…).
+ * È CSS con animation-timeline: senza supporto, o con la riduzione del movimento, le scene sono
+ * un elenco da leggere dall'alto in basso, ognuna con il suo schermo accanto.
+ */
+import Device from './Device.astro';
+interface Step { title: string; text: string; code?: string; tint?: 'acid' | 'blue' | 'violet' | 'orange' }
+interface Props { steps: Step[]; device?: 'iphone' | 'ipad' | 'mac' | 'none'; label?: string; note?: string }
+const { steps, device = 'iphone', label = 'Steps', note } = Astro.props;
+const scenes = await Promise.all(steps.map((_, i) => (Astro.slots.has(`scene-${i + 1}`) ? Astro.slots.render(`scene-${i + 1}`) : Promise.resolve(''))));
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+<div class:list={['st-scenes', `st-scenes-${device}`]} style={`--n: ${steps.length}`}>
+	<div class="st-scenes-stage">
+		<ol class="st-scenes-list" aria-label={label}>
+			{steps.map((s, i) => (
+				<li class="st-scene" style={`--i: ${i}; --tint: var(--${s.tint ?? 'acid'})`}>
+					<div class="st-scene-copy">
+						<span class="st-scene-count st-mono"><b>{pad(i + 1)}</b> / {pad(steps.length)}</span>
+						<h3>{s.title}</h3>
+						<p>{s.text}</p>
+						{s.code && <code class="st-scene-code">{s.code}</code>}
+					</div>
+					<div class="st-scene-media">
+						{device === 'none'
+							? <Fragment set:html={scenes[i]} />
+							: <Device kind={device}><div class="st-scene-screen">{scenes[i] ? <Fragment set:html={scenes[i]} /> : <span class="st-frame-empty">[Screenshot · {s.title}]</span>}</div></Device>}
+					</div>
+				</li>
+			))}
+		</ol>
+		<span class="st-scenes-progress" aria-hidden="true"><span></span></span>
+	</div>
+	{note && <p class="st-scenes-note st-mono">{note}</p>}
+</div>

@@ -1,0 +1,27 @@
+---
+/**
+ * La griglia a riquadri delle pagine di sistema di apple.com (macOS, iOS, Apple Intelligence): tessere
+ * di misure diverse, ognuna con un'idea sola, un numero grande o un disegno. `size` dice quanto spazio
+ * prende: small 1×1, wide 2×1, tall 1×2, large 2×2. Le tessere entrano una dopo l'altra, riga per riga.
+ * Sotto i 1000px le colonne diventano due, sotto i 600 una.
+ */
+type Tone = 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange';
+interface Tile { title?: string; text?: string; eyebrow?: string; value?: string; unit?: string; tone?: Tone; size?: 'small' | 'wide' | 'tall' | 'large'; image?: string; imageAlt?: string }
+interface Props { tiles: Tile[]; label?: string }
+const { tiles, label = 'Highlights' } = Astro.props;
+const media = await Promise.all(tiles.map((_, i) => (Astro.slots.has(`tile-${i + 1}`) ? Astro.slots.render(`tile-${i + 1}`) : Promise.resolve(''))));
+---
+<ul class="st-bento" role="list" aria-label={label}>
+	{tiles.map((t, i) => (
+		<li class:list={['st-bento-tile', `tone-${t.tone ?? 'paper'}`, `size-${t.size ?? 'small'}`, { 'has-media': t.image || media[i] }]}>
+			<div class="st-bento-copy">
+				{t.eyebrow && <span class="st-eyebrow">{t.eyebrow}</span>}
+				{t.value && <b class="st-bento-value">{t.value}{t.unit && <span>{t.unit}</span>}</b>}
+				{t.title && <h3>{t.title}</h3>}
+				{t.text && <p>{t.text}</p>}
+			</div>
+			{t.image && <img class="st-bento-image" src={t.image} alt={t.imageAlt ?? ''} loading="lazy" />}
+			{media[i] && <div class="st-bento-media"><Fragment set:html={media[i]} /></div>}
+		</li>
+	))}
+</ul>

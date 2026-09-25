@@ -1,0 +1,30 @@
+---
+/**
+ * Gli oggetti in fila, come gli accessori delle pagine prodotto di apple.com: una riga sola, ogni
+ * oggetto appoggiato sulla stessa linea di base, sotto il nome e una riga. L'analisi lo aveva
+ * segnato come blocco senza equivalente nei racconti; serve per mostrare la famiglia di un lavoro
+ * (dispositivi, pezzi di hardware, pacchetti). Gli oggetti arrivano dagli slot `object-1`…
+ * Sotto i 900px la fila scorre di lato.
+ */
+interface Item { name: string; text?: string; href?: string }
+interface Props { items: Item[]; label?: string }
+const { items, label = 'The family' } = Astro.props;
+const objects = await Promise.all(items.map((_, i) => (Astro.slots.has(`object-${i + 1}`) ? Astro.slots.render(`object-${i + 1}`) : Promise.resolve(''))));
+---
+<ul class="st-objects-row" role="list" aria-label={label} style={`--count: ${items.length}`}>
+	{items.map((it, i) => {
+		const external = it.href ? /^https?:/.test(it.href) : false;
+		const Name = it.href ? 'a' : 'b';
+		return (
+			<li>
+				<figure>
+					<div class="st-object">{objects[i] && <Fragment set:html={objects[i]} />}</div>
+					<figcaption>
+						<Name class="st-object-name" href={it.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>{it.name}</Name>
+						{it.text && <span>{it.text}</span>}
+					</figcaption>
+				</figure>
+			</li>
+		);
+	})}
+</ul>

@@ -1,11 +1,11 @@
 ---
 /**
  * Una fila di carte con didascalia: sopra un riquadro colorato con lo schermo o il disegno (slot
- * `media-1`, `media-2`… oppure `image`), sotto una frase dove l'inizio in grassetto fa da titolo.
- * Le frecce si spengono ai due capi della fila.
+ * `media-1`, `media-2`… oppure `image`), sotto una frase dove l'inizio in grassetto fa da titolo e,
+ * se serve, una nota piccola: un limite, una condizione. Le frecce si spengono ai due capi della fila.
  */
 import Icon from './Icon.astro';
-interface Item { lead: string; text: string; tone?: 'paper' | 'dark' | 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string; tag?: string }
+interface Item { lead: string; text: string; note?: string; tone?: 'paper' | 'dark' | 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string; tag?: string }
 interface Props { items: Item[]; label?: string }
 const { items, label = 'Cards' } = Astro.props;
 const media = await Promise.all(items.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
@@ -20,6 +20,7 @@ const media = await Promise.all(items.map((_, i) => (Astro.slots.has(`media-${i 
 					{it.tag && <span class="st-mc-tag st-mono">{it.tag}</span>}
 				</div>
 				<p><b>{it.lead}</b> {it.text}</p>
+				{it.note && <small class="st-mc-note">{it.note}</small>}
 			</li>
 		))}
 	</ul>

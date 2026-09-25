@@ -1,0 +1,172 @@
+/* Il movimento dei racconti, preso dalle misure su apple.com (iPhone 18 Pro, AirPods Pro 3,
+   MacBook Pro, 24 settembre 2026):
+   - le transizioni d'interfaccia durano .24–.34 s, quasi sempre su cubic-bezier(.4, 0, .6, 1);
+   - titoli di sezione, riquadri e carte salgono di 30 px e si accendono seguendo lo scroll:
+     partono quando il loro bordo alto è all'85% della finestra e finiscono verso il 35–40%;
+   - ogni sezione è un gruppo: gli elementi affiancati entrano uno dopo l'altro;
+   - i blocchi fissati restano fermi per una o tre schermate mentre il contenuto cambia.
+   Apple lo fa con uno script; qui è CSS (animation-timeline: view()), quindi senza JavaScript.
+   Dove il browser non lo supporta, o con la riduzione del movimento, tutto resta fermo e visibile. */
+
+.st-page {
+	--st-ease: cubic-bezier(.4, 0, .6, 1);
+	--st-ease-out: cubic-bezier(0, 0, .5, 1);
+	--st-rise: 30px;
+}
+
+/* --- ingresso nello scroll: sale di 30 px e si accende --- */
+@keyframes st-rise { from { opacity: 0; translate: 0 var(--st-rise); } 80% { translate: 0 0; } to { opacity: 1; translate: 0 0; } }
+@keyframes st-fade { from { opacity: 0; } }
+@keyframes st-pop { from { opacity: 0; scale: .92; } }
+@keyframes st-grow-x { from { scale: 0 1; } }
+@keyframes st-light { from { color: var(--st-dim); } }
+@keyframes st-settle { to { translate: 0 0; } }
+
+@media (prefers-reduced-motion: no-preference) {
+	@supports (animation-timeline: view()) {
+		/* ciò che sale; dentro una fila che scorre di lato sale la fila intera, non le carte:
+		   una carta dentro un contenitore che scorre legherebbe la sua linea del tempo a quello */
+		.st-page :is(
+			.st-head, .st-lockup-chapter, .st-lockup h2, .st-lockup-lead, .st-lockup-actions, .st-lockup-facts > li,
+			.st-hgallery, .st-mcards, .st-fx-list, .st-fx-figure, .st-toggle, .st-explainer,
+			.st-stats-grid > li, .st-stats-feature, .st-stats-targets,
+			.st-thennow-head, .st-thennow-grid > li, .st-thennow-foot, .st-lineup, .st-matrix, .st-findings-cols, .st-findings-list > li,
+			.st-techspecs-head, .st-techspecs-group, .st-limits2-head, .st-limits2-col, .st-sources-head, .st-sources-list > li,
+			.st-decl-main, .st-decl-nav, .st-cs-meta, .st-cs-steps, .st-cs-code, .st-anatomy-figure, .st-modules-head, .st-modules-card,
+			.st-states-figure, .st-states-legend > li, .st-changelog-legend, .st-changelog-list > li,
+			.st-principles-list > li, .st-principles-example,
+			.st-contrib-share, .st-contrib-me, .st-contrib-mates li, .st-faq2-head, .st-faq > details, .st-keep-head, .st-keep-grid > *,
+			.st-index-grid > *,
+			.st-lit-eyebrow, .st-bento > li, .st-objects-row > li, .st-bars, .st-plus-grid > li, .st-ba
+		) {
+			animation: st-rise linear both;
+			animation-timeline: view();
+			animation-timing-function: var(--st-ease);
+			animation-range: cover calc(14vh + var(--st-i, 0) * 5vh) cover calc(60vh + var(--st-i, 0) * 5vh);
+		}
+		/* chi sta nella stessa riga entra un po' dopo il vicino: l'indice riparte a ogni riga */
+		:is(.st-stats-grid, .st-states-legend, .st-bento) > :nth-child(4n + 2),
+		:is(.st-thennow-grid, .st-index-grid, .st-lockup-facts, .st-plus-grid, .st-objects-row) > :nth-child(3n + 2),
+		:is(.st-keep-grid, .st-limits2-cols) > :nth-child(2n + 2) { --st-i: 1; }
+		:is(.st-stats-grid, .st-states-legend, .st-bento) > :nth-child(4n + 3),
+		:is(.st-thennow-grid, .st-index-grid, .st-lockup-facts, .st-plus-grid, .st-objects-row) > :nth-child(3n + 3) { --st-i: 2; }
+		:is(.st-stats-grid, .st-states-legend, .st-bento) > :nth-child(4n + 4) { --st-i: 3; }
+		.st-objects-row > :nth-child(3n + 4) { --st-i: 3; }
+
+		/* le parole in inchiostro di un sottotitolo si accendono mentre lo si legge */
+		.st-page :is(.st-lockup-lead b, .st-stats-lead b) {
+			animation: st-light linear both;
+			animation-timeline: view();
+			animation-range: cover 22vh cover 48vh;
+		}
+
+		/* l'esploso parte chiuso e si apre: ogni piastra scivola al suo posto, i tratteggi e le
+		   note arrivano per ultimi. Lo stato chiuso sta sull'elemento, il fotogramma dice solo "al
+		   suo posto": così senza animazioni l'esploso resta aperto */
+		.st-exploded-art { view-timeline: --st-explode block; }
+		.st-page .st-iso-plate {
+			translate: 0 var(--dy, 0px);
+			animation: st-settle linear both;
+			animation-timeline: --st-explode;
+			animation-timing-function: var(--st-ease);
+			animation-range: cover 8vh cover 62vh;
+		}
+		.st-page :is(.st-iso-link, .st-exploded-notes li) {
+			animation: st-fade linear both;
+			animation-timeline: --st-explode;
+			animation-range: cover 48vh cover 72vh;
+		}
+
+		/* la macchina a stati si accende da sinistra: gli stati uno alla volta, poi le frecce */
+		.st-states-figure { view-timeline: --st-states block; }
+		.st-page .st-states .node {
+			transform-box: fill-box;
+			transform-origin: center;
+			animation: st-pop linear both;
+			animation-timeline: --st-states;
+			animation-timing-function: var(--st-ease);
+			animation-range: cover calc(18vh + var(--st-i, 0) * 5vh) cover calc(34vh + var(--st-i, 0) * 5vh);
+		}
+		.st-page .st-states :is(.edge, .edge-label, .never) {
+			animation: st-fade linear both;
+			animation-timeline: --st-states;
+			animation-range: cover 34vh cover 58vh;
+		}
+
+		/* barre e pastiglie che si riempiono entrando */
+		.st-contrib-bar { view-timeline: --st-share block; }
+		.st-page .st-contrib-bar > span {
+			transform-origin: left center;
+			animation: st-grow-x linear both;
+			animation-timeline: --st-share;
+			animation-timing-function: var(--st-ease);
+			animation-range: cover 16vh cover 52vh;
+		}
+		.st-limits2-meter { view-timeline: --st-meter block; }
+		.st-page .st-limits2-meter > span:not(.st-mono) {
+			animation: st-pop linear both;
+			animation-timeline: --st-meter;
+			animation-range: cover calc(14vh + var(--st-i, 0) * 3vh) cover calc(30vh + var(--st-i, 0) * 3vh);
+		}
+		.st-limits2-meter > span:nth-child(2) { --st-i: 1; } .st-limits2-meter > span:nth-child(3) { --st-i: 2; }
+		.st-limits2-meter > span:nth-child(4) { --st-i: 3; } .st-limits2-meter > span:nth-child(5) { --st-i: 4; }
+		.st-limits2-meter > span:nth-child(6) { --st-i: 5; } .st-limits2-meter > span:nth-child(7) { --st-i: 6; }
+		.st-limits2-meter > span:nth-child(n + 8) { --st-i: 7; }
+	}
+}
+
+/* --- apertura della pagina: la hero entra una volta, a tempo e non con lo scroll --- */
+@keyframes st-enter { from { opacity: 0; translate: 0 26px; } }
+@keyframes st-enter-mark { from { opacity: 0; scale: .8; } }
+@keyframes st-enter-device { from { opacity: 0; translate: 0 90px; } }
+@keyframes st-hero-out { to { opacity: .15; transform: translateY(-48px); } }
+@keyframes st-hero-drift { to { transform: translateY(-7vh) scale(1.04); } }
+
+@media (prefers-reduced-motion: no-preference) {
+	.st-ahero-mark { animation: st-enter-mark 1.1s var(--st-ease-out) .05s both; }
+	:is(.st-ahero-name, .st-mhero-name) { animation: st-enter .9s var(--st-ease-out) .14s both; }
+	:is(.st-ahero h1, .st-mhero-title, .st-dhero h1) { animation: st-enter 1s var(--st-ease-out) .22s both; }
+	:is(.st-ahero-summary, .st-dhero-abstract) { animation: st-enter 1s var(--st-ease-out) .32s both; }
+	:is(.st-ahero-copy > .st-eyebrow, .st-dhero-copy > .st-eyebrow) { animation: st-enter 1s var(--st-ease-out) .4s both; }
+	:is(.st-ahero-actions, .st-mhero-foot, .st-dhero-facts, .st-dhero-note) { animation: st-enter 1s var(--st-ease-out) .48s both; }
+	:is(.st-ahero-devices, .st-mhero-art, .st-dhero-figure) { animation: st-enter-device 1.3s var(--st-ease-out) .36s both; }
+	/* dietro il sipario non parte niente: la hero entra quando il sipario si alza */
+	html[data-caricando] :is(.st-ahero, .st-mhero, .st-dhero) * { animation-play-state: paused; }
+
+	/* uscendo, il testo si allontana più in fretta dei dispositivi */
+	@supports (animation-timeline: scroll()) {
+		.st-ahero-copy {
+			animation: st-hero-out linear both;
+			animation-timeline: scroll(root block);
+			animation-range: 8vh 70vh;
+		}
+		.st-ahero-devices > * {
+			animation: st-hero-drift linear both;
+			animation-timeline: scroll(root block);
+			animation-range: 0 100vh;
+		}
+	}
+}
+
+/* --- le transizioni d'interfaccia, sulla curva e sui tempi misurati --- */
+.st-page :is(.st-ahero-action, .st-keep-cta > span, .st-more > span, .st-deep-sign, .st-hg-play, .st-rail-controls button) {
+	transition: background-color .32s var(--st-ease), color .32s var(--st-ease), box-shadow .32s var(--st-ease), scale .24s var(--st-ease), transform .32s var(--st-ease);
+}
+.st-page .st-ahero-action.primary:hover { background: #3b3830; }
+.st-page .st-ahero-action.outline:hover { box-shadow: inset 0 0 0 1px var(--ink), 0 0 0 1px var(--ink); }
+.st-page :is(.st-ahero-action, .st-hg-play, .st-rail-controls button):active { scale: .97; }
+
+/* la risposta di una domanda si apre invece di comparire */
+@supports (interpolate-size: allow-keywords) {
+	.st-faq details { interpolate-size: allow-keywords; }
+	.st-faq details::details-content { block-size: 0; overflow: hidden; transition: block-size .44s var(--st-ease), content-visibility .44s allow-discrete; }
+	.st-faq details[open]::details-content { block-size: auto; }
+}
+@media (prefers-reduced-motion: no-preference) {
+	.st-faq details[open] p { animation: st-enter .5s var(--st-ease-out) .06s both; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.st-page :is(.st-ahero-action, .st-keep-cta > span, .st-more > span, .st-deep-sign, .st-hg-play, .st-rail-controls button) { transition: none; }
+	.st-faq details::details-content { transition: none; }
+}
