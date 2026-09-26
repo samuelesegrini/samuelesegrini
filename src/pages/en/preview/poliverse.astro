@@ -10,7 +10,7 @@ import {
 	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, ToggleFigure, Stats,
 	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
 	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BeforeAfter, ProductShot, Device, Icon, MediaCards,
-	Statement, ObjectRow, PlusCards,
+	Statement, ObjectRow,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -83,7 +83,7 @@ const place = (i: number) => `--tint: var(--${sources[i].tint}); --r: ${sources[
 
 const sections = [
 	{ kicker: 'Chapter 1 of 8', value: 'Why it exists', detail: { kicker: 'Places', value: '6 to check' } },
-	{ kicker: 'Chapter 2 of 8', value: 'Promises', detail: { kicker: 'Promises', value: '3, then 4 highlights' } },
+	{ kicker: 'Chapter 2 of 8', value: 'Highlights', detail: { kicker: 'In short', value: '4 highlights' } },
 	{ kicker: 'Chapter 3 of 8', value: 'A day in it', detail: { kicker: 'Tabs', value: '4, one question each' } },
 	{ kicker: 'Chapter 4 of 8', value: 'Make it yours', detail: { kicker: 'Icons', value: '36 to choose from' } },
 	{ kicker: 'Chapter 5 of 8', value: 'Fifteen days', detail: { kicker: 'Commits', value: '309' } },
@@ -142,35 +142,7 @@ const sections = [
 			<LitText eyebrow="PoliVerse · The motive" tint="blue" text="So I built the app I wanted to open: *all six in one place*, on the newest SwiftUI." />
 		</Section>
 
-		<ScrollIntro id="highlights" index={2} tone="ink2" eyebrow="PoliVerse" title="Three promises." />
-
-		<Section tone="ink2">
-			<PlusCards label="The three promises PoliVerse keeps" cards={[
-				{ eyebrow: 'Promise 1', title: 'All of it.', text: 'Six places in one app, on every screen a student carries.', tone: 'acid',
-					detail: 'Servizi Online, WeBeep, the recordings, the rooms, the syllabus and the Manifesto, in four tabs, on iPhone, iPad, Apple Watch, widgets and the Lock Screen, and audited at the largest text size. Keeping it working without a public API is what the sixth chapter is about.',
-					links: [{ label: 'There is no public API', href: '#backend' }, { label: 'CieID doesn’t know who called it', href: '#cie' }] },
-				{ eyebrow: 'Promise 2', title: 'Never empty.', text: 'It opens with the day, even underground.', tone: 'blue',
-					detail: 'The last copy of each answer stays on the phone, in the app group the widgets read too. With no signal the app opens from there, and a refresh that fails keeps what is on screen and says when it was fetched.',
-					links: [{ label: 'A stale answer with a date', href: '#data' }, { label: 'Four layers, pulled apart', href: '#layers' }] },
-				{ eyebrow: 'Promise 3', title: 'Never pretends.', text: 'Sample data says so, and nothing is written on a guess.', tone: 'orange',
-					detail: 'Sample data is on by default and every screen says so while it is. An old copy carries its date. Enrolling in an exam stays out until the request shapes are verified, because a wrong write costs a student a session. And this page ends on what it has not proven yet.',
-					links: [{ label: 'Four things that looked like bugs', href: '#traps' }, { label: 'The rules', href: '#decisions' }] },
-			]}>
-				<div slot="media-1" class="pv-pm pv-pm-all" aria-hidden="true">
-					<span class="pv-pm-six">{sources.map((source) => <i style={`--tint: var(--${source.tint})`}><Icon name={source.icon} size={15} stroke={2.2} /></i>)}</span>
-					<Icon name="arrow-right" size={18} stroke={2.4} />
-					<img src={icon('orbit')} alt="" width="56" height="56" />
-				</div>
-				<div slot="media-2" class="pv-pm pv-pm-empty" aria-hidden="true">
-					<span class="pv-pm-card"><b>Oggi</b><span><em>12:15</em>Reti di Calcolatori</span><span><em>14:15</em>Basi di Dati</span></span>
-					<span class="pv-pm-pill off">Offline · 8:42</span>
-				</div>
-				<div slot="media-3" class="pv-pm pv-pm-honest" aria-hidden="true">
-					<span class="pv-pm-pill sample">Stai guardando dati di esempio</span>
-					<span class="pv-pm-card"><span><em>Orario</em>40 min fa</span></span>
-				</div>
-			</PlusCards>
-		</Section>
+		<ScrollIntro id="highlights" index={2} tone="ink2" eyebrow="PoliVerse" title="Get the highlights." />
 
 		<Section tone="ink2" link={{ label: 'Browse the source', href: repo }}>
 			<HighlightsGallery interval={6000} cards={[
@@ -582,7 +554,7 @@ const sections = [
 				]} />
 		</Section>
 
-		<Section id="traps" split eyebrow="PoliVerse · Traps · Never pretends" title="Four things that looked like bugs." dim="None of them was ours."
+		<Section id="traps" split eyebrow="PoliVerse · Traps" title="Four things that looked like bugs." dim="None of them was ours."
 			lead="Each one looked like a broken endpoint or a crash in the app. Each is written up, with what the app does about it.">
 			<Findings columns={['Severity', 'What looked broken', 'When it shows', 'What PoliVerse does']} note="Severity 1 ends the student’s session or hides their data; severity 2 degrades one feature." items={[
 				{ severity: 1, title: 'A missing scope looks like a dead endpoint.', text: 'A token minted without agenda signs in and works everywhere else, then gets 401 from the timetable.', impact: { label: 'After the paths were already fixed' }, fix: 'Build the sign-in request from the live scope list' },
@@ -592,7 +564,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section id="cie" split eyebrow="PoliVerse · Signing in · All of it" title="CieID doesn’t know who called it." dim="So we tell it."
+		<Section id="cie" split eyebrow="PoliVerse · Signing in" title="CieID doesn’t know who called it." dim="So we tell it."
 			lead="Inside a plain web view, CieID returns the authenticated session to Safari and the login is lost. PoliVerse intercepts the hand-off before the web view follows it, and re-opens it with a sourceApp that brings the student back.">
 			<StickyScenes device="iphone" label="Signing in with CIE, in four steps" note="Illustrations of the Italian interface" steps={[
 				{ title: 'Catch the link.', text: 'The sign-in page sends the web view to the CIE identity provider. PoliVerse sees that navigation before the web view follows it.', code: 'https://ios.idserver.servizicie.interno.gov.it/…', tint: 'blue' },
@@ -629,7 +601,7 @@ const sections = [
 			</StickyScenes>
 		</Section>
 
-		<Section id="data" split eyebrow="PoliVerse · Offline · Never empty" title="A stale answer with a date" dim="says more than an empty screen."
+		<Section id="data" split eyebrow="PoliVerse · Offline" title="A stale answer with a date" dim="says more than an empty screen."
 			lead="The Politecnico’s servers send no ETag, no Last-Modified, no Cache-Control and no push, so freshness is the app’s job. Every Store publishes its cached copy on the first frame, a five-minute window decides whether to fetch, and the app revalidates when it returns to the foreground or comes back online.">
 			<StateMachine label="A load through a Store" forbidden="clear the screen · never"
 				before={[{ name: 'Cached', text: 'The offline copy is published at once.' }, { name: 'Refreshing', text: 'The load window says a fetch is due.' }]}
@@ -638,7 +610,7 @@ const sections = [
 				labels={{ before: [['window due', 'cache first']], fork: ['200', 'error'], join: ['publish', 'keep the old copy'] }} />
 		</Section>
 
-		<Section id="layers" tone="dark" split eyebrow="PoliVerse · Architecture · Never empty" title="Four layers," dim="pulled apart."
+		<Section id="layers" tone="dark" split eyebrow="PoliVerse · Architecture" title="Four layers," dim="pulled apart."
 			lead="Screens never talk to the network. Each service is a Source behind a Store, and one HTTP door leads out, to hosts the official config names.">
 			<ExplodedStack layers={[
 				{ name: 'Features', tint: 'acid', chips: [{ label: 'Today' }, { label: 'Courses' }, { label: 'Career' }], text: 'Seventeen feature folders, routed by ShellState, drawn with the look in use.' },
@@ -659,7 +631,7 @@ const sections = [
 			</Declaration>
 		</Section>
 
-		<Section id="decisions" tone="sand" eyebrow="PoliVerse · The rules" title="Six rules," dim="behind the three promises." index={7}>
+		<Section id="decisions" tone="sand" eyebrow="PoliVerse · The rules" title="Six rules," dim="each with its reason." index={7}>
 			<Principles rules={[
 				{ title: 'Read, never write.', text: 'No enrolling, no refusing a mark, no forum posts, no hand-ins. The write requests are unverified, and a wrong one costs the student a session.', source: 'docs/writes-to-university-systems.md' },
 				{ title: 'Never pass sample data off as real.', text: 'Sample data is on by default and every screen says so; all of it comes from one fictional degree, so career, timetable and courses agree.', source: 'SampleDegree · DataStatusLine' },
@@ -765,7 +737,7 @@ const sections = [
 			all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
 
 		<Section tone="sand">
-			<PageIndex title="PoliVerse" primary={[{ label: 'Why it exists', href: '#why' }, { label: 'The promises', href: '#highlights' }, { label: 'A day in it', href: '#app' }, { label: 'Make it yours', href: '#personalise' }, { label: 'Fifteen days', href: '#numbers' }, { label: 'What it took', href: '#backend' }, { label: 'The rules', href: '#decisions' }, { label: 'Specs', href: '#specs' }, { label: 'Questions', href: '#faq' }]}
+			<PageIndex title="PoliVerse" primary={[{ label: 'Why it exists', href: '#why' }, { label: 'Highlights', href: '#highlights' }, { label: 'A day in it', href: '#app' }, { label: 'Make it yours', href: '#personalise' }, { label: 'Fifteen days', href: '#numbers' }, { label: 'What it took', href: '#backend' }, { label: 'The rules', href: '#decisions' }, { label: 'Specs', href: '#specs' }, { label: 'Questions', href: '#faq' }]}
 				groups={[{ title: 'Code', links: [{ label: 'PoliVerse on GitHub', href: repo, note: 'Source, DocC and research notes' }, { label: 'Endpoint notes', href: `${repo}/blob/main/docs/endpoint-status.md` }, { label: 'Why it never writes', href: `${repo}/blob/main/docs/writes-to-university-systems.md` }] }, { title: 'More from the portfolio', links: [{ label: 'EasyManager', href: labProjectPath('en', 'easymanager-restaurant-operations') }, { label: 'All projects', href: labPaths.en.work }, { label: 'About me', href: labPaths.en.about, icon: 'person' }] }]} />
 		</Section>
 	</Story>
@@ -891,19 +863,6 @@ const sections = [
 	.pv-shot .pv-live-card { grid-template-columns: 1fr; width: 100%; padding: 10px 12px; border-radius: 16px; }
 	.pv-shot .pv-live-card b { font-size: 12.5px; } .pv-shot .pv-live-left { display: none; }
 	.pv-shot .pv-phone { font-size: 10.5px; }
-	/* Le promesse: un pezzo d'interfaccia per carta, in basso, disegnato come il resto della pagina. */
-	.pv-pm { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; color: #171713; font-size: 13px; }
-	.pv-pm-six { display: grid; grid-template-columns: repeat(3, auto); gap: 6px; }
-	.pv-pm-six i { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; background: var(--tint); box-shadow: inset 0 0 0 1.5px #171713; }
-	.pv-pm-all img { width: 56px; height: 56px; filter: drop-shadow(0 8px 14px rgba(23, 23, 19, .25)); }
-	.pv-pm-empty, .pv-pm-honest { flex-direction: column; gap: 10px; }
-	.pv-pm-card { display: grid; gap: 6px; width: min(100%, 220px); padding: 12px 14px; border-radius: 14px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
-	.pv-pm-card b { font-size: 14px; }
-	.pv-pm-card span { display: flex; gap: 10px; }
-	.pv-pm-card em { font-style: normal; font-weight: 700; }
-	.pv-pm-pill { padding: 6px 12px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 12px; font-weight: 600; }
-	.pv-pm-pill.off::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: #ffb27a; }
-	.pv-pm-pill.sample { background: #fffefb; color: #171713; box-shadow: inset 0 0 0 1.5px #171713; }
 	/* La frase del perché apre la sezione da sola: niente margine sopra, lo spazio lo dà la sezione. */
 	:global(#why .st-statement) { margin-top: 0 !important; }
 	/* Perché esiste: i sei posti in fila, ognuno una piastrella del suo colore, appena storta. */

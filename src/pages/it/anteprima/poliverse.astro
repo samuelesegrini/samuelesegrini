@@ -11,7 +11,7 @@ import {
 	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, ToggleFigure, Stats,
 	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
 	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BeforeAfter, ProductShot, Device, Icon, MediaCards,
-	Statement, ObjectRow, PlusCards,
+	Statement, ObjectRow,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -84,7 +84,7 @@ const place = (i: number) => `--tint: var(--${sources[i].tint}); --r: ${sources[
 
 const sections = [
 	{ kicker: 'Capitolo 1 di 8', value: 'Perché esiste', detail: { kicker: 'Posti', value: '6 da controllare' } },
-	{ kicker: 'Capitolo 2 di 8', value: 'Promesse', detail: { kicker: 'Promesse', value: '3, poi 4 punti forti' } },
+	{ kicker: 'Capitolo 2 di 8', value: 'Punti forti', detail: { kicker: 'In breve', value: '4 punti forti' } },
 	{ kicker: 'Capitolo 3 di 8', value: 'Una giornata', detail: { kicker: 'Schede', value: '4, una domanda ciascuna' } },
 	{ kicker: 'Capitolo 4 di 8', value: 'Falla tua', detail: { kicker: 'Icone', value: '36 tra cui scegliere' } },
 	{ kicker: 'Capitolo 5 di 8', value: 'Quindici giorni', detail: { kicker: 'Commit', value: '309' } },
@@ -143,35 +143,7 @@ const sections = [
 			<LitText eyebrow="PoliVerse · Il motivo" tint="blue" text="Così ho costruito l’app che volevo aprire io: *tutti e sei in un posto solo*, sul SwiftUI più recente." />
 		</Section>
 
-		<ScrollIntro id="highlights" index={2} tone="ink2" eyebrow="PoliVerse" title="Tre promesse." />
-
-		<Section tone="ink2">
-			<PlusCards label="Le tre promesse che PoliVerse mantiene" cards={[
-				{ eyebrow: 'Promessa 1', title: 'Tutto.', text: 'Sei posti in un’app, su ogni schermo che uno studente ha con sé.', tone: 'acid',
-					detail: 'Servizi Online, WeBeep, le registrazioni, le aule, i programmi e il Manifesto, in quattro schede, su iPhone, iPad, Apple Watch, widget e schermata di blocco, e verificati alla dimensione di testo più grande. Farlo funzionare senza un’API pubblica è il tema del sesto capitolo.',
-					links: [{ label: 'Non c’è un’API pubblica', href: '#backend' }, { label: 'CieID non sa chi l’ha chiamata', href: '#cie' }] },
-				{ eyebrow: 'Promessa 2', title: 'Mai vuota.', text: 'Si apre con la giornata, anche sottoterra.', tone: 'blue',
-					detail: 'L’ultima copia di ogni risposta resta sul telefono, nel gruppo d’app che leggono anche i widget. Senza segnale l’app si apre da lì, e un aggiornamento che fallisce lascia quello che c’è sullo schermo e dice quando è stato scaricato.',
-					links: [{ label: 'Una risposta vecchia, con la data', href: '#data' }, { label: 'Quattro strati, separati', href: '#layers' }] },
-				{ eyebrow: 'Promessa 3', title: 'Mai finta.', text: 'I dati d’esempio lo dicono, e niente si scrive a occhio.', tone: 'orange',
-					detail: 'I dati d’esempio sono attivi di serie e ogni schermata lo dice finché lo sono. Una copia vecchia porta la sua data. L’iscrizione agli esami resta fuori finché le richieste non sono verificate, perché una scrittura sbagliata costa una sessione. E questa pagina finisce su quello che non ha ancora dimostrato.',
-					links: [{ label: 'Quattro cose che sembravano bug', href: '#traps' }, { label: 'Le regole', href: '#decisions' }] },
-			]}>
-				<div slot="media-1" class="pv-pm pv-pm-all" aria-hidden="true">
-					<span class="pv-pm-six">{sources.map((source) => <i style={`--tint: var(--${source.tint})`}><Icon name={source.icon} size={15} stroke={2.2} /></i>)}</span>
-					<Icon name="arrow-right" size={18} stroke={2.4} />
-					<img src={icon('orbit')} alt="" width="56" height="56" />
-				</div>
-				<div slot="media-2" class="pv-pm pv-pm-empty" aria-hidden="true">
-					<span class="pv-pm-card"><b>Oggi</b><span><em>12:15</em>Reti di Calcolatori</span><span><em>14:15</em>Basi di Dati</span></span>
-					<span class="pv-pm-pill off">Offline · 8:42</span>
-				</div>
-				<div slot="media-3" class="pv-pm pv-pm-honest" aria-hidden="true">
-					<span class="pv-pm-pill sample">Stai guardando dati di esempio</span>
-					<span class="pv-pm-card"><span><em>Orario</em>40 min fa</span></span>
-				</div>
-			</PlusCards>
-		</Section>
+		<ScrollIntro id="highlights" index={2} tone="ink2" eyebrow="PoliVerse" title="I punti forti." />
 
 		<Section tone="ink2" link={{ label: 'Sfoglia il codice', href: repo }}>
 			<HighlightsGallery interval={6000} cards={[
@@ -583,7 +555,7 @@ const sections = [
 				]} />
 		</Section>
 
-		<Section id="traps" split eyebrow="PoliVerse · Trappole · Mai finta" title="Quattro cose che sembravano bug." dim="Nessuna era nostra."
+		<Section id="traps" split eyebrow="PoliVerse · Trappole" title="Quattro cose che sembravano bug." dim="Nessuna era nostra."
 			lead="Ognuna sembrava un endpoint rotto o un crash dell’app. Ognuna è documentata, con quello che l’app fa al riguardo.">
 			<Findings columns={['Gravità', 'Cosa sembrava rotto', 'Quando si vede', 'Cosa fa PoliVerse']} note="La gravità 1 chiude la sessione dello studente o ne nasconde i dati; la gravità 2 peggiora una funzione." items={[
 				{ severity: 1, title: 'Uno scope mancante sembra un endpoint morto.', text: 'Un token emesso senza agenda entra e funziona ovunque, poi riceve 401 dall’orario.', impact: { label: 'Dopo che i percorsi erano già stati corretti' }, fix: 'Costruire la richiesta di accesso dalla lista di scope attuale' },
@@ -593,7 +565,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section id="cie" split eyebrow="PoliVerse · Accesso · Tutto" title="CieID non sa chi l’ha chiamata." dim="Così glielo diciamo."
+		<Section id="cie" split eyebrow="PoliVerse · Accesso" title="CieID non sa chi l’ha chiamata." dim="Così glielo diciamo."
 			lead="Dentro una semplice web view, CieID riporta la sessione autenticata a Safari e l’accesso si perde. PoliVerse intercetta il passaggio prima che la web view lo segua, e lo riapre con un sourceApp che riporta indietro lo studente.">
 			<StickyScenes device="iphone" label="L’accesso con CIE, in quattro passi" note="Illustrazioni dell’interfaccia" steps={[
 				{ title: 'Prendere il link.', text: 'La pagina di accesso manda la web view al provider d’identità CIE. PoliVerse vede quella navigazione prima che la web view la segua.', code: 'https://ios.idserver.servizicie.interno.gov.it/…', tint: 'blue' },
@@ -630,7 +602,7 @@ const sections = [
 			</StickyScenes>
 		</Section>
 
-		<Section id="data" split eyebrow="PoliVerse · Offline · Mai vuota" title="Una risposta vecchia con la data" dim="dice più di uno schermo vuoto."
+		<Section id="data" split eyebrow="PoliVerse · Offline" title="Una risposta vecchia con la data" dim="dice più di uno schermo vuoto."
 			lead="I server del Politecnico non mandano ETag, Last-Modified, Cache-Control né notifiche push, quindi la freschezza tocca all’app. Ogni Store pubblica la sua copia in cache al primo frame, una finestra di cinque minuti decide se scaricare, e l’app riconvalida quando torna in primo piano o torna online.">
 			<StateMachine label="Un caricamento attraverso uno Store" forbidden="svuotare lo schermo · mai"
 				before={[{ name: 'In cache', text: 'La copia offline viene pubblicata subito.' }, { name: 'Aggiornamento', text: 'La finestra di caricamento dice che tocca scaricare.' }]}
@@ -639,7 +611,7 @@ const sections = [
 				labels={{ before: [['finestra scaduta', 'prima la cache']], fork: ['200', 'errore'], join: ['pubblica', 'tieni la copia vecchia'] }} />
 		</Section>
 
-		<Section id="layers" tone="dark" split eyebrow="PoliVerse · Architettura · Mai vuota" title="Quattro strati," dim="separati."
+		<Section id="layers" tone="dark" split eyebrow="PoliVerse · Architettura" title="Quattro strati," dim="separati."
 			lead="Le schermate non parlano mai con la rete. Ogni servizio è una Source dietro uno Store, e una sola porta HTTP porta fuori, verso gli host che nomina la configurazione ufficiale.">
 			<ExplodedStack layers={[
 				{ name: 'Features', tint: 'acid', chips: [{ label: 'Oggi' }, { label: 'Corsi' }, { label: 'Carriera' }], text: 'Diciassette cartelle di funzioni, instradate da ShellState, disegnate con l’aspetto in uso.' },
@@ -660,7 +632,7 @@ const sections = [
 			</Declaration>
 		</Section>
 
-		<Section id="decisions" tone="sand" eyebrow="PoliVerse · Le regole" title="Sei regole," dim="dietro le tre promesse." index={7}>
+		<Section id="decisions" tone="sand" eyebrow="PoliVerse · Le regole" title="Sei regole," dim="ognuna con la sua ragione." index={7}>
 			<Principles rules={[
 				{ title: 'Leggere, mai scrivere.', text: 'Niente iscrizioni, niente rifiuti di un voto, niente post nel forum, niente consegne. Le richieste di scrittura non sono verificate, e una sbagliata costa una sessione allo studente.', source: 'docs/writes-to-university-systems.md' },
 				{ title: 'Mai spacciare i dati d’esempio per veri.', text: 'I dati d’esempio sono attivi di serie e ogni schermata lo dice; vengono tutti da un unico corso di laurea inventato, così carriera, orario e corsi tornano.', source: 'SampleDegree · DataStatusLine' },
@@ -767,7 +739,7 @@ const sections = [
 			all={{ label: 'L’archivio', title: 'Tutti i progetti', text: 'App, pacchetti, hardware e ricerca, in un elenco solo.', href: labPaths.it.work }} />
 
 		<Section tone="sand">
-			<PageIndex title="PoliVerse" primaryLabel="In questa pagina" primary={[{ label: 'Perché esiste', href: '#why' }, { label: 'Le promesse', href: '#highlights' }, { label: 'Una giornata', href: '#app' }, { label: 'Falla tua', href: '#personalise' }, { label: 'Quindici giorni', href: '#numbers' }, { label: 'Cosa è servito', href: '#backend' }, { label: 'Le regole', href: '#decisions' }, { label: 'Scheda', href: '#specs' }, { label: 'Domande', href: '#faq' }]}
+			<PageIndex title="PoliVerse" primaryLabel="In questa pagina" primary={[{ label: 'Perché esiste', href: '#why' }, { label: 'Punti forti', href: '#highlights' }, { label: 'Una giornata', href: '#app' }, { label: 'Falla tua', href: '#personalise' }, { label: 'Quindici giorni', href: '#numbers' }, { label: 'Cosa è servito', href: '#backend' }, { label: 'Le regole', href: '#decisions' }, { label: 'Scheda', href: '#specs' }, { label: 'Domande', href: '#faq' }]}
 				groups={[{ title: 'Codice', links: [{ label: 'PoliVerse su GitHub', href: repo, note: 'Codice, DocC e note di ricerca' }, { label: 'Note sugli endpoint', href: `${repo}/blob/main/docs/endpoint-status.md` }, { label: 'Perché non scrive mai', href: `${repo}/blob/main/docs/writes-to-university-systems.md` }] }, { title: 'Altro dal portfolio', links: [{ label: 'EasyManager', href: labProjectPath('it', 'easymanager-restaurant-operations') }, { label: 'Tutti i progetti', href: labPaths.it.work }, { label: 'Chi sono', href: labPaths.it.about, icon: 'person' }] }]} />
 		</Section>
 	</Story>
@@ -893,19 +865,6 @@ const sections = [
 	.pv-shot .pv-live-card { grid-template-columns: 1fr; width: 100%; padding: 10px 12px; border-radius: 16px; }
 	.pv-shot .pv-live-card b { font-size: 12.5px; } .pv-shot .pv-live-left { display: none; }
 	.pv-shot .pv-phone { font-size: 10.5px; }
-	/* Le promesse: un pezzo d'interfaccia per carta, in basso, disegnato come il resto della pagina. */
-	.pv-pm { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; color: #171713; font-size: 13px; }
-	.pv-pm-six { display: grid; grid-template-columns: repeat(3, auto); gap: 6px; }
-	.pv-pm-six i { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; background: var(--tint); box-shadow: inset 0 0 0 1.5px #171713; }
-	.pv-pm-all img { width: 56px; height: 56px; filter: drop-shadow(0 8px 14px rgba(23, 23, 19, .25)); }
-	.pv-pm-empty, .pv-pm-honest { flex-direction: column; gap: 10px; }
-	.pv-pm-card { display: grid; gap: 6px; width: min(100%, 220px); padding: 12px 14px; border-radius: 14px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
-	.pv-pm-card b { font-size: 14px; }
-	.pv-pm-card span { display: flex; gap: 10px; }
-	.pv-pm-card em { font-style: normal; font-weight: 700; }
-	.pv-pm-pill { padding: 6px 12px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 12px; font-weight: 600; }
-	.pv-pm-pill.off::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: #ffb27a; }
-	.pv-pm-pill.sample { background: #fffefb; color: #171713; box-shadow: inset 0 0 0 1.5px #171713; }
 	/* La frase del perché apre la sezione da sola: niente margine sopra, lo spazio lo dà la sezione. */
 	:global(#why .st-statement) { margin-top: 0 !important; }
 	/* Perché esiste: i sei posti in fila, ognuno una piastrella del suo colore, appena storta. */

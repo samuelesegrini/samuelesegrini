@@ -10,7 +10,7 @@ const route = '/en/preview/poliverse/';
 test('the PoliVerse story renders every chapter and indexes them in the dock', async ({ page }) => {
 	await page.goto(route);
 	await arriva(page);
-	for (const block of ['.st-ahero', '.st-ahero-shot .st-shot', '.st-intro', '.st-statement', '.st-objects-row', '.st-hgallery', '.st-plus-grid', '.st-lit', '.st-fx', '.st-mcards', '.st-bento', '.st-ba', '.st-toggle', '.st-stats', '.st-changelog', '.st-lockup', '.st-thennow', '.st-findings', '.st-scenes', '.st-states', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-sources', '.st-faq2', '.st-keep', '.st-index']) {
+	for (const block of ['.st-ahero', '.st-ahero-shot .st-shot', '.st-intro', '.st-statement', '.st-objects-row', '.st-hgallery', '.st-lit', '.st-fx', '.st-mcards', '.st-bento', '.st-ba', '.st-toggle', '.st-stats', '.st-changelog', '.st-lockup', '.st-thennow', '.st-findings', '.st-scenes', '.st-states', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-sources', '.st-faq2', '.st-keep', '.st-index']) {
 		await expect(page.locator(`.st-page ${block}`).first(), block).toBeAttached();
 	}
 	const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
@@ -88,7 +88,6 @@ test('il racconto di PoliVerse in italiano ha gli stessi capitoli e rimanda al g
 	expect(sections).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
 	await expect(page.locator('.st-hg-card')).toHaveCount(4);
 	await expect(page.locator('.st-hg-dots')).toHaveAttribute('aria-label', 'Scegli un punto forte');
-	await expect(page.locator('.st-plus-open').first()).toHaveAttribute('aria-label', /^Di più su: /);
 	await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', /\/en\/preview\/poliverse\/$/);
 
 	await page.goto(route);
