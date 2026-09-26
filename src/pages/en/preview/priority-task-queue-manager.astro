@@ -1,0 +1,161 @@
+---
+/**
+ * Anteprima non elencata di Priority Task Queue Manager, nella stessa forma breve di Highway Route
+ * Planner: un'affermazione sola e sette sezioni lette come una relazione tecnica. Il cuore è il
+ * difetto di temporizzazione: o_done alzato 2 ns prima che la RAM avesse scritto. Le forme d'onda
+ * sono disegnate qui a mano dal caso di studio; il VHDL è una traccia, dichiarata come tale.
+ * Fuori dalla sitemap, noindex.
+ */
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import {
+	Story, Section, DocHero, Statement, ToggleFigure, CodeSplit, StateMachine, Callout, BeforeAfter, Specs, Principles, TechSpecs, KeepExploring,
+} from '../../../components/story';
+import { neighbours } from '../../../lib/previews';
+import { labPaths, labProjectPath } from '../../../components/lab/chrome';
+import { withBase } from '../../../lib/base';
+
+const { next, previous } = neighbours('priority-task-queue-manager');
+
+// La coda di esempio: indirizzo 0 il conteggio, poi i compiti in ordine di priorità (id·priorità).
+const ops = [
+	{ label: 'OP 00 · Aging', before: ['3', 'A·2', 'B·1', 'C·0'], after: ['3', 'A·3', 'B·2', 'C·1'], text: 'Every priority up by one, saturating at 11; the order stays.' },
+	{ label: 'OP 01 · Remove', before: ['3', 'A·2', 'B·1', 'C·0'], after: ['2', 'B·1', 'C·0', '·'], text: 'The head leaves with its id; the rest compacts towards address 1.' },
+	{ label: 'OP 10 · Insert', before: ['3', 'A·2', 'B·1', 'C·0'], after: ['4', 'A·2', 'B·1', 'N·1', 'C·0'], text: 'N, priority 1, lands after B, which has the same priority; only C moves.' },
+	{ label: 'OP 11 · Clear', before: ['3', 'A·2', 'B·1', 'C·0'], after: ['0', 'A·2', 'B·1', 'C·0'], text: 'One write of zero at address 0. The old entries no longer count.' },
+];
+
+const sections = [
+	{ kicker: 'Section 1 of 5', value: 'The problem', detail: { kicker: 'Memory', value: 'one port' } },
+	{ kicker: 'Section 2 of 5', value: 'Four operations', detail: { kicker: 'OP', value: '00–11' } },
+	{ kicker: 'Section 3 of 5', value: 'The machine', detail: { kicker: 'States', value: '15' } },
+	{ kicker: 'Section 4 of 5', value: 'Done, too early', detail: { kicker: 'Late by', value: '2 ns' } },
+	{ kicker: 'Section 5 of 5', value: 'Results', detail: { kicker: 'Tests', value: '10 of 10' } },
+];
+---
+
+<ExperimentLayout lang="en" title="Priority Task Queue Manager (preview)" currentHref="/en/preview/priority-task-queue-manager/" sections={sections} itHref={labProjectPath('it', 'gestore-coda-task-priorita')} enHref={withBase('/en/preview/priority-task-queue-manager/')} noindex>
+	<Story>
+		<DocHero eyebrow="Digital Logic · VHDL · 2026" title="Priority Task Queue Manager"
+			abstract="A VHDL component that keeps a priority-ordered task queue in external RAM, from behavioural specification to post-synthesis simulation. When it says done, the memory already agrees: getting that instant right was the decisive fix."
+			note={{ label: 'Method', text: 'Individual project. Xilinx Vivado, Artix-7, post-synthesis timing at 50 MHz.' }}
+			image={withBase('/images/projects/explainers/priority-queue-insertion.svg')} imageAlt="Before-and-after comparison of a task inserted after an existing item with the same priority"
+			caption="The new task enters after the existing one of equal priority; only lower-priority entries move towards higher addresses."
+			facts={[{ value: '15', label: 'finite states', icon: 'graph' }, { value: '31', label: 'tasks, at most', icon: 'list' }, { value: '68', label: 'cycles, worst insertion', icon: 'clock' }, { value: '91', label: 'LUTs', icon: 'chip' }]} />
+
+		<Section id="problem" index={1}>
+			<Statement>The queue lives <b>in the memory, not in the component</b>: address 0 holds the count, <b>one port</b> serves reads and writes, a read answers <b>2 ns later</b>, and a <b>START–DONE</b> handshake tells the master when the work is finished.</Statement>
+		</Section>
+
+		<Section id="ops" eyebrow="Priority Task Queue Manager · Operations" title="Four operations," dim="one component." index={2}
+			lead="A two-bit input picks the operation. The same queue, before and after each one: address 0, then the tasks as id·priority.">
+			<ToggleFigure label="Choose an operation" options={ops.map((op, i) => ({ label: op.label.split(' · ')[1], lead: op.label, text: op.text, tone: (['acid', 'orange', 'blue', 'violet'] as const)[i] }))}>
+				<div slot="panel-1" class="pq-ram" aria-hidden="true">
+					<span class="pq-row"><em>before</em>{ops[0].before.map((c, k) => <i class:list={{ count: k === 0 }}>{c}</i>)}</span>
+					<span class="pq-row"><em>after</em>{ops[0].after.map((c, k) => <i class:list={{ count: k === 0 }}>{c}</i>)}</span>
+				</div>
+				<div slot="panel-2" class="pq-ram" aria-hidden="true">
+					<span class="pq-row"><em>before</em>{ops[1].before.map((c, k) => <i class:list={{ count: k === 0 }}>{c}</i>)}</span>
+					<span class="pq-row"><em>after</em>{ops[1].after.map((c, k) => <i class:list={{ count: k === 0 }}>{c}</i>)}</span>
+				</div>
+				<div slot="panel-3" class="pq-ram" aria-hidden="true">
+					<span class="pq-row"><em>before</em>{ops[2].before.map((c, k) => <i class:list={{ count: k === 0 }}>{c}</i>)}</span>
+					<span class="pq-row"><em>after</em>{ops[2].after.map((c, k) => <i class:list={{ count: k === 0 }}>{c}</i>)}</span>
+				</div>
+				<div slot="panel-4" class="pq-ram" aria-hidden="true">
+					<span class="pq-row"><em>before</em>{ops[3].before.map((c, k) => <i class:list={{ count: k === 0 }}>{c}</i>)}</span>
+					<span class="pq-row"><em>after</em>{ops[3].after.map((c, k) => <i class:list={{ count: k === 0 }}>{c}</i>)}</span>
+				</div>
+			</ToggleFigure>
+		</Section>
+
+		<Section>
+			<CodeSplit eyebrow="Insertion · the backwards scan" title="One character keeps arrival order."
+				text="Starting at the tail, the component shifts strictly lower-priority entries and stops at the right place. With > the new task lands after equals and FIFO holds; with >= it would jump ahead of them."
+				file="insert scan · outline, not the original source" language="VHDL" tone="blue"
+				code={'if new_prio > entry_prio then\n  -- strictly lower: move it one up\n  ram_write(addr + 1, entry);\n  addr <= addr - 1;\nelse\n  -- equal or higher: stop, insert after it\n  ram_write(addr + 1, new_task);\nend if;'} />
+		</Section>
+
+		<Section id="machine" split eyebrow="Priority Task Queue Manager · The machine" title="15 states," dim="one clock edge." index={3}
+			lead="Two processes: combinational logic computes the next state and outputs from explicit defaults; sequential logic commits the register record on each rising edge.">
+			<StateMachine label="One operation, start to done" forbidden="raise DONE before the write has landed"
+				before={[{ name: 'Idle', text: 'Waiting for i_start.' }, { name: 'Fetch count', text: 'Read address 0.' }]}
+				fork={[{ name: 'Scan and shift', text: 'Insert and remove walk the list.', tone: 'blue' }, { name: 'One pass', text: 'Aging rewrites; clear writes a zero.', tone: 'orange' }]}
+				after={[{ name: 'Update count', text: 'Write the new length.' }, { name: 'Wait commit', text: 'One cycle for the write to land.', tone: 'acid' }, { name: 'Done', text: 'o_done high until i_start falls.', tone: 'dark' }]}
+				labels={{ before: [['i_start', 'select op']], fork: ['OP 01 · 10', 'OP 00 · 11'], join: ['count changed', 'count changed'] }} />
+			<Callout kind="note" title="To add">The full list of the 15 states; the case study names only the common ones.</Callout>
+		</Section>
+
+		<Section id="timing" eyebrow="Priority Task Queue Manager · The bug" title="Done," dim="2 ns too early." index={4}
+			lead="Larger testbenches read RAM[0] as soon as o_done rose, while the memory model applied the write 2 ns later. The answer was right and still arrived too early.">
+			<BeforeAfter label="Compare o_done before and after WAIT_COMMIT" start={50}
+				before={{ label: 'Before · reads 3', text: 'o_done rises in the same cycle as the write; RAM[0] changes 2 ns after the testbench samples it.' }}
+				after={{ label: 'After WAIT_COMMIT · reads 4', text: 'One cycle, 20 ns at 50 MHz, in which nothing starts: the count is stable when o_done rises.' }}>
+				<svg slot="before" class="pq-wave" viewBox="0 0 600 220" role="img" aria-label="Waveform: o_done rises, the testbench samples RAM[0] and reads the old count, which changes 2 ns later">
+					<text x="10" y="48">clk</text><polyline points="90,60 90,30 150,30 150,60 210,60 210,30 270,30 270,60 330,60 330,30 390,30 390,60 450,60 450,30 510,30 510,60 570,60" />
+					<text x="10" y="118">o_done</text><polyline points="90,130 330,130 330,100 590,100" class="hot" />
+					<text x="10" y="188">RAM[0]</text><polyline points="90,170 342,170 346,200 590,200" /><polyline points="90,200 342,200 346,170 590,170" />
+					<text x="200" y="190" class="val">3</text><text x="420" y="190" class="val">4</text>
+					<line x1="330" y1="70" x2="330" y2="210" class="sample" /><text x="336" y="152" class="note">sampled: 3</text>
+				</svg>
+				<svg slot="after" class="pq-wave" viewBox="0 0 600 220" role="img" aria-label="Waveform: RAM[0] changes during WAIT_COMMIT, then o_done rises and the testbench reads the new count">
+					<text x="10" y="48">clk</text><polyline points="90,60 90,30 150,30 150,60 210,60 210,30 270,30 270,60 330,60 330,30 390,30 390,60 450,60 450,30 510,30 510,60 570,60" />
+					<text x="10" y="118">o_done</text><polyline points="90,130 450,130 450,100 590,100" class="hot" />
+					<text x="10" y="188">RAM[0]</text><polyline points="90,170 342,170 346,200 590,200" /><polyline points="90,200 342,200 346,170 590,170" />
+					<text x="200" y="190" class="val">3</text><text x="480" y="190" class="val">4</text>
+					<rect x="330" y="80" width="120" height="16" class="wait" /><text x="336" y="92" class="note">WAIT_COMMIT</text>
+					<line x1="450" y1="70" x2="450" y2="210" class="sample" /><text x="456" y="152" class="note">sampled: 4</text>
+				</svg>
+			</BeforeAfter>
+		</Section>
+
+		<Section id="results" split eyebrow="Priority Task Queue Manager · Results" title="Small, predictable," dim="and fast enough twelve times over." index={5}
+			lead="All ten functional tests pass, including the checks added after the RAM fix. A sequential machine trades parallel speed for small area and a latency you can predict.">
+			<Specs specs={[
+				{ label: 'Functional tests', value: '10 of 10' },
+				{ label: 'Area', value: '91 LUTs · 32 flip-flops · no latches' },
+				{ label: 'Critical path', value: '1.658 ns, about 603 MHz against 50 required' },
+				{ label: 'Worst insertion', value: '68 cycles, 1.36 µs at 50 MHz' },
+			]} />
+			<Callout kind="warning" title="To check">The case study says the worst case inserts into a 31-task queue, but 31 is the capacity. It probably means a 30-task queue, shifting 30 entries.</Callout>
+		</Section>
+
+		<Section eyebrow="Priority Task Queue Manager · Next" title="What I’d keep," dim="and what I’d add.">
+			<Principles rules={[
+				{ title: 'Keep the two-process split.', text: 'Next state and outputs in one place, registers in another: the behaviour stays inspectable.' },
+				{ title: 'Keep the backwards insertion.', text: 'One pass from the tail, and FIFO decided by a single comparison.' },
+				{ title: 'Keep the explicit commit state.', text: 'Correct includes the instant a value becomes observable.' },
+				{ title: 'Add protocol assertions.', text: 'The START–DONE contract checked in simulation, not only by the testbench’s timing.' },
+				{ title: 'Add configurable capacity.', text: '31 is a documented limit, not a law of the design.' },
+			]} />
+		</Section>
+
+		<Section id="specs" tone="sand">
+			<TechSpecs eyebrow="Priority Task Queue Manager" meta="VHDL · Xilinx Vivado · Artix-7 · 2026" groups={[
+				{ title: 'Memory', values: [{ label: 'Size', value: '64 KB', text: 'single port, write-first' }, { label: 'Addresses', value: '16-bit' }, { label: 'Data', value: '8-bit' }] },
+				{ title: 'Design', counts: [{ value: '15', label: 'states' }, { value: '4', label: 'operations' }, { value: '31', label: 'tasks', accent: true }], note: 'Control unit, datapath, register bank and memory interface.' },
+				{ title: 'Source', items: [{ title: 'Not linked yet', text: 'Link the repository here, or say it isn’t public.' }] },
+			]} />
+		</Section>
+
+		<Section tone="sand">
+			<KeepExploring next={next} previous={previous}
+				all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
+		</Section>
+	</Story>
+</ExperimentLayout>
+
+<style>
+	.pq-ram { display: flex; flex-direction: column; gap: 18px; padding: 32px; font-family: 'IBM Plex Mono', monospace; }
+	.pq-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+	.pq-row em { width: 64px; font-style: normal; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+	.pq-row i { min-width: 52px; padding: 10px 8px; border-radius: 10px; font-style: normal; font-size: 15px; font-weight: 600; text-align: center; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; color: #171713; }
+	.pq-row i.count { background: #171713; color: #fffef9; }
+	.pq-wave { width: 100%; height: auto; padding: 16px; box-sizing: border-box; font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+	.pq-wave polyline { fill: none; stroke: currentColor; stroke-width: 2; }
+	.pq-wave polyline.hot { stroke: #d9531e; stroke-width: 3; }
+	.pq-wave text { fill: currentColor; }
+	.pq-wave .val { font-size: 14px; font-weight: 600; }
+	.pq-wave .note { font-size: 11px; }
+	.pq-wave .sample { stroke: #1f6fd6; stroke-width: 1.5; stroke-dasharray: 4 4; }
+	.pq-wave .wait { fill: #c7ff9f; opacity: .6; }
+</style>

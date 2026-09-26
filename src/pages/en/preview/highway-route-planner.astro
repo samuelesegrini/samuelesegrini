@@ -1,0 +1,124 @@
+---
+/**
+ * Anteprima non elencata di Highway Route Planner. Un progetto piccolo e diretto ha una pagina
+ * piccola e diretta: niente promesse né carte, un'affermazione sola e sei sezioni lette come una
+ * breve relazione tecnica, con DocHero in apertura. Il codice è una traccia ricostruita dal caso di
+ * studio, dichiarata come tale finché non c'è il sorgente. Fuori dalla sitemap, noindex.
+ */
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import {
+	Story, Section, DocHero, Statement, Layers, Callout, CodeSteps, Compare, Specs, Principles, TechSpecs, KeepExploring,
+} from '../../../components/story';
+import { neighbours } from '../../../lib/previews';
+import { labPaths, labProjectPath } from '../../../components/lab/chrome';
+import { withBase } from '../../../lib/base';
+
+const { next, previous } = neighbours('highway-route-planner');
+
+// Una traccia di findOptimalPath ricostruita dal caso di studio: non è il sorgente originale.
+const outline = `/* Outline of findOptimalPath, rebuilt from the case study */
+int step = (to > from) ? +1 : -1;
+
+for (int i = from; i != to; i += step) {
+    if (moves[i] == UNREACHED) continue;
+    for (int j = i + step; j != to + step; j += step) {
+        if (!fleetReaches(i, j)) break;
+        int m = moves[i] + 1;
+        if (m < moves[j] ||
+            (m == moves[j] && dist(i) < dist(prev[j]))) {
+            moves[j] = m;
+            prev[j] = i;
+        }
+    }
+}
+
+for (int k = to; k != from; k = prev[k]) push(route, k);
+printReversed(route, from);`;
+
+const sections = [
+	{ kicker: 'Section 1 of 5', value: 'The problem', detail: { kicker: 'Constraints', value: '5' } },
+	{ kicker: 'Section 2 of 5', value: 'The model', detail: { kicker: 'Lookup', value: 'binary search' } },
+	{ kicker: 'Section 3 of 5', value: 'The graph', detail: { kicker: 'Built', value: 'never' } },
+	{ kicker: 'Section 4 of 5', value: 'The tie', detail: { kicker: 'Right answers', value: '1' } },
+	{ kicker: 'Section 5 of 5', value: 'The cost', detail: { kicker: 'Time', value: 'O(n²·v)' } },
+];
+---
+
+<ExperimentLayout lang="en" title="Highway Route Planner (preview)" currentHref="/en/preview/highway-route-planner/" sections={sections} itHref={labProjectPath('it', 'pianificatore-percorsi-autostradali')} enHref={withBase('/en/preview/highway-route-planner/')} noindex>
+	<Story>
+		<DocHero eyebrow="Algorithms and Data Structures · 2022–2023" title="Highway Route Planner"
+			abstract="A C program that plans the fewest-stop journey along a highway, in either direction, while stations are built and demolished and fleets change. The fewest stops, and never an arbitrary one: when routes tie, the specification names the right answer."
+			note={{ label: 'Method', text: 'Individual final assignment. One ordered array, binary search, and a graph that is never built.' }}
+			image={withBase('/images/projects/explainers/highway-implicit-graph.svg')} imageAlt="Five stations connected by reachability arcs, with the minimum route 20, 30, 50 highlighted"
+			caption="Edges are evaluated only when a vehicle’s range makes the move possible; 20 → 30 → 50 reaches the destination in the fewest stops."
+			facts={[{ value: 'C', label: 'language', icon: 'code' }, { value: '5', label: 'commands', icon: 'list' }, { value: '512', label: 'vehicles per station, at most', icon: 'layers' }, { value: 'O(n²·v)', label: 'route planning, worst case', icon: 'gauge' }]} />
+
+		<Section id="problem" index={1}>
+			<Statement>Fewest stops. <b>No turning back.</b> A <b>new car at every stop</b>, from a fleet that keeps changing, on a highway where <b>stations appear and vanish</b>, and when two routes tie, <b>only one of them is right</b>.</Statement>
+		</Section>
+
+		<Section id="model" split eyebrow="Highway Route Planner · The model" title="An ordered array" dim="is the whole index." index={2}
+			lead="A vehicle is its range; a station is its distance, its vehicle count and a pointer to its fleet; the highway is a dynamic array of stations kept in ascending distance.">
+			<Layers layers={[
+				{ label: 'Highway', items: ['dynamic array of stations, sorted by distance'], tone: 'dark' },
+				{ label: 'Station', items: ['distance', 'vehicle count', 'fleet pointer'], tone: 'mixed' },
+				{ label: 'Vehicle', items: ['driving range'] },
+			]} />
+			<Callout kind="important" title="The invariant">Stations stay in ascending distance. That is what lets findStationIndexByDistance use binary search, and what makes both directions a plain walk along the array. malloc, realloc, free and memmove keep it true across inserts and removals.</Callout>
+		</Section>
+
+		<Section id="graph" eyebrow="Highway Route Planner · The heart" title="A graph" dim="that is never built." index={3}>
+			<CodeSteps file="findOptimalPath · outline" lang="c" label="findOptimalPath, in four steps" code={outline}
+				note="An outline rebuilt from the case study, not the original source."
+				steps={[
+					{ title: 'Pick the direction.', text: '+1 when the destination is farther along the highway, −1 when travelling back towards its start.', lines: [2] },
+					{ title: 'Test a move against the fleet.', text: 'An edge exists only when a vehicle at the departure station has the range for it. Nothing is stored.', lines: [4, 5, 6, 7] },
+					{ title: 'Keep the fewest moves, and the predecessor.', text: 'Two arrays: minimum moves and chosen predecessor. On a tie, the lower distance wins.', lines: [8, 9, 10, 11, 12, 13] },
+					{ title: 'Walk back, then print forward.', text: 'The destination is traced through its predecessors and printed from origin to destination.', lines: [17, 18] },
+				]}>
+				<img slot="preview" src={withBase('/images/projects/explainers/highway-implicit-graph.svg')} alt="The implicit graph, with the minimum route highlighted" width="1200" height="675" loading="lazy" />
+			</CodeSteps>
+		</Section>
+
+		<Section id="tie" eyebrow="Highway Route Planner · Tied routes" title="Same stops." dim="One right answer." index={4}
+			lead="Working backwards from a shared ending, the specification keeps the route whose station is closer to the start of the highway. Distance from the start, not the direction of travel.">
+			<Compare columns={[
+				{ title: 'Also two stops, rejected', items: ['20 → 45 → 50', 'Ties with the winner on stops', '45 is farther from the start than 30'] },
+				{ title: 'The one the rule keeps', items: ['20 → 30 → 50', 'And on the way back: 50 → 30 → 20', 'The lower distance wins every tie'] },
+			]} />
+		</Section>
+
+		<Section id="cost" split eyebrow="Highway Route Planner · Trade-offs" title="What it costs," dim="and what I’d change." index={5}
+			lead="Planning compares pairs of stations and may scan the departure fleet for each move. The solution favours a direct, readable representation over the cleverest structure.">
+			<Specs specs={[
+				{ label: 'Route planning', value: 'O(n² · v) worst case' },
+				{ label: 'Vehicles per station', value: 'v ≤ 512, by specification' },
+				{ label: 'Memory', value: 'Linear in stations: moves, predecessors, route' },
+				{ label: 'Station lookup', value: 'O(log n), binary search' },
+			]} />
+		</Section>
+
+		<Section eyebrow="Highway Route Planner · Today" title="Five changes," dim="each with its reason.">
+			<Principles rules={[
+				{ title: 'Parsing apart from domain logic.', text: 'Commands and the highway would be testable separately.' },
+				{ title: 'Allocation failures handled consistently.', text: 'Every malloc and realloc checked the same way.' },
+				{ title: 'Tie-breaking isolated.', text: 'The one rule with a single right answer, in one function.' },
+				{ title: 'Reverse and unreachable routes tested.', text: 'The cases where a quiet mistake is easiest.' },
+				{ title: 'Each station’s maximum range cached.', text: 'Reachability without scanning a whole fleet.' },
+			]} />
+		</Section>
+
+		<Section id="specs" tone="sand">
+			<TechSpecs eyebrow="Highway Route Planner" meta="C · dynamic memory · binary search · 2023" groups={[
+				{ title: 'Project', values: [{ label: 'Course', value: 'Algorithms and Data Structures', text: '2022–2023 final assignment' }, { label: 'Work', value: 'Individual' }] },
+				{ title: 'Commands', lead: 'Five, on a mutable highway', tags: ['build a station', 'demolish a station', 'add a vehicle', 'scrap a vehicle', 'plan a route'] },
+				{ title: 'Source', items: [{ title: 'Not linked yet', text: 'Link the repository here, or say it isn’t public.' }] },
+			]} />
+		</Section>
+
+		<Section tone="sand">
+			<KeepExploring next={next} previous={previous}
+				all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
+		</Section>
+	</Story>
+</ExperimentLayout>
