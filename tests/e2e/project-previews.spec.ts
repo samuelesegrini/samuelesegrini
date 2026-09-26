@@ -35,6 +35,9 @@ test('the preview index lists every project and links to each', async ({ page })
 
 test('the previews pass an accessibility scan', async ({ page }) => {
 	test.setTimeout(120_000);
+	// senza movimento, come le altre scansioni: a metà entrata la didascalia di DocHero è ancora
+	// trasparente e axe misura un contrasto che a pagina ferma non c'è
+	await page.emulateMedia({ reducedMotion: 'reduce' });
 	for (const preview of previews) {
 		await page.goto(`/en/preview/${preview.key}/`);
 		await arriva(page);
