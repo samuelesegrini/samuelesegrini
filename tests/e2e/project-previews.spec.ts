@@ -14,34 +14,45 @@ const previews = [
 	{ key: 'priority-task-queue-manager', chapters: 4, blocks: ['.st-toggle', '.st-states', '.st-ba', '.st-techspecs', '.st-ts-map', '.st-keep'] },
 ];
 
-for (const preview of previews) {
-	test(`the ${preview.key} preview renders its chapters and stays out of search`, async ({ page }) => {
-		await page.goto(`/en/preview/${preview.key}/`);
+// Le due lingue: /en/preview/ e il gemello italiano /it/anteprima/, stesse sezioni e stessi capitoli.
+const langs = [
+	{ lang: 'en', root: '/en/preview/', other: '/it/anteprima/' },
+	{ lang: 'it', root: '/it/anteprima/', other: '/en/preview/' },
+] as const;
+
+for (const { lang, root, other } of langs) {
+	for (const preview of previews) {
+		test(`the ${preview.key} preview (${lang}) renders its chapters and stays out of search`, async ({ page }) => {
+			await page.goto(`${root}${preview.key}/`);
+			await arriva(page);
+			await expect(page.locator('html')).toHaveAttribute('lang', lang);
+			for (const block of preview.blocks) await expect(page.locator(`.st-page ${block}`).first(), block).toBeAttached();
+			const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
+			expect(sections).toEqual(Array.from({ length: preview.chapters + 1 }, (_, k) => k));
+			await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+			// la fila gira: ogni anteprima porta alla successiva, alla precedente e all'indice, nella stessa lingua
+			await expect(page.locator(`.st-keep a[href*="${root}"]`)).toHaveCount(3);
+			// e il cambio di lingua porta al gemello
+			await expect(page.locator(`a[href$="${other}${preview.key}/"]`).first()).toBeAttached();
+		});
+	}
+
+	test(`the preview index (${lang}) lists every project and links to each`, async ({ page }) => {
+		await page.goto(root);
 		await arriva(page);
-		for (const block of preview.blocks) await expect(page.locator(`.st-page ${block}`).first(), block).toBeAttached();
-		const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
-		expect(sections).toEqual(Array.from({ length: preview.chapters + 1 }, (_, k) => k));
-		await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-		// la fila gira: ogni anteprima porta alla successiva, alla precedente e all'indice
-		await expect(page.locator('.st-keep a[href*="/en/preview/"]')).toHaveCount(3);
+		for (const key of ['poliverse', ...previews.map((p) => p.key)]) await expect(page.locator(`.st-page a[href$="${root}${key}/"]`)).toHaveCount(1);
+	});
+
+	test(`the previews (${lang}) pass an accessibility scan`, async ({ page }) => {
+		test.setTimeout(120_000);
+		// senza movimento, come le altre scansioni: a metà entrata la didascalia di DocHero è ancora
+		// trasparente e axe misura un contrasto che a pagina ferma non c'è
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+		for (const preview of previews) {
+			await page.goto(`${root}${preview.key}/`);
+			await arriva(page);
+			const results = await new AxeBuilder({ page }).include('.st-page').analyze();
+			expect(results.violations.map((v) => `${preview.key}: ${v.id} (${v.nodes.length})`)).toEqual([]);
+		}
 	});
 }
-
-test('the preview index lists every project and links to each', async ({ page }) => {
-	await page.goto('/en/preview/');
-	await arriva(page);
-	for (const key of ['poliverse', ...previews.map((p) => p.key)]) await expect(page.locator(`a[href$="/en/preview/${key}/"]`)).toHaveCount(1);
-});
-
-test('the previews pass an accessibility scan', async ({ page }) => {
-	test.setTimeout(120_000);
-	// senza movimento, come le altre scansioni: a metà entrata la didascalia di DocHero è ancora
-	// trasparente e axe misura un contrasto che a pagina ferma non c'è
-	await page.emulateMedia({ reducedMotion: 'reduce' });
-	for (const preview of previews) {
-		await page.goto(`/en/preview/${preview.key}/`);
-		await arriva(page);
-		const results = await new AxeBuilder({ page }).include('.st-page').analyze();
-		expect(results.violations.map((v) => `${preview.key}: ${v.id} (${v.nodes.length})`)).toEqual([]);
-	}
-});

@@ -13,7 +13,7 @@ import {
 	ChangeLog, Limits, Faq, KeepExploring, PageIndex,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
-import { labPaths, labProjectPath } from '../../../components/lab/chrome';
+import { labPaths } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 import '../../../styles/story-mocks.css';
 
@@ -43,7 +43,7 @@ const sections = [
 ];
 ---
 
-<ExperimentLayout lang="en" title="EasyManager (preview)" currentHref="/en/preview/easymanager/" sections={sections} itHref={labProjectPath('it', 'easymanager-operazioni-ristorante')} enHref={withBase('/en/preview/easymanager/')} noindex>
+<ExperimentLayout lang="en" title="EasyManager (preview)" currentHref="/en/preview/easymanager/" sections={sections} itHref={withBase('/it/anteprima/easymanager/')} enHref={withBase('/en/preview/easymanager/')} noindex>
 	<Story>
 		<MediaHero name="EasyManager" title="From the table to the fiscal printer." image={withBase('/images/projects/covers/easymanager.svg')}
 			imageAlt="An iPad showing a restaurant dining room with tables coloured by state, next to an order ticket"

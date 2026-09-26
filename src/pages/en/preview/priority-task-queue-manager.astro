@@ -11,7 +11,6 @@ import {
 	Story, Section, DocHero, ToggleFigure, CodeSplit, StateMachine, Callout, BeforeAfter, TechSpecs, KeepExploring,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
-import { labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 
 const { next, previous } = neighbours('priority-task-queue-manager');
@@ -32,7 +31,7 @@ const sections = [
 ];
 ---
 
-<ExperimentLayout lang="en" title="Priority Task Queue Manager (preview)" currentHref="/en/preview/priority-task-queue-manager/" sections={sections} itHref={labProjectPath('it', 'gestore-coda-task-priorita')} enHref={withBase('/en/preview/priority-task-queue-manager/')} noindex>
+<ExperimentLayout lang="en" title="Priority Task Queue Manager (preview)" currentHref="/en/preview/priority-task-queue-manager/" sections={sections} itHref={withBase('/it/anteprima/priority-task-queue-manager/')} enHref={withBase('/en/preview/priority-task-queue-manager/')} noindex>
 	<Story>
 		<DocHero eyebrow="Digital Logic · VHDL · 2026" title="Priority Task Queue Manager"
 			abstract="A VHDL component that keeps a priority-ordered task queue in external RAM, from behavioural specification to post-synthesis simulation. When it says done, the memory already agrees: getting that instant right was the decisive fix."

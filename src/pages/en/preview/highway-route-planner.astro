@@ -10,7 +10,6 @@ import {
 	Story, Section, DocHero, Specs, Layers, Callout, ExplainerFigure, CodeSteps, Compare, Numbers, TechSpecs, KeepExploring,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
-import { labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 
 const { next, previous } = neighbours('highway-route-planner');
@@ -44,7 +43,7 @@ const sections = [
 ];
 ---
 
-<ExperimentLayout lang="en" title="Highway Route Planner (preview)" currentHref="/en/preview/highway-route-planner/" sections={sections} itHref={labProjectPath('it', 'pianificatore-percorsi-autostradali')} enHref={withBase('/en/preview/highway-route-planner/')} noindex>
+<ExperimentLayout lang="en" title="Highway Route Planner (preview)" currentHref="/en/preview/highway-route-planner/" sections={sections} itHref={withBase('/it/anteprima/highway-route-planner/')} enHref={withBase('/en/preview/highway-route-planner/')} noindex>
 	<Story>
 		<DocHero eyebrow="Algorithms and Data Structures · 2022–2023" title="Highway Route Planner"
 			abstract="A C program that plans the fewest-stop journey along a highway, in either direction, while stations are built and demolished and fleets change. The fewest stops, and never an arbitrary one: when routes tie, the specification names the right answer."

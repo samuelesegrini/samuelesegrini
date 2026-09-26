@@ -5,6 +5,7 @@
  * Sostituisce Hero quando la copertina merita il centro della scena.
  */
 import Icon from './Icon.astro';
+import { storyLang } from '../../lib/story-lang';
 interface Link { label: string; href: string }
 interface Props {
 	name: string;
@@ -23,12 +24,13 @@ interface Props {
 	index?: number | null;
 }
 const { name, title, image, imageAlt, tint = 'blue', meta, detail, action, back, position, id = 'overview', index = 0 } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
 const two = (n: number) => String(n).padStart(2, '0');
 ---
 <header class={`st-mhero tone-${tint}`} id={id} data-section={index ?? undefined}>
 	{(back || position) && <div class="st-hero-bar">
 		{back && <a class="st-link small" href={back.href}><Icon name="arrow-back" size={16} />{back.label}</a>}
-		{position && <span class="st-mono"><span aria-hidden="true">{two(position.current)} / {two(position.total)}</span><span class="st-sr">Project {position.current} of {position.total}</span></span>}
+		{position && <span class="st-mono"><span aria-hidden="true">{two(position.current)} / {two(position.total)}</span><span class="st-sr">{it ? `Progetto ${position.current} di ${position.total}` : `Project ${position.current} of ${position.total}`}</span></span>}
 	</div>}
 	<img class="st-mhero-art" src={image} alt={imageAlt} width="1200" height="800" fetchpriority="high" />
 	<div class="st-mhero-foot">

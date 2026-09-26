@@ -29,7 +29,7 @@ const it = storyLang(Astro.url) === 'it';
 const tint: Record<Sym['kind'], string> = { S: 'blue', C: 'violet', E: 'orange', P: 'acid', F: 'paper' };
 ---
 <div class:list={['st-decl', { 'no-nav': nav.length === 0 }]}>
-	{nav.length > 0 && <nav class="st-decl-nav" aria-label={`${project} symbols`}>
+	{nav.length > 0 && <nav class="st-decl-nav" aria-label={it ? `Simboli di ${project}` : `${project} symbols`}>
 		<span class="st-decl-project"><Icon name="package" size={16} />{project}</span>
 		{nav.map((g) => (
 			<div class="st-decl-group">

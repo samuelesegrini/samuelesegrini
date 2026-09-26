@@ -28,7 +28,7 @@ const { items, note, columns = it ? ['Gravità', 'Problema', 'Chi ha colpito', '
 				<span class="st-findings-impact">
 					<span class="st-sr">{columns[2]}: </span>
 					{f.impact?.share !== undefined && <><b>{Math.round(f.impact.share * 100)}%</b><span class="st-bar" aria-hidden="true"><span style={`width: ${f.impact.share * 100}%`}></span></span></>}
-					{f.impact?.of && <><b>{f.impact.of[0]} of {f.impact.of[1]}</b><span class="st-dots" aria-hidden="true">{Array.from({ length: f.impact.of[1] }, (_, k) => <span class:list={{ on: k < f.impact!.of![0] }}></span>)}</span></>}
+					{f.impact?.of && <><b>{f.impact.of[0]} {it ? 'su' : 'of'} {f.impact.of[1]}</b><span class="st-dots" aria-hidden="true">{Array.from({ length: f.impact.of[1] }, (_, k) => <span class:list={{ on: k < f.impact!.of![0] }}></span>)}</span></>}
 					{f.impact ? <span class="st-findings-label">{f.impact.label}</span> : <span class="st-mono st-findings-label">{it ? 'Non quantificato' : 'Not quantified'}</span>}
 				</span>
 				<span class="st-findings-fix"><span class="st-sr">{columns[3]}: </span><Icon name="arrow-right" size={16} stroke={2.4} />{f.fix}</span>

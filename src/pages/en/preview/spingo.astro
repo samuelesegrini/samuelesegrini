@@ -13,7 +13,6 @@ import {
 	Sources, Faq, KeepExploring,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
-import { labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 import '../../../styles/story-mocks.css';
 
@@ -31,7 +30,7 @@ const sections = [
 ];
 ---
 
-<ExperimentLayout lang="en" title="SpinGO (preview)" currentHref="/en/preview/spingo/" sections={sections} itHref={labProjectPath('it', 'spingo-micromobilita-sostenibile')} enHref={withBase('/en/preview/spingo/')} noindex>
+<ExperimentLayout lang="en" title="SpinGO (preview)" currentHref="/en/preview/spingo/" sections={sections} itHref={withBase('/it/anteprima/spingo/')} enHref={withBase('/en/preview/spingo/')} noindex>
 	<Story>
 		<AppHero name="SpinGO" title="Research before code." tint="acid"
 			summary="74.2% of the people who don’t ride regularly would like to. 109 answers, 4 interviews and 7 usability sessions later, a micromobility app with a watch companion reached 88% task success and a SUS of 89.2."

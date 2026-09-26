@@ -12,7 +12,7 @@ import {
 	Limits, Cards, Faq, KeepExploring,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
-import { labPostPath, labProjectPath } from '../../../components/lab/chrome';
+import { labPostPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 import '../../../styles/story-mocks.css';
 
@@ -31,7 +31,7 @@ const sections = [
 ];
 ---
 
-<ExperimentLayout lang="en" title="Galaxy Trucker (preview)" currentHref="/en/preview/galaxy-trucker/" sections={sections} itHref={labProjectPath('it', 'galaxy-trucker-progetto-java')} enHref={withBase('/en/preview/galaxy-trucker/')} noindex>
+<ExperimentLayout lang="en" title="Galaxy Trucker (preview)" currentHref="/en/preview/galaxy-trucker/" sections={sections} itHref={withBase('/it/anteprima/galaxy-trucker/')} enHref={withBase('/en/preview/galaxy-trucker/')} noindex>
 	<Story>
 		<MediaHero name="Galaxy Trucker" title="A board game, as a distributed system." tint="violet" image={withBase('/images/projects/covers/galaxy-trucker.svg')}
 			imageAlt="A spaceship built from square tiles joined by pipe connectors, with a laser, engines and an incoming meteor"

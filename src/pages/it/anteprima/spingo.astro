@@ -1,0 +1,202 @@
+---
+/**
+ * Il racconto di SpinGO in italiano, gemello di /en/preview/spingo: stesse sezioni, stessi disegni e
+ * stesse note; cambia il testo, compreso quello dentro le schermate illustrate. È una ricerca, e la
+ * pagina segue il metodo. Numeri dal caso di studio (Deliverable 1 e 6). Fuori dalla sitemap, noindex.
+ */
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import {
+	Story, Section, AppHero, Device, Timeline, MediaCards, Stats, BarCompare, Findings, Matrix, BeforeAfter, Contribution,
+	Sources, Faq, KeepExploring,
+} from '../../../components/story';
+import { neighbours, previewIndex } from '../../../lib/previews';
+import { withBase } from '../../../lib/base';
+import '../../../styles/story-mocks.css';
+
+const repo = 'https://github.com/milenaramosduran/hci-eco';
+const site = 'https://milenaramosduran.github.io/hci-eco/';
+const { next, previous } = neighbours('spingo', 'it');
+
+const sections = [
+	{ kicker: 'Capitolo 1 di 6', value: 'Il metodo', detail: { kicker: 'Risposte', value: '109' } },
+	{ kicker: 'Capitolo 2 di 6', value: 'Il progetto', detail: { kicker: 'Compiti', value: '3' } },
+	{ kicker: 'Capitolo 3 di 6', value: 'Il test', detail: { kicker: 'SUS', value: '89,2' } },
+	{ kicker: 'Capitolo 4 di 6', value: 'Cosa non andava', detail: { kicker: 'Gravità 1', value: '1' } },
+	{ kicker: 'Capitolo 5 di 6', value: 'Una correzione', detail: { kicker: 'Spostato', value: 'Aggiungi' } },
+	{ kicker: 'Capitolo 6 di 6', value: 'La mia parte', detail: { kicker: 'Commit', value: '112 su 119' } },
+];
+---
+
+<ExperimentLayout lang="it" title="SpinGO (anteprima)" currentHref="/it/anteprima/spingo/" sections={sections} itHref={withBase('/it/anteprima/spingo/')} enHref={withBase('/en/preview/spingo/')} noindex>
+	<Story>
+		<AppHero name="SpinGO" title="La ricerca prima del codice." tint="acid"
+			summary="Il 74,2% di chi non va in bici o in monopattino con regolarità vorrebbe farlo. Dopo 109 risposte, 4 interviste e 7 sessioni di test, un’app di micromobilità con un compagno da polso ha raggiunto l’88% di successo nei compiti e un SUS di 89,2."
+			meta="Squadra di cinque · HCI, Politecnico di Milano · 2025–2026"
+			actions={[{ label: 'Segui il metodo', href: '#metodo' }, { label: 'Sito del progetto', href: site }, { label: 'Repository della squadra', href: repo }]}>
+			<svg slot="mark" viewBox="0 0 64 64" fill="none" stroke="#171713" stroke-width="5" stroke-linecap="round" aria-hidden="true"><path d="M16 48c0-12 32-8 32-22 0-6-4-10-10-10" /><circle cx="16" cy="48" r="5" fill="#c7ff9f" /><circle cx="38" cy="16" r="5" fill="#fffef9" /></svg>
+			<Fragment slot="devices">
+				<Device kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 276 596" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustrazione della schermata del percorso: un percorso sicuro disegnato sulla mappa, con il tasto per partire">
+						<rect width="276" height="596" fill="#f4f1e9" />
+						<rect x="148" y="96" width="150" height="170" rx="42" fill="#e3f5d2" />
+						<g stroke="#e2ddd2" stroke-width="18" stroke-linecap="round" fill="none"><path d="M-10 170H290M-10 350H290M72 -10V610M204 -10V610M-10 520 140 420" /></g>
+						<path d="M62 474c0-66 10-86 52-106s92-26 92-96-8-116 8-150" fill="none" stroke="#171713" stroke-width="17" stroke-linecap="round" />
+						<path d="M62 474c0-66 10-86 52-106s92-26 92-96-8-116 8-150" fill="none" stroke="#c7ff9f" stroke-width="10" stroke-linecap="round" />
+						<circle cx="62" cy="474" r="11" fill="#171713" /><circle cx="62" cy="474" r="4" fill="#fffef9" />
+						<circle cx="214" cy="122" r="15" fill="#ded1ff" stroke="#171713" stroke-width="3.5" /><circle cx="214" cy="122" r="5" fill="#171713" />
+						<rect x="16" y="20" width="244" height="64" rx="18" fill="#fffefb" stroke="#171713" stroke-width="2.5" />
+						<text x="34" y="48" class="mock-svg-title">Parti su un percorso sicuro</text>
+						<text x="34" y="68" class="mock-svg-mono">COMPITO 1 · NAVIGAZIONE</text>
+						<rect x="0" y="498" width="276" height="98" fill="#fffefb" /><path d="M0 498h276" stroke="#171713" stroke-width="2.5" />
+						<rect x="18" y="522" width="176" height="48" rx="24" fill="#171713" />
+						<text x="106" y="552" text-anchor="middle" class="mock-svg-title light">Parti</text>
+						<rect x="206" y="522" width="52" height="48" rx="24" fill="#ffd4b8" stroke="#171713" stroke-width="2.5" />
+						<path d="M232 536v10M232 552v.5" stroke="#171713" stroke-width="3" stroke-linecap="round" />
+					</svg>
+				</Device>
+				<div class="st-ahero-side">
+					<Device kind="watch">
+						<div class="mock-watch"><span class="st-mono">Prossima svolta</span><svg viewBox="0 0 48 48" width="50" height="50" fill="none" stroke="#c7ff9f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 42V24a8 8 0 0 1 8-8h18m-8-9 9 9-9 9" /></svg><b>Gira a destra</b></div>
+					</Device>
+					<span class="st-mono">Un compagno al polso: prossima svolta, vibrazioni, segnalazioni rapide.</span>
+				</div>
+			</Fragment>
+		</AppHero>
+
+		<Section id="metodo" index={1} eyebrow="SpinGO · Il metodo" title="Quattro passi," dim="ognuno nutre il successivo."
+			lead="Tutto il processo centrato sulle persone, nell’ordine in cui è andato. Ogni passo ha ristretto quello prima.">
+			<Timeline steps={[
+				{ when: 'Needfinding', title: '109 risposte, 4 persone', text: 'Un questionario adattivo che seguiva il viaggio, poi quattro interviste a profili volutamente diversi.' },
+				{ when: 'Sintesi', title: '4 direzioni', text: 'Oltre 150 codici, oltre 50 bisogni: sicurezza e controllo, fiducia nei luoghi, viaggi fluidi, comunità.' },
+				{ when: 'Progetto', title: 'App e orologio', text: 'L’app copriva i compiti; l’orologio teneva gli occhi sulla strada. Un’altra squadra l’ha valutata.' },
+				{ when: 'Test', title: '7 sessioni', text: 'Think-aloud, SEQ dopo ogni compito, SUS alla fine, contro obiettivi fissati prima.' },
+			]} />
+		</Section>
+
+		<Section id="progetto" index={2} eyebrow="SpinGO · Progetto" title="Tre compiti." dim="Un compagno al polso." link={{ label: 'Prova i prototipi sul sito del progetto', href: site }}>
+			<MediaCards label="I compiti del progetto" items={[
+				{ lead: 'Pianifica e parti su un percorso sicuro.', text: 'La navigazione ha raggiunto il 93% di successo e 6,5 su 7 nella Single Ease Question.', tone: 'violet' },
+				{ lead: 'Gestisci i veicoli nel Garage.', text: 'Il compito più debole, 82% e 4,2 su 7: due persone hanno modificato un veicolo perché Aggiungi stava in fondo alla lista.', tone: 'acid', tag: 'Aggiungi spostato in cima' },
+				{ lead: 'Segnala alla comunità.', text: 'La segnalazione di una persona diventa quello che tutti sanno di quella strada; 89% di successo, 5,8 su 7.', tone: 'blue' },
+				{ lead: 'Il telefono resta in tasca.', text: 'L’orologio porta la prossima svolta, le vibrazioni e una segnalazione con un tocco.', tone: 'orange' },
+			]}>
+				<Device slot="media-1" kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 212 452" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustrazione: la schermata del percorso, con un percorso sicuro sulla mappa">
+						<rect width="212" height="452" fill="#f4f1e9" />
+						<g stroke="#e2ddd2" stroke-width="14" stroke-linecap="round"><path d="M-10 130H230M-10 270H230M56 -10V470M160 -10V470" /></g>
+						<path d="M46 360c0-50 8-66 40-80s70-20 70-72-6-88 6-112" fill="none" stroke="#171713" stroke-width="13" stroke-linecap="round" />
+						<path d="M46 360c0-50 8-66 40-80s70-20 70-72-6-88 6-112" fill="none" stroke="#c7ff9f" stroke-width="7" stroke-linecap="round" />
+						<circle cx="46" cy="360" r="9" fill="#171713" /><circle cx="162" cy="96" r="12" fill="#ded1ff" stroke="#171713" stroke-width="3" />
+						<rect x="12" y="14" width="188" height="48" rx="14" fill="#fffefb" stroke="#171713" stroke-width="2" />
+						<text x="26" y="43" class="mock-svg-title small">Percorso sicuro</text>
+						<rect x="12" y="386" width="188" height="44" rx="22" fill="#171713" />
+						<text x="106" y="413" text-anchor="middle" class="mock-svg-title small light">Parti</text>
+					</svg>
+				</Device>
+				<Device slot="media-2" kind="iphone">
+					<div class="mock-garage" role="img" aria-label="Illustrazione: il Garage, con Aggiungi un veicolo in cima alla lista">
+						<b>Garage</b><span class="add">+ Aggiungi un veicolo</span>
+						{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}
+					</div>
+				</Device>
+				<Device slot="media-3" kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 212 452" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustrazione: la schermata della comunità, con segnalazioni appuntate sulla mappa">
+						<rect width="212" height="452" fill="#f4f1e9" />
+						<g stroke="#e2ddd2" stroke-width="14" stroke-linecap="round"><path d="M-10 110H230M-10 250H230M70 -10V470M150 -10V470" /></g>
+						<g stroke="#171713" stroke-width="2.5" stroke-linejoin="round"><path d="M60 80 74 104H46Z" fill="#ffd4b8" /><path d="M140 170 154 194H126Z" fill="#ffd4b8" /><path d="M96 232 110 256H82Z" fill="#ffd4b8" /></g>
+						<rect x="0" y="300" width="212" height="152" fill="#fffefb" /><path d="M0 300h212" stroke="#171713" stroke-width="2" />
+						<text x="16" y="330" class="mock-svg-title small">Segnalazioni vicine</text>
+						<rect x="16" y="346" width="180" height="10" rx="5" fill="#e2ddd2" /><rect x="16" y="346" width="120" height="10" rx="5" fill="#171713" />
+						<rect x="16" y="382" width="180" height="44" rx="22" fill="#ffd4b8" stroke="#171713" stroke-width="2" />
+						<text x="106" y="409" text-anchor="middle" class="mock-svg-title small">Nuova segnalazione</text>
+					</svg>
+				</Device>
+				<Device slot="media-4" kind="watch">
+					<div class="mock-watch"><span class="st-mono">Prossima svolta</span><svg viewBox="0 0 48 48" width="50" height="50" fill="none" stroke="#c7ff9f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 42V24a8 8 0 0 1 8-8h18m-8-9 9 9-9 9" /></svg><b>Gira a destra</b></div>
+				</Device>
+			</MediaCards>
+		</Section>
+
+		<Section id="test" index={3} tone="dark" eyebrow="SpinGO · Test di usabilità" title="Sette sessioni, tre compiti." dim="Ogni numero con il suo metodo.">
+			<Stats items={[
+				{ label: 'Successo medio', value: '88%', text: 'sui tre compiti', method: 'scala 0–2 per compito, 7 persone, 14 punti al massimo', note: 1, accent: true },
+				{ label: 'Punteggio SUS', value: '89,2', text: 'grado A', method: 'System Usability Scale, tutti e 7 i partecipanti', note: 2 },
+				{ label: 'Needfinding', value: '109', text: 'risposte al questionario', method: 'Questionario adattivo, Deliverable 1', note: 3 },
+				{ label: 'Reazione ai pericoli', value: '7,8', unit: 's', text: 'in media, navigando', method: 'Compito di navigazione, cronometrato in sessione', note: 4 },
+			]} feature={{ label: 'Compito più forte', value: '93%', text: 'di successo in navigazione, 6,5 su 7 di facilità' }}
+				targets={{ title: 'Gli obiettivi erano fissati prima della prima sessione.', text: 'Sono stati raggiunti tutti e tre.', rows: [{ label: 'Tasso di successo', target: '> 85%', value: '88%' }, { label: 'SUS', target: '> 70', value: '89,2' }, { label: 'Problemi di gravità 1–2', target: '< 3', value: '2' }] }}>
+				Pianificare e far partire un percorso è stato quasi immediato. <b>Il Garage è stato il punto debole, con l’82% e 4,2 su 7</b>, e le segnalazioni alla comunità stavano in mezzo, all’89%. Una media positiva nasconde dove le persone si sono fermate: per questo i problemi qui sotto sono ordinati per gravità, non per numero.
+			</Stats>
+		</Section>
+
+		<Section eyebrow="SpinGO · Successo per compito" title="Due compiti sopra l’obiettivo." dim="Uno sotto."
+			lead="Tasso di successo per compito, rispetto all’obiettivo dell’85% fissato prima della prima sessione. Il Garage è quello che l’ha mancato.">
+			<BarCompare label="Successo per compito, rispetto all’obiettivo dell’85%" max={100} threshold={{ value: 85, label: 'Obiettivo 85%', below: 'sotto l’obiettivo' }}
+				caption="Scala 0–2 per compito, sette partecipanti · Deliverable 6, test di usabilità" rows={[
+					{ label: 'Pianificare e partire', note: 'Navigazione', value: 93, display: '93%', emphasis: true },
+					{ label: 'Segnalare alla comunità', note: 'Segnalazioni', value: 89, display: '89%' },
+					{ label: 'Gestire i veicoli', note: 'Il Garage', value: 82, display: '82%' },
+					{ label: 'Tutti e tre i compiti', note: 'Successo medio', value: 88, display: '88%', emphasis: true },
+				]} />
+		</Section>
+
+		<Section id="problemi" index={4} split eyebrow="SpinGO · Problemi di usabilità" title="Ordinati per gravità," dim="non per numero."
+			lead="Una media positiva non chiude la ricerca. I 45 secondi di una persona ferma davanti a un pannello descrivono un modello mentale che l’interfaccia non rispecchia.">
+			<Findings note="La gravità 1 è la più seria. Sette partecipanti tra i 16 e i 35 anni, circa 45 minuti ciascuno, think-aloud e osservazione." items={[
+				{ severity: 1, title: 'I percorsi salvati stavano in due posti.', text: 'Vederli era in Home e gestirli in Profilo, una separazione che per chi pedala non esiste.', impact: { of: [2, 7], label: 'non sono riusciti a gestire i percorsi salvati' }, fix: 'Unire vedere e gestire' },
+				{ severity: 2, title: 'Aggiungi stava in fondo al Garage.', text: 'Due persone hanno modificato un veicolo che avevano già invece di aggiungerne uno nuovo.', impact: { of: [2, 7], label: 'partecipanti' }, fix: 'Spostare la creazione in cima' },
+				{ severity: 3, title: 'Parti chiesto due volte, e scritto a mano.', text: 'Tasti Parti ridondanti, e un punto di partenza inserito a mano invece della posizione attuale.', fix: 'Valori predefiniti intelligenti per la partenza' },
+				{ severity: 'unranked', title: 'Le icone di percorso e punto si somigliavano.', text: 'Ricondotto all’unico SUS a 70; gli altri sei stavano tra 82,5 e 100.', impact: { of: [1, 7], label: 'partecipanti' }, fix: 'Distinguere le due icone' },
+			]} />
+		</Section>
+
+		<Section split eyebrow="SpinGO · Valutazione euristica" title="Cosa ha trovato la revisione," dim="e cosa è tornato."
+			lead="Un’altra squadra, GreenBytes, ha valutato il prototipo prima dei test di usabilità. Ogni problema è seguito nei tre momenti in cui poteva vedersi.">
+			<Matrix label="Problemi euristici per fase" rowLabel="Problema" link={{ label: 'Vedi i problemi ordinati dai test', href: '#problemi' }}
+				columns={[{ label: 'Trovato in revisione', icon: 'search', tone: 'violet' }, { label: 'Cambiato prima dei test', icon: 'pencil', tone: 'acid' }, { label: 'Rivisto nei test', icon: 'person', tone: 'orange' }]} rows={[
+					{ title: 'La barra delle schede era troppo piccola', text: 'Navigazione ingrandita e chiarita', cells: ['yes', 'yes', 'no'] },
+					{ title: 'Un tasto indietro fuori dalle convenzioni', text: 'Controlli spostati secondo gli standard mobile', cells: ['yes', 'yes', 'no'] },
+					{ title: 'Azioni senza riscontro', text: 'Aggiunte etichette e conferme', cells: ['yes', 'yes', 'no'] },
+					{ title: 'Punti di interesse e percorsi salvati si somigliavano', text: 'L’unico SUS anomalo, a 70, ci è stato ricondotto', cells: ['yes', 'unknown', 'back'] },
+				]} />
+		</Section>
+
+		<Section id="correzione" index={5} split eyebrow="SpinGO · Il Garage" title="Aggiungi è salito in cima." dim="Dopo che due persone non l’avevano visto."
+			lead="Nel prototipo testato Aggiungi stava in fondo alla lista dei veicoli, e due partecipanti su sette hanno modificato un veicolo che avevano già invece di aggiungerne uno. La riprogettazione lo mette per primo.">
+			<BeforeAfter label="Confronta il Garage del prototipo con quello riprogettato" start={50}
+				before={{ label: 'Prototipo', text: 'Aggiungi in fondo alla lista.' }} after={{ label: 'Riprogettato', text: 'Aggiungi per primo, dove parte lo sguardo.' }}>
+				<div slot="before" class="mock-ba tone-violet"><Device kind="iphone"><div class="mock-garage" role="img" aria-label="Illustrazione: il Garage nel prototipo, con Aggiungi un veicolo in fondo alla lista"><b>Garage</b>{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}<span class="add">+ Aggiungi un veicolo</span></div></Device></div>
+				<div slot="after" class="mock-ba tone-acid"><Device kind="iphone"><div class="mock-garage" role="img" aria-label="Illustrazione: il Garage riprogettato, con Aggiungi un veicolo in cima"><b>Garage</b><span class="add">+ Aggiungi un veicolo</span>{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}</div></Device></div>
+			</BeforeAfter>
+		</Section>
+
+		<Section id="parte" index={6} split eyebrow="SpinGO · La mia parte" title="Il progetto era di tutti." dim="Il sito è mio."
+			lead="Ricerca, prototipi e test sono stati il lavoro di cinque persone. Il sito che li raccoglie è mio.">
+			<Contribution total={119} unit="commit" scope="sul sito del progetto" period="2025–2026" shared="needfinding, sintesi, prototipi, la valutazione euristica e i test." sharedLabel="Condiviso da tutti e cinque"
+				note="Nomi della squadra da aggiungere."
+				me={{ name: 'Samuele Segrini', initials: 'SS', count: 112, role: 'Sviluppatore frontend e membro della squadra HCI', tags: ['React 19', 'TypeScript', 'Vite 7', 'GSAP', 'GitHub Pages'],
+					text: 'Il sito che raccoglie la ricerca, le sette consegne, i video del prototipo finale e i prototipi Figma, con una linea del tempo orizzontale delle consegne in GSAP ScrollTrigger, personas, valori e una vetrina dei prototipi.' }}
+				others={[{ name: '[Compagno]', initials: '··', tone: 'violet' }, { name: '[Compagno]', initials: '··', tone: 'blue' }, { name: '[Compagno]', initials: '··', tone: 'orange' }, { name: '[Compagno]', initials: '··', tone: 'acid' }]} />
+		</Section>
+
+		<Section tone="sand">
+			<Sources eyebrow="SpinGO" title="Fonti e metodi." lead="Ogni numero della pagina porta un apice che arriva qui: cosa misura, come è stato preso e dove controllarlo." notes={[
+				{ title: '88% di successo medio', text: 'Ogni compito valutato da 0 a 2: successo pieno, problemi minori, problemi maggiori o fallimento. Sette persone, 14 punti al massimo.', source: 'Deliverable 6 · test di usabilità' },
+				{ title: 'SUS 89,2, grado A', text: 'System Usability Scale, compilata da tutti e sette dopo la sessione. Sei punteggi tra 82,5 e 100, uno a 70.', source: 'Test di usabilità · questionario' },
+				{ title: '109 risposte al questionario', text: 'Questionario adattivo diffuso nei gruppi universitari e sui social; il 95,4% tra i 18 e i 35 anni, il 78% a Milano o provincia.', source: 'Deliverable 1 · needfinding' },
+				{ title: '7,8 s di reazione ai pericoli', text: 'Tempo medio di reazione durante il compito di navigazione.', source: 'Test di usabilità · navigazione' },
+			]} />
+		</Section>
+
+		<Section tone="sand">
+			<Faq eyebrow="SpinGO" title="Domande," dim="con risposta." open={0} lead="Quelle che chi valuta fa per prime." contact={{ label: 'Scrivimi di questo progetto', href: 'mailto:samuele.segrini@gmail.com' }} items={[
+				{ q: 'Perché un orologio?', a: 'L’app copriva i tre compiti meglio di un dispositivo sul manubrio, ma portava lo sguardo via dalla strada. L’orologio tiene solo quello che serve mentre ci si muove.' },
+				{ q: 'Perché solo sette persone?', a: 'Sette bastano a trovare i problemi che contano, ed era quello lo scopo del test; non bastano per una statistica, e la pagina non ne rivendica.' },
+				{ q: 'C’è un’app da scaricare?', a: 'No. SpinGO è un prototipo Figma testato; i flussi corretti hanno ancora bisogno di una demo funzionante.' },
+			]} />
+		</Section>
+
+		<KeepExploring title="Continua a esplorare." next={next} previous={previous}
+			all={{ label: 'Tutte le anteprime', title: 'Anteprime dei progetti', text: 'Un racconto per progetto, non elencato.', href: previewIndex('it') }} />
+	</Story>
+</ExperimentLayout>

@@ -1,26 +1,25 @@
 ---
 /**
- * L'indice delle anteprime: una per progetto, con lo stato di ciascuna, per aprirle e lavorarci
- * senza cercare gli indirizzi. Non collegata dal resto del sito, fuori dalla sitemap, noindex.
+ * L'indice delle anteprime in italiano, gemello di /en/preview/: una per progetto, con lo stato di
+ * ciascuna. Non collegata dal resto del sito, fuori dalla sitemap, noindex.
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import { Story, Section, Statement } from '../../../components/story';
-import { previews, previewPath, previewCover } from '../../../lib/previews';
-import { withBase } from '../../../lib/base';
+import { previews, previewPath, previewCover, previewIndex } from '../../../lib/previews';
 
-const sections = [{ kicker: 'Previews', value: `${previews.length} projects`, detail: { kicker: 'Status', value: 'unlisted' } }];
+const sections = [{ kicker: 'Anteprime', value: `${previews.length} progetti`, detail: { kicker: 'Stato', value: 'non elencate' } }];
 ---
 
-<ExperimentLayout lang="en" title="Project previews" currentHref="/en/preview/" sections={sections} itHref={withBase('/it/anteprima/')} enHref={withBase('/en/preview/')} noindex>
+<ExperimentLayout lang="it" title="Anteprime dei progetti" currentHref="/it/anteprima/" sections={sections} itHref={previewIndex('it')} enHref={previewIndex('en')} noindex>
 	<Story>
-		<Section id="previews" index={0} eyebrow="Unlisted" title="Project previews," dim="one per project.">
-			<Statement>Each project told as a story with the <b>second series of sections</b>. The large ones make <b>three promises</b> and prove them; the small ones read as a <b>short technical report</b>.</Statement>
+		<Section id="previews" index={0} eyebrow="Non elencate" title="Anteprime dei progetti," dim="una per progetto.">
+			<Statement>Ogni progetto raccontato con le <b>sezioni della seconda serie</b>, ciascuno con la sua forma: i grandi seguono <b>il loro filo</b>, i piccoli si leggono come una <b>breve relazione tecnica</b>.</Statement>
 			<ul class="pvx-list" role="list">
 				{previews.map((p) => (
 					<li>
-						<a href={previewPath(p.key)} class="pvx-card">
+						<a href={previewPath(p.key, 'it')} class="pvx-card">
 							<img src={previewCover(p.key)} alt="" width="1200" height="800" loading="lazy" />
-							<span class="pvx-copy"><b>{p.title}</b><span>{p.en.text}</span><em>{p.en.status}</em></span>
+							<span class="pvx-copy"><b>{p.title}</b><span>{p.it.text}</span><em>{p.it.status}</em></span>
 						</a>
 					</li>
 				))}

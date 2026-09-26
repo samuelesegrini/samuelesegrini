@@ -1,0 +1,230 @@
+---
+/**
+ * Il racconto di EasyManager in italiano, gemello di /en/preview/easymanager: stesse sezioni, stessi
+ * disegni e stesse note; cambia il testo, compreso quello dentro le schermate illustrate. Una comanda
+ * sola lungo le quattro tappe, poi i pezzi come in una documentazione. I fatti del 2026 vengono dal
+ * repository dell'app (commit 424587c). Fuori dalla sitemap, noindex.
+ */
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import {
+	Story, Section, MediaHero, StickyScenes, Anatomy, Lockup, CodeSteps, Declaration, PlusCards, Bento, StateMachine,
+	ChangeLog, Limits, Faq, KeepExploring, PageIndex,
+} from '../../../components/story';
+import { neighbours, previewIndex } from '../../../lib/previews';
+import { labPaths } from '../../../components/lab/chrome';
+import { withBase } from '../../../lib/base';
+import '../../../styles/story-mocks.css';
+
+const repo2023 = 'https://github.com/samuelesegrini/easymanager';
+const { next, previous } = neighbours('easymanager', 'it');
+
+const fiscal = `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body>
+    <printerFiscalReceipt>
+      <beginFiscalReceipt operator="1" />
+      <printRecItem operator="1" description="Risotto"
+        quantity="2" unitPrice="14,00" department="1" />
+      <printRecTotal operator="1" description="Contanti"
+        payment="28,00" paymentType="0" />
+      <endFiscalReceipt operator="1" />
+    </printerFiscalReceipt>
+  </s:Body>
+</s:Envelope>`;
+
+const sections = [
+	{ kicker: 'Capitolo 1 di 6', value: 'Una comanda', detail: { kicker: 'Tappe', value: '4' } },
+	{ kicker: 'Capitolo 2 di 6', value: 'La sala', detail: { kicker: 'Stati del tavolo', value: '4' } },
+	{ kicker: 'Capitolo 3 di 6', value: 'Lo scontrino', detail: { kicker: 'Inviato', value: 'una volta' } },
+	{ kicker: 'Capitolo 4 di 6', value: 'Decisioni', detail: { kicker: 'Scritte', value: '3' } },
+	{ kicker: 'Capitolo 5 di 6', value: 'Il toolkit', detail: { kicker: 'Prodotti', value: '31' } },
+	{ kicker: 'Capitolo 6 di 6', value: 'A che punto è', detail: { kicker: 'Versione', value: '0.1.0' } },
+];
+---
+
+<ExperimentLayout lang="it" title="EasyManager (anteprima)" currentHref="/it/anteprima/easymanager/" sections={sections} itHref={withBase('/it/anteprima/easymanager/')} enHref={withBase('/en/preview/easymanager/')} noindex>
+	<Story>
+		<MediaHero name="EasyManager" title="Dal tavolo alla stampante fiscale." image={withBase('/images/projects/covers/easymanager.svg')}
+			imageAlt="Un iPad con la sala di un ristorante, i tavoli colorati per stato, accanto a una comanda"
+			meta="App per iPad, poi un toolkit Swift · 2023–2026" detail="Lavoro individuale, per un ristorante vero" action={{ label: 'Segui una comanda', href: '#comanda' }}
+			back={{ label: 'Tutte le anteprime', href: previewIndex('it') }} position={{ current: 2, total: 6 }} />
+
+		<Section id="comanda" index={1} eyebrow="EasyManager · Una comanda" title="Quattro tappe," dim="e l’ultima non si annulla."
+			lead="Una comanda passa per quattro paia di mani e tre dispositivi. Ogni schermo legge la stessa comanda; la stampante fiscale la trasforma in un documento con valore legale.">
+			<StickyScenes device="ipad" label="Una comanda dal tavolo alla stampante" note="Illustrazioni · schermate da sostituire" steps={[
+				{ title: 'Presa al tavolo.', text: 'Piatti per portata, varianti con il loro prezzo, un reparto IVA su ogni riga.', code: 'OrderSheetView.swift', tint: 'orange' },
+				{ title: 'Cucinata per portata.', text: 'La cucina vede la stessa comanda, raggruppata per portata per chi cucina.', code: 'CookingView.swift', tint: 'blue' },
+				{ title: 'Pagata in cassa.', text: 'Un preconto, poi il pagamento per metodo: contanti, elettronico, assegno o buono pasto.', code: 'CashDesk.swift', tint: 'violet' },
+				{ title: 'Stampata come scontrino fiscale.', text: 'La cassa manda XML via HTTP alla stampante Epson. Da qui in poi, un errore è un documento con valore legale.', code: 'POST fpmate.cgi · printerFiscalReceipt', tint: 'acid' },
+			]}>
+				<div slot="scene-1" class="mock-screen mock-pad" role="img" aria-label="Illustrazione: il blocco comande del tavolo 7, risotto per due in prima portata">
+					<div class="mock-menu">
+						<div class="mock-tabs"><span class="on">Portata 1</span><span>Portata 2</span><span>Portata 3</span></div>
+						<div class="mock-dishes"><span class="on"><b>Risotto</b><span class="st-mono">14,00</span></span>{Array.from({ length: 5 }, () => <span><i></i><i></i></span>)}</div>
+						<span class="st-eyebrow">Varianti · prezzo per scelta</span>
+					</div>
+					<div class="mock-ticket"><b>Tavolo 7</b><span class="st-eyebrow">Portata 1</span><span class="row"><span>Risotto × 2</span><span class="st-mono">28,00</span></span><span class="st-mono dept">rep. 1</span><span class="st-eyebrow">Portata 2</span><span class="muted">Ancora nessun piatto</span><span class="grow"></span><span class="row total"><span>Totale</span><span class="st-mono">28,00</span></span><span class="send">Invia in cucina</span></div>
+				</div>
+				<div slot="scene-2" class="mock-screen mock-kitchen" role="img" aria-label="Illustrazione: la vista della cucina, comande raggruppate per portata">
+					<b>Cucina</b>
+					<div class="mock-courses">
+						<div><span class="st-eyebrow">Portata 1</span><span class="ticket"><b class="st-mono">T7</b><span>Risotto × 2</span></span><span class="ticket done"><b class="st-mono">T2</b><i></i></span></div>
+						<div><span class="st-eyebrow">Portata 2</span><span class="ticket"><b class="st-mono">T6</b><i></i><i></i></span></div>
+						<div><span class="st-eyebrow">Portata 3</span><span class="ticket"><b class="st-mono">T11</b><i></i></span></div>
+					</div>
+				</div>
+				<div slot="scene-3" class="mock-screen mock-till" role="img" aria-label="Illustrazione: la cassa del tavolo 7, i metodi di pagamento e il tasto dello scontrino fiscale">
+					<div class="st-receipt st-receipt-paper"><div class="head">PRECONTO · TAVOLO 7</div><div class="rule"></div><div class="row"><span>RISOTTO 2×</span><span>28,00</span></div><div class="rule"></div><div class="row strong"><span>TOTALE</span><span>28,00</span></div></div>
+					<div class="mock-pay"><b>Cassa · Tavolo 7</b><div class="methods"><span class="on">Contanti</span><span>Elettronico</span><span>Assegno</span><span>Buono pasto</span></div><span class="grow"></span><span class="pre">Preconto</span><span class="print">Stampa scontrino fiscale</span><span class="st-mono">Chiusure X e Z a fine turno</span></div>
+				</div>
+				<div slot="scene-4" class="mock-screen mock-printout" role="img" aria-label="Illustrazione: lo scontrino fiscale del tavolo 7, accanto alla richiesta che l’ha stampato">
+					<div class="st-receipt st-receipt-paper"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div><div class="row"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div><div class="barcode"></div></div>
+					<div class="mock-request st-mono"><span>POST /cgi-bin/fpmate.cgi</span><span>&lt;printRecItem description="Risotto"</span><span>&nbsp;&nbsp;quantity="2" unitPrice="14,00" /&gt;</span><span class="ok">200 · stampato</span></div>
+				</div>
+			</StickyScenes>
+		</Section>
+
+		<Section id="sala" index={2} split eyebrow="EasyManager · La sala" title="Anatomia di un tavolo." dim="Quattro informazioni su una tessera."
+			lead="Nel dominio un tavolo ha uno stato, un cameriere assegnato e l’ora d’inizio del servizio. La tessera li porta tutti, leggibili dall’altra parte della sala.">
+			<Anatomy label="La tessera di un tavolo con le sue quattro informazioni" measure="tutta la tessera è un solo bersaglio al tocco" statesTitle="Stati" statesText="I quattro valori del dominio, un colore ciascuno."
+				callouts={[
+					{ label: 'Numero', text: 'La cosa più grande sulla tessera, da trovare dall’altra parte della sala.', side: 'left' },
+					{ label: 'Cameriere', text: 'Chi segue il tavolo, filtrabile dalla barra laterale.', side: 'right' },
+					{ label: 'Stato', text: 'Scritto, e ripetuto nel colore perché si legga a colpo d’occhio.', side: 'right' },
+					{ label: 'Inizio servizio', text: 'Quando il tavolo si è seduto.', side: 'left' },
+				]}
+				states={[{ label: 'Libero', tone: 'acid', sample: '1' }, { label: 'Prenotato', tone: 'violet', sample: '3' }, { label: 'In attesa', tone: 'orange', sample: '7' }, { label: 'Occupato', tone: 'dark', sample: '2' }]}>
+				<div class="mock-tile" role="img" aria-label="Tavolo 7, cameriere 02, servizio iniziato alle 20:14, in attesa">
+					<b>7</b><span class="st-mono waiter">C 02</span>
+					<span class="st-mono time"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>20:14</span>
+					<span class="st-mono state">In attesa</span>
+				</div>
+			</Anatomy>
+		</Section>
+
+		<Lockup id="scontrino" index={3} number="03" label="Lo scontrino" title="Uno scontrino si manda una volta." dim="Non si annulla."
+			deepDive="Approfondimento: quando la stampante non risponde" next={{ label: 'Poi: costruiscine uno, riga per riga', href: '#passo-passo' }}>
+			La cassa avvolge ogni scontrino in una busta SOAP e lo invia alla stampante Epson in sala: <b>una riga per piatto con il suo reparto IVA, un totale per metodo di pagamento.</b> Quando la risposta non arrivava, l’app del 2023 lasciava decidere a chi stava in cassa.
+			<Fragment slot="deep-dive">
+				<p>Non sapere se la stampante ha stampato non è come sapere che non l’ha fatto. Rimandare potrebbe stampare un secondo documento con valore legale; non rimandare potrebbe perderne uno. Il toolkit del 2026 parte da questa domanda.</p>
+			</Fragment>
+		</Lockup>
+
+		<Section id="passo-passo" eyebrow="EasyManager · Passo per passo" title="Costruisci uno scontrino," dim="una riga alla volta.">
+			<CodeSteps file="fpmate.cgi · richiesta, abbreviata" code={fiscal} lang="xml" label="Passi" previewLabel="Anteprima" note="POST · indirizzo della stampante in sala"
+				meta={[{ label: '5 passi', icon: 'lines' }, { label: 'XML via HTTP', icon: 'brackets' }, { label: 'Stampante fiscale Epson', icon: 'printer' }]} steps={[
+					{ title: 'Avvolgi in SOAP.', text: 'L’app compone il documento dentro una busta SOAP e lo invia a fpmate.cgi sulla stampante in sala.', lines: '1-3, 10-12', status: 'Busta pronta, niente da stampare' },
+					{ title: 'Apri uno scontrino fiscale.', text: 'Tutto fino al tag di chiusura diventa un solo documento fiscale.', lines: '4', status: 'Scontrino aperto' },
+					{ title: 'Una riga per piatto.', text: 'Descrizione, quantità, prezzo unitario e il reparto IVA a cui corrisponde l’aliquota.', lines: '5-6', status: 'Riga aggiunta' },
+					{ title: 'Un totale per metodo di pagamento.', text: 'Contanti, assegno, pagamento elettronico o buono pasto, ciascuno con il suo totale.', lines: '7-8', status: 'Totale aggiunto' },
+					{ title: 'Chiudi, poi aspetta la risposta.', text: 'Se non arriva, l’app del 2023 registra l’errore e lascia decidere all’operatore.', lines: '9', status: 'Inviato · in attesa della stampante' },
+				]}>
+				<div slot="preview" class="st-receipt">
+					<div class="empty" data-until="0">Ancora niente di stampato.<br />La busta è vuota.</div>
+					<div data-from="1"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div></div>
+					<div data-from="2"><div class="row lit"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div></div>
+					<div data-from="3"><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div></div>
+					<div data-from="4" class="barcode"></div>
+				</div>
+			</CodeSteps>
+		</Section>
+
+		<Section>
+			<Declaration project="EasyManager · 2023" breadcrumb={['EasyManager', 'View model', 'PrinterViewModel']} kind="Classe" name="PrinterViewModel"
+				abstract="Compone i documenti della stampante in XML, li avvolge in una busta SOAP e li invia alla stampante fiscale Epson in sala."
+				availability={[{ label: 'iPadOS' }, { label: 'SwiftUI · MVVM' }, { label: 'Epson ePOS fiscale' }, { label: 'app del 2023', muted: true }]}
+				declaration="class PrinterViewModel: ObservableObject" more="View model: 6 in tutto"
+				nav={[
+					{ title: 'Viste', symbols: [{ name: 'DiningView', kind: 'S' }, { name: 'OrderSheetView', kind: 'S' }, { name: 'CookingView', kind: 'S' }, { name: 'CashDesk', kind: 'S' }] },
+					{ title: 'View model', symbols: [{ name: 'RestaurantViewModel', kind: 'C' }, { name: 'OrderViewModel', kind: 'C' }, { name: 'PrinterViewModel', kind: 'C', current: true }, { name: 'TableViewModel', kind: 'C' }] },
+				]}
+				mentioned={[{ label: 'Uno scontrino si manda una volta', href: '#scontrino' }, { label: 'Costruisci uno scontrino, una riga alla volta', href: '#passo-passo' }]}>
+				<p>Due tipi di documento e le chiusure. Il <b>preconto</b> non è fiscale: una riga per piatto e variante, allineata su 46 colonne. Lo <b>scontrino fiscale</b> porta un <code>printRecItem</code> per riga e un <code>printRecTotal</code> per metodo di pagamento. Le chiusure X e Z chiudono il turno. Stava accanto ad altri cinque view model condivisi, ed è quello che la ricostruzione ha smontato.</p>
+			</Declaration>
+		</Section>
+
+		<Section id="decisioni" index={4} eyebrow="EasyManager · Perché è fatto così" title="Tre decisioni." dim="Aprine una per il ragionamento.">
+			<PlusCards label="Le decisioni dietro il toolkit" cards={[
+				{ eyebrow: 'Livello fiscale', title: '“Incerto” è una risposta, non un errore.', text: 'Quando la stampante non risponde, non si rimanda niente.', tone: 'orange',
+					detail: 'Un timeout lascia aperta la domanda per il passo successivo invece di ripetere un’operazione che potrebbe stampare un secondo scontrino. Nel toolkit l’esito è un valore, accettato, rifiutato o sconosciuto, e la cassa può tenere uno scontrino incerto finché non viene riconciliato.' },
+				{ eyebrow: 'Dispositivi', title: 'Una corsia per dispositivo.', text: 'L’hardware non è un’API come le altre.', tone: 'violet',
+					detail: 'Due comandi validi diventano pericolosi quando si intrecciano sulla stessa stampante. L’hub lega ogni corsia all’identificativo del dispositivo, così due oggetti per lo stesso indirizzo condividono una sola coda, e annullare chi aspetta ferma l’attesa, mai un documento già in scrittura.' },
+				{ eyebrow: 'Comande', title: 'Consegnata, o in attesa.', text: 'Una comanda non sparisce mai e basta.', tone: 'acid',
+					detail: 'La consegna riesce quando la comanda è confermata o messa in coda in modo durevole. DeliveryOutcome ha quattro casi, consegnata, consegnata con pulizia in sospeso, in coda e rifiutata, e “persa” non è tra questi.',
+					links: [{ label: 'Leggi il codice del 2023', href: repo2023 }] },
+			]} />
+		</Section>
+
+		<Section id="toolkit" index={5} eyebrow="EasyManager · Il toolkit del 2026" title="Ricostruito in pacchetti." dim="Ognuno con un compito.">
+			<Bento label="Il toolkit, tessera per tessera" tiles={[
+				{ value: '31', eyebrow: 'Prodotti del pacchetto', text: 'Documentati con DocC e compilati dal controllo di rilascio.', tone: 'acid', size: 'large' },
+				{ value: '0', eyebrow: 'Dipendenze remote', text: 'Dove prima al centro c’era Cloud Firestore.', tone: 'dark' },
+				{ eyebrow: 'Swift 6.3', title: 'Una corsia per dispositivo.', text: 'Due comandi validi non si intrecciano mai sulla stessa stampante.', tone: 'violet' },
+				{ eyebrow: 'Motori', title: 'Puntano solo verso l’interno.', text: 'Niente SwiftUI, niente backend, nessuna API di un produttore dentro un motore.', size: 'wide' },
+				{ eyebrow: 'Fiscale', title: 'I tipi italiani restano nell’adattatore italiano.', text: 'La logica di cassa non li vede mai.', tone: 'blue', size: 'wide' },
+				{ eyebrow: 'Denaro', title: 'Centesimi interi.', text: 'Uno scontrino non arrotonda mai verso un importo diverso.', tone: 'orange', size: 'wide' },
+			]}>
+				<div slot="tile-1" class="mock-grid mock-grid-bento" role="img" aria-label="31 prodotti del pacchetto, tre dei quali sono il dominio delle comande, le corsie dei dispositivi e il livello fiscale">
+					{Array.from({ length: 31 }, (_, k) => <span class:list={{ core: k < 3 }}></span>)}
+				</div>
+			</Bento>
+		</Section>
+
+		<Section split eyebrow="EasyManager · Ciclo di vita della comanda" title="Una comanda è una macchina a stati durevole." dim="Un timeout lascia aperta la domanda."
+			lead="Uscita, conferma e riconciliazione sono fasi separate. Ripetere dopo un timeout potrebbe stampare un secondo documento fiscale, quindi l’incertezza passa al passo successivo.">
+			<StateMachine label="Ciclo di vita della comanda" forbidden="ripetere in silenzio · mai"
+				before={[{ name: 'Bozza', text: 'In costruzione sul blocco; non ha ancora lasciato l’iPad.' }, { name: 'Inviata', text: 'Nella coda d’uscita, affidata al dispositivo.' }]}
+				fork={[{ name: 'Confermata', text: 'Il dispositivo ha risposto.', tone: 'blue' }, { name: 'Incerta', text: 'Ancora nessuna risposta. Sconosciuto non vuol dire fallito.', tone: 'orange' }]}
+				after={[{ name: 'Riconciliata', text: 'Verificata con quello che il dispositivo ha registrato.', tone: 'dark' }]}
+				labels={{ before: [['invio', 'coda d’uscita']], fork: ['il dispositivo risponde', 'timeout'], join: ['riconcilia', 'riconcilia al passo dopo'] }} />
+		</Section>
+
+		<Section id="punto" index={6} eyebrow="EasyManager · Com’è arrivato qui" title="Registro delle modifiche." dim="Dal più recente.">
+			<ChangeLog columns={['Versione', 'Quando', 'Modifiche']} releases={[
+				{ version: '0.2', when: 'Non pubblicata', style: 'planned', changes: [{ kind: 'planned', text: 'Lavoro in corso, non pubblicato e non rivendicato in questa pagina.' }] },
+				{ version: 'main', when: '5 set 2026', changes: [{ kind: 'changed', text: 'La navigazione per ruolo passa nei flussi di ciascuna funzione.' }] },
+				{ version: '0.1.0', when: '24 ago 2026', changes: [
+					{ kind: 'added', text: '31 prodotti: fondamenta, sette motori di funzione, SwiftUI, adattatori per hardware e fisco, test.' },
+					{ kind: 'changed', text: 'SwiftUI distribuito a parte dai motori; l’XML Epson passa a EMEpsonEPOS.' },
+					{ kind: 'removed', text: 'Gli adattatori di backend dai prodotti pubblici, e ogni promessa sulla vecchia struttura.' },
+				] },
+				{ version: 'App', when: 'aprile 2023 · 20 commit', style: 'outline', changes: [
+					{ kind: 'added', text: 'Sala, blocco comande, cucina e cassa su iPad, per un ristorante vero.' },
+					{ kind: 'added', text: 'Stampa fiscale via HTTP: preconto, scontrino, chiusure X e Z.' },
+					{ kind: 'note', text: 'Sei view model condivisi fanno ricadere altrove i cambi locali; le cuciture si vedono.' },
+				] },
+			]} />
+		</Section>
+
+		<Limits title="Cosa è dimostrato," dim="e cosa non ancora." provenLabel="Verificato" notProvenLabel="Non dimostrato" proven={[
+			{ text: 'L’applicazione del 2023, leggibile per intero', source: 'github.com/samuelesegrini/easymanager', href: repo2023 },
+			{ text: 'La versione 0.1.0: 31 prodotti, nessuna dipendenza remota', source: 'Package.swift · CHANGELOG, 24 agosto 2026' },
+			{ text: 'Le compilazioni a valle importano ogni prodotto pubblico senza @testable', source: 'Fixtures/Consumers' },
+		]} notProven={[
+			{ text: 'L’app sull’API 0.1', source: 'La migrazione è fuori dalla versione 0.1.0' },
+			{ text: 'La compatibilità con stampanti fisiche', source: 'Ancora nessuna prova sui dispositivi' },
+			{ text: 'La certificazione fiscale', source: 'Prove ancora mancanti' },
+			{ text: 'Un sorgente 0.1 pubblico', source: 'Per ora privato' },
+		]} />
+
+		<Section>
+			<Faq eyebrow="EasyManager" title="Domande," dim="con risposta." open={0} lead="Quelle che chi valuta fa per prime." contact={{ label: 'Scrivimi di questo progetto', href: 'mailto:samuele.segrini@gmail.com' }} items={[
+				{ q: 'Il ristorante l’ha usata davvero?', a: 'L’app del 2023 è stata scritta per un ristorante vero e per la sua stampante fiscale. La compatibilità con i dispositivi e la certificazione fiscale del toolkit del 2026 non sono ancora dimostrate.' },
+				{ q: 'Perché ricostruire invece di sistemare l’app?', a: 'Sei view model condivisi facevano ricadere altrove ogni cambio locale. La ricostruzione traccia confini attorno a comande, dispositivi e livello fiscale.' },
+				{ q: 'Cosa succede quando la stampante non risponde?', a: 'L’esito diventa “incerto” e si riconcilia al passo successivo, invece di essere ripetuto.' },
+				{ q: 'Posso leggere il codice?', a: 'L’applicazione del 2023 è pubblica su GitHub. Il sorgente del 2026 non è ancora pubblico.' },
+			]} />
+		</Section>
+
+		<KeepExploring title="Continua a esplorare." next={next} previous={previous}
+			all={{ label: 'Tutte le anteprime', title: 'Anteprime dei progetti', text: 'Un racconto per progetto, non elencato.', href: previewIndex('it') }} />
+
+		<Section tone="sand">
+			<PageIndex title="EasyManager"
+				primary={[{ label: 'Una comanda', href: '#comanda' }, { label: 'La sala', href: '#sala' }, { label: 'Lo scontrino', href: '#scontrino' }, { label: 'Decisioni', href: '#decisioni' }, { label: 'Il toolkit', href: '#toolkit' }, { label: 'Registro', href: '#punto' }]}
+				groups={[
+					{ title: 'Codice', links: [{ label: 'Applicazione originale, 2023', href: repo2023, note: 'Il mio repository · github.com' }, { label: 'Sorgente del toolkit 0.1', locked: true, note: 'Non ancora pubblico' }] },
+					{ title: 'Altro dal portfolio', links: [{ label: 'Tutti i progetti', href: labPaths.it.work }, { label: 'Chi sono', href: labPaths.it.about, icon: 'person' }] },
+				]} />
+		</Section>
+	</Story>
+</ExperimentLayout>
