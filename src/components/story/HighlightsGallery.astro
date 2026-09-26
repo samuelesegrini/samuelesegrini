@@ -93,9 +93,8 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			let wanted = !reduce();
 			let inview = false;
 			root.style.setProperty('--hg-every', `${dwell(0)}ms`);
-			// mentre la fila scorre per un pallino o per la riproduzione, lo scorrimento non è di chi guarda
-			let lock = false;
-			let lockTimer = 0;
+			// quando lo script ha mosso la fila l'ultima volta: gli scorrimenti senza un gesto più recente sono suoi
+			let lockedAt = 0;
 
 			// la carta davanti, vista una volta, parte e resta arrivata: non ripartirà più da capo
 			const reveal = () => {
@@ -152,10 +151,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			};
 			const go = (i: number) => {
 				const left = cards[i].offsetLeft - parseFloat(getComputedStyle(track).paddingLeft);
-				lock = true;
-				window.clearTimeout(lockTimer);
-				// scrollend chiude il blocco; il tempo di riserva vale per i browser che non lo mandano
-				lockTimer = window.setTimeout(() => { lock = false; }, 1600);
+				lockedAt = performance.now();
 				track.scrollTo({ left, behavior: reduce() ? 'auto' : 'smooth' });
 				mark(i);
 				arm();
@@ -201,12 +197,16 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				still(false);
 				if (playing) run(); else setPlaying(true);
 			});
-			track.addEventListener('scrollend', () => { lock = false; window.clearTimeout(lockTimer); });
-			// uno scorrimento conta come di chi guarda solo se segue un suo gesto sulla fila, non un assestamento dello snap
+			// I gesti sulla fila: le due dita sul trackpad, la rotella con Maiusc, il dito sul telefono,
+			// le frecce con la fila a fuoco. Uno scorrimento conta come di chi guarda solo se segue un
+			// suo gesto sulla fila, non un assestamento dello snap né la fila mossa dallo script.
 			let touched = -Infinity;
-			for (const type of ['pointerdown', 'keydown', 'touchstart', 'touchmove']) track.addEventListener(type, () => { touched = performance.now(); }, { passive: true });
-			// col trackpad la pagina si scorre in verticale anche col puntatore sopra la fila: conta solo la rotella di lato
-			track.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) touched = performance.now(); }, { passive: true });
+			const touch = () => { touched = performance.now(); };
+			for (const type of ['pointerdown', 'touchstart', 'touchmove']) track.addEventListener(type, touch, { passive: true });
+			track.addEventListener('keydown', (e) => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) touch(); });
+			// col trackpad la pagina si scorre in verticale anche col puntatore sopra la fila: conta la
+			// rotella di lato, o quella in verticale con Maiusc, che alcuni browser non girano in orizzontale
+			track.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || (e.shiftKey && e.deltaY)) touch(); }, { passive: true });
 			// in vista il contatore corre; fuori vista si ferma e riprende da dove era.
 			// In vista vuol dire metà galleria nella finestra, oppure i controlli interi: arrivando dal
 			// basso i controlli si vedono prima di metà galleria, e prima restavano lì senza muovere
@@ -246,28 +246,49 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			};
 			new IntersectionObserver(([entry]) => { ratio = entry.intersectionRatio; judge(); }, { threshold: [0, 0.15, 0.5] }).observe(root);
 			new IntersectionObserver(([entry]) => { controlsIn = entry.intersectionRatio >= 0.99; judge(); }, { threshold: [0, 1] }).observe(root.querySelector('[data-hg-controls]')!);
-			// il pallino segue la carta più vicina all'inizio della fila
+			// la carta più vicina all'inizio della fila; in fondo le ultime non ci arrivano: vale l'ultima
+			const nearestCard = () => {
+				const pad = parseFloat(getComputedStyle(track).paddingLeft);
+				const distance = (card: HTMLElement) => Math.abs(card.offsetLeft - pad - track.scrollLeft);
+				const nearest = cards.reduce((best, card, k) => (distance(card) < distance(cards[best]) ? k : best), 0);
+				return track.scrollLeft + track.clientWidth >= track.scrollWidth - 2 ? cards.length - 1 : nearest;
+			};
+			// Un gesto vale come un pallino: durante lo scorrimento il pallino segue la carta e il
+			// contatore aspetta; a fila ferma la carta riparte da capo e la galleria scorre, anche se era
+			// in pausa. Safari non manda scrollend: la fila è ferma quando non scorre da un momento.
+			let swiping = false;
+			let swipeTimer = 0;
+			const swiped = () => {
+				window.clearTimeout(swipeTimer);
+				if (!swiping) return;
+				swiping = false;
+				root.toggleAttribute('data-swiping', false);
+				const to = nearestCard();
+				if (to !== current) { mark(to); arm(); }
+				enter();
+				settle();
+				still(false);
+				if (playing) run(); else setPlaying(true);
+			};
+			track.addEventListener('scrollend', swiped);
 			let frame = 0;
 			track.addEventListener('scroll', () => {
 				cancelAnimationFrame(frame);
 				frame = requestAnimationFrame(() => {
-					// solo un gesto sposta i pallini: lo snap che si assesta, o la fila mossa dallo script, mai.
-					// Safari non manda scrollend e può riassestare lo snap dopo lo scorrimento dello script:
-					// senza questa regola riportava il pallino alla carta prima e ne faceva ripartire il contatore
-					if (lock || performance.now() - touched > 2500) return;
-					const pad = parseFloat(getComputedStyle(track).paddingLeft);
-					const distance = (card: HTMLElement) => Math.abs(card.offsetLeft - pad - track.scrollLeft);
-					const nearest = cards.reduce((best, card, k) => (distance(card) < distance(cards[best]) ? k : best), 0);
-					// in fondo alla fila le ultime carte non arrivano all'inizio: vale l'ultima
-					const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
-					const to = atEnd ? cards.length - 1 : nearest;
-					// la fila che si riassesta sulla stessa carta non è un cambio: la riproduzione resta com'era
-					if (to === current) return;
-					// la fila l'ha spostata chi guarda su un'altra carta: le carte smettono di scorrere da sole, i giri no
-					wanted = false;
-					if (playing) { setPlaying(false); still(false); }
-					mark(to);
-					arm();
+					// di chi guarda solo con un suo gesto recente, venuto dopo l'ultima mossa dello script:
+					// lo snap che si riassesta dopo (Safari lo fa) riportava il pallino alla carta prima
+					if (touched < lockedAt || performance.now() - touched > 2500) return;
+					// chi guarda prende la fila anche mentre lo script la sta muovendo
+					if (!swiping) {
+						swiping = true;
+						wanted = false;
+						root.toggleAttribute('data-swiping', true);
+						hold();
+					}
+					const to = nearestCard();
+					if (to !== current) { mark(to); arm(); }
+					window.clearTimeout(swipeTimer);
+					swipeTimer = window.setTimeout(swiped, 220);
 				});
 			}, { passive: true });
 		});

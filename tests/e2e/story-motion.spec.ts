@@ -332,7 +332,7 @@ test('coming back up from below, the controls work as soon as they are on screen
 	expect(await fill()).toBe('running');
 });
 
-test('reaching the last card keeps playing, while a sideways swipe stops it', async ({ page }) => {
+test('reaching the last card keeps playing, and the snap settling does not count as a swipe', async ({ page }) => {
 	await page.goto(poliverse);
 	await arriva(page);
 	const gallery = page.locator('.st-hgallery');
@@ -352,12 +352,113 @@ test('reaching the last card keeps playing, while a sideways swipe stops it', as
 	await page.waitForTimeout(300);
 	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	await expect(last).toHaveAttribute('data-current', '');
-	// una passata di lato porta a un'altra carta e ferma lo scorrimento da solo
+	// una passata di lato porta a un'altra carta, come un pallino
 	await track.hover();
 	await page.mouse.wheel(-2000, 0);
-	await expect(gallery).toHaveAttribute('data-playing', 'false');
 	await expect(last).not.toHaveAttribute('data-current', '');
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
 });
+
+// Ogni modo di cambiare carta vale come un pallino: il pallino segue, la barra riparte da vuota, la
+// galleria scorre (anche se era in pausa) e il tasto lo dice. Due passate: con scrollend, e senza,
+// come in Safari, dove la fila è ferma quando non scorre da un momento.
+for (const safari of [false, true]) {
+	const tag = safari ? ' (without scrollend, as in Safari)' : '';
+	const prepare = async (page: Page) => {
+		// senza scrollend: fermato sulla finestra, prima che arrivi alla fila
+		if (safari) await page.addInitScript(() => window.addEventListener('scrollend', (e) => e.stopImmediatePropagation(), true));
+		await page.goto(poliverse);
+		await arriva(page);
+		const gallery = page.locator('.st-hgallery');
+		await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+		await expect(gallery).toHaveAttribute('data-playing', 'true');
+		await expect(gallery).toHaveAttribute('data-settled', '', { timeout: 4000 });
+		return gallery;
+	};
+	// lo stato che si vede: la carta davanti, il pallino acceso, la barra, il tasto
+	const seen = (page: Page) => page.locator('.st-hgallery').evaluate((root) => {
+		const pressed = root.querySelector('[data-hg-dot][aria-pressed="true"]')!;
+		const bar = pressed.querySelector('span')!.getAnimations({ subtree: true })[0];
+		return {
+			card: [...root.querySelectorAll('.st-hg-card')].findIndex((c) => c.hasAttribute('data-current')),
+			dot: Number(pressed.getAttribute('data-hg-dot')),
+			button: root.querySelector('[data-hg-play]')!.getAttribute('data-state'),
+			playing: root.getAttribute('data-playing'),
+			bar: bar ? { time: Number(bar.currentTime), state: bar.playState } : null,
+		};
+	});
+	const settled = async (page: Page, card: number) => {
+		await expect.poll(async () => { const s = await seen(page); return [s.card, s.dot, s.button, s.playing]; }, { timeout: 4000 }).toEqual([card, card, 'playing', 'true']);
+		await expect.poll(async () => (await seen(page)).bar?.state).toBe('running');
+		expect((await seen(page)).bar!.time).toBeLessThan(1500);
+	};
+
+	test(`a two-finger swipe moves the dot and restarts the card, like a dot${tag}`, async ({ page }) => {
+		await prepare(page);
+		await page.waitForTimeout(1500);
+		await page.locator('[data-hg-track]').hover();
+		await page.mouse.wheel(700, 0);
+		await settled(page, 1);
+		// e all'indietro
+		await page.mouse.wheel(-700, 0);
+		await settled(page, 0);
+	});
+
+	test(`a swipe on a paused gallery starts it again, like a dot${tag}`, async ({ page }) => {
+		await prepare(page);
+		await page.locator('[data-hg-play]').click();
+		await expect(page.locator('.st-hgallery')).toHaveAttribute('data-still', '');
+		await page.locator('[data-hg-track]').hover();
+		await page.mouse.wheel(700, 0);
+		await settled(page, 1);
+		await expect(page.locator('.st-hgallery')).not.toHaveAttribute('data-still', '');
+	});
+
+	test(`the mouse wheel with Shift, the arrow keys and a finger all count as a swipe${tag}`, async ({ page }) => {
+		await prepare(page);
+		const track = page.locator('[data-hg-track]');
+		// Maiusc e rotella: alcuni browser la mandano in verticale, la fila scorre comunque di lato
+		await track.hover();
+		await page.keyboard.down('Shift');
+		await page.mouse.wheel(0, 700);
+		await page.keyboard.up('Shift');
+		await track.evaluate((el) => { if (el.scrollLeft < 50) el.scrollBy({ left: 700, behavior: 'instant' }); });
+		await settled(page, 1);
+		// le frecce con la fila a fuoco
+		await track.focus();
+		await page.keyboard.press('ArrowRight');
+		await page.keyboard.press('ArrowRight');
+		await expect.poll(async () => (await seen(page)).card, { timeout: 4000 }).toBeGreaterThan(1);
+		const byKeys = (await seen(page)).card;
+		await settled(page, byKeys);
+		// un dito: il tocco, poi la fila che scorre sotto
+		await track.dispatchEvent('touchstart');
+		await track.evaluate((el) => el.scrollBy({ left: -2000, behavior: 'instant' }));
+		await settled(page, 0);
+	});
+
+	test(`while the gallery moves on its own, a swipe takes over${tag}`, async ({ page }) => {
+		await prepare(page);
+		// il primo pallino si riempie in 9 secondi: il passaggio alla seconda carta, e subito una passata indietro
+		await expect.poll(async () => (await seen(page)).card, { timeout: 12000 }).toBe(1);
+		await page.locator('[data-hg-track]').hover();
+		await page.mouse.wheel(-900, 0);
+		await settled(page, 0);
+	});
+
+	test(`a click inside a card or a vertical scroll over the row is not a swipe${tag}`, async ({ page }) => {
+		const gallery = await prepare(page);
+		await page.locator('.st-hg-card[data-current]').click({ position: { x: 40, y: 40 } });
+		await page.locator('[data-hg-track]').hover();
+		await page.mouse.wheel(0, 60);
+		await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+		await page.waitForTimeout(600);
+		const s = await seen(page);
+		expect([s.card, s.dot, s.playing]).toEqual([0, 0, 'true']);
+		// la barra ha continuato: non è ripartita
+		expect(s.bar!.time).toBeGreaterThan(1500);
+	});
+}
 
 test('each big card plays its own entrance the first time it comes to the front, then stays', async ({ page }) => {
 	await page.goto(poliverse);
