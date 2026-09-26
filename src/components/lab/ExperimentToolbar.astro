@@ -96,7 +96,7 @@ const { lang, name, ticker, routes, sections, languages, cv, labels, mailHref } 
     @media(max-width:620px){.toolbar-shell{left:12px;bottom:12px;width:calc(100vw - 24px);height:86px;border-radius:23px}.toolbar-shell.open{height:min(548px,calc(100svh - 24px));border-radius:25px}.nav-panel{height:calc(100% - 86px);padding:10px 10px 0}.nav-list{gap:5px}.nav-item{grid-template-columns:64px 1fr 34px;gap:14px;min-height:79px;padding:6px 9px 6px 6px;border-radius:16px}.nav-preview{width:64px;height:64px;border-radius:12px}.nav-copy small{font-size:8px}.nav-copy strong{font-size:21px}.nav-arrow{width:32px;height:32px}.identity-row{grid-template-columns:64px minmax(0,1fr) 54px;height:86px;padding:9px;border-radius:23px}.identity-mark{width:64px;height:66px;border-radius:13px;font-size:19px}.identity-name{font-size:15px}.identity-name span{display:none}.ticker{font-size:11px}.menu-toggle{margin-left:7px;width:50px;height:50px;border-radius:14px}}
     /* --- composizione 02: macchine 02 e 05, widget statici, cambio lingua --- */
     .slot{position:relative;height:92px;border:0;border-radius:16px;background:var(--slot);color:#fff;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.shuffle-slot{perspective:500px;text-align:left}.shuffle-card{position:absolute;inset:1px;padding:13px 14px;border-radius:15px;background:var(--blue);color:#111;transform-origin:50% 100%;transition:transform .55s var(--ease),opacity .25s}.shuffle-card.alt{background:var(--violet);transform:translateY(110%) rotateX(-35deg);opacity:0}.shuffle-slot.swapped .shuffle-card{transform:translateY(-110%) rotateX(40deg);opacity:0}.shuffle-slot.swapped .shuffle-card.alt{transform:none;opacity:1}.shuffle-card small{display:block;font:8px var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.55}.shuffle-card b{position:absolute;left:14px;bottom:14px;font-size:18px;letter-spacing:-.045em}.shuffle-notch{position:absolute;right:12px;top:12px;width:8px;height:8px;border-radius:2px;background:#111;box-shadow:0 12px #1118}
+.shuffle-slot{text-align:left}.shuffle-card{position:absolute;inset:1px;padding:13px 14px;border-radius:15px;background:var(--blue);color:#111;transform-origin:50% 100%;transition:transform .55s var(--ease),opacity .25s}.shuffle-card.alt{background:var(--violet);transform:translateY(110%) rotateX(-35deg);opacity:0}.shuffle-slot.swapped .shuffle-card{transform:translateY(-110%) rotateX(40deg);opacity:0}.shuffle-slot.swapped .shuffle-card.alt{transform:none;opacity:1}.shuffle-card small{display:block;font:8px var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.55}.shuffle-card b{position:absolute;left:14px;bottom:14px;font-size:18px;letter-spacing:-.045em}.shuffle-notch{position:absolute;right:12px;top:12px;width:8px;height:8px;border-radius:2px;background:#111;box-shadow:0 12px #1118}
 .plane-slot{display:grid;place-items:center}.plane-stage{position:relative;width:48px;height:48px}.plane-icon{position:absolute;left:7px;top:5px;width:34px;height:30px;overflow:visible;transform-origin:50% 65%;will-change:transform,opacity}.plane-body{fill:white}.plane-fold{fill:none;stroke:#242424;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}.plane-shadow{position:absolute;left:13px;right:13px;bottom:6px;height:5px;border-radius:50%;background:#0009;filter:blur(2px);will-change:transform,opacity}
     .slot-row{display:grid;grid-template-columns:5fr 1fr 1fr;gap:6px;height:78px;min-width:0}
     .mode-area{position:relative;min-width:0}
@@ -139,7 +139,11 @@ const { lang, name, ticker, routes, sections, languages, cv, labels, mailHref } 
     .shuffle-card[data-pos="below"]{z-index:0;transform:translateY(110%) rotateX(-35deg);opacity:0}
     /* l'indice sta sopra il mazzo e non gira con le carte: mostra al massimo cinque quadratini e,
        con più sezioni, la fila scorre per tenere quello acceso nel mezzo; quelli sul bordo della
-       finestra, con altre sezioni oltre, si fanno piccoli come i pallini delle pagine di iOS */
+       finestra, con altre sezioni oltre, si fanno piccoli come i pallini delle pagine di iOS.
+       Le carte girano in prospettiva dentro il loro mazzo (.shuffle-deck), un livello a sé: così
+       l'indice gli sta sopra per z-index anche in Safari, che fra elementi 3D fratelli ordina per
+       profondità e lo lasciava dietro la carta davanti */
+    .shuffle-deck{position:absolute;inset:0;perspective:500px}
     .shuffle-index{--dot:6px;--gap:4px;--seen:5;position:absolute;z-index:3;right:9px;top:50%;box-sizing:content-box;height:calc(var(--seen) * var(--dot) + (var(--seen) - 1) * var(--gap));padding:2px;overflow:hidden;transform:translateY(-50%);pointer-events:none}
     .shuffle-strip{display:grid;gap:var(--gap);transform:translateY(calc(var(--shift, 0) * (var(--dot) + var(--gap)) * -1));transition:transform .45s var(--ease)}
     .shuffle-strip i{width:var(--dot);height:var(--dot);border-radius:2px;background:#111;opacity:.22;transition:opacity .3s ease,transform .3s ease}
@@ -310,10 +314,10 @@ function montaIndice(shell) {
   })
 
   // una carta per sezione, ognuna con la sua identità
-  carta.innerHTML = sezioni.map((sezione, i) => `
+  carta.innerHTML = '<span class="shuffle-deck">' + sezioni.map((sezione, i) => `
     <span class="shuffle-card" data-section="${i}" data-pos="${i === 0 ? 'in' : 'below'}" style="background:${ACCENTI[i % ACCENTI.length]}">
       <small>${sezione.kicker}</small><b>${sezione.value}</b>
-    </span>`).join('') + `<i class="shuffle-index" aria-hidden="true"><i class="shuffle-strip">${sezioni.map(() => '<i></i>').join('')}</i></i>`
+    </span>`).join('') + '</span>' + `<i class="shuffle-index" aria-hidden="true"><i class="shuffle-strip">${sezioni.map(() => '<i></i>').join('')}</i></i>`
   const carte = [...carta.querySelectorAll('.shuffle-card')]
   // l'indice: una finestra di al massimo cinque quadratini che scorre con la carta davanti
   const finestra = Math.min(5, sezioni.length)
