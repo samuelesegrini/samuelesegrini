@@ -144,6 +144,8 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			// un pallino porta a quella carta e fa ripartire il contatore; se era in pausa, riparte anche la riproduzione
 			dots.forEach((d, k) => d.addEventListener('click', () => {
 				wanted = false;
+				// chi preme un controllo lo sta guardando: la galleria è in vista, qualunque sia la sua quota
+				enter();
 				hold();
 				go(k);
 				root.toggleAttribute('data-still', false);
@@ -152,6 +154,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			// pausa: la carta, la barra e i giri si fermano dove sono; riprendendo, continuano da lì
 			play.addEventListener('click', () => {
 				wanted = false;
+				enter();
 				if (!playing && !root.hasAttribute('data-still')) arm();
 				setPlaying(!playing);
 				root.toggleAttribute('data-still', !playing);
@@ -162,26 +165,36 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			for (const type of ['pointerdown', 'keydown', 'touchstart', 'touchmove']) track.addEventListener(type, () => { touched = performance.now(); }, { passive: true });
 			// col trackpad la pagina si scorre in verticale anche col puntatore sopra la fila: conta solo la rotella di lato
 			track.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) touched = performance.now(); }, { passive: true });
-			// in vista per metà il contatore corre; fuori vista si ferma e riprende da dove era
-			new IntersectionObserver(([entry]) => {
-				if (entry.intersectionRatio >= 0.5) {
-					inview = true;
-					root.toggleAttribute('data-inview', true);
-					// la prima volta arrivano anche i controlli, con la loro entrata; poi restano
-					if (!root.hasAttribute('data-arrived')) {
-						// il cerchio parte dal fondo della finestra: la distanza la misura qui, una volta
-						const top = root.querySelector('[data-hg-controls]')!.getBoundingClientRect().top;
-						root.style.setProperty('--hg-rise', `${Math.max(120, Math.round(innerHeight - top))}px`);
-						root.toggleAttribute('data-arrived', true);
-					}
-					reveal();
-					if (wanted && !playing) { wanted = false; arm(); setPlaying(true); } else run();
-				} else if (entry.intersectionRatio < 0.15) {
+			// in vista il contatore corre; fuori vista si ferma e riprende da dove era.
+			// In vista vuol dire metà galleria nella finestra, oppure i controlli interi: arrivando dal
+			// basso i controlli si vedono prima di metà galleria, e prima restavano lì senza muovere
+			// niente (la barra ferma, il tasto che cambiava solo l'icona). Fuori vista solo sotto il 15%
+			// e con i controlli fuori: in mezzo resta com'era, per non accendersi e spegnersi al bordo.
+			let ratio = 0;
+			let controlsIn = false;
+			const enter = () => {
+				inview = true;
+				root.toggleAttribute('data-inview', true);
+				// la prima volta arrivano anche i controlli, con la loro entrata; poi restano
+				if (!root.hasAttribute('data-arrived')) {
+					// il cerchio parte dal fondo della finestra: la distanza la misura qui, una volta
+					const top = root.querySelector('[data-hg-controls]')!.getBoundingClientRect().top;
+					root.style.setProperty('--hg-rise', `${Math.max(120, Math.round(innerHeight - top))}px`);
+					root.toggleAttribute('data-arrived', true);
+				}
+				reveal();
+				if (wanted && !playing) { wanted = false; arm(); setPlaying(true); } else run();
+			};
+			const judge = () => {
+				if (ratio >= 0.5 || controlsIn) enter();
+				else if (ratio < 0.15 && inview) {
 					inview = false;
 					root.toggleAttribute('data-inview', false);
 					hold();
 				}
-			}, { threshold: [0, 0.15, 0.5] }).observe(root);
+			};
+			new IntersectionObserver(([entry]) => { ratio = entry.intersectionRatio; judge(); }, { threshold: [0, 0.15, 0.5] }).observe(root);
+			new IntersectionObserver(([entry]) => { controlsIn = entry.intersectionRatio >= 0.99; judge(); }, { threshold: [0, 1] }).observe(root.querySelector('[data-hg-controls]')!);
 			// il pallino segue la carta più vicina all'inizio della fila
 			let frame = 0;
 			track.addEventListener('scroll', () => {

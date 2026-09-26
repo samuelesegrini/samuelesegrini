@@ -211,7 +211,7 @@ test('the controls arrive once as a rising circle that opens into the dots and t
 	expect(await controls.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
 	expect(await gallery.locator('.st-hg-dots').evaluate((el) => [getComputedStyle(el).clipPath, getComputedStyle(el).translate])).toEqual(['none', 'none']);
 	// fuori e di nuovo in vista non riparte
-	await page.evaluate(() => window.scrollTo(0, 0));
+	await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
 	await expect(gallery).not.toHaveAttribute('data-inview', '');
 	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
 	await expect(gallery).toHaveAttribute('data-inview', '');
@@ -227,6 +227,39 @@ test('without motion the controls are simply there', async ({ page }) => {
 	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
 	await expect(gallery).toHaveAttribute('data-arrived', '');
 	expect(await page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-/.test((a as CSSAnimation).animationName)).length)).toBe(0);
+});
+
+test('coming back up from below, the controls work as soon as they are on screen', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const controls = gallery.locator('.st-hg-controls');
+	// prima sotto la galleria, lontano, poi su quanto basta per avere i controlli interi ma meno di metà galleria
+	const box = await gallery.evaluate((el) => { const r = el.getBoundingClientRect(); return { top: r.top + window.scrollY, height: r.height }; });
+	const vh = await page.evaluate(() => window.innerHeight);
+	await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), box.top + box.height + vh);
+	await expect(gallery).not.toHaveAttribute('data-inview', '');
+	await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), box.top + box.height - 180);
+	const shown = await gallery.evaluate((el) => { const r = el.getBoundingClientRect(); return Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)) / r.height; });
+	expect(shown).toBeLessThan(0.5);
+	await expect(controls).toBeInViewport({ ratio: 1 });
+	// i controlli interi bastano: la galleria è in vista, arrivano e le carte scorrono da sole
+	await expect(gallery).toHaveAttribute('data-inview', '');
+	await expect(gallery).toHaveAttribute('data-arrived', '');
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect.poll(() => page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-(rise|open|drop|show)$/.test((a as CSSAnimation).animationName)).length), { timeout: 4000 }).toBe(0);
+	const fill = () => gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => el.getAnimations({ subtree: true })[0]?.playState);
+	await expect.poll(fill).toBe('running');
+	// la pausa ferma la barra, il tasto la fa ripartire, un pallino porta alla sua carta e riparte
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
+	expect(await fill()).toBe('paused');
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	expect(await fill()).toBe('running');
+	await page.locator('[data-hg-dot="2"]').click();
+	await expect(page.locator('.st-hg-card').nth(2)).toHaveAttribute('data-current', '');
+	expect(await fill()).toBe('running');
 });
 
 test('reaching the last card keeps playing, while a sideways swipe stops it', async ({ page }) => {
