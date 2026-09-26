@@ -869,6 +869,9 @@ const sections = [
 	.pv-shot .pv-phone { font-size: 10.5px; }
 	/* La frase del perché apre la sezione da sola: niente margine sopra, lo spazio lo dà la sezione. */
 	:global(#why .st-statement) { margin-top: 0 !important; }
+	/* Le piastrelle dei sei posti stanno subito sotto la frase: il riquadro alto è fatto per i dispositivi. */
+	:global(#why .st-objects-row) { margin-top: clamp(40px, 5vw, 72px); }
+	:global(#why .st-object) { height: auto; }
 	/* Perché esiste: i sei posti in fila, ognuno una piastrella del suo colore, appena storta. */
 	.pv-place { display: grid; place-items: center; width: min(112px, 86%); aspect-ratio: 1; border-radius: 28%; background: var(--tint); box-shadow: inset 0 0 0 1.5px #171713, 0 14px 28px rgba(23, 23, 19, .12); color: #171713; rotate: var(--r); }
 	/* La terza: il muro di icone, di sbieco, che sfuma sotto il testo e scorre piano, una fila per verso. */
