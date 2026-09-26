@@ -261,6 +261,31 @@ test('left alone, the entrance settles and the icons still switch at once', asyn
 	expect(shown).toEqual({ opacity: '1', animations: 0 });
 });
 
+test('replay starts the drawing of the card in front over, with its bar, and resumes a paused gallery', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await page.locator('[data-hg-dot="1"]').click();
+	const second = page.locator('.st-hg-card').nth(1);
+	await expect(second).toHaveAttribute('data-played', '');
+	const time = () => second.locator('[style*="pvk-grow"]').first().evaluate((el) => Number(el.getAnimations()[0]?.currentTime ?? 0));
+	const fill = () => gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => Number(el.getAnimations({ subtree: true })[0]?.currentTime ?? 0));
+	await expect.poll(time, { timeout: 5000 }).toBeGreaterThan(1500);
+	// in pausa: rivedi riporta il disegno all'inizio, la barra da vuota, e fa ripartire
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
+	await page.locator('[data-hg-replay]').click();
+	expect(await time()).toBeLessThan(500);
+	expect(await fill()).toBeLessThan(500);
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect(gallery).not.toHaveAttribute('data-still', '');
+	await expect(second).not.toHaveAttribute('data-frozen', '');
+	await expect(second).toHaveAttribute('data-current', '');
+	// e il disegno va avanti di nuovo
+	await expect.poll(time, { timeout: 3000 }).toBeGreaterThan(600);
+});
+
 test('without motion the controls are simply there', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.goto(poliverse);
@@ -270,6 +295,8 @@ test('without motion the controls are simply there', async ({ page }) => {
 	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
 	await expect(gallery).toHaveAttribute('data-arrived', '');
 	expect(await page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-/.test((a as CSSAnimation).animationName)).length)).toBe(0);
+	// i disegni sono già completi: niente da rivedere
+	await expect(page.locator('[data-hg-replay]')).toBeHidden();
 });
 
 test('coming back up from below, the controls work as soon as they are on screen', async ({ page }) => {

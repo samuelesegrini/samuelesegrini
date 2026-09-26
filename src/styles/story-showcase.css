@@ -48,7 +48,8 @@
    ricade e ci si ancora con un rimbalzo (--hg-rise, la distanza dal fondo, la misura lo script);
    poi si allunga nella pillola dei pallini
    mentre il tasto si stacca a destra come una goccia, poi compaiono i pallini e l'icona. Il cerchio
-   è la pillola stessa ritagliata al centro: il tasto e il suo spazio (56 + 14) la spostano di 35px.
+   è la pillola stessa ritagliata al centro; ogni pezzo parte dal centro dei controlli, a --hg-dx
+   (la distanza la misura lo script all'arrivo, perché dipende dai pallini e dai tasti).
    Finita l'entrata la galleria prende data-settled e queste animazioni se ne vanno: le due icone del
    tasto si alternano con display, e un elemento che torna visibile rifà le sue animazioni, quindi
    ogni pressione faceva aspettare all'icona nuova il ritardo dell'entrata, più di un secondo. */
@@ -57,6 +58,7 @@
 	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-controls { animation: st-hg-rise 1.05s backwards; }
 	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-dots { animation: st-hg-open .6s cubic-bezier(.34, 1.25, .64, 1) .98s backwards; }
 	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-play { animation: st-hg-drop .6s cubic-bezier(.34, 1.4, .64, 1) .98s backwards; }
+	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-replay { animation-delay: 1.06s; }
 	.st-hgallery[data-arrived]:not([data-settled]) :is(.st-hg-dots button, .st-hg-play svg) { animation: st-hg-show .35s ease-out 1.3s backwards; }
 }
 @keyframes st-hg-rise {
@@ -66,8 +68,8 @@
 	88% { transform: translateY(-3px) scale(.99, 1.01); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
 	100% { transform: none; }
 }
-@keyframes st-hg-open { from { clip-path: inset(0 calc(50% - 28px) round 28px); translate: 35px 0; } to { clip-path: inset(0 0 round 28px); translate: 0 0; } }
-@keyframes st-hg-drop { from { translate: -35px 0; scale: .5; opacity: 0; } 30% { opacity: 1; } to { translate: 0 0; scale: 1; opacity: 1; } }
+@keyframes st-hg-open { from { clip-path: inset(0 calc(50% - 28px) round 28px); translate: var(--hg-dx, 35px) 0; } to { clip-path: inset(0 0 round 28px); translate: 0 0; } }
+@keyframes st-hg-drop { from { translate: var(--hg-dx, -35px) 0; scale: .5; opacity: 0; } 30% { opacity: 1; } to { translate: 0 0; scale: 1; opacity: 1; } }
 @keyframes st-hg-show { from { opacity: 0; } }
 @keyframes st-dot-fill-b { from { scale: 0 1; } }
 /* sotto la frase, quando serve, una riga di descrizione in corpo piccolo */
@@ -215,4 +217,6 @@
 	.st-hg-dots button, .st-hg-dots button span, .st-fx-card, .st-fx-screen, .st-segments label span, .st-toggle-panel, .st-segments[data-thumb]::before, .st-fx-body, .st-fx-body-in { transition: none; }
 	.st-hg-dots button span::after { animation: none !important; }
 	.st-hg-anim, .st-hg-anim *, .st-hg-loop { animation: none !important; }
+	/* i disegni sono già fermi e completi: non c'è niente da rivedere */
+	.st-hg-replay { display: none; }
 }

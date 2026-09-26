@@ -18,6 +18,8 @@
  * ferma solo lo scorrere delle carte.
  * La prima volta che la galleria entra in vista prende `data-arrived`: i controlli arrivano come un
  * cerchio che sale e si apre nella pillola dei pallini e nel tasto.
+ * Il tasto accanto (`data-hg-replay`) rifà da capo il disegno della carta davanti e il suo contatore;
+ * se la galleria era in pausa riparte, come con un pallino.
  * Ogni carta resta davanti per il suo `dwell` (in millisecondi, se no `interval`): il pallino attivo
  * si riempie in quel tempo, così una carta con un disegno più lungo ha il tempo di finirlo.
  * Uno slot `copy-1`, `copy-2`… prende il posto della frase quando la frase deve muoversi con il
@@ -31,8 +33,8 @@ interface Card { text?: string; lead?: string; body?: string; dwell?: number; me
 interface Props { cards: Card[]; label?: string; interval?: number }
 const it = storyLang(Astro.url) === 'it';
 const words = it
-	? { label: 'Punti forti', choose: 'Scegli un punto forte', dot: 'Punto forte', of: 'di', play: 'Fai scorrere i punti forti', pause: 'Ferma i punti forti' }
-	: { label: 'Highlights', choose: 'Choose a highlight', dot: 'Highlight', of: 'of', play: 'Play the highlights', pause: 'Pause the highlights' };
+	? { label: 'Punti forti', choose: 'Scegli un punto forte', dot: 'Punto forte', of: 'di', play: 'Fai scorrere i punti forti', pause: 'Ferma i punti forti', replay: 'Rivedi questo punto forte' }
+	: { label: 'Highlights', choose: 'Choose a highlight', dot: 'Highlight', of: 'of', play: 'Play the highlights', pause: 'Pause the highlights', replay: 'Replay this highlight' };
 const { cards, label = words.label, interval = 3400 } = Astro.props;
 const copy = await Promise.all(cards.map((_, i) => (Astro.slots.has(`copy-${i + 1}`) ? Astro.slots.render(`copy-${i + 1}`) : Promise.resolve(''))));
 const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
@@ -59,6 +61,9 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			<svg class="play" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg>
 			<svg class="pause" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
 		</button>
+		<button type="button" class="st-hg-play st-hg-replay" aria-label={words.replay} data-hg-replay>
+			<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5.2 13.5a7 7 0 1 0 2-6.4L5 9.3" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /><path d="M4.6 4.6v5.1h5.1" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+		</button>
 	</div>
 </div>
 
@@ -72,6 +77,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			const cards = [...track.children] as HTMLElement[];
 			const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-hg-dot]')];
 			const play = root.querySelector<HTMLButtonElement>('[data-hg-play]')!;
+			const replay = root.querySelector<HTMLButtonElement>('[data-hg-replay]');
 			root.querySelector('[data-hg-controls]')?.removeAttribute('hidden');
 			const every = Number(root.dataset.interval) || 3400;
 			const dwell = (i: number) => Number(cards[i].dataset.dwell) || every;
@@ -184,6 +190,17 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				setPlaying(!playing);
 				still(!playing);
 			});
+			// rivedi: il disegno della carta davanti torna al primo fotogramma e riparte, con il contatore
+			replay?.addEventListener('click', () => {
+				wanted = false;
+				enter();
+				settle();
+				hold();
+				for (const a of cards[current].getAnimations({ subtree: true })) a.currentTime = 0;
+				arm();
+				still(false);
+				if (playing) run(); else setPlaying(true);
+			});
 			track.addEventListener('scrollend', () => { lock = false; window.clearTimeout(lockTimer); });
 			// uno scorrimento conta come di chi guarda solo se segue un suo gesto sulla fila, non un assestamento dello snap
 			let touched = -Infinity;
@@ -204,8 +221,14 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				// la prima volta arrivano anche i controlli, con la loro entrata; poi restano
 				if (!root.hasAttribute('data-arrived')) {
 					// il cerchio parte dal fondo della finestra: la distanza la misura qui, una volta
-					const top = root.querySelector('[data-hg-controls]')!.getBoundingClientRect().top;
-					root.style.setProperty('--hg-rise', `${Math.max(120, Math.round(innerHeight - top))}px`);
+					const bar = root.querySelector<HTMLElement>('[data-hg-controls]')!;
+					const box = bar.getBoundingClientRect();
+					root.style.setProperty('--hg-rise', `${Math.max(120, Math.round(innerHeight - box.top))}px`);
+					// il cerchio sta al centro dei controlli: ogni pezzo parte da lì, a qualunque distanza sia
+					for (const part of bar.children as HTMLCollectionOf<HTMLElement>) {
+						const r = part.getBoundingClientRect();
+						part.style.setProperty('--hg-dx', `${Math.round(box.left + box.width / 2 - (r.left + r.width / 2))}px`);
+					}
 					root.toggleAttribute('data-arrived', true);
 					// finita l'entrata, le sue animazioni si tolgono: l'icona del tasto le rifarebbe a ogni cambio
 					window.setTimeout(settle, 1800);
