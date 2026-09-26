@@ -10,7 +10,7 @@ import {
 	Story, Section, DocHero, Specs, Layers, Callout, ExplainerFigure, CodeSteps, Compare, Numbers, TechSpecs, KeepExploring,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
-import { labPaths, labProjectPath } from '../../../components/lab/chrome';
+import { labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 
 const { next, previous } = neighbours('highway-route-planner');
@@ -129,7 +129,7 @@ const sections = [
 
 		<Section tone="sand">
 			<KeepExploring next={next} previous={previous}
-				all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
+				all={{ label: 'All previews', title: 'Project previews', text: 'One story per project, unlisted.', href: withBase('/en/preview/') }} />
 		</Section>
 	</Story>
 </ExperimentLayout>
