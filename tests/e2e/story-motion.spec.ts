@@ -167,6 +167,33 @@ test('a dot restarts the counter, pause freezes it, and play goes on from where 
 	await expect(gallery).toHaveAttribute('data-playing', 'true');
 });
 
+test('reaching the last card keeps playing, while a sideways swipe stops it', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const track = gallery.locator('[data-hg-track]');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	// la pagina scorsa in verticale col trackpad sopra la fila non è un gesto sulla fila
+	await track.hover();
+	await page.mouse.wheel(0, 30);
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	const last = page.locator('.st-hg-card').last();
+	await page.locator('[data-hg-dot="3"]').click();
+	await expect(last).toHaveAttribute('data-current', '');
+	await page.waitForTimeout(1800);
+	// lo snap che si riassesta sull'ultima carta, come fa Safari, lascia la riproduzione com'era
+	await track.evaluate((el) => el.scrollBy({ left: -1, behavior: 'instant' }));
+	await page.waitForTimeout(300);
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect(last).toHaveAttribute('data-current', '');
+	// una passata di lato porta a un'altra carta e ferma lo scorrimento da solo
+	await track.hover();
+	await page.mouse.wheel(-2000, 0);
+	await expect(gallery).toHaveAttribute('data-playing', 'false');
+	await expect(last).not.toHaveAttribute('data-current', '');
+});
+
 test('each big card plays its own entrance the first time it comes to the front, then stays', async ({ page }) => {
 	await page.goto(poliverse);
 	await arriva(page);
