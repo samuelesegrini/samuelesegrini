@@ -188,10 +188,14 @@ test('pause freezes the whole card in front, drawing and line, and play lets it 
 	await page.waitForTimeout(600);
 	const states = () => last.evaluate((card) => card.getAnimations({ subtree: true }).map((a) => a.playState));
 	expect(await states()).toContain('running');
+	// il tasto cambia icona subito; la carta si ferma un paio di fotogrammi dopo
 	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'false');
 	await expect(gallery).toHaveAttribute('data-still', '');
+	await expect(last).toHaveAttribute('data-frozen', '');
 	expect((await states()).filter((s) => s === 'running')).toEqual([]);
 	await page.locator('[data-hg-play]').click();
+	await expect(last).not.toHaveAttribute('data-frozen', '');
 	expect(await states()).toContain('running');
 });
 

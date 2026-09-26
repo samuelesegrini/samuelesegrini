@@ -12,7 +12,8 @@
  * giri che non finiscono (`.st-hg-loop`) girano solo mentre la carta è davanti e in vista, e
  * ripartono da dove erano. Un disegno fatto di animazioni scritte nella carta porta `.st-hg-anim`:
  * resta fermo al primo fotogramma finché la carta non ha `data-played`. Dopo il tasto di pausa la
- * galleria porta `data-still` e si ferma tutta la carta, disegno, frase e giri, finché il tasto non la
+ * galleria porta `data-still` (e la carta davanti, un momento dopo, `data-frozen`) e si ferma tutta
+ * la carta, disegno, frase e giri, finché il tasto non la
  * fa ripartire. Un pallino porta alla sua carta e fa ripartire la riproduzione; un trascinamento
  * ferma solo lo scorrere delle carte.
  * La prima volta che la galleria entra in vista prende `data-arrived`: i controlli arrivano come un
@@ -94,12 +95,30 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			const reveal = () => {
 				if (inview) cards[current].toggleAttribute('data-played', true);
 			};
+			// la carta davanti si ferma tutta con la pausa. Fermarla vuol dire ricalcolare lo stile di
+			// ogni suo elemento: si fa due fotogrammi dopo, quando l'icona del tasto è già cambiata,
+			// altrimenti Safari la cambiava solo a ricalcolo finito, con un ritardo che si vedeva
+			let freezeFrame = 0;
+			const freeze = () => {
+				cancelAnimationFrame(freezeFrame);
+				freezeFrame = requestAnimationFrame(() => {
+					freezeFrame = requestAnimationFrame(() => {
+						const on = root.hasAttribute('data-still');
+						cards.forEach((c, k) => c.toggleAttribute('data-frozen', on && k === current));
+					});
+				});
+			};
+			const still = (on: boolean) => {
+				root.toggleAttribute('data-still', on);
+				freeze();
+			};
 			const mark = (i: number) => {
 				current = i;
 				dots.forEach((d, k) => d.setAttribute('aria-pressed', String(k === i)));
 				cards.forEach((c, k) => c.toggleAttribute('data-current', k === i));
 				root.style.setProperty('--hg-every', `${dwell(i)}ms`);
 				reveal();
+				freeze();
 			};
 			// il contatore riparte da capo: tempo pieno e barra del pallino di nuovo vuota
 			const arm = () => {
@@ -148,7 +167,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				enter();
 				hold();
 				go(k);
-				root.toggleAttribute('data-still', false);
+				still(false);
 				if (playing) run(); else setPlaying(true);
 			}));
 			// pausa: la carta, la barra e i giri si fermano dove sono; riprendendo, continuano da lì
@@ -157,7 +176,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				enter();
 				if (!playing && !root.hasAttribute('data-still')) arm();
 				setPlaying(!playing);
-				root.toggleAttribute('data-still', !playing);
+				still(!playing);
 			});
 			track.addEventListener('scrollend', () => { lock = false; window.clearTimeout(lockTimer); });
 			// uno scorrimento conta come di chi guarda solo se segue un suo gesto sulla fila, non un assestamento dello snap
@@ -214,7 +233,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 					if (to === current) return;
 					// la fila l'ha spostata chi guarda su un'altra carta: le carte smettono di scorrere da sole, i giri no
 					wanted = false;
-					if (playing) { setPlaying(false); root.toggleAttribute('data-still', false); }
+					if (playing) { setPlaying(false); still(false); }
 					mark(to);
 					arm();
 				});

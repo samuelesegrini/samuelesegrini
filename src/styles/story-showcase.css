@@ -76,10 +76,9 @@
 .st-hgallery[data-bound] .st-hg-card:not([data-current]) .st-hg-loop { animation-play-state: paused !important; }
 /* Con la pausa si ferma tutta la carta, non solo i giri: il disegno che sta arrivando e la frase che
    lo segue restano al loro fotogramma, e con il tasto ripartono da lì. */
-/* i pseudo-elementi non possono stare dentro :is(): Safari scartava la regola intera */
-.st-hgallery[data-bound][data-still] .st-hg-card *,
-.st-hgallery[data-bound][data-still] .st-hg-card *::before,
-.st-hgallery[data-bound][data-still] .st-hg-card *::after { animation-play-state: paused !important; }
+/* solo la carta davanti, l'unica che si muove, e con un suo attributo: così la pausa ricalcola
+   poco più di un centinaio di elementi, e lo script la mette dopo che l'icona del tasto è cambiata */
+.st-hgallery[data-bound] .st-hg-card[data-frozen] * { animation-play-state: paused !important; }
 
 /* MediaCards */
 .st-mc-track { grid-auto-columns: min(384px, 78vw); }
