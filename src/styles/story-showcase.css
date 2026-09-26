@@ -43,23 +43,24 @@
 .st-hgallery:is([data-still], :not([data-inview])) .st-hg-dots button[aria-pressed='true'] span::after { animation-play-state: paused; }
 @keyframes st-dot-fill { from { scale: 0 1; } }
 /* L'arrivo dei controlli, una volta sola, la prima volta che la galleria entra in vista
-   (data-arrived): un cerchio sale dal basso con un rimbalzo, si allunga nella pillola dei pallini
+   (data-arrived): un cerchio sale dal fondo della finestra, da dietro la barra, supera il suo posto,
+   ricade e ci si ancora con un rimbalzo (--hg-rise, la distanza dal fondo, la misura lo script);
+   poi si allunga nella pillola dei pallini
    mentre il tasto si stacca a destra come una goccia, poi compaiono i pallini e l'icona. Il cerchio
    è la pillola stessa ritagliata al centro: il tasto e il suo spazio (56 + 14) la spostano di 35px. */
 @media (prefers-reduced-motion: no-preference) {
 	.st-hgallery[data-bound]:not([data-arrived]) .st-hg-controls { opacity: 0; }
-	.st-hgallery[data-arrived] .st-hg-controls { animation: st-hg-rise .8s backwards; }
-	.st-hgallery[data-arrived] .st-hg-dots { animation: st-hg-open .6s cubic-bezier(.34, 1.25, .64, 1) .72s backwards; }
-	.st-hgallery[data-arrived] .st-hg-play { animation: st-hg-drop .6s cubic-bezier(.34, 1.4, .64, 1) .72s backwards; }
-	.st-hgallery[data-arrived] :is(.st-hg-dots button, .st-hg-play svg) { animation: st-hg-show .35s ease-out 1.05s backwards; }
+	.st-hgallery[data-arrived] .st-hg-controls { animation: st-hg-rise 1.05s backwards; }
+	.st-hgallery[data-arrived] .st-hg-dots { animation: st-hg-open .6s cubic-bezier(.34, 1.25, .64, 1) .98s backwards; }
+	.st-hgallery[data-arrived] .st-hg-play { animation: st-hg-drop .6s cubic-bezier(.34, 1.4, .64, 1) .98s backwards; }
+	.st-hgallery[data-arrived] :is(.st-hg-dots button, .st-hg-play svg) { animation: st-hg-show .35s ease-out 1.3s backwards; }
 }
 @keyframes st-hg-rise {
-	0% { transform: translateY(96px) scale(.55); opacity: 0; animation-timing-function: cubic-bezier(.2, .7, .3, 1); }
-	12% { opacity: 1; }
-	52% { transform: translateY(-14px) scale(1.04, .97); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
-	70% { transform: translateY(5px) scale(.98, 1.03); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
-	86% { transform: translateY(-2px) scale(1); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
-	100% { transform: none; opacity: 1; }
+	0% { transform: translateY(var(--hg-rise, 120px)) scale(.8); animation-timing-function: cubic-bezier(.15, .75, .35, 1); }
+	56% { transform: translateY(-56px) scale(.94, 1.06); animation-timing-function: cubic-bezier(.5, 0, .7, .4); }
+	74% { transform: translateY(7px) scale(1.07, .93); animation-timing-function: cubic-bezier(.3, .6, .5, 1); }
+	88% { transform: translateY(-3px) scale(.99, 1.01); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+	100% { transform: none; }
 }
 @keyframes st-hg-open { from { clip-path: inset(0 calc(50% - 28px) round 28px); translate: 35px 0; } to { clip-path: inset(0 0 round 28px); translate: 0 0; } }
 @keyframes st-hg-drop { from { translate: -35px 0; scale: .5; opacity: 0; } 30% { opacity: 1; } to { translate: 0 0; scale: 1; opacity: 1; } }

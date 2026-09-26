@@ -211,7 +211,7 @@ test('the controls arrive once as a rising circle that opens into the dots and t
 	expect(await controls.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
 	expect(await gallery.locator('.st-hg-dots').evaluate((el) => [getComputedStyle(el).clipPath, getComputedStyle(el).translate])).toEqual(['none', 'none']);
 	// fuori e di nuovo in vista non riparte
-	await page.evaluate(() => scrollTo(0, 0));
+	await page.evaluate(() => window.scrollTo(0, 0));
 	await expect(gallery).not.toHaveAttribute('data-inview', '');
 	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
 	await expect(gallery).toHaveAttribute('data-inview', '');

@@ -168,7 +168,12 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 					inview = true;
 					root.toggleAttribute('data-inview', true);
 					// la prima volta arrivano anche i controlli, con la loro entrata; poi restano
-					root.toggleAttribute('data-arrived', true);
+					if (!root.hasAttribute('data-arrived')) {
+						// il cerchio parte dal fondo della finestra: la distanza la misura qui, una volta
+						const top = root.querySelector('[data-hg-controls]')!.getBoundingClientRect().top;
+						root.style.setProperty('--hg-rise', `${Math.max(120, Math.round(innerHeight - top))}px`);
+						root.toggleAttribute('data-arrived', true);
+					}
 					reveal();
 					if (wanted && !playing) { wanted = false; arm(); setPlaying(true); } else run();
 				} else if (entry.intersectionRatio < 0.15) {
