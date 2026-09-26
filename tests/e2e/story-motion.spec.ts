@@ -167,6 +167,24 @@ test('a dot restarts the counter, pause freezes it, and play goes on from where 
 	await expect(gallery).toHaveAttribute('data-playing', 'true');
 });
 
+test('pause freezes the whole card in front, drawing and line, and play lets it go on', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await page.locator('[data-hg-dot="3"]').click();
+	const last = page.locator('.st-hg-card').last();
+	await expect(last).toHaveAttribute('data-played', '');
+	await page.waitForTimeout(600);
+	const states = () => last.evaluate((card) => card.getAnimations({ subtree: true }).map((a) => a.playState));
+	expect(await states()).toContain('running');
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
+	expect((await states()).filter((s) => s === 'running')).toEqual([]);
+	await page.locator('[data-hg-play]').click();
+	expect(await states()).toContain('running');
+});
+
 test('reaching the last card keeps playing, while a sideways swipe stops it', async ({ page }) => {
 	await page.goto(poliverse);
 	await arriva(page);
