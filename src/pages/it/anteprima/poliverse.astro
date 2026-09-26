@@ -543,7 +543,7 @@ const sections = [
 			<Fragment slot="deep-dive"><p>Nessun proxy e nessuna intercettazione TLS: il bundle web, circa 8 MB, viene servito a chiunque lo chieda. Ogni percorso trovato lì dentro è stato poi provato senza credenziali. Un 401 vuol dire che il percorso esiste e vuole un token; un 404 che non c’è più.</p></Fragment>
 		</Lockup>
 
-		<Section tone="dark">
+		<Section>
 			<ThenNow title="Il backend si è spostato." dim="PoliVerse l’ha seguito." baseline="PoliFemo · host scritti nel codice nel 2023" baselineLabel="PoliVerse, a confronto con"
 				note="Da docs/endpoint-status.md, verificato l’11 settembre 2026" link={{ label: 'Leggi le note sugli endpoint', href: `${repo}/blob/main/docs/endpoint-status.md` }} changes={[
 					{ icon: 'globe', title: 'Host letti dalla configurazione ufficiale all’avvio', was: 'host fissati in costanti' },
@@ -621,7 +621,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section>
+		<Section tone="dark">
 			<Declaration project="PoliVerse · 2026" breadcrumb={['PoliVerse', 'Lo strato dei dati', 'Store']} kind="Class" name="Store"
 				abstract="Guida una Source: pubblica subito la sua copia in cache, aggiorna quando la sua finestra di caricamento lo dice, e non svuota mai quello che è già sullo schermo."
 				availability={[{ label: 'iOS 27' }, { label: 'Swift 6 · MainActor' }, { label: 'Widgets · Watch' }, { label: 'DocC', muted: true }]}
@@ -632,7 +632,7 @@ const sections = [
 			</Declaration>
 		</Section>
 
-		<Section id="decisions" tone="sand" eyebrow="PoliVerse · Le regole" title="Sei regole," dim="ognuna con la sua ragione." index={7}>
+		<Section id="decisions" eyebrow="PoliVerse · Le regole" title="Sei regole," dim="ognuna con la sua ragione." index={7}>
 			<Principles rules={[
 				{ title: 'Leggere, mai scrivere.', text: 'Niente iscrizioni, niente rifiuti di un voto, niente post nel forum, niente consegne. Le richieste di scrittura non sono verificate, e una sbagliata costa una sessione allo studente.', source: 'docs/writes-to-university-systems.md' },
 				{ title: 'Mai spacciare i dati d’esempio per veri.', text: 'I dati d’esempio sono attivi di serie e ogni schermata lo dice; vengono tutti da un unico corso di laurea inventato, così carriera, orario e corsi tornano.', source: 'SampleDegree · DataStatusLine' },
@@ -657,7 +657,7 @@ const sections = [
 			{ text: 'Le prestazioni sul campo', source: 'La routine di MetricKit è scritta; serve una versione pubblicata per avere i rapporti' },
 		]} />
 
-		<Section id="specs" index={8}>
+		<Section id="specs" tone="sand" index={8}>
 			<TechSpecs eyebrow="PoliVerse" title="Scheda tecnica" meta="Swift 6 · SwiftUI · iOS 27 · watchOS 26 · 2026" groups={[
 				{ title: 'Piattaforme', items: [{ title: 'iPhone e iPad', text: 'Una colonna su iPhone; su iPad una barra laterale e due colonne, limitate a una misura leggibile.' }, { title: 'Widget e attività in tempo reale', text: 'Prossima lezione, oggi, carriera, aule libere e controlli; la lezione e l’esame sulla schermata di blocco.' }, { title: 'Apple Watch', text: 'La giornata e il prossimo esame, mandati via WatchConnectivity.' }, { title: 'Siri e Spotlight', text: 'Corsi, appelli e aule come entità di App Intents.' }] },
 				{ title: 'Codice', counts: [{ value: '460', label: 'file Swift' }, { value: '17', label: 'aree funzionali' }, { value: '0', label: 'dipendenze', accent: true }], note: 'Modalità di linguaggio Swift 6, concorrenza rigorosa completa, MainActor di default.' },
@@ -667,7 +667,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section eyebrow="PoliVerse · Giorno per giorno" title="Cosa ha aggiunto ogni giorno." dim="Dal più recente.">
+		<Section tone="sand" eyebrow="PoliVerse · Giorno per giorno" title="Cosa ha aggiunto ogni giorno." dim="Dal più recente.">
 			<ChangeLog columns={['Giorno', 'Commit', 'Cambiamenti']} releases={[
 				{ version: '24 set', when: '6 commit', changes: [
 					{ kind: 'added', text: 'Icone rifatte in Icon Composer: Orbita, Giorno e Vicino in ogni colore, e undici speciali.' },
@@ -722,7 +722,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section id="faq">
+		<Section id="faq" tone="sand">
 			<Faq eyebrow="PoliVerse" title="Domande," dim="e risposte." open={0} lead="Quelle che fa per prime chi valuta." contact={{ label: 'Chiedi di questo progetto', href: 'mailto:samuele.segrini@gmail.com' }} items={[
 				{ q: 'È un’app ufficiale?', a: 'No. PoliVerse non è ufficiale e non è approvata dal Politecnico di Milano; l’icona di proposito non porta niente della sua identità.' },
 				{ q: 'Da dove vengono i dati, senza un’API pubblica?', a: 'Dal backend dietro l’app ufficiale. PoliVerse legge la stessa configurazione pubblica per gli host dei servizi e per gli scope di accesso, così un backend spostato non richiede una nuova versione.' },
@@ -732,11 +732,13 @@ const sections = [
 			]} />
 		</Section>
 
-		<KeepExploring
-			title="Continua a esplorare."
-			next={{ label: 'Il prossimo', title: 'EasyManager', text: 'Gli ordini di un ristorante, dal tavolo alla stampante fiscale.', href: labProjectPath('it', 'easymanager-restaurant-operations'), image: cover('easymanager'), tone: 'blue' }}
-			previous={{ label: 'Il precedente', title: 'SpinGO', href: labProjectPath('it', 'spingo-sustainable-micromobility'), image: cover('spingo'), tone: 'violet' }}
-			all={{ label: 'L’archivio', title: 'Tutti i progetti', text: 'App, pacchetti, hardware e ricerca, in un elenco solo.', href: labPaths.it.work }} />
+		<Section tone="sand">
+			<KeepExploring
+				title="Continua a esplorare."
+				next={{ label: 'Il prossimo', title: 'EasyManager', text: 'Gli ordini di un ristorante, dal tavolo alla stampante fiscale.', href: labProjectPath('it', 'easymanager-restaurant-operations'), image: cover('easymanager'), tone: 'blue' }}
+				previous={{ label: 'Il precedente', title: 'SpinGO', href: labProjectPath('it', 'spingo-sustainable-micromobility'), image: cover('spingo'), tone: 'violet' }}
+				all={{ label: 'L’archivio', title: 'Tutti i progetti', text: 'App, pacchetti, hardware e ricerca, in un elenco solo.', href: labPaths.it.work }} />
+		</Section>
 
 		<Section tone="sand">
 			<PageIndex title="PoliVerse" primaryLabel="In questa pagina" primary={[{ label: 'Perché esiste', href: '#why' }, { label: 'Punti forti', href: '#highlights' }, { label: 'Una giornata', href: '#app' }, { label: 'Falla tua', href: '#personalise' }, { label: 'Quindici giorni', href: '#numbers' }, { label: 'Cosa è servito', href: '#backend' }, { label: 'Le regole', href: '#decisions' }, { label: 'Scheda', href: '#specs' }, { label: 'Domande', href: '#faq' }]}

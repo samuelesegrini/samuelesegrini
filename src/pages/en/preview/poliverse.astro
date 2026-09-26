@@ -542,7 +542,7 @@ const sections = [
 			<Fragment slot="deep-dive"><p>No proxy and no TLS interception: the web bundle, about 8 MB, is served to anyone who asks. Each path found in it was then probed without credentials. A 401 means the path exists and wants a token; a 404 means it is gone.</p></Fragment>
 		</Lockup>
 
-		<Section tone="dark">
+		<Section>
 			<ThenNow title="The backend moved." dim="PoliVerse followed." baseline="PoliFemo · hosts hard-coded in 2023" baselineLabel="PoliVerse, compared with"
 				note="From docs/endpoint-status.md, verified 11 September 2026" link={{ label: 'Read the endpoint notes', href: `${repo}/blob/main/docs/endpoint-status.md` }} changes={[
 					{ icon: 'globe', title: 'Hosts read from the official config at launch', was: 'hosts baked into constants' },
@@ -620,7 +620,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section>
+		<Section tone="dark">
 			<Declaration project="PoliVerse · 2026" breadcrumb={['PoliVerse', 'The data layer', 'Store']} kind="Class" name="Store"
 				abstract="Drives one Source: publishes its cached copy at once, refreshes when its load window says so, and never clears what is already on screen."
 				availability={[{ label: 'iOS 27' }, { label: 'Swift 6 · MainActor' }, { label: 'Widgets · Watch' }, { label: 'DocC', muted: true }]}
@@ -631,7 +631,7 @@ const sections = [
 			</Declaration>
 		</Section>
 
-		<Section id="decisions" tone="sand" eyebrow="PoliVerse · The rules" title="Six rules," dim="each with its reason." index={7}>
+		<Section id="decisions" eyebrow="PoliVerse · The rules" title="Six rules," dim="each with its reason." index={7}>
 			<Principles rules={[
 				{ title: 'Read, never write.', text: 'No enrolling, no refusing a mark, no forum posts, no hand-ins. The write requests are unverified, and a wrong one costs the student a session.', source: 'docs/writes-to-university-systems.md' },
 				{ title: 'Never pass sample data off as real.', text: 'Sample data is on by default and every screen says so; all of it comes from one fictional degree, so career, timetable and courses agree.', source: 'SampleDegree · DataStatusLine' },
@@ -656,7 +656,7 @@ const sections = [
 			{ text: 'Performance in the field', source: 'The MetricKit routine is written; it needs a release to report' },
 		]} />
 
-		<Section id="specs" index={8}>
+		<Section id="specs" tone="sand" index={8}>
 			<TechSpecs eyebrow="PoliVerse" meta="Swift 6 · SwiftUI · iOS 27 · watchOS 26 · 2026" groups={[
 				{ title: 'Platforms', items: [{ title: 'iPhone and iPad', text: 'One column on iPhone; on iPad a sidebar and two columns, capped at a readable measure.' }, { title: 'Widgets and Live Activities', text: 'Next lecture, today, career, free rooms and controls; the lesson and the exam on the Lock Screen.' }, { title: 'Apple Watch', text: 'The day and the next exam, sent over WatchConnectivity.' }, { title: 'Siri and Spotlight', text: 'Courses, sittings and rooms as App Intents entities.' }] },
 				{ title: 'Code', counts: [{ value: '460', label: 'Swift files' }, { value: '17', label: 'feature areas' }, { value: '0', label: 'dependencies', accent: true }], note: 'Swift 6 language mode, complete strict concurrency, MainActor by default.' },
@@ -666,7 +666,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section eyebrow="PoliVerse · Day by day" title="What each day added." dim="Newest first.">
+		<Section tone="sand" eyebrow="PoliVerse · Day by day" title="What each day added." dim="Newest first.">
 			<ChangeLog columns={['Day', 'Commits', 'Changes']} releases={[
 				{ version: '24 Sep', when: '6 commits', changes: [
 					{ kind: 'added', text: 'Icons rebuilt in Icon Composer: Orbita, Giorno and Vicino in every colour, and eleven specials.' },
@@ -721,7 +721,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section id="faq">
+		<Section id="faq" tone="sand">
 			<Faq eyebrow="PoliVerse" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
 				{ q: 'Is it an official app?', a: 'No. PoliVerse is unofficial and not endorsed by Politecnico di Milano; the icon deliberately carries nothing from its identity.' },
 				{ q: 'Where does the data come from, without a public API?', a: 'From the backend behind the official app. PoliVerse reads the same public config for its service hosts and its sign-in scopes, so a moved backend needs no release.' },
@@ -731,10 +731,12 @@ const sections = [
 			]} />
 		</Section>
 
-		<KeepExploring
-			next={{ label: 'Next', title: 'EasyManager', text: 'A restaurant’s orders, from the table to the fiscal printer.', href: labProjectPath('en', 'easymanager-restaurant-operations'), image: cover('easymanager'), tone: 'blue' }}
-			previous={{ label: 'Previous', title: 'SpinGO', href: labProjectPath('en', 'spingo-sustainable-micromobility'), image: cover('spingo'), tone: 'violet' }}
-			all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
+		<Section tone="sand">
+			<KeepExploring
+				next={{ label: 'Next', title: 'EasyManager', text: 'A restaurant’s orders, from the table to the fiscal printer.', href: labProjectPath('en', 'easymanager-restaurant-operations'), image: cover('easymanager'), tone: 'blue' }}
+				previous={{ label: 'Previous', title: 'SpinGO', href: labProjectPath('en', 'spingo-sustainable-micromobility'), image: cover('spingo'), tone: 'violet' }}
+				all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
+		</Section>
 
 		<Section tone="sand">
 			<PageIndex title="PoliVerse" primary={[{ label: 'Why it exists', href: '#why' }, { label: 'Highlights', href: '#highlights' }, { label: 'A day in it', href: '#app' }, { label: 'Make it yours', href: '#personalise' }, { label: 'Fifteen days', href: '#numbers' }, { label: 'What it took', href: '#backend' }, { label: 'The rules', href: '#decisions' }, { label: 'Specs', href: '#specs' }, { label: 'Questions', href: '#faq' }]}
