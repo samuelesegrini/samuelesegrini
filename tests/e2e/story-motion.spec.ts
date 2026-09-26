@@ -49,7 +49,7 @@ test('the highlights play when they come into view, and never on their own with 
 	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	await expect(gallery.getByRole('button', { name: 'Pause the highlights' })).toBeVisible();
 	// il pallino attivo si riempie nel tempo di una carta
-	expect(await gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => getComputedStyle(el, '::after').animationName)).toBe('st-dot-fill');
+	expect(await gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => getComputedStyle(el, '::after').animationName)).toMatch(/^st-dot-fill/);
 
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.reload();
@@ -115,13 +115,11 @@ test('the six services keep orbiting the app until the pause button stops them',
 	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	// il giro parte con l'ingresso e non si ferma
 	expect(await moving()).toBe(true);
-	// un pallino ferma lo scorrere delle carte, non l'orbita
+	// un pallino porta alla carta e lascia scorrere le carte e l'orbita
 	await page.locator('[data-hg-dot="0"]').click();
-	await expect(gallery).toHaveAttribute('data-playing', 'false');
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	expect(await moving()).toBe(true);
 	// il tasto di pausa invece la ferma dov'è, e l'ingresso arriva comunque in fondo
-	await play.click();
-	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	await play.click();
 	await expect(gallery).toHaveAttribute('data-still', '');
 	expect(await moving()).toBe(false);
@@ -130,6 +128,43 @@ test('the six services keep orbiting the app until the pause button stops them',
 	await play.click();
 	await expect(gallery).not.toHaveAttribute('data-still', '');
 	expect(await moving()).toBe(true);
+});
+
+test('a dot restarts the counter, pause freezes it, and play goes on from where it stopped', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	// quanto si è riempita la barra del pallino attivo
+	const fill = () => gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => {
+		const a = el.getAnimations({ subtree: true })[0];
+		return a ? { time: Number(a.currentTime), state: a.playState } : null;
+	});
+	await page.waitForTimeout(1500);
+	// un altro pallino: la carta cambia, la riproduzione resta, la barra riparte da vuota
+	await page.locator('[data-hg-dot="2"]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect(page.locator('.st-hg-card').nth(2)).toHaveAttribute('data-current', '');
+	expect((await fill())!.time).toBeLessThan(700);
+	await page.waitForTimeout(1200);
+	// pausa: la barra si ferma dov'è
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
+	const held = (await fill())!;
+	expect(held.state).toBe('paused');
+	await page.waitForTimeout(800);
+	expect((await fill())!.time).toBe(held.time);
+	// riprendendo continua da lì, non da capo
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await page.waitForTimeout(300);
+	const after = (await fill())!;
+	expect(after.state).toBe('running');
+	expect(after.time).toBeGreaterThanOrEqual(held.time);
+	// un clic dentro una carta non ferma nulla
+	await page.locator('.st-hg-card[data-current]').click({ position: { x: 40, y: 40 } });
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
 });
 
 test('each big card plays its own entrance the first time it comes to the front, then stays', async ({ page }) => {

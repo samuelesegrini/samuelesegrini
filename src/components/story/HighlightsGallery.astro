@@ -73,16 +73,23 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			const dwell = (i: number) => Number(cards[i].dataset.dwell) || every;
 			const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 			let current = 0;
+			// un solo contatore per la carta davanti: il tempo che le resta, e da quando corre
 			let timer = 0;
-			// se la riproduzione deve girare quando la galleria è in vista: chi usa i controlli lo decide
+			let remaining = dwell(0);
+			let since = 0;
+			// playing: chi guarda vuole che scorrano; il contatore corre solo se in più la galleria è in vista
+			let playing = false;
+			// finché nessuno tocca i controlli, parte la prima volta che la galleria entra in vista
 			let wanted = !reduce();
+			let inview = false;
 			root.style.setProperty('--hg-every', `${dwell(0)}ms`);
-			// mentre scorre per un pallino o per la riproduzione, lo scorrimento non riassegna il pallino
-			let lock = 0;
+			// mentre la fila scorre per un pallino o per la riproduzione, lo scorrimento non è di chi guarda
+			let lock = false;
+			let lockTimer = 0;
 
 			// la carta davanti, vista una volta, parte e resta arrivata: non ripartirà più da capo
 			const reveal = () => {
-				if (root.hasAttribute('data-inview')) cards[current].toggleAttribute('data-played', true);
+				if (inview) cards[current].toggleAttribute('data-played', true);
 			};
 			const mark = (i: number) => {
 				current = i;
@@ -91,59 +98,95 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				root.style.setProperty('--hg-every', `${dwell(i)}ms`);
 				reveal();
 			};
-			mark(0);
-			const go = (i: number) => {
-				const left = cards[i].offsetLeft - parseFloat(getComputedStyle(track).paddingLeft);
-				lock = performance.now() + 900;
-				track.scrollTo({ left, behavior: reduce() ? 'auto' : 'smooth' });
-				mark(i);
+			// il contatore riparte da capo: tempo pieno e barra del pallino di nuovo vuota
+			const arm = () => {
+				remaining = dwell(current);
+				root.dataset.lap = root.dataset.lap === '1' ? '0' : '1';
 			};
-			// ogni carta resta davanti per il suo tempo, poi tocca alla prossima
-			const next = () => {
-				timer = window.setTimeout(() => {
-					if (!root.isConnected) return;
-					go((current + 1) % cards.length);
-					next();
-				}, dwell(current));
-			};
-			const stop = () => {
+			const hold = () => {
+				if (!timer) return;
 				window.clearTimeout(timer);
 				timer = 0;
-				root.dataset.playing = 'false';
-				play.setAttribute('aria-label', play.dataset.labelPlay ?? 'Play the highlights');
+				remaining = Math.max(0, remaining - (performance.now() - since));
 			};
-			const start = () => {
-				next();
-				root.dataset.playing = 'true';
-				play.setAttribute('aria-label', play.dataset.labelPause ?? 'Pause the highlights');
+			const run = () => {
+				if (timer || !playing || !inview) return;
+				since = performance.now();
+				timer = window.setTimeout(() => {
+					timer = 0;
+					if (!root.isConnected) return;
+					go((current + 1) % cards.length);
+					run();
+				}, remaining);
 			};
+			const go = (i: number) => {
+				const left = cards[i].offsetLeft - parseFloat(getComputedStyle(track).paddingLeft);
+				lock = true;
+				window.clearTimeout(lockTimer);
+				// scrollend chiude il blocco; il tempo di riserva vale per i browser che non lo mandano
+				lockTimer = window.setTimeout(() => { lock = false; }, 1600);
+				track.scrollTo({ left, behavior: reduce() ? 'auto' : 'smooth' });
+				mark(i);
+				arm();
+			};
+			const label = () => play.setAttribute('aria-label', playing ? (play.dataset.labelPause ?? 'Pause the highlights') : (play.dataset.labelPlay ?? 'Play the highlights'));
+			const setPlaying = (on: boolean) => {
+				playing = on;
+				root.dataset.playing = String(on);
+				label();
+				if (on) run(); else hold();
+			};
+			mark(0);
 
-			dots.forEach((d, k) => d.addEventListener('click', () => { wanted = false; stop(); go(k); }));
+			// un pallino porta a quella carta e fa ripartire il contatore; la riproduzione resta com'era
+			dots.forEach((d, k) => d.addEventListener('click', () => {
+				wanted = false;
+				hold();
+				go(k);
+				run();
+			}));
+			// pausa: la carta, la barra e i giri si fermano dove sono; riprendendo, continuano da lì
 			play.addEventListener('click', () => {
-				wanted = !timer;
-				if (timer) stop(); else start();
-				root.toggleAttribute('data-still', !timer);
+				wanted = false;
+				if (!playing && !root.hasAttribute('data-still')) arm();
+				setPlaying(!playing);
+				root.toggleAttribute('data-still', !playing);
 			});
-			track.addEventListener('pointerdown', () => { wanted = false; stop(); });
-			// parte quando è in vista per metà, si ferma quando esce
+			track.addEventListener('scrollend', () => { lock = false; window.clearTimeout(lockTimer); });
+			// uno scorrimento conta come di chi guarda solo se segue un suo gesto sulla fila, non un assestamento dello snap
+			let touched = -Infinity;
+			for (const type of ['pointerdown', 'wheel', 'keydown', 'touchstart']) track.addEventListener(type, () => { touched = performance.now(); }, { passive: true });
+			// in vista per metà il contatore corre; fuori vista si ferma e riprende da dove era
 			new IntersectionObserver(([entry]) => {
-				if (entry.intersectionRatio >= 0.5) { root.toggleAttribute('data-inview', true); reveal(); }
-				else if (entry.intersectionRatio < 0.15) root.toggleAttribute('data-inview', false);
-				if (entry.intersectionRatio >= 0.5 && wanted && !timer) start();
-				else if (entry.intersectionRatio < 0.15 && timer) stop();
+				if (entry.intersectionRatio >= 0.5) {
+					inview = true;
+					root.toggleAttribute('data-inview', true);
+					reveal();
+					if (wanted && !playing) { wanted = false; arm(); setPlaying(true); } else run();
+				} else if (entry.intersectionRatio < 0.15) {
+					inview = false;
+					root.toggleAttribute('data-inview', false);
+					hold();
+				}
 			}, { threshold: [0, 0.15, 0.5] }).observe(root);
 			// il pallino segue la carta più vicina all'inizio della fila
 			let frame = 0;
 			track.addEventListener('scroll', () => {
 				cancelAnimationFrame(frame);
 				frame = requestAnimationFrame(() => {
-					if (performance.now() < lock) return;
+					if (lock) return;
+					// la fila l'ha spostata chi guarda: le carte smettono di scorrere da sole, i giri no
+					if (performance.now() - touched < 1500) {
+						wanted = false;
+						if (playing) { setPlaying(false); root.toggleAttribute('data-still', false); }
+					}
 					const pad = parseFloat(getComputedStyle(track).paddingLeft);
 					const distance = (card: HTMLElement) => Math.abs(card.offsetLeft - pad - track.scrollLeft);
 					const nearest = cards.reduce((best, card, k) => (distance(card) < distance(cards[best]) ? k : best), 0);
 					// in fondo alla fila le ultime carte non arrivano all'inizio: vale l'ultima
 					const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
-					mark(atEnd ? cards.length - 1 : nearest);
+					const to = atEnd ? cards.length - 1 : nearest;
+					if (to !== current) { mark(to); arm(); }
 				});
 			}, { passive: true });
 		});

@@ -33,9 +33,14 @@
 .st-hgallery[data-playing='true'] .st-hg-play .pause { display: block; }
 /* mentre gira, il pallino attivo si riempie nel tempo di una carta */
 .st-hg-dots button span { position: relative; overflow: hidden; }
-.st-hgallery[data-playing='true'] .st-hg-dots button[aria-pressed='true'] span { background: color-mix(in srgb, var(--st-fg) 28%, transparent); }
-.st-hgallery[data-playing='true'] .st-hg-dots button[aria-pressed='true'] span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--st-fg); transform-origin: left center; animation: st-dot-fill var(--hg-every, 3.4s) linear both; }
+.st-hgallery:is([data-playing='true'], [data-still]) .st-hg-dots button[aria-pressed='true'] span { background: color-mix(in srgb, var(--st-fg) 28%, transparent); }
+.st-hgallery:is([data-playing='true'], [data-still]) .st-hg-dots button[aria-pressed='true'] span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--st-fg); transform-origin: left center; animation: st-dot-fill var(--hg-every, 3.4s) linear both; }
+/* ogni nuovo giro del contatore cambia nome all'animazione, così la barra riparte da vuota anche sullo stesso pallino */
+.st-hgallery[data-lap='1'] .st-hg-dots button[aria-pressed='true'] span::after { animation-name: st-dot-fill-b; }
+/* in pausa, o fuori vista, la barra si ferma dov'è insieme al contatore */
+.st-hgallery:is([data-still], :not([data-inview])) .st-hg-dots button[aria-pressed='true'] span::after { animation-play-state: paused; }
 @keyframes st-dot-fill { from { scale: 0 1; } }
+@keyframes st-dot-fill-b { from { scale: 0 1; } }
 /* sotto la frase, quando serve, una riga di descrizione in corpo piccolo */
 .st-hg-card .st-hg-copy p.st-hg-body { max-width: 400px; font-size: 15px; font-weight: 500; line-height: 1.55; letter-spacing: 0; color: var(--st-muted); text-wrap: pretty; }
 /* I disegni che si muovono da soli. Con lo script aspettano al primo fotogramma finché la loro carta
