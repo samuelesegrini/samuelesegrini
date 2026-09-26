@@ -195,6 +195,40 @@ test('pause freezes the whole card in front, drawing and line, and play lets it 
 	expect(await states()).toContain('running');
 });
 
+test('the controls arrive once as a rising circle that opens into the dots and the button', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const controls = gallery.locator('.st-hg-controls');
+	// prima di entrare in vista i controlli non si vedono ancora
+	expect(await controls.evaluate((el) => getComputedStyle(el).opacity)).toBe('0');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-arrived', '');
+	const names = await page.evaluate(() => document.getAnimations().map((a) => (a as CSSAnimation).animationName).filter((n) => /^st-hg-(rise|open|drop|show)$/.test(n)));
+	expect(new Set(names)).toEqual(new Set(['st-hg-rise', 'st-hg-open', 'st-hg-drop', 'st-hg-show']));
+	// finita l'entrata restano come sempre: niente ritaglio, niente spostamento, il tasto si preme ancora
+	await expect.poll(() => page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-(rise|open|drop|show)$/.test((a as CSSAnimation).animationName)).length), { timeout: 4000 }).toBe(0);
+	expect(await controls.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+	expect(await gallery.locator('.st-hg-dots').evaluate((el) => [getComputedStyle(el).clipPath, getComputedStyle(el).translate])).toEqual(['none', 'none']);
+	// fuori e di nuovo in vista non riparte
+	await page.evaluate(() => scrollTo(0, 0));
+	await expect(gallery).not.toHaveAttribute('data-inview', '');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-inview', '');
+	expect(await page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-(rise|open|drop|show)$/.test((a as CSSAnimation).animationName)).length)).toBe(0);
+});
+
+test('without motion the controls are simply there', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	expect(await gallery.locator('.st-hg-controls').evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-arrived', '');
+	expect(await page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-/.test((a as CSSAnimation).animationName)).length)).toBe(0);
+});
+
 test('reaching the last card keeps playing, while a sideways swipe stops it', async ({ page }) => {
 	await page.goto(poliverse);
 	await arriva(page);

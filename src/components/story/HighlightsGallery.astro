@@ -15,6 +15,8 @@
  * galleria porta `data-still` e si ferma tutta la carta, disegno, frase e giri, finché il tasto non la
  * fa ripartire. Un pallino porta alla sua carta e fa ripartire la riproduzione; un trascinamento
  * ferma solo lo scorrere delle carte.
+ * La prima volta che la galleria entra in vista prende `data-arrived`: i controlli arrivano come un
+ * cerchio che sale e si apre nella pillola dei pallini e nel tasto.
  * Ogni carta resta davanti per il suo `dwell` (in millisecondi, se no `interval`): il pallino attivo
  * si riempie in quel tempo, così una carta con un disegno più lungo ha il tempo di finirlo.
  * Uno slot `copy-1`, `copy-2`… prende il posto della frase quando la frase deve muoversi con il
@@ -165,6 +167,8 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				if (entry.intersectionRatio >= 0.5) {
 					inview = true;
 					root.toggleAttribute('data-inview', true);
+					// la prima volta arrivano anche i controlli, con la loro entrata; poi restano
+					root.toggleAttribute('data-arrived', true);
 					reveal();
 					if (wanted && !playing) { wanted = false; arm(); setPlaying(true); } else run();
 				} else if (entry.intersectionRatio < 0.15) {
