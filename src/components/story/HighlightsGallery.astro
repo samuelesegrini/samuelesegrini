@@ -13,8 +13,8 @@
  * ripartono da dove erano. Un disegno fatto di animazioni scritte nella carta porta `.st-hg-anim`:
  * resta fermo al primo fotogramma finché la carta non ha `data-played`. Dopo il tasto di pausa la
  * galleria porta `data-still` e si ferma tutta la carta, disegno, frase e giri, finché il tasto non la
- * fa ripartire. Un pallino o
- * un trascinamento fermano solo lo scorrere delle carte.
+ * fa ripartire. Un pallino porta alla sua carta e fa ripartire la riproduzione; un trascinamento
+ * ferma solo lo scorrere delle carte.
  * Ogni carta resta davanti per il suo `dwell` (in millisecondi, se no `interval`): il pallino attivo
  * si riempie in quel tempo, così una carta con un disegno più lungo ha il tempo di finirlo.
  * Uno slot `copy-1`, `copy-2`… prende il posto della frase quando la frase deve muoversi con il
@@ -139,12 +139,13 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			};
 			mark(0);
 
-			// un pallino porta a quella carta e fa ripartire il contatore; la riproduzione resta com'era
+			// un pallino porta a quella carta e fa ripartire il contatore; se era in pausa, riparte anche la riproduzione
 			dots.forEach((d, k) => d.addEventListener('click', () => {
 				wanted = false;
 				hold();
 				go(k);
-				run();
+				root.toggleAttribute('data-still', false);
+				if (playing) run(); else setPlaying(true);
 			}));
 			// pausa: la carta, la barra e i giri si fermano dove sono; riprendendo, continuano da lì
 			play.addEventListener('click', () => {

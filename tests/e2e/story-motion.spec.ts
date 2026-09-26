@@ -162,6 +162,16 @@ test('a dot restarts the counter, pause freezes it, and play goes on from where 
 	const after = (await fill())!;
 	expect(after.state).toBe('running');
 	expect(after.time).toBeGreaterThanOrEqual(held.time);
+	// in pausa, un pallino porta alla sua carta e fa ripartire la riproduzione, con la barra da vuota
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
+	await page.locator('[data-hg-dot="1"]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect(gallery).not.toHaveAttribute('data-still', '');
+	await expect(page.locator('.st-hg-card').nth(1)).toHaveAttribute('data-current', '');
+	const restarted = (await fill())!;
+	expect(restarted.state).toBe('running');
+	expect(restarted.time).toBeLessThan(700);
 	// un clic dentro una carta non ferma nulla
 	await page.locator('.st-hg-card[data-current]').click({ position: { x: 40, y: 40 } });
 	await expect(gallery).toHaveAttribute('data-playing', 'true');
