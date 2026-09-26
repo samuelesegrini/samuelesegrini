@@ -22,9 +22,14 @@
  * disegno sotto), `overlay` (il disegno a tutta carta, il testo centrato sopra) e `split` (il
  * disegno a sinistra, il testo a destra). Con `lead` la frase si apre con un titolo in grassetto.
  */
+import { storyLang } from '../../lib/story-lang';
 interface Card { text?: string; lead?: string; body?: string; dwell?: number; meta?: string; name?: string; tone?: 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange'; layout?: 'stack' | 'overlay' | 'split'; image?: string; imageAlt?: string; wide?: boolean }
 interface Props { cards: Card[]; label?: string; interval?: number }
-const { cards, label = 'Highlights', interval = 3400 } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
+const words = it
+	? { label: 'Punti forti', choose: 'Scegli un punto forte', dot: 'Punto forte', of: 'di', play: 'Fai scorrere i punti forti', pause: 'Ferma i punti forti' }
+	: { label: 'Highlights', choose: 'Choose a highlight', dot: 'Highlight', of: 'of', play: 'Play the highlights', pause: 'Pause the highlights' };
+const { cards, label = words.label, interval = 3400 } = Astro.props;
 const copy = await Promise.all(cards.map((_, i) => (Astro.slots.has(`copy-${i + 1}`) ? Astro.slots.render(`copy-${i + 1}`) : Promise.resolve(''))));
 const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
 ---
@@ -43,10 +48,10 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 		))}
 	</ul>
 	<div class="st-hg-controls" data-hg-controls hidden>
-		<div class="st-hg-dots" role="group" aria-label="Choose a highlight">
-			{cards.map((c, i) => <button type="button" aria-label={`Highlight ${i + 1} of ${cards.length}${c.name ? `: ${c.name}` : ''}`} aria-pressed={i === 0 ? 'true' : 'false'} data-hg-dot={i}><span></span></button>)}
+		<div class="st-hg-dots" role="group" aria-label={words.choose}>
+			{cards.map((c, i) => <button type="button" aria-label={`${words.dot} ${i + 1} ${words.of} ${cards.length}${c.name ? `: ${c.name}` : ''}`} aria-pressed={i === 0 ? 'true' : 'false'} data-hg-dot={i}><span></span></button>)}
 		</div>
-		<button type="button" class="st-hg-play" aria-label="Play the highlights" data-hg-play>
+		<button type="button" class="st-hg-play" aria-label={words.play} data-hg-play data-label-play={words.play} data-label-pause={words.pause}>
 			<svg class="play" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg>
 			<svg class="pause" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
 		</button>
@@ -105,12 +110,12 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				window.clearTimeout(timer);
 				timer = 0;
 				root.dataset.playing = 'false';
-				play.setAttribute('aria-label', 'Play the highlights');
+				play.setAttribute('aria-label', play.dataset.labelPlay ?? 'Play the highlights');
 			};
 			const start = () => {
 				next();
 				root.dataset.playing = 'true';
-				play.setAttribute('aria-label', 'Pause the highlights');
+				play.setAttribute('aria-label', play.dataset.labelPause ?? 'Pause the highlights');
 			};
 
 			dots.forEach((d, k) => d.addEventListener('click', () => { wanted = false; stop(); go(k); }));

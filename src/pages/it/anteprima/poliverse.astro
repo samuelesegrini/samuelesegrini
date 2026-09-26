@@ -1,7 +1,8 @@
 ---
 /**
- * Anteprima non elencata del racconto di PoliVerse, costruita solo con le sezioni della seconda
- * serie. I numeri vengono dal repository (commit e983281) e hanno la loro nota in fondo; le icone
+ * Il racconto di PoliVerse in italiano, gemello di /en/preview/poliverse: stesse sezioni, stessi
+ * disegni e stesse note; cambia solo il testo. Anteprima non elencata, costruita solo con le sezioni
+ * della seconda serie. I numeri vengono dal repository (commit e983281) e hanno la loro nota in fondo; le icone
  * sono i file veri dell'app; le schermate sono illustrazioni dichiarate dell'interfaccia italiana,
  * da sostituire con le catture del test ScreenshotSweepUITests. Fuori dalla sitemap, noindex.
  */
@@ -21,14 +22,14 @@ const cover = (name: string) => withBase(`/images/projects/covers/${name}.svg`);
 
 // I colori in cui escono Giorno e Vicino: gli stessi da cui parte un Flavor (AppIconChoice).
 const colours: [string, string][] = [
-	['classic', 'Classic'], ['lavender', 'Lavender'], ['indigo', 'Indigo'], ['sky', 'Sky'], ['mint', 'Mint'], ['sage', 'Sage'],
-	['mandarin', 'Mandarin'], ['coral', 'Coral'], ['raspberry', 'Raspberry'], ['coffee', 'Coffee'], ['slate', 'Slate'], ['graphite', 'Graphite'],
+	['classic', 'Classica'], ['lavender', 'Lavanda'], ['indigo', 'Indaco'], ['sky', 'Cielo'], ['mint', 'Menta'], ['sage', 'Salvia'],
+	['mandarin', 'Mandarino'], ['coral', 'Corallo'], ['raspberry', 'Lampone'], ['coffee', 'Caffè'], ['slate', 'Ardesia'], ['graphite', 'Grafite'],
 ];
 const specials: [string, string][] = [
-	['neon', 'Neon'], ['spectrum', 'Spectrum'], ['leather', 'Leather'], ['holographic', 'Holographic'], ['hyperspace', 'Hyperspace'],
-	['blueprint', 'Blueprint'], ['circuit', 'Circuit'], ['heavens', 'Heavens'], ['observatory', 'Observatory'], ['soft', 'Soft'], ['paper', 'Paper'],
+	['neon', 'Neon'], ['spectrum', 'Spettro'], ['leather', 'Pelle'], ['holographic', 'Olografico'], ['hyperspace', 'Iperspazio'],
+	['blueprint', 'Blueprint'], ['circuit', 'Circuito'], ['heavens', 'Cielo'], ['observatory', 'Osservatorio'], ['soft', 'Morbido'], ['paper', 'Carta'],
 ];
-const appearances: [string, string][] = [['orbit', 'Default'], ['orbit-dark', 'Dark'], ['orbit-clear', 'Clear'], ['orbit-tinted', 'Tinted']];
+const appearances: [string, string][] = [['orbit', 'Predefinita'], ['orbit-dark', 'Scura'], ['orbit-clear', 'Trasparente'], ['orbit-tinted', 'Colorata']];
 
 // La rampa del Flavor di partenza, dal diagramma DocC flavor-ramp.svg: dal più profondo al più chiaro.
 const ramp = ['#11777A', '#13758A', '#157099', '#1767A8', '#195BB8', '#1B4BC7', '#1D37D6', '#1F20E5'];
@@ -41,12 +42,12 @@ const ramp = ['#11777A', '#13758A', '#157099', '#1767A8', '#195BB8', '#1B4BC7', 
 const lap = 40;
 const phase = (degrees: number) => -+(((((degrees % 360) + 360) % 360) / 360) * lap).toFixed(2);
 const sources = ([
-	{ name: 'Servizi Online', adds: 'courses, career, exams', icon: 'checklist', tint: 'blue', dx: -24, dy: -8, r: -7 },
-	{ name: 'WeBeep', adds: 'materials, notices, forum', icon: 'layers', tint: 'acid', dx: 7, dy: -14, r: 6 },
-	{ name: 'Recordings', adds: 'recorded lectures', icon: 'play', tint: 'violet', dx: 11, dy: 12, r: -5 },
-	{ name: 'Rooms & maps', adds: 'free rooms, floor plans', icon: 'target', tint: 'orange', dx: 22, dy: 6, r: 8 },
-	{ name: 'Syllabus', adds: 'what each course covers', icon: 'doc-text', tint: 'blue', dx: -6, dy: 13, r: 7 },
-	{ name: 'Manifesto', adds: 'your plan and teachers', icon: 'book', tint: 'acid', dx: -12, dy: -12, r: -6 },
+	{ name: 'Servizi Online', adds: 'corsi, carriera, esami', icon: 'checklist', tint: 'blue', dx: -24, dy: -8, r: -7 },
+	{ name: 'WeBeep', adds: 'materiali, avvisi, forum', icon: 'layers', tint: 'acid', dx: 7, dy: -14, r: 6 },
+	{ name: 'Registrazioni', adds: 'lezioni registrate', icon: 'play', tint: 'violet', dx: 11, dy: 12, r: -5 },
+	{ name: 'Aule e mappe', adds: 'aule libere, planimetrie', icon: 'target', tint: 'orange', dx: 22, dy: 6, r: 8 },
+	{ name: 'Programmi', adds: 'cosa copre ogni corso', icon: 'doc-text', tint: 'blue', dx: -6, dy: 13, r: 7 },
+	{ name: 'Manifesto', adds: 'piano e docenti', icon: 'book', tint: 'acid', dx: -12, dy: -12, r: -6 },
 ] as const).map((source, i) => {
 	const angle = -90 + i * 60;
 	const radians = (angle * Math.PI) / 180;
@@ -82,31 +83,31 @@ const week = [
 const place = (i: number) => `--tint: var(--${sources[i].tint}); --r: ${sources[i].r / 2}deg`;
 
 const sections = [
-	{ kicker: 'Chapter 1 of 8', value: 'Why it exists', detail: { kicker: 'Places', value: '6 to check' } },
-	{ kicker: 'Chapter 2 of 8', value: 'Three promises', detail: { kicker: 'In short', value: '4 highlights' } },
-	{ kicker: 'Chapter 3 of 8', value: 'A day in it', detail: { kicker: 'Tabs', value: 'Today · Courses · Career · Search' } },
-	{ kicker: 'Chapter 4 of 8', value: 'Make it yours', detail: { kicker: 'Icons', value: '36 to choose from' } },
-	{ kicker: 'Chapter 5 of 8', value: 'Fifteen days', detail: { kicker: 'Commits', value: '309' } },
-	{ kicker: 'Chapter 6 of 8', value: 'What it took', detail: { kicker: 'Public API', value: 'none' } },
-	{ kicker: 'Chapter 7 of 8', value: 'The rules', detail: { kicker: 'Written down', value: '6 rules' } },
-	{ kicker: 'Chapter 8 of 8', value: 'Specs & questions', detail: { kicker: 'Dependencies', value: 'none' } },
+	{ kicker: 'Capitolo 1 di 8', value: 'Perché esiste', detail: { kicker: 'Posti', value: '6 da controllare' } },
+	{ kicker: 'Capitolo 2 di 8', value: 'Tre promesse', detail: { kicker: 'In breve', value: '4 punti forti' } },
+	{ kicker: 'Capitolo 3 di 8', value: 'Una giornata', detail: { kicker: 'Schede', value: 'Oggi · Corsi · Carriera · Cerca' } },
+	{ kicker: 'Capitolo 4 di 8', value: 'Tua', detail: { kicker: 'Icone', value: '36 tra cui scegliere' } },
+	{ kicker: 'Capitolo 5 di 8', value: 'Quindici giorni', detail: { kicker: 'Commit', value: '309' } },
+	{ kicker: 'Capitolo 6 di 8', value: 'Cosa è servito', detail: { kicker: 'API pubblica', value: 'nessuna' } },
+	{ kicker: 'Capitolo 7 di 8', value: 'Le regole', detail: { kicker: 'Messe per iscritto', value: '6 regole' } },
+	{ kicker: 'Capitolo 8 di 8', value: 'Scheda e domande', detail: { kicker: 'Dipendenze', value: 'nessuna' } },
 ];
 
 ---
 
-<ExperimentLayout lang="en" title="PoliVerse (preview)" currentHref="/en/preview/poliverse/" sections={sections} itHref={withBase('/it/anteprima/poliverse/')} enHref={withBase('/en/preview/poliverse/')} noindex>
+<ExperimentLayout lang="it" title="PoliVerse (anteprima)" currentHref="/it/anteprima/poliverse/" sections={sections} itHref={withBase('/it/anteprima/poliverse/')} enHref={withBase('/en/preview/poliverse/')} noindex>
 	<Story>
-		<AppHero name="PoliVerse" title="Your whole Politecnico. In one app." tint="blue"
-			summary="An unofficial app for Politecnico di Milano students: timetable, courses, WeBeep materials, lesson recordings, exams and rooms, on iPhone, iPad, Apple Watch and the Lock Screen. It opens with content, even offline."
-			meta="Individual work · SwiftUI · iOS 27 · September 2026"
-			actions={[{ label: 'Read the story', href: '#why' }, { label: 'Source on GitHub', href: repo }]}>
+		<AppHero name="PoliVerse" title="Tutto il tuo Politecnico. In un’app." tint="blue"
+			summary="Un’app non ufficiale per chi studia al Politecnico di Milano: orario, corsi, materiali di WeBeep, registrazioni delle lezioni, esami e aule, su iPhone, iPad, Apple Watch e schermata di blocco. Si apre già piena, anche offline."
+			meta="Lavoro individuale · SwiftUI · iOS 27 · settembre 2026"
+			actions={[{ label: 'Leggi il racconto', href: '#why' }, { label: 'Codice su GitHub', href: repo }]}>
 			<img slot="mark" src={icon('orbit')} alt="" width="104" height="104" class="pv-mark" />
-			<ProductShot slot="shot" priority src="/assets/projects/poliverse-devices.png" alt="PoliVerse on iPhone, iPad and Apple Watch" />
+			<ProductShot slot="shot" priority src="/assets/projects/poliverse-devices.png" alt="PoliVerse su iPhone, iPad e Apple Watch" />
 		</AppHero>
 
-		<Section id="why" index={1} eyebrow="PoliVerse · Why it exists" title="Six places," dim="before the first lesson.">
-			<Statement>A day at the Politecnico is spread over six places: <b>Servizi Online</b>, <b>WeBeep</b>, <b>the recordings</b>, <b>the rooms</b>, <b>the syllabus</b> and <b>the Manifesto</b>. <b>The official app leaves some of them out.</b></Statement>
-			<ObjectRow label="The six places a student checks" items={sources.map((source) => ({ name: source.name, text: `For ${source.adds}.` }))}>
+		<Section id="why" index={1} eyebrow="PoliVerse · Perché esiste" title="Sei posti," dim="prima della prima lezione.">
+			<Statement>Una giornata al Politecnico è sparsa in sei posti: <b>Servizi Online</b>, <b>WeBeep</b>, <b>le registrazioni</b>, <b>le aule</b>, <b>i programmi</b> e <b>il Manifesto</b>. <b>L’app ufficiale ne lascia fuori qualcuno.</b></Statement>
+			<ObjectRow label="I sei posti che uno studente controlla" items={sources.map((source) => ({ name: source.name, text: `${source.adds[0].toUpperCase()}${source.adds.slice(1)}.` }))}>
 				<span slot="object-1" class="pv-place" style={place(0)} aria-hidden="true"><Icon name={sources[0].icon} size={40} stroke={1.8} /></span>
 				<span slot="object-2" class="pv-place" style={place(1)} aria-hidden="true"><Icon name={sources[1].icon} size={40} stroke={1.8} /></span>
 				<span slot="object-3" class="pv-place" style={place(2)} aria-hidden="true"><Icon name={sources[2].icon} size={40} stroke={1.8} /></span>
@@ -117,31 +118,31 @@ const sections = [
 		</Section>
 
 		<Section>
-			<LitText eyebrow="PoliVerse · So" tint="blue" text="So I built the app I wanted to open: *all six in one place*, on the newest SwiftUI." />
+			<LitText eyebrow="PoliVerse · Così" tint="blue" text="Così ho costruito l’app che volevo aprire io: *tutti e sei in un posto solo*, sul SwiftUI più recente." />
 		</Section>
 
-		<ScrollIntro id="highlights" index={2} tone="ink2" eyebrow="PoliVerse" title="Three promises." />
+		<ScrollIntro id="highlights" index={2} tone="ink2" eyebrow="PoliVerse" title="Tre promesse." />
 
 		<Section tone="ink2">
-			<PlusCards label="The three promises PoliVerse keeps" cards={[
-				{ eyebrow: 'Promise 1', title: 'All of it.', text: 'Six places in one app, on every screen a student carries.', tone: 'acid',
-					detail: 'Servizi Online, WeBeep, the recordings, the rooms, the syllabus and the Manifesto, in four tabs, on iPhone, iPad, Apple Watch, widgets and the Lock Screen, and audited at the largest text size. Keeping it working without a public API is what the sixth chapter is about.',
-					links: [{ label: 'There is no public API', href: '#backend' }, { label: 'CieID doesn’t know who called it', href: '#cie' }] },
-				{ eyebrow: 'Promise 2', title: 'Never empty.', text: 'It opens with the day, even underground.', tone: 'blue',
-					detail: 'The last copy of each answer stays on the phone, in the app group the widgets read too. With no signal the app opens from there, and a refresh that fails keeps what is on screen and says when it was fetched.',
-					links: [{ label: 'A stale answer with a date', href: '#data' }, { label: 'Four layers, pulled apart', href: '#layers' }] },
-				{ eyebrow: 'Promise 3', title: 'Never pretends.', text: 'Sample data says so, and nothing is written on a guess.', tone: 'orange',
-					detail: 'Sample data is on by default and every screen says so while it is. An old copy carries its date. Enrolling in an exam stays out until the request shapes are verified, because a wrong write costs a student a session. And this page ends on what it has not proven yet.',
-					links: [{ label: 'Four things that looked like bugs', href: '#traps' }, { label: 'The rules', href: '#decisions' }] },
+			<PlusCards label="Le tre promesse che PoliVerse mantiene" cards={[
+				{ eyebrow: 'Promessa 1', title: 'Tutto.', text: 'Sei posti in un’app, su ogni schermo che uno studente ha con sé.', tone: 'acid',
+					detail: 'Servizi Online, WeBeep, le registrazioni, le aule, i programmi e il Manifesto, in quattro schede, su iPhone, iPad, Apple Watch, widget e schermata di blocco, e verificati alla dimensione di testo più grande. Farlo funzionare senza un’API pubblica è il tema del sesto capitolo.',
+					links: [{ label: 'Non c’è un’API pubblica', href: '#backend' }, { label: 'CieID non sa chi l’ha chiamata', href: '#cie' }] },
+				{ eyebrow: 'Promessa 2', title: 'Mai vuota.', text: 'Si apre con la giornata, anche sottoterra.', tone: 'blue',
+					detail: 'L’ultima copia di ogni risposta resta sul telefono, nel gruppo d’app che leggono anche i widget. Senza segnale l’app si apre da lì, e un aggiornamento che fallisce lascia quello che c’è sullo schermo e dice quando è stato scaricato.',
+					links: [{ label: 'Una risposta vecchia, con la data', href: '#data' }, { label: 'Quattro strati, separati', href: '#layers' }] },
+				{ eyebrow: 'Promessa 3', title: 'Mai finta.', text: 'I dati d’esempio lo dicono, e niente si scrive a occhio.', tone: 'orange',
+					detail: 'I dati d’esempio sono attivi di serie e ogni schermata lo dice finché lo sono. Una copia vecchia porta la sua data. L’iscrizione agli esami resta fuori finché le richieste non sono verificate, perché una scrittura sbagliata costa una sessione. E questa pagina finisce su quello che non ha ancora dimostrato.',
+					links: [{ label: 'Quattro cose che sembravano bug', href: '#traps' }, { label: 'Le regole', href: '#decisions' }] },
 			]} />
 		</Section>
 
-		<Section tone="ink2" link={{ label: 'Browse the source', href: repo }}>
+		<Section tone="ink2" link={{ label: 'Sfoglia il codice', href: repo }}>
 			<HighlightsGallery interval={6000} cards={[
-				{ text: 'Six places a student checks. One app.', meta: 'What PoliVerse brings together', name: 'Six places, one app', tone: 'dark' },
-				{ lead: 'Your courses, with WeBeep inside.', text: 'Your exam grade, from the study plan.', name: 'Courses with WeBeep inside', tone: 'paper', layout: 'split', dwell: 9000 },
-				{ lead: 'Make it yours.', text: 'One colour becomes the whole app, down to the icon.', meta: 'Personalizza, 36 icons', name: 'Make it yours', tone: 'dark', layout: 'overlay' },
-				{ lead: 'It opens with your day, even underground.', text: 'Back up, it catches up on its own.', body: 'PoliVerse keeps the last copy of your day on the phone. With no signal it opens from there, and when the signal is back it refreshes by itself, room changes included.', name: 'Offline first', tone: 'paper', layout: 'split', dwell: 8000 },
+				{ text: 'Sei posti da controllare. Un’app.', meta: 'Quello che PoliVerse tiene insieme', name: 'Sei posti, un’app', tone: 'dark' },
+				{ lead: 'I tuoi corsi, con dentro WeBeep.', text: 'Il voto dell’esame, dal piano di studi.', name: 'Corsi con dentro WeBeep', tone: 'paper', layout: 'split', dwell: 9000 },
+				{ lead: 'Falla tua.', text: 'Un colore diventa tutta l’app, fino all’icona.', meta: 'Personalizza, 36 icone', name: 'Falla tua', tone: 'dark', layout: 'overlay' },
+				{ lead: 'Si apre con la tua giornata, anche sottoterra.', text: 'Tornato su, si rimette in pari da sola.', body: 'PoliVerse tiene sul telefono l’ultima copia della tua giornata. Senza segnale si apre da lì, e quando il segnale torna si aggiorna da sola, cambi d’aula compresi.', name: 'Prima offline', tone: 'paper', layout: 'split', dwell: 8000 },
 			]}>
 				<div slot="media-1" class="pv-combine" style={`--half: ${lap / 2}s`} aria-hidden="true">
 					<span class="pv-ring"></span>
@@ -157,16 +158,16 @@ const sections = [
 					))}
 				</div>
 				<div slot="copy-2" class="st-hg-anim pv-k-copy">
-					<p><b class="st-hg-lead">Your courses, with WeBeep inside.</b></p>
+					<p><b class="st-hg-lead">I tuoi corsi, con dentro WeBeep.</b></p>
 					<div class="pv-k-lines">
-						<p data-gone style="opacity: 0; animation: pvk-fade-out .3s ease-out 2.2s backwards;">Matched by the course code.</p>
+						<p data-gone style="opacity: 0; animation: pvk-fade-out .3s ease-out 2.2s backwards;">Trovato dal codice del corso.</p>
 						<div style="animation: pvk-fade-in .4s ease-out 2.45s both;">
-							<p class="st-hg-loop" style="animation: pvk-txt-a 6s cubic-bezier(.4, 0, .6, 1) 4s infinite none;">Your exam grade, from the study plan.</p>
-							<p class="st-hg-loop" data-gone style="opacity: 0; animation: pvk-txt-b 6s cubic-bezier(.4, 0, .6, 1) 4s infinite none;">Your next lesson, with its room.</p>
-							<p class="st-hg-loop" data-gone style="opacity: 0; animation: pvk-txt-c 6s cubic-bezier(.4, 0, .6, 1) 4s infinite none;">Days to your next exam, counted down.</p>
+							<p class="st-hg-loop" style="animation: pvk-txt-a 6s cubic-bezier(.4, 0, .6, 1) 4s infinite none;">Il voto dell’esame, dal piano di studi.</p>
+							<p class="st-hg-loop" data-gone style="opacity: 0; animation: pvk-txt-b 6s cubic-bezier(.4, 0, .6, 1) 4s infinite none;">La prossima lezione, con la sua aula.</p>
+							<p class="st-hg-loop" data-gone style="opacity: 0; animation: pvk-txt-c 6s cubic-bezier(.4, 0, .6, 1) 4s infinite none;">I giorni al prossimo esame, a scalare.</p>
 						</div>
 					</div>
-					<p class="st-hg-body">Each course in your plan opens its WeBeep page, with lessons, exams and grade beside it.</p>
+					<p class="st-hg-body">Ogni corso del tuo piano apre la sua pagina di WeBeep, con accanto lezioni, esami e voto.</p>
 				</div>
 				<div slot="media-2" class="pv-stage-box" aria-hidden="true">
 					<div class="st-hg-anim pv-stage" style="position: relative; width: 452px; height: 472px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -296,7 +297,7 @@ const sections = [
 						</span>
 					))}
 				</div>
-				<div slot="media-4" class="pv-stage-box" role="img" aria-label="Illustration: the day stays on screen while the signal is gone, then refreshes by itself when it comes back">
+				<div slot="media-4" class="pv-stage-box" role="img" aria-label="Illustrazione: la giornata resta sullo schermo mentre il segnale manca, poi si aggiorna da sola quando torna">
 					<div class="st-hg-anim pv-stage" style="position: relative; width: 452px; height: 472px; display: flex; align-items: center; justify-content: center;">
 					        <div style="position: relative; width: 420px; height: 440px; border-radius: 22px; overflow: hidden; background: #cdefff; display: flex; align-items: center; justify-content: center;">
 					          <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: #3a3a33; box-shadow: inset 0 2px 0 #5e5a53; animation: pvo-ground 5.4s cubic-bezier(.4, 0, .6, 1) 0s both;"></div>
@@ -336,14 +337,14 @@ const sections = [
 			</HighlightsGallery>
 		</Section>
 
-		<Section id="app" eyebrow="PoliVerse · A day in it" title="One day," dim="four questions." index={3}>
-			<FeatureExplorer label="Tabs" device="iphone" note="Illustrations of the Italian interface · screenshots to follow" features={[
-				{ title: 'Today', file: 'Features/Shell', tint: 'blue', text: 'In the morning: what is on today? The date, the lesson in progress, then what is coming, the timetable, deadlines and exams. Every section can be moved, hidden or redrawn.' },
-				{ title: 'Courses', file: 'Features/Home · WeBeep', tint: 'acid', text: 'Between lessons: what is new in my courses? Each course gathers its notices, materials, recordings, sittings, forum and syllabus, with unread counts on the way in.' },
-				{ title: 'Career', file: 'Features/Career', tint: 'violet', text: 'In the evening: what is due? Rebuilt around what closes next rather than what is already true: enrolments closing, marks to decide, sittings, and the average as a line over time.' },
-				{ title: 'Search', file: 'Features/Search', tint: 'orange', text: 'Anywhere: where, and what? One field across courses, agenda and sittings, then rooms with their equipment, free rooms, and the campus map down to floor plans.' },
+		<Section id="app" eyebrow="PoliVerse · Una giornata" title="Una giornata," dim="quattro domande." index={3}>
+			<FeatureExplorer label="Schede" device="iphone" note="Illustrazioni dell’interfaccia · le schermate arriveranno" features={[
+				{ title: 'Oggi', file: 'Features/Shell', tint: 'blue', text: 'La mattina: cosa c’è oggi? La data, la lezione in corso, poi quello che arriva, l’orario, le scadenze e gli esami. Ogni sezione si può spostare, nascondere o ridisegnare.' },
+				{ title: 'Corsi', file: 'Features/Home · WeBeep', tint: 'acid', text: 'Tra una lezione e l’altra: cosa c’è di nuovo nei miei corsi? Ogni corso raccoglie avvisi, materiali, registrazioni, appelli, forum e programma, con i non letti già all’ingresso.' },
+				{ title: 'Carriera', file: 'Features/Career', tint: 'violet', text: 'La sera: cosa scade? Rifatta attorno a quello che chiude per primo invece che a quello che è già deciso: iscrizioni in chiusura, voti da decidere, appelli, e la media come una linea nel tempo.' },
+				{ title: 'Cerca', file: 'Features/Search', tint: 'orange', text: 'Ovunque: dove, e cosa? Un campo solo per corsi, agenda e appelli, poi le aule con le loro dotazioni, le aule libere e la mappa del campus fino alle planimetrie.' },
 			]}>
-				<div slot="screen-1" class="pv-phone" role="img" aria-label="Illustration: the Today tab">
+				<div slot="screen-1" class="pv-phone" role="img" aria-label="Illustrazione: la scheda Oggi">
 					<span class="pv-hello">Buona giornata!</span>
 					<span class="pv-date"><b>24.09</b><b>GIO</b></span>
 					<span class="pv-kicker">Lezione in corso</span>
@@ -354,7 +355,7 @@ const sections = [
 					<span class="pv-kicker">Esami</span>
 					<span class="pv-row"><i class="c-blue"></i><span><b>Probabilità e Statistica</b><span>6 ott · 9:00</span></span></span>
 				</div>
-				<div slot="screen-2" class="pv-phone" role="img" aria-label="Illustration: the Courses tab">
+				<div slot="screen-2" class="pv-phone" role="img" aria-label="Illustrazione: la scheda Corsi">
 					<span class="pv-title">Corsi</span>
 					<span class="pv-feature"><span class="pv-tag">In evidenza</span><b>Ingegneria del Software</b>
 						<span class="pv-chips"><i>Avvisi <em>2</em></i><i>Materiali</i><i>Registrazioni</i><i>Appelli</i></span>
@@ -367,7 +368,7 @@ const sections = [
 						<span class="c-acid"><b>Tecnologie per il Web</b><em>Consegna</em></span>
 					</span>
 				</div>
-				<div slot="screen-3" class="pv-phone" role="img" aria-label="Illustration: the Career tab">
+				<div slot="screen-3" class="pv-phone" role="img" aria-label="Illustrazione: la scheda Carriera">
 					<span class="pv-title">Carriera</span>
 					<span class="pv-due c-orange"><span class="pv-tag">Iscrizioni in chiusura</span><b>Probabilità e Statistica</b><span>chiude tra 2 giorni</span></span>
 					<span class="pv-due c-violet"><span class="pv-tag">Voto da decidere</span><b>Basi di Dati</b><span class="pv-grade">27</span></span>
@@ -376,7 +377,7 @@ const sections = [
 						<svg viewBox="0 0 200 60" aria-hidden="true"><polyline points="0,44 30,40 60,46 90,30 120,34 150,22 200,18" /></svg>
 					</span>
 				</div>
-				<div slot="screen-4" class="pv-phone" role="img" aria-label="Illustration: the Search tab">
+				<div slot="screen-4" class="pv-phone" role="img" aria-label="Illustrazione: la scheda Cerca">
 					<span class="pv-title">Cerca</span>
 					<span class="pv-field">Reti</span>
 					<span class="pv-chips"><i>Aule</i><i>Aule libere</i><i>Mappa</i><i>Piano di studi</i></span>
@@ -389,16 +390,16 @@ const sections = [
 			</FeatureExplorer>
 		</Section>
 
-		<Section eyebrow="PoliVerse · The small things" title="Small things," dim="that save a walk across campus.">
-			<MediaCards label="Small things PoliVerse does" items={[
-				{ lead: 'A free room, right now.', text: 'Rooms free for the next half hour or longer, campus by campus, with their seats.', note: 'Worked out from booked lessons: an open room can still be locked.', tone: 'paper' },
-				{ lead: 'Your week, before the agenda has it.', text: 'Pick the courses you follow and the app builds the week, with rooms and addresses.', tone: 'blue' },
-				{ lead: 'Your teacher, for your group.', text: 'Degree and plan come from the Manifesto, so each course shows the lecturer and the syllabus for your alphabetical group.', tone: 'paper' },
-				{ lead: 'Deadlines, with the hour that matters.', text: 'WeBeep assignments sit on Today with their course and exact time, so you know whether tonight is still enough.', tone: 'violet' },
-				{ lead: 'What closes next, first.', text: 'Enrolments about to close and marks waiting for your decision come before what is already settled.', tone: 'paper' },
-				{ lead: 'One search across your courses.', text: 'Courses, lessons and exam sittings from one field, with free rooms and teachers one tap away.', tone: 'acid' },
+		<Section eyebrow="PoliVerse · Le piccole cose" title="Piccole cose," dim="che risparmiano un giro per il campus.">
+			<MediaCards label="Piccole cose che fa PoliVerse" items={[
+				{ lead: 'Un’aula libera, adesso.', text: 'Le aule libere per la prossima mezz’ora o più, campus per campus, con i loro posti.', note: 'Ricavate dalle lezioni prenotate: un’aula libera può comunque essere chiusa a chiave.', tone: 'paper' },
+				{ lead: 'La tua settimana, prima che l’agenda ce l’abbia.', text: 'Scegli i corsi che segui e l’app costruisce la settimana, con aule e indirizzi.', tone: 'blue' },
+				{ lead: 'Il tuo docente, per il tuo scaglione.', text: 'Corso di laurea e piano arrivano dal Manifesto, così ogni corso mostra il docente e il programma del tuo scaglione alfabetico.', tone: 'paper' },
+				{ lead: 'Le scadenze, con l’ora che conta.', text: 'Le consegne di WeBeep stanno in Oggi con il loro corso e l’ora esatta, così sai se stasera basta ancora.', tone: 'violet' },
+				{ lead: 'Prima quello che chiude.', text: 'Le iscrizioni in chiusura e i voti che aspettano una tua decisione vengono prima di quello che è già deciso.', tone: 'paper' },
+				{ lead: 'Una ricerca per tutti i tuoi corsi.', text: 'Corsi, lezioni e appelli da un campo solo, con aule libere e docenti a un tocco.', tone: 'acid' },
 			]}>
-				<div slot="media-1" class="pv-mini" role="img" aria-label="Illustration: free rooms now, with their seats, and one room's free and busy hours">
+				<div slot="media-1" class="pv-mini" role="img" aria-label="Illustrazione: le aule libere adesso, con i loro posti, e le ore libere e occupate di un’aula">
 					<span class="pv-seg"><i>30 min</i><i class="on">1 ora</i><i>2 ore</i></span>
 					<b class="pv-mini-title">Libere ora — 12</b>
 					<span class="pv-room"><b>3.0.1</b><span><Icon name="people" size={13} stroke={2.2} />120</span></span>
@@ -406,31 +407,31 @@ const sections = [
 					<span class="pv-room"><b>T.1.3</b><span><Icon name="people" size={13} stroke={2.2} />80</span></span>
 					<span class="pv-room"><b>B.2.4</b><span><Icon name="people" size={13} stroke={2.2} />64</span></span>
 				</div>
-				<div slot="media-2" class="pv-mini" role="img" aria-label="Illustration: three courses picked, and the week they make, with rooms">
+				<div slot="media-2" class="pv-mini" role="img" aria-label="Illustrazione: tre corsi scelti e la settimana che ne viene fuori, con le aule">
 					<span class="pv-pick">{picks.map((pick) => <span class:list={[{ on: pick.on }]}><i>{pick.on && <Icon name="check" size={11} stroke={3} />}</i>{pick.name}</span>)}</span>
 					<span class="pv-week">
 						{['L', 'M', 'M', 'G', 'V'].map((d, k) => <b style={`grid-column: ${k + 1}`}>{d}</b>)}
 						{week.map((slot) => <i style={`grid-column: ${slot.day}; grid-row: ${slot.from + 1} / span ${slot.span}; background: var(--${slot.tint})`}>{slot.room}</i>)}
 					</span>
 				</div>
-				<div slot="media-3" class="pv-mini" role="img" aria-label="Illustration: a course sheet with a lecturer for each alphabetical group, yours marked">
+				<div slot="media-3" class="pv-mini" role="img" aria-label="Illustrazione: la scheda di un corso con un docente per scaglione alfabetico, il tuo evidenziato">
 					<b class="pv-mini-title">Basi di Dati</b>
 					<span class="pv-kicker">Docenti per scaglione</span>
 					<span class="pv-group"><b>A–K</b><span>Prof. A. R.</span></span>
 					<span class="pv-group mine"><b>L–Z</b><span>Prof. L. C.</span><em>il tuo</em></span>
 					<span class="pv-more">Programma, libri e dettagli<Icon name="chevron-right" size={14} stroke={2.4} /></span>
 				</div>
-				<div slot="media-4" class="pv-mini" role="img" aria-label="Illustration: two WeBeep deadlines on Today, one due tonight at 23:59">
+				<div slot="media-4" class="pv-mini" role="img" aria-label="Illustrazione: due scadenze di WeBeep in Oggi, una stasera alle 23:59">
 					<span class="pv-kicker">Scadenze</span>
 					<span class="pv-deadline soon"><i class="c-orange"></i><span><b>Consegna del progetto</b><span>Tecnologie per il Web</span></span><em>oggi<br />23:59</em></span>
 					<span class="pv-deadline"><i class="c-violet"></i><span><b>Homework 2</b><span>Basi di Dati</span></span><em>ven<br />18:00</em></span>
 				</div>
-				<div slot="media-5" class="pv-mini" role="img" aria-label="Illustration: an enrolment closing in two days, then a mark to decide, then an exam">
+				<div slot="media-5" class="pv-mini" role="img" aria-label="Illustrazione: un’iscrizione che chiude tra due giorni, poi un voto da decidere, poi un esame">
 					<span class="pv-due c-orange"><span class="pv-tag">Iscrizioni in chiusura</span><b>Probabilità e Statistica</b><span>chiude tra 2 giorni</span></span>
 					<span class="pv-due c-violet"><span class="pv-tag">Voto da decidere</span><b>Basi di Dati</b><span class="pv-grade">27</span></span>
 					<span class="pv-due"><span class="pv-tag">Esame in arrivo</span><b>Reti di Calcolatori</b><span>8 ottobre</span></span>
 				</div>
-				<div slot="media-6" class="pv-mini" role="img" aria-label="Illustration: searching Reti finds a course, a lesson and an exam sitting">
+				<div slot="media-6" class="pv-mini" role="img" aria-label="Illustrazione: cercando Reti escono un corso, una lezione e un appello">
 					<span class="pv-field">Reti</span>
 					<span class="pv-hit"><em>Corso</em><b>Reti di Calcolatori</b><span>10 CFU</span></span>
 					<span class="pv-hit"><em>Lezione</em><b>Reti di Calcolatori</b><span>lun 12:15 · T.2.1</span></span>
@@ -439,13 +440,13 @@ const sections = [
 			</MediaCards>
 		</Section>
 
-		<Section eyebrow="PoliVerse · Beyond the app" title="Everywhere a student looks." dim="Not only inside the app.">
-			<Bento label="Beyond the app" tiles={[
-				{ eyebrow: 'WidgetKit', title: 'Widgets.', text: 'Next lecture, today, career and free rooms. The free-rooms widget fetches its own data, with a button to refresh it.', tone: 'blue', size: 'large' },
-				{ eyebrow: 'ActivityKit', title: 'The Lock Screen.', text: 'A Live Activity follows the lesson in progress, and the exam on the day of the exam.', tone: 'dark', size: 'tall' },
-				{ eyebrow: 'watchOS', title: 'Apple Watch.', text: 'Today’s lectures and the next exam, sent from the phone.', tone: 'violet', size: 'tall' },
-				{ eyebrow: 'App Intents', title: 'Siri and Spotlight.', text: 'Courses, sittings and rooms are things Siri knows, not only screens it can open.', tone: 'acid', size: 'wide' },
-				{ eyebrow: 'AVKit', title: 'Lesson recordings.', text: 'In the system player, resumed where you stopped, and downloadable when the teacher allows it.', tone: 'orange', size: 'wide' },
+		<Section eyebrow="PoliVerse · Oltre l’app" title="Ovunque guardi uno studente." dim="Non solo dentro l’app.">
+			<Bento label="Oltre l’app" tiles={[
+				{ eyebrow: 'WidgetKit', title: 'Widget.', text: 'Prossima lezione, oggi, carriera e aule libere. Il widget delle aule libere scarica i suoi dati da solo, con un pulsante per aggiornarli.', tone: 'blue', size: 'large' },
+				{ eyebrow: 'ActivityKit', title: 'La schermata di blocco.', text: 'Un’attività in tempo reale segue la lezione in corso, e l’esame il giorno dell’esame.', tone: 'dark', size: 'tall' },
+				{ eyebrow: 'watchOS', title: 'Apple Watch.', text: 'Le lezioni di oggi e il prossimo esame, mandati dal telefono.', tone: 'violet', size: 'tall' },
+				{ eyebrow: 'App Intents', title: 'Siri e Spotlight.', text: 'Corsi, appelli e aule sono cose che Siri conosce, non solo schermate che sa aprire.', tone: 'acid', size: 'wide' },
+				{ eyebrow: 'AVKit', title: 'Le registrazioni delle lezioni.', text: 'Nel lettore di sistema, riprese da dove ti eri fermato, e scaricabili quando il docente lo permette.', tone: 'orange', size: 'wide' },
 			]}>
 				<div slot="tile-1" class="pv-widgets" aria-hidden="true">
 					<span class="pv-w"><em>Prossima</em><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></span>
@@ -468,37 +469,37 @@ const sections = [
 			</Bento>
 		</Section>
 
-		<Section id="personalise" tone="dark" center eyebrow="PoliVerse · Personalizza" title="Make it yours," dim="without losing a word." index={4}
-			lead="Almost nothing in PoliVerse is drawn in a fixed colour. A look starts from one colour; every card, control and typeface reads it, and every colour is checked for contrast before it is drawn.">
+		<Section id="personalise" tone="dark" center eyebrow="PoliVerse · Personalizza" title="Falla tua," dim="senza perdere una parola." index={4}
+			lead="Quasi niente in PoliVerse è disegnato in un colore fisso. Un aspetto parte da un colore; ogni carta, controllo e carattere lo legge, e ogni colore è controllato per il contrasto prima di essere disegnato.">
 			<figure class="pv-flavor">
 				<div class="pv-flavor-row">
-					<span class="pv-swatch"><i style="background: #0F3D6E"></i><b>Main</b><span class="st-mono">#0F3D6E</span><em>the colour the student picked</em></span>
+					<span class="pv-swatch"><i style="background: #0F3D6E"></i><b>Principale</b><span class="st-mono">#0F3D6E</span><em>il colore scelto dallo studente</em></span>
 					<span class="pv-arrow" aria-hidden="true">→</span>
-					<span class="pv-swatch"><i style="background: #155B5E"></i><b>Accent</b><span class="st-mono">#155B5E</span><em>hue −0.08 · sat ×0.90 · bri ×0.85</em></span>
+					<span class="pv-swatch"><i style="background: #155B5E"></i><b>Accento</b><span class="st-mono">#155B5E</span><em>tinta −0,08 · sat ×0,90 · lum ×0,85</em></span>
 					<span class="pv-arrow" aria-hidden="true">→</span>
-					<span class="pv-swatch"><i style="background: #0E4D29"></i><b>Extra</b><span class="st-mono">#0E4D29</span><em>hue −0.18 · sat ×0.95 · bri ×0.70</em></span>
+					<span class="pv-swatch"><i style="background: #0E4D29"></i><b>Extra</b><span class="st-mono">#0E4D29</span><em>tinta −0,18 · sat ×0,95 · lum ×0,70</em></span>
 				</div>
-				<ol class="pv-ramp" aria-label="The ramp a page hands its colours out from, deepest to palest">
+				<ol class="pv-ramp" aria-label="La scala da cui una pagina distribuisce i suoi colori, dal più profondo al più chiaro">
 					{ramp.map((c) => <li style={`background: ${c}`}><span class="st-mono">{c}</span></li>)}
 				</ol>
-				<figcaption><b>Flavor.</b> Accent and Extra sit a step and two steps around the wheel from Main; a page hands out the ramp by position. A grey has no hue to move along, so below 0.12 saturation it only deepens. Values from the app’s own documentation.</figcaption>
+				<figcaption><b>Flavor.</b> Accento ed Extra stanno a uno e due passi dal Principale sulla ruota dei colori; una pagina distribuisce la scala per posizione. Un grigio non ha una tinta lungo cui spostarsi, così sotto 0,12 di saturazione si scurisce soltanto. Valori dalla documentazione dell’app.</figcaption>
 			</figure>
 			<div class="pv-ba">
-				<BeforeAfter label="Compare a white label and a near-black label on the blue accent in dark mode" start={50}
-					before={{ label: 'White · 2.4:1', text: 'A fixed white label, fine in light mode, fails in dark.' }} after={{ label: 'Near-black · 7.8:1', text: 'In dark mode the label on a filled accent flips.' }}>
+				<BeforeAfter label="Confronta un’etichetta bianca e una quasi nera sull’accento blu in modalità scura" start={50}
+					before={{ label: 'Bianco · 2,4:1', text: 'Un’etichetta bianca fissa: va bene in modalità chiara, non in quella scura.' }} after={{ label: 'Quasi nero · 7,8:1', text: 'In modalità scura l’etichetta su un accento pieno si inverte.' }}>
 					<div slot="before" class="pv-contrast" aria-hidden="true"><span class="pv-contrast-card"><span class="st-mono">Corso</span><b>Ingegneria del Software</b><span class="pill white"></span></span></div>
 					<div slot="after" class="pv-contrast" aria-hidden="true"><span class="pv-contrast-card"><span class="st-mono">Corso</span><b>Ingegneria del Software</b><span class="pill black"></span></span></div>
 				</BeforeAfter>
 			</div>
 		</Section>
 
-		<Section tone="dark" center eyebrow="PoliVerse · The icon" title="One planet." dim="Thirty-six ways to wear it."
-			lead="A ringed planet, the -Verse of PoliVerse, with one amber moon for what comes next. It avoids the mortarboard every university app reaches for, uses no SF Symbols, and carries nothing from the Politecnico’s identity.">
-			<ToggleFigure label="Choose an icon shape" options={[
-				{ label: 'Orbita', lead: 'Orbita, the icon that ships.', text: 'In the four appearances iOS asks for: default, dark, clear and tinted.', tone: 'blue' },
-				{ label: 'Giorno', lead: 'Giorno, the day as a dial.', text: 'The moon on the rim of the day, in the twelve colours a Flavor starts from.', tone: 'acid' },
-				{ label: 'Vicino', lead: 'Vicino, the planet up close.', text: 'The planet filling the corner, in the same twelve colours. Paired with a look, the app picks the nearest one.', tone: 'violet' },
-				{ label: 'Special', lead: 'Eleven specials, free for everyone.', text: 'Each a picture of its own rather than a colour of a shape. The icon changes once, when Personalizza closes, because iOS announces every change.', tone: 'orange' },
+		<Section tone="dark" center eyebrow="PoliVerse · L’icona" title="Un pianeta." dim="Trentasei modi di portarlo."
+			lead="Un pianeta con l’anello, il -Verse di PoliVerse, con una luna ambra per quello che viene dopo. Evita il tocco da laureato che ogni app universitaria prende per prima, non usa SF Symbols e non porta niente dell’identità del Politecnico.">
+			<ToggleFigure label="Scegli una forma dell’icona" options={[
+				{ label: 'Orbita', lead: 'Orbita, l’icona di serie.', text: 'Nei quattro aspetti che iOS chiede: predefinito, scuro, trasparente e colorato.', tone: 'blue' },
+				{ label: 'Giorno', lead: 'Giorno, la giornata come un quadrante.', text: 'La luna sul bordo della giornata, nei dodici colori da cui parte un Flavor.', tone: 'acid' },
+				{ label: 'Vicino', lead: 'Vicino, il pianeta da vicino.', text: 'Il pianeta che riempie l’angolo, negli stessi dodici colori. Abbinata a un aspetto, l’app sceglie la più vicina.', tone: 'violet' },
+				{ label: 'Speciali', lead: 'Undici speciali, gratis per tutti.', text: 'Ognuna un disegno a sé invece che un colore di una forma. L’icona cambia una volta sola, quando si chiude Personalizza, perché iOS annuncia ogni cambio.', tone: 'orange' },
 			]}>
 				<ul slot="panel-1" class="pv-icons big">
 					{appearances.map(([n, label]) => <li><img src={icon(n)} alt="" width="160" height="160" loading="lazy" /><span>{label}</span></li>)}
@@ -515,75 +516,75 @@ const sections = [
 			</ToggleFigure>
 		</Section>
 
-		<Section id="numbers" eyebrow="PoliVerse · The repository" title="Fifteen days, one person." dim="And no public API." index={5}>
+		<Section id="numbers" eyebrow="PoliVerse · Il repository" title="Quindici giorni, una persona." dim="E nessuna API pubblica." index={5}>
 			<Stats items={[
-				{ label: 'Commits', value: '309', text: 'from 10 to 24 September 2026', method: 'every commit on main, all mine', note: 1, accent: true },
-				{ label: 'Unit tests', value: '1,220', text: 'plus 49 UI tests', method: 'Swift Testing and XCTest', note: 2 },
-				{ label: 'Swift', value: '89.6', unit: 'k', text: 'lines in 460 files', method: 'app, widgets, Watch and tests', note: 3 },
-				{ label: 'Dependencies', value: '0', text: 'third-party packages', method: 'Apple frameworks only', note: 4 },
-			]} feature={{ label: 'Feature areas', value: '17', text: 'one folder each, from Auth to WeBeep' }}>
-				The first commit rebuilt the app from scratch; the <b>2023 prototype was a home-screen mockup with hard-coded data and no networking</b>. Every service now ships with sample data derived from one fictional degree, so the whole app renders without an account, and <b>every screen says so while it does</b>.
+				{ label: 'Commit', value: '309', text: 'dal 10 al 24 settembre 2026', method: 'ogni commit su main, tutti miei', note: 1, accent: true },
+				{ label: 'Test unitari', value: '1.220', text: 'più 49 test dell’interfaccia', method: 'Swift Testing e XCTest', note: 2 },
+				{ label: 'Swift', value: '89,6', unit: 'k', text: 'righe in 460 file', method: 'app, widget, Watch e test', note: 3 },
+				{ label: 'Dipendenze', value: '0', text: 'pacchetti di terzi', method: 'solo framework Apple', note: 4 },
+			]} feature={{ label: 'Aree funzionali', value: '17', text: 'una cartella ciascuna, da Auth a WeBeep' }}>
+				Il primo commit ha rifatto l’app da zero: <b>il prototipo del 2023 era una schermata home finta, con i dati scritti nel codice e nessuna rete</b>. Ogni servizio ora ha dati d’esempio ricavati da un unico corso di laurea inventato, così tutta l’app si vede senza un account, e <b>ogni schermata lo dice finché lo fa</b>.
 			</Stats>
 		</Section>
 
-		<Lockup id="backend" index={6} number="06" label="What it took" title="There is no public API." dim="So it reads what the official app reads."
-			deepDive="Deep dive: how the map was drawn" next={{ label: 'Next: signing in with CIE', href: '#cie' }}
-			facts={[{ label: 'Service config', value: '200', note: 'public, no sign-in' }, { label: 'Path exists', value: '401', accent: true }, { label: 'Path gone', value: '404' }]}
-			factsNote="Probed 11 September 2026">
-			The official web app is a public single-page app, and its bundle carries the route table and every path. On launch the official app fetches <b>one unauthenticated config with every backend’s address</b>. PoliVerse reads the same config, with the current hosts compiled in as fallbacks, so <b>a backend that moves costs a fetch, not a release</b>.
-			<Fragment slot="deep-dive"><p>No proxy and no TLS interception: the web bundle, about 8 MB, is served to anyone who asks. Each path found in it was then probed without credentials. A 401 means the path exists and wants a token; a 404 means it is gone.</p></Fragment>
+		<Lockup id="backend" index={6} number="06" label="Cosa è servito" title="Non c’è un’API pubblica." dim="Così legge quello che legge l’app ufficiale."
+			deepDive="Approfondimento: come è stata disegnata la mappa" next={{ label: 'Poi: l’accesso con CIE', href: '#cie' }}
+			facts={[{ label: 'Configurazione dei servizi', value: '200', note: 'pubblica, senza accesso' }, { label: 'Percorso esistente', value: '401', accent: true }, { label: 'Percorso sparito', value: '404' }]}
+			factsNote="Provati l’11 settembre 2026">
+			La web app ufficiale è una single-page app pubblica, e il suo bundle contiene la tabella delle rotte e ogni percorso. All’avvio l’app ufficiale scarica <b>una configurazione senza autenticazione con l’indirizzo di ogni backend</b>. PoliVerse legge la stessa configurazione, con gli host attuali compilati come riserva, così <b>un backend che si sposta costa un download, non una nuova versione</b>.
+			<Fragment slot="deep-dive"><p>Nessun proxy e nessuna intercettazione TLS: il bundle web, circa 8 MB, viene servito a chiunque lo chieda. Ogni percorso trovato lì dentro è stato poi provato senza credenziali. Un 401 vuol dire che il percorso esiste e vuole un token; un 404 che non c’è più.</p></Fragment>
 		</Lockup>
 
 		<Section tone="dark">
-			<ThenNow title="The backend moved." dim="PoliVerse followed." baseline="PoliFemo · hosts hard-coded in 2023" baselineLabel="PoliVerse, compared with"
-				note="From docs/endpoint-status.md, verified 11 September 2026" link={{ label: 'Read the endpoint notes', href: `${repo}/blob/main/docs/endpoint-status.md` }} changes={[
-					{ icon: 'globe', title: 'Hosts read from the official config at launch', was: 'hosts baked into constants' },
-					{ icon: 'swap', title: 'Courses at api.polimi.it/iae/v1/insegn/', was: 'www22.dmz.polimi.it/iae/rest/v1/insegn' },
-					{ icon: 'clock', title: 'Timetable at api.polimi.it/agenda', was: 'polimiapp…/polimi_app/agenda/api/me/{m}/events' },
-					{ icon: 'lock', title: 'Sign-in scopes fetched from /jaf/oauth/params', was: 'a scope list frozen in 2023' },
-					{ value: '9', title: 'scopes added upstream since then, picked up without a release', was: 'agenda among them, missing', tone: 'acid' },
-					{ value: '2', title: 'scopes removed upstream', was: 'still requested', tone: 'orange' },
+			<ThenNow title="Il backend si è spostato." dim="PoliVerse l’ha seguito." baseline="PoliFemo · host scritti nel codice nel 2023" baselineLabel="PoliVerse, a confronto con"
+				note="Da docs/endpoint-status.md, verificato l’11 settembre 2026" link={{ label: 'Leggi le note sugli endpoint', href: `${repo}/blob/main/docs/endpoint-status.md` }} changes={[
+					{ icon: 'globe', title: 'Host letti dalla configurazione ufficiale all’avvio', was: 'host fissati in costanti' },
+					{ icon: 'swap', title: 'Corsi su api.polimi.it/iae/v1/insegn/', was: 'www22.dmz.polimi.it/iae/rest/v1/insegn' },
+					{ icon: 'clock', title: 'Orario su api.polimi.it/agenda', was: 'polimiapp…/polimi_app/agenda/api/me/{m}/events' },
+					{ icon: 'lock', title: 'Scope di accesso scaricati da /jaf/oauth/params', was: 'una lista di scope ferma al 2023' },
+					{ value: '9', title: 'scope aggiunti a monte da allora, presi senza una nuova versione', was: 'agenda tra questi, mancante', tone: 'acid' },
+					{ value: '2', title: 'scope tolti a monte', was: 'ancora richiesti', tone: 'orange' },
 				]} />
 		</Section>
 
-		<Section id="traps" split eyebrow="PoliVerse · Traps · Never pretends" title="Four things that looked like bugs." dim="None of them was ours."
-			lead="Each one looked like a broken endpoint or a crash in the app. Each is written up, with what the app does about it.">
-			<Findings columns={['Severity', 'What looked broken', 'When it shows', 'What PoliVerse does']} note="Severity 1 ends the student’s session or hides their data; severity 2 degrades one feature." items={[
-				{ severity: 1, title: 'A missing scope looks like a dead endpoint.', text: 'A token minted without agenda signs in and works everywhere else, then gets 401 from the timetable.', impact: { label: 'After the paths were already fixed' }, fix: 'Build the sign-in request from the live scope list' },
-				{ severity: 1, title: 'Two refreshes end the session.', text: 'The Politecnico rotates the refresh token, so a second refresh in flight presents one the first just invalidated.', impact: { label: 'Whenever two requests find the token expired together' }, fix: 'TokenStore is an actor: one refresh, everyone awaits it' },
-				{ severity: 2, title: '“Code 6” is not a refusal.', text: 'The exams service answers “Utente non abilitato Code: 6”.', impact: { label: 'Between one exam session and the next' }, fix: 'Report the service as refused, keep the stale copy, never sign out' },
-				{ severity: 2, title: 'Switching career fails upstream.', text: 'careerChange errors for this account, and not only in PoliVerse.', impact: { label: 'In the official app too, reproduced 12 September' }, fix: 'Set the favourite career, then sign in again' },
+		<Section id="traps" split eyebrow="PoliVerse · Trappole · Mai finta" title="Quattro cose che sembravano bug." dim="Nessuna era nostra."
+			lead="Ognuna sembrava un endpoint rotto o un crash dell’app. Ognuna è documentata, con quello che l’app fa al riguardo.">
+			<Findings columns={['Gravità', 'Cosa sembrava rotto', 'Quando si vede', 'Cosa fa PoliVerse']} note="La gravità 1 chiude la sessione dello studente o ne nasconde i dati; la gravità 2 peggiora una funzione." items={[
+				{ severity: 1, title: 'Uno scope mancante sembra un endpoint morto.', text: 'Un token emesso senza agenda entra e funziona ovunque, poi riceve 401 dall’orario.', impact: { label: 'Dopo che i percorsi erano già stati corretti' }, fix: 'Costruire la richiesta di accesso dalla lista di scope attuale' },
+				{ severity: 1, title: 'Due rinnovi chiudono la sessione.', text: 'Il Politecnico ruota il refresh token, così un secondo rinnovo in corso presenta quello che il primo ha appena invalidato.', impact: { label: 'Ogni volta che due richieste trovano insieme il token scaduto' }, fix: 'TokenStore è un actor: un rinnovo solo, e tutti lo aspettano' },
+				{ severity: 2, title: '“Code 6” non è un rifiuto.', text: 'Il servizio esami risponde “Utente non abilitato Code: 6”.', impact: { label: 'Tra una sessione d’esami e l’altra' }, fix: 'Segnalare il servizio come rifiutato, tenere la copia vecchia, non uscire mai' },
+				{ severity: 2, title: 'Cambiare carriera fallisce a monte.', text: 'careerChange va in errore per questo account, e non solo in PoliVerse.', impact: { label: 'Anche nell’app ufficiale, riprodotto il 12 settembre' }, fix: 'Impostare la carriera preferita, poi rientrare' },
 			]} />
 		</Section>
 
-		<Section id="cie" split eyebrow="PoliVerse · Signing in · All of it" title="CieID doesn’t know who called it." dim="So we tell it."
-			lead="Inside a plain web view, CieID returns the authenticated session to Safari and the login is lost. PoliVerse intercepts the hand-off before the web view follows it, and re-opens it with a sourceApp that brings the student back.">
-			<StickyScenes device="iphone" label="Signing in with CIE, in four steps" note="Illustrations of the Italian interface" steps={[
-				{ title: 'Catch the link.', text: 'The sign-in page sends the web view to the CIE identity provider. PoliVerse sees that navigation before the web view follows it.', code: 'https://ios.idserver.servizicie.interno.gov.it/…', tint: 'blue' },
-				{ title: 'Re-open it in CieID.', text: 'The navigation is cancelled and opened in the CieID app instead, with PoliVerse’s own URL scheme attached as the source.', code: 'CIEID://…&sourceApp=one.wape.PoliVerse', tint: 'violet' },
-				{ title: 'Card and PIN, in CieID.', text: 'The student holds the card to the phone and types the PIN. CieID then opens the app named in sourceApp: PoliVerse, not Safari.', code: 'one.wape.PoliVerse://https://idserver…', tint: 'orange' },
-				{ title: 'Back in the same web view.', text: 'CieIDRouter carries the URL from onOpenURL to the web view that holds the session, and the sign-in simply continues.', code: 'onOpenURL → CieIDRouter → AuthWebView', tint: 'acid' },
+		<Section id="cie" split eyebrow="PoliVerse · Accesso · Tutto" title="CieID non sa chi l’ha chiamata." dim="Così glielo diciamo."
+			lead="Dentro una semplice web view, CieID riporta la sessione autenticata a Safari e l’accesso si perde. PoliVerse intercetta il passaggio prima che la web view lo segua, e lo riapre con un sourceApp che riporta indietro lo studente.">
+			<StickyScenes device="iphone" label="L’accesso con CIE, in quattro passi" note="Illustrazioni dell’interfaccia" steps={[
+				{ title: 'Prendere il link.', text: 'La pagina di accesso manda la web view al provider d’identità CIE. PoliVerse vede quella navigazione prima che la web view la segua.', code: 'https://ios.idserver.servizicie.interno.gov.it/…', tint: 'blue' },
+				{ title: 'Riaprirlo in CieID.', text: 'La navigazione viene annullata e aperta invece nell’app CieID, con lo schema URL di PoliVerse allegato come origine.', code: 'CIEID://…&sourceApp=one.wape.PoliVerse', tint: 'violet' },
+				{ title: 'Carta e PIN, in CieID.', text: 'Lo studente avvicina la carta al telefono e scrive il PIN. CieID apre poi l’app indicata in sourceApp: PoliVerse, non Safari.', code: 'one.wape.PoliVerse://https://idserver…', tint: 'orange' },
+				{ title: 'Di nuovo nella stessa web view.', text: 'CieIDRouter porta l’URL da onOpenURL alla web view che tiene la sessione, e l’accesso semplicemente continua.', code: 'onOpenURL → CieIDRouter → AuthWebView', tint: 'acid' },
 			]}>
-				<div slot="scene-1" class="pv-phone pv-signin" role="img" aria-label="Illustration: a sign-in page with two choices, SPID and CIE, and CIE being tapped">
+				<div slot="scene-1" class="pv-phone pv-signin" role="img" aria-label="Illustrazione: una pagina di accesso con due scelte, SPID e CIE, e CIE toccata">
 					<span class="pv-url st-mono">idp · accesso</span>
 					<span class="pv-title">Accesso</span>
 					<span class="pv-hello">Scegli come entrare.</span>
 					<span class="pv-choice">Entra con SPID</span>
 					<span class="pv-choice on">Entra con CIE<i></i></span>
 				</div>
-				<div slot="scene-2" class="pv-phone pv-handoff" role="img" aria-label="Illustration: PoliVerse handing the sign-in to the CieID app, with its own name as the source">
+				<div slot="scene-2" class="pv-phone pv-handoff" role="img" aria-label="Illustrazione: PoliVerse passa l’accesso all’app CieID, con il proprio nome come origine">
 					<span class="pv-apps"><img src={icon('orbit')} alt="" width="72" height="72" /><span class="pv-arrow-long" aria-hidden="true"></span><span class="pv-card-app"><i></i></span></span>
 					<span class="pv-handoff-line st-mono">sourceApp=<b>one.wape.PoliVerse</b></span>
 					<span class="pv-hello">Apertura di CieID…</span>
 				</div>
-				<div slot="scene-3" class="pv-phone pv-cie" role="img" aria-label="Illustration: an identity app asking to hold the card to the phone, then for the PIN">
+				<div slot="scene-3" class="pv-phone pv-cie" role="img" aria-label="Illustrazione: un’app d’identità chiede di avvicinare la carta al telefono, poi il PIN">
 					<span class="pv-title">Avvicina la carta</span>
 					<span class="pv-idcard"><i></i><span></span><span></span></span>
 					<span class="pv-waves" aria-hidden="true"><i></i><i></i><i></i></span>
 					<span class="pv-kicker">Inserisci il PIN</span>
 					<span class="pv-pin">{Array.from({ length: 8 }, (_, k) => <i class:list={{ on: k < 5 }}></i>)}</span>
 				</div>
-				<div slot="scene-4" class="pv-phone pv-back" role="img" aria-label="Illustration: back in PoliVerse, signed in, with the Today tab behind a confirmation">
+				<div slot="scene-4" class="pv-phone pv-back" role="img" aria-label="Illustrazione: di nuovo in PoliVerse, con l’accesso fatto e la scheda Oggi dietro una conferma">
 					<span class="pv-toast"><i></i>Accesso eseguito</span>
 					<span class="pv-hello">Buona giornata!</span>
 					<span class="pv-date"><b>24.09</b><b>GIO</b></span>
@@ -593,144 +594,145 @@ const sections = [
 			</StickyScenes>
 		</Section>
 
-		<Section id="data" split eyebrow="PoliVerse · Offline · Never empty" title="A stale answer with a date" dim="says more than an empty screen."
-			lead="The Politecnico’s servers send no ETag, no Last-Modified, no Cache-Control and no push, so freshness is the app’s job. Every Store publishes its cached copy on the first frame, a five-minute window decides whether to fetch, and the app revalidates when it returns to the foreground or comes back online.">
-			<StateMachine label="A load through a Store" forbidden="clear the screen · never"
-				before={[{ name: 'Cached', text: 'The offline copy is published at once.' }, { name: 'Refreshing', text: 'The load window says a fetch is due.' }]}
-				fork={[{ name: 'Fresh', text: 'Decoded, cached, published, widgets told.', tone: 'blue' }, { name: 'Failed', text: 'Recorded beside the stale copy.', tone: 'orange' }]}
-				after={[{ name: 'On screen', text: 'Silent under 15 minutes old, dated past that.', tone: 'dark' }]}
-				labels={{ before: [['window due', 'cache first']], fork: ['200', 'error'], join: ['publish', 'keep the old copy'] }} />
+		<Section id="data" split eyebrow="PoliVerse · Offline · Mai vuota" title="Una risposta vecchia con la data" dim="dice più di uno schermo vuoto."
+			lead="I server del Politecnico non mandano ETag, Last-Modified, Cache-Control né notifiche push, quindi la freschezza tocca all’app. Ogni Store pubblica la sua copia in cache al primo frame, una finestra di cinque minuti decide se scaricare, e l’app riconvalida quando torna in primo piano o torna online.">
+			<StateMachine label="Un caricamento attraverso uno Store" forbidden="svuotare lo schermo · mai"
+				before={[{ name: 'In cache', text: 'La copia offline viene pubblicata subito.' }, { name: 'Aggiornamento', text: 'La finestra di caricamento dice che tocca scaricare.' }]}
+				fork={[{ name: 'Fresca', text: 'Decodificata, in cache, pubblicata, widget avvisati.', tone: 'blue' }, { name: 'Fallito', text: 'Annotato accanto alla copia vecchia.', tone: 'orange' }]}
+				after={[{ name: 'Sullo schermo', text: 'Muta sotto i 15 minuti, con la data oltre.', tone: 'dark' }]}
+				labels={{ before: [['finestra scaduta', 'prima la cache']], fork: ['200', 'errore'], join: ['pubblica', 'tieni la copia vecchia'] }} />
 		</Section>
 
-		<Section id="layers" tone="dark" split eyebrow="PoliVerse · Architecture · Never empty" title="Four layers," dim="pulled apart."
-			lead="Screens never talk to the network. Each service is a Source behind a Store, and one HTTP door leads out, to hosts the official config names.">
+		<Section id="layers" tone="dark" split eyebrow="PoliVerse · Architettura · Mai vuota" title="Quattro strati," dim="separati."
+			lead="Le schermate non parlano mai con la rete. Ogni servizio è una Source dietro uno Store, e una sola porta HTTP porta fuori, verso gli host che nomina la configurazione ufficiale.">
 			<ExplodedStack layers={[
-				{ name: 'Features', tint: 'acid', chips: [{ label: 'Today' }, { label: 'Courses' }, { label: 'Career' }], text: 'Seventeen feature folders, routed by ShellState, drawn with the look in use.' },
-				{ name: 'Models', tint: 'violet', chips: [{ label: 'Career' }, { label: 'Agenda' }, { label: 'WeBeep' }], text: 'Feature models compose stores into the shapes screens consume.' },
-				{ name: 'Stores', tint: 'blue', chips: [{ label: 'Source → Store → OfflineStore' }], text: 'Cache first, load window, offline copy in the app group, and a phase every screen can show.' },
-				{ name: 'Services', tint: 'paper', chips: [{ label: 'PoliMi' }, { label: 'WeBeep' }, { label: 'Rooms', accent: true }], text: 'Servizi Online, Manifesti, WeBeep’s Moodle and the public rooms, through PoliMiAPI and PublicHTTP.' },
+				{ name: 'Features', tint: 'acid', chips: [{ label: 'Oggi' }, { label: 'Corsi' }, { label: 'Carriera' }], text: 'Diciassette cartelle di funzioni, instradate da ShellState, disegnate con l’aspetto in uso.' },
+				{ name: 'Models', tint: 'violet', chips: [{ label: 'Career' }, { label: 'Agenda' }, { label: 'WeBeep' }], text: 'I modelli delle funzioni compongono gli store nelle forme che usano le schermate.' },
+				{ name: 'Stores', tint: 'blue', chips: [{ label: 'Source → Store → OfflineStore' }], text: 'Prima la cache, finestra di caricamento, copia offline nel gruppo d’app, e una fase che ogni schermata può mostrare.' },
+				{ name: 'Services', tint: 'paper', chips: [{ label: 'PoliMi' }, { label: 'WeBeep' }, { label: 'Aule', accent: true }], text: 'Servizi Online, Manifesti, il Moodle di WeBeep e le aule pubbliche, attraverso PoliMiAPI e PublicHTTP.' },
 			]} />
 		</Section>
 
 		<Section>
-			<Declaration project="PoliVerse · 2026" breadcrumb={['PoliVerse', 'The data layer', 'Store']} kind="Class" name="Store"
-				abstract="Drives one Source: publishes its cached copy at once, refreshes when its load window says so, and never clears what is already on screen."
+			<Declaration project="PoliVerse · 2026" breadcrumb={['PoliVerse', 'Lo strato dei dati', 'Store']} kind="Class" name="Store"
+				abstract="Guida una Source: pubblica subito la sua copia in cache, aggiorna quando la sua finestra di caricamento lo dice, e non svuota mai quello che è già sullo schermo."
 				availability={[{ label: 'iOS 27' }, { label: 'Swift 6 · MainActor' }, { label: 'Widgets · Watch' }, { label: 'DocC', muted: true }]}
 				declaration="final class Store<S: Source>"
-				nav={[{ title: 'The data layer', symbols: [{ name: 'Source', kind: 'P' }, { name: 'Store', kind: 'C', current: true }, { name: 'OfflineStore', kind: 'C' }, { name: 'LoadWindow', kind: 'S' }, { name: 'DataStatus', kind: 'C' }] }, { title: 'Sign-in', symbols: [{ name: 'Session', kind: 'C' }, { name: 'ServiceDirectory', kind: 'C' }, { name: 'CieIDBridge', kind: 'E' }, { name: 'CieIDRouter', kind: 'C' }] }]}
-				mentioned={[{ label: 'CieID doesn’t know who called it', href: '#cie' }, { label: 'A stale answer with a date', href: '#data' }]}>
-				<p>A <code>load()</code> reads the cache and publishes it, asks the <code>LoadWindow</code> whether a refresh is due, fetches and decodes through the one HTTP door, writes the copy back to the app group and tells the widgets. The outcome lands in <code>DataStatus</code>, so the app can always say <b>how old what it is showing is</b>. A failed load does not mark the window, so the next appearance tries again.</p>
+				nav={[{ title: 'Lo strato dei dati', symbols: [{ name: 'Source', kind: 'P' }, { name: 'Store', kind: 'C', current: true }, { name: 'OfflineStore', kind: 'C' }, { name: 'LoadWindow', kind: 'S' }, { name: 'DataStatus', kind: 'C' }] }, { title: 'Accesso', symbols: [{ name: 'Session', kind: 'C' }, { name: 'ServiceDirectory', kind: 'C' }, { name: 'CieIDBridge', kind: 'E' }, { name: 'CieIDRouter', kind: 'C' }] }]}
+				mentioned={[{ label: 'CieID non sa chi l’ha chiamata', href: '#cie' }, { label: 'Una risposta vecchia con la data', href: '#data' }]}>
+				<p>Un <code>load()</code> legge la cache e la pubblica, chiede alla <code>LoadWindow</code> se tocca aggiornare, scarica e decodifica attraverso l’unica porta HTTP, riscrive la copia nel gruppo d’app e avvisa i widget. L’esito finisce in <code>DataStatus</code>, così l’app sa sempre dire <b>quanto è vecchio quello che mostra</b>. Un caricamento fallito non segna la finestra, così alla prossima apparizione ci riprova.</p>
 			</Declaration>
 		</Section>
 
-		<Section id="decisions" tone="sand" eyebrow="PoliVerse · The rules" title="The promises," dim="written down as rules." index={7}>
+		<Section id="decisions" tone="sand" eyebrow="PoliVerse · Le regole" title="Le promesse," dim="messe per iscritto come regole." index={7}>
 			<Principles rules={[
-				{ title: 'Read, never write.', text: 'No enrolling, no refusing a mark, no forum posts, no hand-ins. The write requests are unverified, and a wrong one costs the student a session.', source: 'docs/writes-to-university-systems.md' },
-				{ title: 'Never pass sample data off as real.', text: 'Sample data is on by default and every screen says so; all of it comes from one fictional degree, so career, timetable and courses agree.', source: 'SampleDegree · DataStatusLine' },
-				{ title: 'Keep what is on screen.', text: 'A failed refresh leaves the cached copy in place and says how old it is.', source: 'Store · FreshnessBar' },
-				{ title: 'Nothing leaves the phone on its own.', text: 'No analytics service and no crash reporter. Diagnostics and MetricKit reports stay on the device until the student shares them.', source: 'Diagnostics · docs/field-performance.md' },
-				{ title: 'Borrow nothing that isn’t ours.', text: 'No SF Symbols in the icon, as Apple’s terms require, and nothing from the Politecnico’s identity: the app is unofficial and must not look otherwise.', source: 'design/app-icon/README.md' },
-				{ title: 'Check every colour.', text: 'The brand navy is 13:1 on white but 1.3:1 on the dark background, so every accent has a dark twin. The worst pair is now 4.7:1.', source: 'Theme.swift' },
-			]} example={{ label: 'Rule 03, drawn', dont: { title: 'Don’t clear the screen when a refresh fails', text: 'The student loses what was there, and learns nothing about why.' }, do: { title: 'Keep the copy, and date it', text: 'The cached timetable stays, with a line saying how old it is and that the refresh failed.' } }}>
-				<Fragment slot="dont"><span class="st-state">Cached</span><span class="st-arrow-label">refresh fails →</span><span class="st-state uncertain">Empty screen</span></Fragment>
-				<Fragment slot="do"><span class="st-state">Cached</span><span class="st-arrow-label">refresh fails →</span><span class="st-state dark">Cached · 40 min old</span></Fragment>
+				{ title: 'Leggere, mai scrivere.', text: 'Niente iscrizioni, niente rifiuti di un voto, niente post nel forum, niente consegne. Le richieste di scrittura non sono verificate, e una sbagliata costa una sessione allo studente.', source: 'docs/writes-to-university-systems.md' },
+				{ title: 'Mai spacciare i dati d’esempio per veri.', text: 'I dati d’esempio sono attivi di serie e ogni schermata lo dice; vengono tutti da un unico corso di laurea inventato, così carriera, orario e corsi tornano.', source: 'SampleDegree · DataStatusLine' },
+				{ title: 'Tenere quello che c’è sullo schermo.', text: 'Un aggiornamento fallito lascia al suo posto la copia in cache e dice quanto è vecchia.', source: 'Store · FreshnessBar' },
+				{ title: 'Niente lascia il telefono da solo.', text: 'Nessun servizio di analisi e nessun raccoglitore di crash. La diagnostica e i rapporti di MetricKit restano sul dispositivo finché lo studente non li condivide.', source: 'Diagnostics · docs/field-performance.md' },
+				{ title: 'Non prendere niente che non sia nostro.', text: 'Niente SF Symbols nell’icona, come chiedono i termini di Apple, e niente dell’identità del Politecnico: l’app non è ufficiale e non deve sembrarlo.', source: 'design/app-icon/README.md' },
+				{ title: 'Controllare ogni colore.', text: 'Il blu del marchio è 13:1 sul bianco ma 1,3:1 sullo sfondo scuro, così ogni accento ha un gemello scuro. La coppia peggiore ora è 4,7:1.', source: 'Theme.swift' },
+			]} example={{ label: 'La regola 03, disegnata', dont: { title: 'Non svuotare lo schermo quando un aggiornamento fallisce', text: 'Lo studente perde quello che c’era, e non scopre niente del perché.' }, do: { title: 'Tenere la copia, e datarla', text: 'L’orario in cache resta, con una riga che dice quanto è vecchio e che l’aggiornamento è fallito.' } }}>
+				<Fragment slot="dont"><span class="st-state">In cache</span><span class="st-arrow-label">aggiornamento fallito →</span><span class="st-state uncertain">Schermo vuoto</span></Fragment>
+				<Fragment slot="do"><span class="st-state">In cache</span><span class="st-arrow-label">aggiornamento fallito →</span><span class="st-state dark">In cache · di 40 min fa</span></Fragment>
 			</Principles>
 		</Section>
 
-		<Limits title="What’s proven," dim="and what isn’t yet." proven={[
-			{ text: 'Every screen renders on sample data, walked by 49 UI tests with accessibility audits at the largest text size', source: 'PoliVerseUITests · AccessibilityAuditUITests' },
-			{ text: 'Hosts and paths mapped against the official client', source: 'docs/endpoint-status.md · 11 September 2026' },
-			{ text: 'Source, tests, DocC and research notes, readable in full', source: 'github.com/samuelesegrini/PoliVerse', href: repo },
+		<Limits title="Cosa è dimostrato," dim="e cosa non ancora." provenLabel="Verificato" notProvenLabel="Non dimostrato" proven={[
+			{ text: 'Ogni schermata si vede con i dati d’esempio, percorsa da 49 test dell’interfaccia con verifiche di accessibilità alla dimensione di testo più grande', source: 'PoliVerseUITests · AccessibilityAuditUITests' },
+			{ text: 'Host e percorsi mappati sul client ufficiale', source: 'docs/endpoint-status.md · 11 settembre 2026' },
+			{ text: 'Codice, test, DocC e note di ricerca, leggibili per intero', source: 'github.com/samuelesegrini/PoliVerse', href: repo },
 		]} notProven={[
-			{ text: 'Sign-in against a live account', source: 'Implemented, still to be tested' },
-			{ text: 'Timetable and career on today’s endpoints', source: 'Both return 404 as of September 2026' },
-			{ text: 'The Watch app on a device', source: 'Builds against the watchOS SDK only' },
-			{ text: 'Performance in the field', source: 'The MetricKit routine is written; it needs a release to report' },
+			{ text: 'L’accesso con un account vero', source: 'Implementato, ancora da provare' },
+			{ text: 'Orario e carriera sugli endpoint di oggi', source: 'Entrambi rispondono 404 a settembre 2026' },
+			{ text: 'L’app per Watch su un dispositivo', source: 'Compila solo con l’SDK di watchOS' },
+			{ text: 'Le prestazioni sul campo', source: 'La routine di MetricKit è scritta; serve una versione pubblicata per avere i rapporti' },
 		]} />
 
 		<Section id="specs" index={8}>
-			<TechSpecs eyebrow="PoliVerse" meta="Swift 6 · SwiftUI · iOS 27 · watchOS 26 · 2026" groups={[
-				{ title: 'Platforms', items: [{ title: 'iPhone and iPad', text: 'One column on iPhone; on iPad a sidebar and two columns, capped at a readable measure.' }, { title: 'Widgets and Live Activities', text: 'Next lecture, today, career, free rooms and controls; the lesson and the exam on the Lock Screen.' }, { title: 'Apple Watch', text: 'The day and the next exam, sent over WatchConnectivity.' }, { title: 'Siri and Spotlight', text: 'Courses, sittings and rooms as App Intents entities.' }] },
-				{ title: 'Code', counts: [{ value: '460', label: 'Swift files' }, { value: '17', label: 'feature areas' }, { value: '0', label: 'dependencies', accent: true }], note: 'Swift 6 language mode, complete strict concurrency, MainActor by default.' },
-				{ title: 'Accessibility', values: [{ label: 'Brand navy on white', value: '13:1' }, { label: 'Navy on dark, before', value: '1.3:1', text: 'so every accent has a dark twin' }, { label: 'Worst pair now', value: '4.7:1', text: 'in either appearance' }] },
-				{ title: 'Verification', lead: '1,220 unit tests and 49 UI tests', tags: ['CET/CEST timestamps', 'refresh coalescing', 'exam status mapping', 'authcode extraction', 'accessibility audits at AX5', 'launch and hitch metrics'] },
-				{ title: 'Documentation', counts: [{ value: '6', label: 'DocC articles' }, { value: '20', label: 'research notes' }], note: 'Architecture, data layer, sign-in, customisation, widgets and diagnostics, with diagrams in light and dark.' },
+			<TechSpecs eyebrow="PoliVerse" title="Scheda tecnica" meta="Swift 6 · SwiftUI · iOS 27 · watchOS 26 · 2026" groups={[
+				{ title: 'Piattaforme', items: [{ title: 'iPhone e iPad', text: 'Una colonna su iPhone; su iPad una barra laterale e due colonne, limitate a una misura leggibile.' }, { title: 'Widget e attività in tempo reale', text: 'Prossima lezione, oggi, carriera, aule libere e controlli; la lezione e l’esame sulla schermata di blocco.' }, { title: 'Apple Watch', text: 'La giornata e il prossimo esame, mandati via WatchConnectivity.' }, { title: 'Siri e Spotlight', text: 'Corsi, appelli e aule come entità di App Intents.' }] },
+				{ title: 'Codice', counts: [{ value: '460', label: 'file Swift' }, { value: '17', label: 'aree funzionali' }, { value: '0', label: 'dipendenze', accent: true }], note: 'Modalità di linguaggio Swift 6, concorrenza rigorosa completa, MainActor di default.' },
+				{ title: 'Accessibilità', values: [{ label: 'Blu del marchio sul bianco', value: '13:1' }, { label: 'Blu sullo scuro, prima', value: '1,3:1', text: 'per questo ogni accento ha un gemello scuro' }, { label: 'Coppia peggiore ora', value: '4,7:1', text: 'in entrambi gli aspetti' }] },
+				{ title: 'Verifica', lead: '1.220 test unitari e 49 test dell’interfaccia', tags: ['orari CET/CEST', 'rinnovi accorpati', 'stati degli esami', 'estrazione dell’authcode', 'verifiche di accessibilità ad AX5', 'metriche di avvio e scatti'] },
+				{ title: 'Documentazione', counts: [{ value: '6', label: 'articoli DocC' }, { value: '20', label: 'note di ricerca' }], note: 'Architettura, strato dei dati, accesso, personalizzazione, widget e diagnostica, con diagrammi in chiaro e in scuro.' },
 			]} />
 		</Section>
 
-		<Section eyebrow="PoliVerse · Day by day" title="What each day added." dim="Newest first.">
-			<ChangeLog columns={['Day', 'Commits', 'Changes']} releases={[
-				{ version: '24 Sep', when: '6 commits', changes: [
-					{ kind: 'added', text: 'Icons rebuilt in Icon Composer: Orbita, Giorno and Vicino in every colour, and eleven specials.' },
-					{ kind: 'added', text: 'Blueprint and Playful, two special Flavors that redraw every tab.' },
-					{ kind: 'changed', text: 'Each tab answers one question.' },
+		<Section eyebrow="PoliVerse · Giorno per giorno" title="Cosa ha aggiunto ogni giorno." dim="Dal più recente.">
+			<ChangeLog columns={['Giorno', 'Commit', 'Cambiamenti']} releases={[
+				{ version: '24 set', when: '6 commit', changes: [
+					{ kind: 'added', text: 'Icone rifatte in Icon Composer: Orbita, Giorno e Vicino in ogni colore, e undici speciali.' },
+					{ kind: 'added', text: 'Blueprint e Giocherelloso, due Flavor speciali che ridisegnano ogni scheda.' },
+					{ kind: 'changed', text: 'Ogni scheda risponde a una domanda.' },
 				] },
-				{ version: '23 Sep', when: '10 commits', changes: [
-					{ kind: 'added', text: 'Lesson recordings in the system player, resumed where you stopped, downloadable for offline viewing.' },
-					{ kind: 'fixed', text: 'A refreshed token keeps its scope, so the app no longer signs out at every launch.' },
+				{ version: '23 set', when: '10 commit', changes: [
+					{ kind: 'added', text: 'Le registrazioni delle lezioni nel lettore di sistema, riprese da dove ti eri fermato, scaricabili per vederle offline.' },
+					{ kind: 'fixed', text: 'Un token rinnovato tiene il suo scope, così l’app non esce più a ogni avvio.' },
 				] },
-				{ version: '22 Sep', when: '12 commits', changes: [
-					{ kind: 'note', text: 'Reads, never writes: written down as a decision, with its reasons.' },
-					{ kind: 'added', text: 'Apple Watch, exams on the Lock Screen, Siri entities, and on-device summaries of long notices.' },
+				{ version: '22 set', when: '12 commit', changes: [
+					{ kind: 'note', text: 'Legge, non scrive mai: messo per iscritto come decisione, con le sue ragioni.' },
+					{ kind: 'added', text: 'Apple Watch, esami sulla schermata di blocco, entità per Siri e riassunti sul dispositivo degli avvisi lunghi.' },
 				] },
-				{ version: '20–21 Sep', when: '22 commits', changes: [
-					{ kind: 'changed', text: 'Every service behind one Store, instead of nineteen copies.' },
-					{ kind: 'changed', text: 'Career rebuilt around what is due, not what is already true.' },
+				{ version: '20–21 set', when: '22 commit', changes: [
+					{ kind: 'changed', text: 'Ogni servizio dietro un solo Store, invece di diciannove copie.' },
+					{ kind: 'changed', text: 'Carriera rifatta attorno a quello che scade, non a quello che è già deciso.' },
 				] },
-				{ version: '17 Sep', when: '39 commits', changes: [
-					{ kind: 'added', text: 'UI tests for navigation, search, lifecycle and accessibility audits.' },
-					{ kind: 'changed', text: 'Minimum iOS 27, and 110 model files regrouped by area.' },
+				{ version: '17 set', when: '39 commit', changes: [
+					{ kind: 'added', text: 'Test dell’interfaccia per navigazione, ricerca, ciclo di vita e verifiche di accessibilità.' },
+					{ kind: 'changed', text: 'iOS 27 come minimo, e 110 file di modello raggruppati per area.' },
 				] },
-				{ version: '15–16 Sep', when: '81 commits', changes: [
-					{ kind: 'added', text: 'The four-tab interface, Personalizza with its gallery of looks, and glass course pages.' },
-					{ kind: 'added', text: 'Widgets, controls and a Live Activity, registered in one bundle.' },
+				{ version: '15–16 set', when: '81 commit', changes: [
+					{ kind: 'added', text: 'L’interfaccia a quattro schede, Personalizza con la sua galleria di aspetti, e le pagine dei corsi in vetro.' },
+					{ kind: 'added', text: 'Widget, controlli e un’attività in tempo reale, registrati in un solo bundle.' },
 				] },
-				{ version: '13–14 Sep', when: '58 commits', changes: [
-					{ kind: 'added', text: 'Alerts when an exam changes, when WeBeep posts marks or solutions, and before a deadline.' },
-					{ kind: 'added', text: 'A personal timetable built in the app until the official one arrives, and an English translation.' },
+				{ version: '13–14 set', when: '58 commit', changes: [
+					{ kind: 'added', text: 'Avvisi quando un esame cambia, quando WeBeep pubblica voti o soluzioni, e prima di una scadenza.' },
+					{ kind: 'added', text: 'Un orario personale costruito nell’app finché non arriva quello ufficiale, e una traduzione in inglese.' },
 				] },
-				{ version: '12 Sep', when: '38 commits', changes: [
-					{ kind: 'added', text: 'Campus map down to floor plans, study plan, grade simulation and reminders.' },
-					{ kind: 'fixed', text: 'Stopped re-downloading 13.7 MB on every login.' },
+				{ version: '12 set', when: '38 commit', changes: [
+					{ kind: 'added', text: 'Mappa del campus fino alle planimetrie, piano di studi, simulazione dei voti e promemoria.' },
+					{ kind: 'fixed', text: 'Smesso di riscaricare 13,7 MB a ogni accesso.' },
 				] },
-				{ version: '11 Sep', when: '37 commits', changes: [
-					{ kind: 'added', text: 'WeBeep through Moodle web services, news, notifications and free rooms.' },
-					{ kind: 'changed', text: 'Service hosts read from the Politecnico’s own config instead of hard-coded.' },
-					{ kind: 'fixed', text: 'The CIE login stays in the app instead of being lost to Safari.' },
+				{ version: '11 set', when: '37 commit', changes: [
+					{ kind: 'added', text: 'WeBeep attraverso i web service di Moodle, notizie, notifiche e aule libere.' },
+					{ kind: 'changed', text: 'Host dei servizi letti dalla configurazione del Politecnico invece che scritti nel codice.' },
+					{ kind: 'fixed', text: 'L’accesso con CIE resta nell’app invece di perdersi in Safari.' },
 				] },
-				{ version: '10 Sep', when: '6 commits', style: 'outline', changes: [
-					{ kind: 'added', text: 'Rebuilt from scratch: a real sign-in layer, calendar, career, search, a disk cache and the first 24 tests.' },
+				{ version: '10 set', when: '6 commit', style: 'outline', changes: [
+					{ kind: 'added', text: 'Rifatta da zero: un vero strato di accesso, calendario, carriera, ricerca, una cache su disco e i primi 24 test.' },
 				] },
 			]} />
 		</Section>
 
 		<Section tone="sand">
-			<Sources eyebrow="PoliVerse" checked="24 September 2026" lead="Every number on the page carries a superscript that lands here: what it counts, and how it was counted." notes={[
-				{ title: '309 commits', text: 'Every commit on main between 10 and 24 September 2026, seven merges included, all authored by me.', source: 'git rev-list --count HEAD at e983281', href: `${repo}/commits/main` },
-				{ title: '1,220 unit tests and 49 UI tests', text: 'Swift Testing @Test functions in PoliVerseTests, and XCTest methods in PoliVerseUITests.', source: 'grep over both test targets at e983281' },
-				{ title: '89.6k lines in 460 files', text: 'Every .swift file in the app, widgets, Watch app, shared code and tests, blank lines and comments included.', source: 'wc -l at e983281' },
-				{ title: 'No dependencies', text: 'The Xcode project references no Swift packages.', source: 'project.pbxproj: no XCRemoteSwiftPackageReference' },
+			<Sources eyebrow="PoliVerse" title="Fonti e metodi." checked="24 settembre 2026" lead="Ogni numero della pagina ha un esponente che porta qui: cosa conta, e come è stato contato." notes={[
+				{ title: '309 commit', text: 'Ogni commit su main tra il 10 e il 24 settembre 2026, sette merge compresi, tutti scritti da me.', source: 'git rev-list --count HEAD a e983281', href: `${repo}/commits/main` },
+				{ title: '1.220 test unitari e 49 test dell’interfaccia', text: 'Funzioni @Test di Swift Testing in PoliVerseTests, e metodi XCTest in PoliVerseUITests.', source: 'grep sui due target di test a e983281' },
+				{ title: '89,6k righe in 460 file', text: 'Ogni file .swift nell’app, nei widget, nell’app per Watch, nel codice condiviso e nei test, righe vuote e commenti compresi.', source: 'wc -l a e983281' },
+				{ title: 'Nessuna dipendenza', text: 'Il progetto Xcode non fa riferimento a nessun pacchetto Swift.', source: 'project.pbxproj: nessun XCRemoteSwiftPackageReference' },
 			]} />
 		</Section>
 
 		<Section id="faq">
-			<Faq eyebrow="PoliVerse" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
-				{ q: 'Is it an official app?', a: 'No. PoliVerse is unofficial and not endorsed by Politecnico di Milano; the icon deliberately carries nothing from its identity.' },
-				{ q: 'Where does the data come from, without a public API?', a: 'From the backend behind the official app. PoliVerse reads the same public config for its service hosts and its sign-in scopes, so a moved backend needs no release.' },
-				{ q: 'Why can’t I enrol in an exam from it?', a: 'A wrong write costs a student a session; a wrong read costs a refresh. The request shapes are not verified, so writes stay out until they are.' },
-				{ q: 'Why is the interface in Italian?', a: 'Because its students are. PoliVerse is written in Italian first and translated into English; the illustrations on this page show the Italian interface.' },
-				{ q: 'Can I try it without a PoliMi account?', a: 'Yes. Sample data is on by default, and every screen says so while it is.' },
+			<Faq eyebrow="PoliVerse" title="Domande," dim="e risposte." open={0} lead="Quelle che fa per prime chi valuta." contact={{ label: 'Chiedi di questo progetto', href: 'mailto:samuele.segrini@gmail.com' }} items={[
+				{ q: 'È un’app ufficiale?', a: 'No. PoliVerse non è ufficiale e non è approvata dal Politecnico di Milano; l’icona di proposito non porta niente della sua identità.' },
+				{ q: 'Da dove vengono i dati, senza un’API pubblica?', a: 'Dal backend dietro l’app ufficiale. PoliVerse legge la stessa configurazione pubblica per gli host dei servizi e per gli scope di accesso, così un backend spostato non richiede una nuova versione.' },
+				{ q: 'Perché non posso iscrivermi a un esame dall’app?', a: 'Una scrittura sbagliata costa una sessione; una lettura sbagliata costa un aggiornamento. Le richieste non sono verificate, quindi le scritture restano fuori finché non lo saranno.' },
+				{ q: 'In che lingua è l’app?', a: 'In italiano, come i suoi studenti. PoliVerse è scritta prima in italiano e tradotta in inglese; le illustrazioni di questa pagina mostrano l’interfaccia italiana.' },
+				{ q: 'Posso provarla senza un account PoliMi?', a: 'Sì. I dati d’esempio sono attivi di serie, e ogni schermata lo dice finché lo sono.' },
 			]} />
 		</Section>
 
 		<KeepExploring
-			next={{ label: 'Next', title: 'EasyManager', text: 'A restaurant’s orders, from the table to the fiscal printer.', href: labProjectPath('en', 'easymanager-restaurant-operations'), image: cover('easymanager'), tone: 'blue' }}
-			previous={{ label: 'Previous', title: 'SpinGO', href: labProjectPath('en', 'spingo-sustainable-micromobility'), image: cover('spingo'), tone: 'violet' }}
-			all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
+			title="Continua a esplorare."
+			next={{ label: 'Il prossimo', title: 'EasyManager', text: 'Gli ordini di un ristorante, dal tavolo alla stampante fiscale.', href: labProjectPath('it', 'easymanager-restaurant-operations'), image: cover('easymanager'), tone: 'blue' }}
+			previous={{ label: 'Il precedente', title: 'SpinGO', href: labProjectPath('it', 'spingo-sustainable-micromobility'), image: cover('spingo'), tone: 'violet' }}
+			all={{ label: 'L’archivio', title: 'Tutti i progetti', text: 'App, pacchetti, hardware e ricerca, in un elenco solo.', href: labPaths.it.work }} />
 
 		<Section tone="sand">
-			<PageIndex title="PoliVerse" primary={[{ label: 'Why it exists', href: '#why' }, { label: 'Three promises', href: '#highlights' }, { label: 'A day in it', href: '#app' }, { label: 'Make it yours', href: '#personalise' }, { label: 'Fifteen days', href: '#numbers' }, { label: 'What it took', href: '#backend' }, { label: 'The rules', href: '#decisions' }, { label: 'Specs', href: '#specs' }, { label: 'Questions', href: '#faq' }]}
-				groups={[{ title: 'Code', links: [{ label: 'PoliVerse on GitHub', href: repo, note: 'Source, DocC and research notes' }, { label: 'Endpoint notes', href: `${repo}/blob/main/docs/endpoint-status.md` }, { label: 'Why it never writes', href: `${repo}/blob/main/docs/writes-to-university-systems.md` }] }, { title: 'More from the portfolio', links: [{ label: 'EasyManager', href: labProjectPath('en', 'easymanager-restaurant-operations') }, { label: 'All projects', href: labPaths.en.work }, { label: 'About me', href: labPaths.en.about, icon: 'person' }] }]} />
+			<PageIndex title="PoliVerse" primaryLabel="In questa pagina" primary={[{ label: 'Perché esiste', href: '#why' }, { label: 'Tre promesse', href: '#highlights' }, { label: 'Una giornata', href: '#app' }, { label: 'Falla tua', href: '#personalise' }, { label: 'Quindici giorni', href: '#numbers' }, { label: 'Cosa è servito', href: '#backend' }, { label: 'Le regole', href: '#decisions' }, { label: 'Scheda', href: '#specs' }, { label: 'Domande', href: '#faq' }]}
+				groups={[{ title: 'Codice', links: [{ label: 'PoliVerse su GitHub', href: repo, note: 'Codice, DocC e note di ricerca' }, { label: 'Note sugli endpoint', href: `${repo}/blob/main/docs/endpoint-status.md` }, { label: 'Perché non scrive mai', href: `${repo}/blob/main/docs/writes-to-university-systems.md` }] }, { title: 'Altro dal portfolio', links: [{ label: 'EasyManager', href: labProjectPath('it', 'easymanager-restaurant-operations') }, { label: 'Tutti i progetti', href: labPaths.it.work }, { label: 'Chi sono', href: labPaths.it.about, icon: 'person' }] }]} />
 		</Section>
 	</Story>
 </ExperimentLayout>

@@ -75,3 +75,35 @@ test('the PoliVerse story reflows without horizontal scroll and stays accessible
 		}
 	}
 });
+
+// Il gemello italiano: stessi capitoli, testo italiano, e le due pagine si indicano a vicenda.
+const rotta = '/it/anteprima/poliverse/';
+
+test('il racconto di PoliVerse in italiano ha gli stessi capitoli e rimanda al gemello inglese', async ({ page }) => {
+	await page.goto(rotta);
+	await arriva(page);
+	await expect(page.locator('html')).toHaveAttribute('lang', 'it');
+	await expect(page.locator('#why-title, #why h2').first()).toContainText('Sei posti');
+	const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
+	expect(sections).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+	await expect(page.locator('.st-hg-card')).toHaveCount(4);
+	await expect(page.locator('.st-hg-dots')).toHaveAttribute('aria-label', 'Scegli un punto forte');
+	await expect(page.locator('.st-plus-open').first()).toHaveAttribute('aria-label', /^Di più su: /);
+	await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', /\/en\/preview\/poliverse\/$/);
+
+	await page.goto(route);
+	await arriva(page);
+	await expect(page.locator('link[rel="alternate"][hreflang="it"]')).toHaveAttribute('href', /\/it\/anteprima\/poliverse\/$/);
+});
+
+test('il racconto in italiano non scorre di lato e resta accessibile', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	for (const width of [390, 1440]) {
+		await page.setViewportSize({ width, height: 900 });
+		await page.goto(rotta);
+		await arriva(page);
+		expect(await page.evaluate(() => document.documentElement.scrollWidth), `overflow at ${width}`).toBeLessThanOrEqual(width);
+		const results = await new AxeBuilder({ page }).include('.st-page').analyze();
+		expect(results.violations).toEqual([]);
+	}
+});

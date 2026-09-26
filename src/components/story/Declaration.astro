@@ -4,6 +4,7 @@
  * con quello corrente evidenziato, a destra il percorso, il genere (classe, struttura), il nome,
  * l'abstract, le piattaforme, la dichiarazione in codice, la panoramica (slot) e dove se ne parla.
  */
+import { storyLang } from '../../lib/story-lang';
 import { Code } from 'astro:components';
 import type { ComponentProps } from 'astro/types';
 import Icon from './Icon.astro';
@@ -23,7 +24,8 @@ interface Props {
 	mentioned?: { label: string; href: string }[];
 	overviewTitle?: string;
 }
-const { project, breadcrumb, kind, name, abstract, availability = [], declaration, lang = 'swift', nav = [], more, mentioned = [], overviewTitle = 'Overview' } = Astro.props;
+const { project, breadcrumb, kind, name, abstract, availability = [], declaration, lang = 'swift', nav = [], more, mentioned = [], overviewTitle = storyLang(Astro.url) === 'it' ? 'Panoramica' : 'Overview' } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
 const tint: Record<Sym['kind'], string> = { S: 'blue', C: 'violet', E: 'orange', P: 'acid', F: 'paper' };
 ---
 <div class:list={['st-decl', { 'no-nav': nav.length === 0 }]}>
@@ -45,11 +47,11 @@ const tint: Record<Sym['kind'], string> = { S: 'blue', C: 'violet', E: 'orange',
 		<span class="st-decl-kindname">{kind}</span>
 		<h2>{name}</h2>
 		<p class="st-decl-abstract">{abstract}</p>
-		{availability.length > 0 && <ul class="st-decl-avail" role="list" aria-label="Availability">{availability.map((a) => <li class:list={['st-mono', { muted: a.muted }]}>{a.label}</li>)}</ul>}
+		{availability.length > 0 && <ul class="st-decl-avail" role="list" aria-label={it ? 'Disponibilità' : 'Availability'}>{availability.map((a) => <li class:list={['st-mono', { muted: a.muted }]}>{a.label}</li>)}</ul>}
 		<div class="st-decl-code"><Code code={declaration} lang={lang} theme={storyLight} transformers={[storyLines()]} /></div>
 		<div class:list={['st-decl-body', { single: mentioned.length === 0 }]}>
 			<section><h3>{overviewTitle}</h3><div class="st-decl-overview"><slot /></div></section>
-			{mentioned.length > 0 && <section class="st-decl-mentioned"><h3>Mentioned in</h3><ul role="list">{mentioned.map((m) => <li><a href={m.href}><Icon name="doc" size={16} /><span>{m.label}</span></a></li>)}</ul></section>}
+			{mentioned.length > 0 && <section class="st-decl-mentioned"><h3>{it ? 'Citato in' : 'Mentioned in'}</h3><ul role="list">{mentioned.map((m) => <li><a href={m.href}><Icon name="doc" size={16} /><span>{m.label}</span></a></li>)}</ul></section>}
 		</div>
 	</article>
 </div>

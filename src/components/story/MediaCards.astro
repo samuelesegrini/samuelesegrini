@@ -4,10 +4,12 @@
  * `media-1`, `media-2`… oppure `image`), sotto una frase dove l'inizio in grassetto fa da titolo e,
  * se serve, una nota piccola: un limite, una condizione. Le frecce si spengono ai due capi della fila.
  */
+import { storyLang } from '../../lib/story-lang';
 import Icon from './Icon.astro';
 interface Item { lead: string; text: string; note?: string; tone?: 'paper' | 'dark' | 'acid' | 'blue' | 'violet' | 'orange'; image?: string; imageAlt?: string; tag?: string }
 interface Props { items: Item[]; label?: string }
-const { items, label = 'Cards' } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
+const { items, label = it ? 'Carte' : 'Cards' } = Astro.props;
 const media = await Promise.all(items.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
 ---
 <div class="st-rail st-mcards" data-rail data-rail-ends>
@@ -25,7 +27,7 @@ const media = await Promise.all(items.map((_, i) => (Astro.slots.has(`media-${i 
 		))}
 	</ul>
 	<div class="st-rail-controls">
-		<button type="button" class="st-round" data-rail-prev aria-label="Previous card"><Icon name="chevron-left" stroke={2.4} /></button>
-		<button type="button" class="st-round" data-rail-next aria-label="Next card"><Icon name="chevron-right" stroke={2.4} /></button>
+		<button type="button" class="st-round" data-rail-prev aria-label={it ? 'Carta precedente' : 'Previous card'}><Icon name="chevron-left" stroke={2.4} /></button>
+		<button type="button" class="st-round" data-rail-next aria-label={it ? 'Carta successiva' : 'Next card'}><Icon name="chevron-right" stroke={2.4} /></button>
 	</div>
 </div>
