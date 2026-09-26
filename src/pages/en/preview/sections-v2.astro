@@ -11,7 +11,7 @@ import {
 	Story, Section, Device, MediaHero, AppHero, DocHero, Lockup, HighlightsGallery, MediaCards, FeatureExplorer, ToggleFigure, ExplainerFigure,
 	Stats, ThenNow, Lineup, Matrix, Findings, TechSpecs, Limits, Sources, Declaration, CodeSteps, Anatomy, ExplodedStack, Modules, StateMachine,
 	ChangeLog, Principles, Contribution, Faq, KeepExploring, PageIndex,
-	ScrollIntro, StickyScenes, LitText, Bento, BarCompare, PlusCards, ObjectRow, BeforeAfter, ProductShot,
+	ScrollIntro, StickyScenes, LitText, Bento, BarCompare, PlusCards, ObjectRow, BeforeAfter, ProductShot, DeviceLineup,
 } from '../../../components/story';
 import { labPaths, labPostPath, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
@@ -79,33 +79,7 @@ const tables = [
 			meta="Team of five · HCI, Politecnico di Milano · 2025–2026"
 			actions={[{ label: 'Read the case study', href: '#findings' }, { label: 'Project website', href: repo.spingoSite }, { label: 'Team repository', href: repo.spingo }]}>
 			<svg slot="mark" viewBox="0 0 64 64" fill="none" stroke="#171713" stroke-width="5" stroke-linecap="round" aria-hidden="true"><path d="M16 48c0-12 32-8 32-22 0-6-4-10-10-10" /><circle cx="16" cy="48" r="5" fill="#c7ff9f" /><circle cx="38" cy="16" r="5" fill="#fffef9" /></svg>
-			<Fragment slot="devices">
-				<Device kind="iphone">
-					<svg class="mock-fill" viewBox="0 0 276 596" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of the route screen: a safe route drawn on a map, with a start button">
-						<rect width="276" height="596" fill="#f4f1e9" />
-						<rect x="148" y="96" width="150" height="170" rx="42" fill="#e3f5d2" />
-						<g stroke="#e2ddd2" stroke-width="18" stroke-linecap="round" fill="none"><path d="M-10 170H290M-10 350H290M72 -10V610M204 -10V610M-10 520 140 420" /></g>
-						<path d="M62 474c0-66 10-86 52-106s92-26 92-96-8-116 8-150" fill="none" stroke="#171713" stroke-width="17" stroke-linecap="round" />
-						<path d="M62 474c0-66 10-86 52-106s92-26 92-96-8-116 8-150" fill="none" stroke="#c7ff9f" stroke-width="10" stroke-linecap="round" />
-						<circle cx="62" cy="474" r="11" fill="#171713" /><circle cx="62" cy="474" r="4" fill="#fffef9" />
-						<circle cx="214" cy="122" r="15" fill="#ded1ff" stroke="#171713" stroke-width="3.5" /><circle cx="214" cy="122" r="5" fill="#171713" />
-						<rect x="16" y="20" width="244" height="64" rx="18" fill="#fffefb" stroke="#171713" stroke-width="2.5" />
-						<text x="34" y="48" class="mock-svg-title">Start a safe route</text>
-						<text x="34" y="68" class="mock-svg-mono">TASK 1 · NAVIGATION</text>
-						<rect x="0" y="498" width="276" height="98" fill="#fffefb" /><path d="M0 498h276" stroke="#171713" stroke-width="2.5" />
-						<rect x="18" y="522" width="176" height="48" rx="24" fill="#171713" />
-						<text x="106" y="552" text-anchor="middle" class="mock-svg-title light">Start</text>
-						<rect x="206" y="522" width="52" height="48" rx="24" fill="#ffd4b8" stroke="#171713" stroke-width="2.5" />
-						<path d="M232 536v10M232 552v.5" stroke="#171713" stroke-width="3" stroke-linecap="round" />
-					</svg>
-				</Device>
-				<div class="st-ahero-side">
-					<Device kind="watch">
-						<div class="mock-watch"><span class="st-mono">Next turn</span><svg viewBox="0 0 48 48" width="50" height="50" fill="none" stroke="#c7ff9f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 42V24a8 8 0 0 1 8-8h18m-8-9 9 9-9 9" /></svg><b>Turn right</b></div>
-					</Device>
-					<span class="st-mono">Companion on the wrist: next turn, haptics, quick reports.</span>
-				</div>
-			</Fragment>
+			<DeviceLineup slot="lineup" />
 		</AppHero>
 
 		<p class="cat-mark"><code>&lt;DocHero /&gt;</code><span>new · opener</span></p>

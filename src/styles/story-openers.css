@@ -37,6 +37,9 @@
 .st-ahero-side { display: flex; align-items: center; gap: 24px; margin-top: 182px; text-align: left; }
 .st-ahero-side .st-frame-watch { flex: none; width: 184px; }
 .st-ahero-side .st-mono { max-width: 160px; font-size: 11px; line-height: 1.5; color: var(--st-meta); }
+/* la fila su palco nero: da bordo a bordo, il disegno centrato e mai più largo del suo */
+.st-ahero-lineup { position: relative; justify-self: stretch; margin: 72px calc(-1 * var(--pad)) 0; padding: clamp(24px, 4vw, 56px) 0 0; background: linear-gradient(#000 86%, #101010); }
+.st-ahero-lineup .st-lineup { display: block; width: 100%; max-width: 2000px; height: auto; margin-inline: auto; }
 /* la foto al posto delle cornici: ferma e intera, sopra il fondo quadrettato, con il suo respiro sotto */
 .st-ahero-shot { position: relative; width: 100%; margin: 72px 0 clamp(56px, 7vw, 104px); }
 
@@ -107,6 +110,7 @@
 	.st-ahero { padding-top: 72px; }
 	.st-ahero-devices { gap: 16px; height: 400px; margin-top: 48px; }
 	.st-ahero-shot { margin-top: 48px; }
+	.st-ahero-lineup { margin-top: 48px; }
 	.st-ahero-devices > .st-frame-iphone { width: 220px; }
 	.st-ahero-side { flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 120px; }
 	.st-ahero-side .st-frame-watch { width: 120px; }
