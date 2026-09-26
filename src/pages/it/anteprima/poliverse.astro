@@ -150,7 +150,7 @@ const sections = [
 				{ text: 'Tutto, in un’app.', meta: 'Quello che PoliVerse tiene insieme', name: 'Tutto, in un’app', tone: 'dark' },
 				{ lead: 'I tuoi corsi, con dentro WeBeep.', text: 'Il voto dell’esame, dal piano di studi.', name: 'Corsi con dentro WeBeep', tone: 'paper', layout: 'split', dwell: 9000 },
 				{ lead: 'Falla tua.', text: 'Un colore diventa tutta l’app, fino all’icona.', meta: 'Personalizza, 36 icone', name: 'Falla tua', tone: 'dark', layout: 'overlay' },
-				{ lead: 'Si apre con la tua giornata, anche sottoterra.', text: 'Tornato su, si rimette in pari da sola.', body: 'PoliVerse tiene sul telefono l’ultima copia della tua giornata. Senza segnale si apre da lì, e quando il segnale torna si aggiorna da sola, cambi d’aula compresi.', name: 'Prima offline', tone: 'paper', layout: 'split', dwell: 8000 },
+				{ lead: 'Si apre con la tua giornata, anche sottoterra.', text: 'Tornato su, si rimette in pari da sola.', name: 'Prima offline', tone: 'paper', layout: 'split', dwell: 8000 },
 			]}>
 				<div slot="media-1" class="pv-combine" style={`--half: ${lap / 2}s`} aria-hidden="true">
 					<span class="pv-ring"></span>
@@ -176,6 +176,15 @@ const sections = [
 						</div>
 					</div>
 					<p class="st-hg-body">Ogni corso del tuo piano si apre con i suoi dati di WeBeep: avvisi, materiali, registrazioni e forum, con accanto lezioni, esami e voto.</p>
+				</div>
+				<div slot="copy-4" class="st-hg-anim pv-k-copy">
+					<p><b class="st-hg-lead">Si apre con la tua giornata, anche sottoterra.</b></p>
+					<div class="pv-k-lines">
+						<p data-gone style="opacity: 0; animation: pvo-txt-1 5.4s cubic-bezier(.4, 0, .6, 1) 0s both;">L’ultima copia resta sul telefono.</p>
+						<p data-gone style="opacity: 0; animation: pvo-txt-2 5.4s cubic-bezier(.4, 0, .6, 1) 0s both;">Senza segnale, si apre da lì.</p>
+						<p style="animation: pvo-txt-3 5.4s cubic-bezier(.4, 0, .6, 1) 0s both;">Tornato su, si rimette in pari da sola.</p>
+					</div>
+					<p class="st-hg-body">Orario, aule e corsi restano sul telefono, e un’aula cambiata si aggiorna appena torna il segnale.</p>
 				</div>
 				<div slot="media-2" class="pv-stage-box" aria-hidden="true">
 					<div class="st-hg-anim pv-stage" style="position: relative; width: 452px; height: 472px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -1054,6 +1063,10 @@ const sections = [
 	@keyframes pvo-s1{0%,27%{opacity:1;translate:0 0}30%,100%{opacity:0;translate:0 -8px}}
 	@keyframes pvo-s2{0%,27%{opacity:0;translate:0 8px}31%,60%{opacity:1;translate:0 0}63%,100%{opacity:0;translate:0 -8px}}
 	@keyframes pvo-s3{0%,60%{opacity:0;translate:0 8px}64%,76%{opacity:1;translate:0 0}79%,100%{opacity:0;translate:0 -8px}}
+	/* le frasi della quarta carta seguono il disegno: sopra, sottoterra, di nuovo su */
+	@keyframes pvo-txt-1{0%,27%{opacity:1;translate:0 0}30%,100%{opacity:0;translate:0 -8px}}
+	@keyframes pvo-txt-2{0%,27%{opacity:0;translate:0 8px}31%,60%{opacity:1;translate:0 0}63%,100%{opacity:0;translate:0 -8px}}
+	@keyframes pvo-txt-3{0%,60%{opacity:0;translate:0 8px}64%,100%{opacity:1;translate:0 0}}
 	@keyframes pvo-s4{0%,76%{opacity:0;translate:0 8px}80%,100%{opacity:1;translate:0 0}}
 	@keyframes pvo-check-pop{0%,79%{scale:.4}84%{scale:1.3}88%,100%{scale:1}}
 	@keyframes pvo-sweep{0%,63%{transform:translateX(-120%);opacity:0}64%{transform:translateX(-120%);opacity:1}76%{transform:translateX(420%);opacity:1}77%,100%{transform:translateX(420%);opacity:0}}
