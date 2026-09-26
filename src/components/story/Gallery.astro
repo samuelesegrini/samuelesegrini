@@ -1,11 +1,13 @@
 ---
 /** Le schermate in una cornice di dispositivo, a carosello. Senza `src` resta un segnaposto dichiarato. */
+import { storyLang } from '../../lib/story-lang';
 interface Shot { title: string; caption: string; src?: string; alt?: string; device?: 'ipad' | 'iphone' | 'mac' }
-interface Props { shots: Shot[] }
-const { shots } = Astro.props;
+interface Props { shots: Shot[]; label?: string }
+const it = storyLang(Astro.url) === 'it';
+const { shots, label = it ? 'Schermate' : 'Screens' } = Astro.props;
 ---
 <div class="st-rail" data-rail>
-	<ul class="st-gallery" role="list" data-rail-track>
+	<ul class="st-gallery" role="list" aria-label={label} tabindex="0" data-rail-track>
 		{shots.map((s) => (
 			<li class={`dev-${s.device ?? 'ipad'}`}>
 				<figure>
@@ -15,5 +17,5 @@ const { shots } = Astro.props;
 			</li>
 		))}
 	</ul>
-	<div class="st-rail-controls"><button type="button" data-rail-prev aria-label="Previous screen">←</button><button type="button" data-rail-next aria-label="Next screen">→</button></div>
+	<div class="st-rail-controls"><button type="button" data-rail-prev aria-label={it ? 'Schermata precedente' : 'Previous screen'}>←</button><button type="button" data-rail-next aria-label={it ? 'Schermata successiva' : 'Next screen'}>→</button></div>
 </div>

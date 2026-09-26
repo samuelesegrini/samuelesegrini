@@ -1,0 +1,133 @@
+---
+/**
+ * Highway Route Planner in italiano, gemello di /en/preview/highway-route-planner: stesse sezioni,
+ * stessa figura annotata e stesse note; cambia il testo. Il codice è una traccia ricostruita dal
+ * caso di studio, dichiarata come tale. Fuori dalla sitemap, noindex.
+ */
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import {
+	Story, Section, DocHero, Specs, Layers, Callout, ExplainerFigure, CodeSteps, Compare, Numbers, TechSpecs, KeepExploring,
+} from '../../../components/story';
+import { neighbours, previewIndex } from '../../../lib/previews';
+import { withBase } from '../../../lib/base';
+
+const { next, previous } = neighbours('highway-route-planner', 'it');
+
+// Una traccia di findOptimalPath ricostruita dal caso di studio: non è il sorgente originale.
+const outline = `/* Traccia di findOptimalPath, ricostruita dal caso di studio */
+int step = (to > from) ? +1 : -1;
+
+for (int i = from; i != to; i += step) {
+    if (moves[i] == UNREACHED) continue;
+    for (int j = i + step; j != to + step; j += step) {
+        if (!fleetReaches(i, j)) break;
+        int m = moves[i] + 1;
+        if (m < moves[j] ||
+            (m == moves[j] && dist(i) < dist(prev[j]))) {
+            moves[j] = m;
+            prev[j] = i;
+        }
+    }
+}
+
+for (int k = to; k != from; k = prev[k]) push(route, k);
+printReversed(route, from);`;
+
+const sections = [
+	{ kicker: 'Sezione 1 di 5', value: 'Il problema', detail: { kicker: 'Vincoli', value: '5' } },
+	{ kicker: 'Sezione 2 di 5', value: 'Il modello', detail: { kicker: 'Ricerca', value: 'binaria' } },
+	{ kicker: 'Sezione 3 di 5', value: 'Il grafo', detail: { kicker: 'Costruito', value: 'mai' } },
+	{ kicker: 'Sezione 4 di 5', value: 'Il pareggio', detail: { kicker: 'Risposte giuste', value: '1' } },
+	{ kicker: 'Sezione 5 di 5', value: 'Il costo', detail: { kicker: 'Tempo', value: 'O(n²·v)' } },
+];
+---
+
+<ExperimentLayout lang="it" title="Highway Route Planner (anteprima)" currentHref="/it/anteprima/highway-route-planner/" sections={sections} itHref={withBase('/it/anteprima/highway-route-planner/')} enHref={withBase('/en/preview/highway-route-planner/')} noindex>
+	<Story>
+		<DocHero eyebrow="Algoritmi e Strutture Dati · 2022–2023" title="Highway Route Planner"
+			abstract="Un programma in C che pianifica il viaggio con meno tappe lungo un’autostrada, nei due sensi, mentre le stazioni vengono costruite e demolite e i parchi auto cambiano. Il minor numero di tappe, e mai uno a caso: quando due percorsi pareggiano, la specifica indica quello giusto."
+			note={{ label: 'Metodo', text: 'Prova finale individuale. Un array ordinato, la ricerca binaria e un grafo che non viene mai costruito.' }}
+			image={withBase('/images/projects/covers/highway-route-planner.svg')} imageAlt="Un percorso che salta le stazioni superflue lungo un’autostrada, dalla prima all’ultima con meno tappe possibili"
+			caption="Il percorso salta tutte le stazioni che può; quali, quando due percorsi pareggiano, lo decide la specifica."
+			facts={[{ value: 'C', label: 'linguaggio', icon: 'code' }, { value: '5', label: 'comandi', icon: 'list' }, { value: '512', label: 'veicoli per stazione, al massimo', icon: 'layers' }, { value: 'O(n²·v)', label: 'pianificazione, caso peggiore', icon: 'gauge' }]} />
+
+		<Section id="problem" index={1} split eyebrow="Highway Route Planner · La specifica" title="Meno tappe possibili." dim="E cinque regole attorno."
+			lead="Un’autostrada è una sequenza di stazioni di servizio, ognuna identificata dalla distanza dall’inizio e con un parco di veicoli elettrici. Le stazioni si costruiscono e si demoliscono, i veicoli si aggiungono e si rottamano, e i viaggi si pianificano sull’autostrada così com’è adesso.">
+			<Specs specs={[
+				{ label: 'Direzione', value: 'Un viaggio non torna mai indietro' },
+				{ label: 'Veicoli', value: 'Se ne noleggia uno nuovo a ogni tappa' },
+				{ label: 'Parco', value: 'Fino a 512 veicoli per stazione, ognuno con la sua autonomia' },
+				{ label: 'Obiettivo', value: 'Il minor numero possibile di tappe' },
+				{ label: 'Pareggi', value: 'Una sola risposta giusta, indicata dalla specifica' },
+			]} />
+		</Section>
+
+		<Section id="model" split eyebrow="Highway Route Planner · Il modello" title="Un array ordinato" dim="è tutto l’indice." index={2}
+			lead="Un veicolo è la sua autonomia; una stazione è la sua distanza, il numero di veicoli e un puntatore al suo parco; l’autostrada è un array dinamico di stazioni tenuto in ordine crescente di distanza.">
+			<Layers layers={[
+				{ label: 'Autostrada', items: ['array dinamico di stazioni, ordinate per distanza'], tone: 'dark' },
+				{ label: 'Stazione', items: ['distanza', 'numero di veicoli', 'puntatore al parco'], tone: 'mixed' },
+				{ label: 'Veicolo', items: ['autonomia'] },
+			]} />
+			<Callout kind="important" title="L’invariante">Le stazioni restano in ordine crescente di distanza. È questo che permette a findStationIndexByDistance di usare la ricerca binaria, e che rende entrambi i sensi una semplice passeggiata lungo l’array. malloc, realloc, free e memmove lo mantengono vero a ogni inserimento e rimozione.</Callout>
+		</Section>
+
+		<Section split eyebrow="Highway Route Planner · Pianificare il percorso" title="Il grafo non viene mai costruito." dim="Ogni arco si controlla quando serve."
+			lead="Le stazioni sono nodi; una mossa esiste quando almeno un veicolo del parco di partenza ha l’autonomia per farla. Il percorso evidenziato arriva a 50 con meno tappe possibili.">
+			<ExplainerFigure image={withBase('/images/projects/explainers/highway-implicit-graph.svg')} imageAlt="Cinque stazioni autostradali collegate da archi di raggiungibilità, con il percorso minimo 20, 30, 50 evidenziato"
+				caption="Fig. 2 · Stazioni a distanza 20, 30, 40, 45 e 50" legend={[{ label: 'Mossa possibile', mark: 'line' }, { label: 'Percorso scelto', mark: 'route' }]}
+				aside="Caso peggiore O(n² · v), con v ≤ 512 veicoli per stazione." notes={[
+					{ title: 'Le stazioni restano un array ordinato.', text: 'Ordinate per distanza, così ogni ricerca è binaria.', at: [52.5, 72.5] },
+					{ title: 'Una mossa esiste solo se un’auto può farla.', text: 'La distanza si confronta con le autonomie del parco di partenza, quando serve.', at: [71.2, 32.3] },
+					{ title: 'Due array ricordano la strada del ritorno.', text: 'Mosse minime e predecessore scelto, aggiornati nell’ordine di viaggio.', at: [22.5, 34.9] },
+					{ title: 'I pareggi vanno alla stazione più vicina all’inizio.', text: 'Così 20 → 30 → 50 vince su 20 → 45 → 50, come chiede la specifica.', at: [90, 78.4] },
+				]} />
+		</Section>
+
+		<Section id="graph" eyebrow="Highway Route Planner · Il cuore" title="findOptimalPath," dim="in quattro passi." index={3}>
+			<CodeSteps file="findOptimalPath · traccia" lang="c" label="findOptimalPath, in quattro passi" previewLabel="Anteprima" code={outline}
+				note="Una traccia ricostruita dal caso di studio, non il sorgente originale."
+				steps={[
+					{ title: 'Scegli il senso.', text: '+1 quando la destinazione è più avanti lungo l’autostrada, −1 quando si torna verso l’inizio.', lines: [2] },
+					{ title: 'Prova una mossa sul parco.', text: 'Un arco esiste solo quando un veicolo della stazione di partenza ha l’autonomia per farlo. Non si memorizza niente.', lines: [4, 5, 6, 7] },
+					{ title: 'Tieni le mosse minime, e il predecessore.', text: 'Due array: mosse minime e predecessore scelto. A pari mosse vince la distanza minore.', lines: [8, 9, 10, 11, 12, 13] },
+					{ title: 'Torna indietro, poi stampa in avanti.', text: 'La destinazione si ripercorre attraverso i predecessori e si stampa dall’origine alla destinazione.', lines: [17, 18] },
+				]}>
+			</CodeSteps>
+		</Section>
+
+		<Section id="tie" eyebrow="Highway Route Planner · Percorsi in pareggio" title="Stesse tappe." dim="Una sola risposta giusta." index={4}
+			lead="Risalendo da una fine in comune, la specifica tiene il percorso la cui stazione è più vicina all’inizio dell’autostrada. Conta la distanza dall’inizio, non il senso di marcia.">
+			<Compare columns={[
+				{ title: 'Anche lui due tappe, scartato', items: ['20 → 45 → 50', 'Pareggia con il vincitore sulle tappe', '45 è più lontana dall’inizio di 30'] },
+				{ title: 'Quello che la regola tiene', items: ['20 → 30 → 50', 'E al ritorno: 50 → 30 → 20', 'La distanza minore vince ogni pareggio'] },
+			]} />
+		</Section>
+
+		<Section id="cost" split tone="dark" eyebrow="Highway Route Planner · Compromessi" title="Quanto costa," dim="e cosa cambierei." index={5}
+			lead="La pianificazione confronta coppie di stazioni e può scorrere il parco di partenza per ogni mossa. La soluzione preferisce una rappresentazione diretta e leggibile alla struttura più furba.">
+			<Numbers items={[
+				{ value: 'O(n²·v)', label: 'pianificazione, caso peggiore', method: 'coppie di stazioni, ognuna scorre il parco di partenza' },
+				{ value: 'O(log n)', label: 'ricerca di una stazione', method: 'ricerca binaria sull’array ordinato' },
+				{ value: 'O(n)', label: 'memoria', method: 'mosse, predecessori e il percorso ricostruito' },
+			]} />
+		</Section>
+
+		<Section>
+			<Callout kind="tip" title="Cosa cambierei oggi">Separare il parsing dalla logica di dominio; gestire allo stesso modo ovunque i fallimenti di allocazione; isolare lo spareggio in una funzione; testare i percorsi all’indietro e quelli irraggiungibili; memorizzare l’autonomia massima di ogni stazione, così la raggiungibilità non scorre un parco intero.</Callout>
+		</Section>
+
+		<Section id="specs" tone="sand">
+			<TechSpecs eyebrow="Highway Route Planner" meta="C · memoria dinamica · ricerca binaria · 2023" groups={[
+				{ title: 'Progetto', values: [{ label: 'Corso', value: 'Algoritmi e Strutture Dati', text: 'prova finale 2022–2023' }, { label: 'Lavoro', value: 'Individuale' }] },
+				{ title: 'Comandi', lead: 'Cinque, su un’autostrada che cambia', tags: ['costruisci una stazione', 'demolisci una stazione', 'aggiungi un veicolo', 'rottama un veicolo', 'pianifica un percorso'] },
+				{ title: 'Sorgente', items: [{ title: 'Non ancora collegato', text: 'Collega qui il repository, o scrivi che non è pubblico.' }] },
+			]} />
+		</Section>
+
+		<Section tone="sand">
+			<KeepExploring title="Continua a esplorare." next={next} previous={previous}
+				all={{ label: 'Tutte le anteprime', title: 'Anteprime dei progetti', text: 'Un racconto per progetto, non elencato.', href: previewIndex('it') }} />
+		</Section>
+	</Story>
+</ExperimentLayout>

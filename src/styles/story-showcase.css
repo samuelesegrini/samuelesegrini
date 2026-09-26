@@ -7,6 +7,8 @@
 .st-hg-track::-webkit-scrollbar { display: none; }
 .st-hg-track:focus-visible { outline: 3px solid #4b65ff; outline-offset: -3px; }
 .st-hg-card { position: relative; height: clamp(440px, 40vw, 560px); overflow: hidden; border-radius: var(--st-radius); scroll-snap-align: start; }
+/* l'ultima carta non arriva all'inizio della fila: si aggancia per la fine, così la posizione finale è un vero punto di aggancio e Safari non la riporta alla carta prima */
+.st-hg-card:last-child { scroll-snap-align: end; }
 .st-hg-copy { position: absolute; left: clamp(24px, 3.4vw, 48px); top: clamp(24px, 3vw, 44px); right: clamp(24px, 3.4vw, 48px); z-index: 1; display: grid; justify-items: start; gap: 16px; max-width: 460px; }
 .st-hg-card .st-hg-copy p { font-size: clamp(22px, 2vw, 28px); font-weight: 600; line-height: 1.14; letter-spacing: -.03em; text-wrap: balance; }
 .st-hg-copy .st-eyebrow { color: var(--st-meta); }
@@ -29,13 +31,61 @@
 .st-hg-dots button[aria-pressed='true'] { width: 56px; }
 .st-hg-dots button[aria-pressed='true'] span { width: 44px; background: var(--st-fg); }
 .st-hg-play { display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 0; border-radius: 50%; background: var(--st-wash); color: var(--st-fg); cursor: pointer; }
-.st-hg-play .pause, .st-hgallery[data-playing='true'] .st-hg-play .play { display: none; }
-.st-hgallery[data-playing='true'] .st-hg-play .pause { display: block; }
+/* l'icona segue lo stato del tasto stesso, non della galleria: cambia senza ricalcolare le carte */
+.st-hg-play .pause, .st-hg-play[data-state='playing'] .play { display: none; }
+.st-hg-play[data-state='playing'] .pause { display: block; }
 /* mentre gira, il pallino attivo si riempie nel tempo di una carta */
 .st-hg-dots button span { position: relative; overflow: hidden; }
-.st-hgallery[data-playing='true'] .st-hg-dots button[aria-pressed='true'] span { background: color-mix(in srgb, var(--st-fg) 28%, transparent); }
-.st-hgallery[data-playing='true'] .st-hg-dots button[aria-pressed='true'] span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--st-fg); transform-origin: left center; animation: st-dot-fill var(--hg-every, 3.4s) linear both; }
+.st-hgallery:is([data-playing='true'], [data-still]) .st-hg-dots button[aria-pressed='true'] span { background: color-mix(in srgb, var(--st-fg) 28%, transparent); }
+.st-hgallery:is([data-playing='true'], [data-still]) .st-hg-dots button[aria-pressed='true'] span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--st-fg); transform-origin: left center; animation: st-dot-fill var(--hg-every, 3.4s) linear both; }
+/* ogni nuovo giro del contatore cambia nome all'animazione, così la barra riparte da vuota anche sullo stesso pallino */
+.st-hgallery[data-lap='1'] .st-hg-dots button[aria-pressed='true'] span::after { animation-name: st-dot-fill-b; }
+/* in pausa, o fuori vista, la barra si ferma dov'è insieme al contatore */
+/* ferma anche mentre chi guarda fa scorrere la fila a mano: il contatore lo aspetta */
+.st-hgallery:is([data-still], [data-swiping], :not([data-inview])) .st-hg-dots button[aria-pressed='true'] span::after { animation-play-state: paused; }
 @keyframes st-dot-fill { from { scale: 0 1; } }
+/* L'arrivo dei controlli, una volta sola, la prima volta che la galleria entra in vista
+   (data-arrived): un cerchio sale dal fondo della finestra, da dietro la barra, supera il suo posto,
+   ricade e ci si ancora con un rimbalzo (--hg-rise, la distanza dal fondo, la misura lo script);
+   poi si allunga nella pillola dei pallini
+   mentre il tasto si stacca a destra come una goccia, poi compaiono i pallini e l'icona. Il cerchio
+   è la pillola stessa ritagliata al centro; ogni pezzo parte dal centro dei controlli, a --hg-dx
+   (la distanza la misura lo script all'arrivo, perché dipende dai pallini e dai tasti).
+   Finita l'entrata la galleria prende data-settled e queste animazioni se ne vanno: le due icone del
+   tasto si alternano con display, e un elemento che torna visibile rifà le sue animazioni, quindi
+   ogni pressione faceva aspettare all'icona nuova il ritardo dell'entrata, più di un secondo. */
+@media (prefers-reduced-motion: no-preference) {
+	.st-hgallery[data-bound]:not([data-arrived]) .st-hg-controls { opacity: 0; }
+	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-controls { animation: st-hg-rise 1.05s backwards; }
+	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-dots { animation: st-hg-open .6s cubic-bezier(.34, 1.25, .64, 1) .98s backwards; }
+	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-play { animation: st-hg-drop .6s cubic-bezier(.34, 1.4, .64, 1) .98s backwards; }
+	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-replay { animation-delay: 1.06s; }
+	.st-hgallery[data-arrived]:not([data-settled]) :is(.st-hg-dots button, .st-hg-play svg) { animation: st-hg-show .35s ease-out 1.3s backwards; }
+}
+@keyframes st-hg-rise {
+	0% { transform: translateY(var(--hg-rise, 120px)) scale(.8); animation-timing-function: cubic-bezier(.15, .75, .35, 1); }
+	56% { transform: translateY(-56px) scale(.94, 1.06); animation-timing-function: cubic-bezier(.5, 0, .7, .4); }
+	74% { transform: translateY(7px) scale(1.07, .93); animation-timing-function: cubic-bezier(.3, .6, .5, 1); }
+	88% { transform: translateY(-3px) scale(.99, 1.01); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+	100% { transform: none; }
+}
+@keyframes st-hg-open { from { clip-path: inset(0 calc(50% - 28px) round 28px); translate: var(--hg-dx, 35px) 0; } to { clip-path: inset(0 0 round 28px); translate: 0 0; } }
+@keyframes st-hg-drop { from { translate: var(--hg-dx, -35px) 0; scale: .5; opacity: 0; } 30% { opacity: 1; } to { translate: 0 0; scale: 1; opacity: 1; } }
+@keyframes st-hg-show { from { opacity: 0; } }
+@keyframes st-dot-fill-b { from { scale: 0 1; } }
+/* sotto la frase, quando serve, una riga di descrizione in corpo piccolo */
+.st-hg-card .st-hg-copy p.st-hg-body { max-width: 400px; font-size: 15px; font-weight: 500; line-height: 1.55; letter-spacing: 0; color: var(--st-muted); text-wrap: pretty; }
+/* I disegni che si muovono da soli. Con lo script aspettano al primo fotogramma finché la loro carta
+   non è stata davanti in vista una volta (data-played), poi arrivano in fondo e ci restano. I giri
+   senza fine girano solo con la carta davanti e in vista, senza pausa, e riprendono da dov'erano. */
+.st-hgallery[data-bound] .st-hg-card:not([data-played]) :is(.st-hg-anim, .st-hg-anim *) { animation-play-state: paused !important; }
+.st-hgallery[data-bound]:is(:not([data-inview]), [data-still]) .st-hg-loop,
+.st-hgallery[data-bound] .st-hg-card:not([data-current]) .st-hg-loop { animation-play-state: paused !important; }
+/* Con la pausa si ferma tutta la carta, non solo i giri: il disegno che sta arrivando e la frase che
+   lo segue restano al loro fotogramma, e con il tasto ripartono da lì. */
+/* solo la carta davanti, l'unica che si muove, e con un suo attributo: così la pausa ricalcola
+   poco più di un centinaio di elementi, e lo script la mette dopo che l'icona del tasto è cambiata */
+.st-hgallery[data-bound] .st-hg-card[data-frozen] * { animation-play-state: paused !important; }
 
 /* MediaCards */
 .st-mc-track { grid-auto-columns: min(384px, 78vw); }
@@ -49,7 +99,6 @@
 .st-mcards .st-mc-track p { font-size: 17px; line-height: 1.45; color: var(--st-meta); text-wrap: pretty; }
 .st-mcards p b { color: var(--st-fg); font-weight: 600; }
 .st-mcards .st-mc-note { margin-top: -12px; font-size: 12px; line-height: 1.5; color: var(--st-meta); }
-.st-mcards .st-rail-controls button:disabled { opacity: .45; cursor: default; }
 
 /* FeatureExplorer */
 .st-fx { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: clamp(32px, 4vw, 60px); align-items: start; }
@@ -157,6 +206,7 @@
 	.st-hg-card.layout-split .st-hg-media { right: clamp(24px, 3.4vw, 48px); top: clamp(170px, 16vw, 200px); }
 	.st-hg-card.layout-split .st-hg-copy { left: clamp(24px, 3.4vw, 48px); top: clamp(24px, 3vw, 44px); translate: none; }
 	.st-hg-image { right: -30%; bottom: -8%; width: 150%; }
+	.st-hg-card .st-hg-copy p.st-hg-body { display: none; }
 	.st-fx, .st-explainer { grid-template-columns: minmax(0, 1fr); }
 	.st-fx-figure { position: static; order: -1; }
 	.st-fx figcaption > span:last-child:not(.st-fx-captions) { display: none; }
@@ -166,4 +216,7 @@
 @media (prefers-reduced-motion: reduce) {
 	.st-hg-dots button, .st-hg-dots button span, .st-fx-card, .st-fx-screen, .st-segments label span, .st-toggle-panel, .st-segments[data-thumb]::before, .st-fx-body, .st-fx-body-in { transition: none; }
 	.st-hg-dots button span::after { animation: none !important; }
+	.st-hg-anim, .st-hg-anim *, .st-hg-loop { animation: none !important; }
+	/* i disegni sono già fermi e completi: non c'è niente da rivedere */
+	.st-hg-replay { display: none; }
 }

@@ -20,7 +20,7 @@ export default defineConfig({
 		// solo quando combaciano dopo il prefisso, e qui gli slug sono tradotti
 		// (/en/about/ e /it/chi-sono/). Restano i <link rel="alternate"> nel <head>, che le
 		// dichiarano per intero pagina per pagina.
-		sitemap({ filter: (page) => new URL(page).pathname !== radice && !new URL(page).pathname.includes('/preview/') }),
+		sitemap({ filter: (page) => new URL(page).pathname !== radice && !/\/(preview|anteprima)\//.test(new URL(page).pathname) }),
 	],
 	markdown: {
 		processor: unified({

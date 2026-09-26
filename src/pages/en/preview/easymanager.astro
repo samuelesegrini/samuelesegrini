@@ -1,137 +1,232 @@
 ---
 /**
- * Anteprima non elencata del nuovo dettaglio progetto, impaginato come una pagina prodotto.
- * Serve a valutare la proposta su un progetto vero prima di farne il modello per tutti:
- * fuori dalla sitemap, noindex, nessun link dal resto del sito.
+ * Anteprima non elencata del racconto di EasyManager. Non ricalca PoliVerse: si apre con la
+ * copertina (MediaHero), segue un ordine solo lungo le quattro tappe (StickyScenes), poi entra nei
+ * pezzi come in una documentazione: il tavolo (Anatomy), la ricevuta (Lockup e CodeSteps), la classe
+ * che la stampa (Declaration), le tre decisioni (PlusCards), il toolkit (Bento e StateMachine).
+ * I fatti del 2026 vengono dal repository dell'app (commit 424587c); le schermate sono
+ * illustrazioni dichiarate, condivise con il catalogo. Fuori dalla sitemap, noindex.
  */
-import { render } from 'astro:content';
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
-import LabContentLink from '../../../components/lab/LabContentLink.astro';
-import LabContentImage from '../../../components/lab/LabContentImage.astro';
-import { Story, Section, Hero, Highlights, Statement, FeatureGrid, Gallery, CodeSplit, Layers, Numbers, Compare, Specs, Timeline, Callout, Topics, Faq, Limits, FullStory, Next } from '../../../components/story';
-import { getPortfolioContent } from '../../../lib/portfolio';
-import { labPaths, labProjectPath } from '../../../components/lab/chrome';
+import {
+	Story, Section, MediaHero, StickyScenes, Anatomy, Lockup, CodeSteps, Declaration, PlusCards, Bento, StateMachine,
+	ChangeLog, Limits, Faq, KeepExploring, PageIndex,
+} from '../../../components/story';
+import { neighbours } from '../../../lib/previews';
+import { labPaths } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
+import '../../../styles/story-mocks.css';
 
-const { projects, projectDocuments } = await getPortfolioContent();
-const project = projects.find((p) => p.locale === 'en' && p.translationKey === 'easymanager')!;
-const next = projects.find((p) => p.locale === 'en' && p.translationKey === 'galaxy-trucker')!;
-const document = projectDocuments.find((d) => d.data.locale === 'en' && d.data.translationKey === 'easymanager')!;
-const { Content, headings } = await render(document);
-const chapters = headings.filter((h) => h.depth === 2).length;
-const repo = project.links[0]?.url;
+const repo2023 = 'https://github.com/samuelesegrini/easymanager';
+const { next, previous } = neighbours('easymanager');
 
-// Le carte del dock seguono i capitoli della pagina: la barra in alto non serve più, il dock fa da indice.
+const fiscal = `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body>
+    <printerFiscalReceipt>
+      <beginFiscalReceipt operator="1" />
+      <printRecItem operator="1" description="Risotto"
+        quantity="2" unitPrice="14,00" department="1" />
+      <printRecTotal operator="1" description="Cash"
+        payment="28,00" paymentType="0" />
+      <endFiscalReceipt operator="1" />
+    </printerFiscalReceipt>
+  </s:Body>
+</s:Envelope>`;
+
 const sections = [
-	{ kicker: 'Chapter 1 of 6', value: 'Highlights', detail: { kicker: 'In short', value: '4 highlights' } },
-	{ kicker: 'Chapter 2 of 6', value: 'How it works', detail: { kicker: 'Design', value: '3 decisions' } },
-	{ kicker: 'Chapter 3 of 6', value: 'Screens', detail: { kicker: 'Stations', value: '3 iPads' } },
-	{ kicker: 'Chapter 4 of 6', value: 'Numbers', detail: { kicker: 'Modules', value: `${project.outcomes[0]?.value ?? ''} in 0.1` } },
-	{ kicker: 'Chapter 5 of 6', value: '2023 vs 2026', detail: { kicker: 'Eras', value: 'App → toolkit' } },
-	{ kicker: 'Chapter 6 of 6', value: 'Full story', detail: { kicker: 'Chapters', value: `${chapters} to read` } },
+	{ kicker: 'Chapter 1 of 6', value: 'One order', detail: { kicker: 'Stops', value: '4' } },
+	{ kicker: 'Chapter 2 of 6', value: 'The floor', detail: { kicker: 'Table states', value: '4' } },
+	{ kicker: 'Chapter 3 of 6', value: 'The receipt', detail: { kicker: 'Sent', value: 'once' } },
+	{ kicker: 'Chapter 4 of 6', value: 'Decisions', detail: { kicker: 'Written down', value: '3' } },
+	{ kicker: 'Chapter 5 of 6', value: 'The toolkit', detail: { kicker: 'Products', value: '31' } },
+	{ kicker: 'Chapter 6 of 6', value: 'Where it stands', detail: { kicker: 'Release', value: '0.1.0' } },
 ];
 ---
 
-<ExperimentLayout lang="en" title="EasyManager (preview)" currentHref={labProjectPath('en', project.slug)} sections={sections}
-	itHref={labProjectPath('it', 'easymanager-operazioni-ristorante')} enHref={labProjectPath('en', project.slug)} noindex>
+<ExperimentLayout lang="en" title="EasyManager (preview)" currentHref="/en/preview/easymanager/" sections={sections} itHref={withBase('/it/anteprima/easymanager/')} enHref={withBase('/en/preview/easymanager/')} noindex>
 	<Story>
-		<Hero eyebrow="iPad app · individual · 2023—2026" title="EasyManager"
-			summary="A restaurant’s orders, from the table to the fiscal printer, on the iPads in the room."
-			facts={[{ value: project.outcomes[0]?.value ?? '', label: 'Swift modules' }, { value: project.outcomes[1]?.value ?? '', label: 'dependencies' }, { value: '1', label: 'real restaurant' }]}
-			actions={[{ label: 'Read the case study ↓', href: '#story', primary: true }, ...(repo ? [{ label: 'View the 2023 code', href: repo }] : [])]}
-			image={withBase(project.coverImage)} imageAlt={project.coverAlt} />
+		<MediaHero name="EasyManager" title="From the table to the fiscal printer." image={withBase('/images/projects/covers/easymanager.svg')}
+			imageAlt="An iPad showing a restaurant dining room with tables coloured by state, next to an order ticket"
+			meta="iPad app, then a Swift toolkit · 2023–2026" detail="Individual work, for a real restaurant" action={{ label: 'Follow one order', href: '#order' }}
+			back={{ label: 'All previews', href: withBase('/en/preview/') }} position={{ current: 2, total: 6 }} />
 
-		<Section id="highlights" title="The highlights." index={1}>
-			<Highlights cards={[
-				{ text: 'A real restaurant ran on it: counter, floor and kitchen.', meta: '2023 · Wape S.r.l', tone: 'blue' },
-				{ text: 'It talks to a fiscal printer in XML over HTTP.', meta: 'Epson ePOS · SOAP', tone: 'dark' },
-				{ text: 'Rebuilt as 31 Swift packages with zero dependencies.', meta: '2026 · Swift 6.3', tone: 'acid' },
-				{ text: '“Uncertain” is an answer, not an error.', meta: 'Fiscal layer', tone: 'orange' },
-			]} />
+		<Section id="order" index={1} eyebrow="EasyManager · One order" title="Four stops," dim="and the last one can’t be undone."
+			lead="An order passes through four pairs of hands and three devices. Every screen reads the same order; the fiscal printer turns it into a legal document.">
+			<StickyScenes device="ipad" label="An order from the table to the printer" note="Illustrations · screenshots to replace" steps={[
+				{ title: 'Taken at the table.', text: 'Dishes by course, variants with their own price, a VAT department on every line.', code: 'OrderSheetView.swift', tint: 'orange' },
+				{ title: 'Cooked by course.', text: 'The kitchen sees the same order, regrouped by course for the people who cook it.', code: 'CookingView.swift', tint: 'blue' },
+				{ title: 'Paid at the till.', text: 'A pre-bill, then the payment by method: cash, electronic, cheque or meal voucher.', code: 'CashDesk.swift', tint: 'violet' },
+				{ title: 'Printed as a fiscal receipt.', text: 'The till sends XML over HTTP to the Epson printer. From here on, a mistake is a legal document.', code: 'POST fpmate.cgi · printerFiscalReceipt', tint: 'acid' },
+			]}>
+				<div slot="scene-1" class="mock-screen mock-pad" role="img" aria-label="Illustration: the order pad for table 7, risotto for two in the first course">
+					<div class="mock-menu">
+						<div class="mock-tabs"><span class="on">Course 1</span><span>Course 2</span><span>Course 3</span></div>
+						<div class="mock-dishes"><span class="on"><b>Risotto</b><span class="st-mono">14,00</span></span>{Array.from({ length: 5 }, () => <span><i></i><i></i></span>)}</div>
+						<span class="st-eyebrow">Variants · priced per choice</span>
+					</div>
+					<div class="mock-ticket"><b>Table 7</b><span class="st-eyebrow">Course 1</span><span class="row"><span>Risotto × 2</span><span class="st-mono">28,00</span></span><span class="st-mono dept">dept. 1</span><span class="st-eyebrow">Course 2</span><span class="muted">No dishes yet</span><span class="grow"></span><span class="row total"><span>Total</span><span class="st-mono">28,00</span></span><span class="send">Send to kitchen</span></div>
+				</div>
+				<div slot="scene-2" class="mock-screen mock-kitchen" role="img" aria-label="Illustration: the kitchen view, orders grouped by course">
+					<b>Kitchen</b>
+					<div class="mock-courses">
+						<div><span class="st-eyebrow">Course 1</span><span class="ticket"><b class="st-mono">T7</b><span>Risotto × 2</span></span><span class="ticket done"><b class="st-mono">T2</b><i></i></span></div>
+						<div><span class="st-eyebrow">Course 2</span><span class="ticket"><b class="st-mono">T6</b><i></i><i></i></span></div>
+						<div><span class="st-eyebrow">Course 3</span><span class="ticket"><b class="st-mono">T11</b><i></i></span></div>
+					</div>
+				</div>
+				<div slot="scene-3" class="mock-screen mock-till" role="img" aria-label="Illustration: the till for table 7, payment methods and the fiscal receipt button">
+					<div class="st-receipt st-receipt-paper"><div class="head">PRE-BILL · TABLE 7</div><div class="rule"></div><div class="row"><span>RISOTTO 2×</span><span>28,00</span></div><div class="rule"></div><div class="row strong"><span>TOTAL</span><span>28,00</span></div></div>
+					<div class="mock-pay"><b>Till · Table 7</b><div class="methods"><span class="on">Cash</span><span>Electronic</span><span>Cheque</span><span>Meal voucher</span></div><span class="grow"></span><span class="pre">Pre-bill</span><span class="print">Print fiscal receipt</span><span class="st-mono">X and Z reports at the end of the shift</span></div>
+				</div>
+				<div slot="scene-4" class="mock-screen mock-printout" role="img" aria-label="Illustration: the fiscal receipt for table 7, beside the request that printed it">
+					<div class="st-receipt st-receipt-paper"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div><div class="row"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div><div class="barcode"></div></div>
+					<div class="mock-request st-mono"><span>POST /cgi-bin/fpmate.cgi</span><span>&lt;printRecItem description="Risotto"</span><span>&nbsp;&nbsp;quantity="2" unitPrice="14,00" /&gt;</span><span class="ok">200 · printed</span></div>
+				</div>
+			</StickyScenes>
 		</Section>
 
-		<Statement>An order passes through <b>four pairs of hands</b> and <b>three devices</b>. The last step, a fiscal receipt, <b>can’t be undone with a tap.</b></Statement>
-
-		<Section id="how" title="How it holds together." lead="Three decisions give the 2026 toolkit its shape." index={2}>
-			<FeatureGrid tiles={[
-				{ title: 'An order is a durable state machine.', text: 'A timeout keeps the uncertainty for the next step instead of silently retrying, which could print a duplicate receipt.', size: 'wide', chips: ['Draft', 'Sent', 'Acknowledged?', 'Reconciled'] },
-				{ title: 'The fiscal layer may answer “uncertain”.', text: 'The request leaves, the reply may never come. Not knowing whether the printer printed is not the same as knowing it didn’t.', size: 'tall', tone: 'dark', glyph: '?' },
-				{ title: 'Hardware is not just another API.', text: 'One lane per device serialises access with Swift Concurrency: two valid commands become unsafe when interleaved.', size: 'wide', tone: 'violet' },
-			]} />
+		<Section id="floor" index={2} split eyebrow="EasyManager · The floor" title="Anatomy of a table." dim="Four facts on one tile."
+			lead="In the domain a table has a state, an assigned waiter and a service start time. The tile carries all of them, readable from across the room.">
+			<Anatomy label="A table tile with its four facts" measure="the whole tile is one tap target" statesText="The four values of the domain, one fill each."
+				callouts={[
+					{ label: 'Number', text: 'The biggest thing on the tile, found from across the room.', side: 'left' },
+					{ label: 'Waiter', text: 'Who owns the table, filterable from the sidebar.', side: 'right' },
+					{ label: 'State', text: 'Named, and repeated as the fill so it reads at a glance.', side: 'right' },
+					{ label: 'Service start', text: 'When the table sat down.', side: 'left' },
+				]}
+				states={[{ label: 'Free', tone: 'acid', sample: '1' }, { label: 'Booked', tone: 'violet', sample: '3' }, { label: 'Waiting', tone: 'orange', sample: '7' }, { label: 'Occupied', tone: 'dark', sample: '2' }]}>
+				<div class="mock-tile" role="img" aria-label="Table 7, waiter 02, service started at 20:14, waiting">
+					<b>7</b><span class="st-mono waiter">W 02</span>
+					<span class="st-mono time"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>20:14</span>
+					<span class="st-mono state">Waiting</span>
+				</div>
+			</Anatomy>
 		</Section>
 
-		<Section id="screens" title="Take a closer look." lead="One iPad per station. Every screen reads the same order in real time." index={3}>
-			<Gallery shots={[
-				{ title: 'Dining room', caption: 'DiningView · tables by state and waiter' },
-				{ title: 'Order pad', caption: 'OrderSheetView · courses, variants, VAT' },
-				{ title: 'Kitchen', caption: 'CookingView · dishes by course' },
-			]} />
+		<Lockup id="receipt" index={3} number="03" label="The receipt" title="A receipt is sent once." dim="It can’t be undone."
+			deepDive="Deep dive: when the printer doesn’t answer" next={{ label: 'Next: build one, line by line', href: '#walkthrough' }}>
+			The till wraps every receipt in a SOAP envelope and posts it to the Epson printer in the room: <b>one line per dish with its VAT department, one total per payment method.</b> When the reply never comes, the 2023 app left the decision to whoever was at the till.
+			<Fragment slot="deep-dive">
+				<p>Not knowing whether the printer printed is not the same as knowing it didn’t. Sending again could print a second legal document; not sending could lose one. That question is where the 2026 toolkit starts.</p>
+			</Fragment>
+		</Lockup>
+
+		<Section id="walkthrough" eyebrow="EasyManager · Walkthrough" title="Build a receipt," dim="one line at a time.">
+			<CodeSteps file="fpmate.cgi · request, abridged" code={fiscal} lang="xml" note="POST · printer’s address in the room"
+				meta={[{ label: '5 steps', icon: 'lines' }, { label: 'XML over HTTP', icon: 'brackets' }, { label: 'Epson fiscal printer', icon: 'printer' }]} steps={[
+					{ title: 'Wrap it in SOAP.', text: 'The app composes the document inside a SOAP envelope and posts it to fpmate.cgi on the printer in the room.', lines: '1-3, 10-12', status: 'Envelope ready, nothing to print' },
+					{ title: 'Open a fiscal receipt.', text: 'Everything until the closing tag becomes one fiscal document.', lines: '4', status: 'Receipt opened' },
+					{ title: 'One line per dish.', text: 'Description, quantity, unit price and the VAT department the rate maps to.', lines: '5-6', status: 'Line added' },
+					{ title: 'One total per payment method.', text: 'Cash, cheque, electronic payment or meal voucher, each its own total.', lines: '7-8', status: 'Total added' },
+					{ title: 'Close, then wait for the reply.', text: 'If it never comes, the 2023 app records the error and leaves the decision to the operator.', lines: '9', status: 'Sent · waiting for the printer' },
+				]}>
+				<div slot="preview" class="st-receipt">
+					<div class="empty" data-until="0">Nothing printed yet.<br />The envelope is empty.</div>
+					<div data-from="1"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div></div>
+					<div data-from="2"><div class="row lit"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div></div>
+					<div data-from="3"><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div></div>
+					<div data-from="4" class="barcode"></div>
+				</div>
+			</CodeSteps>
 		</Section>
 
 		<Section>
-			<CodeSplit eyebrow="Deep dive · the fiscal printer" title="A receipt is an XML document, sent once."
-				text="The app wraps each receipt in a SOAP envelope and posts it to the Epson printer in the room: one line per dish with its VAT department, one total per payment method."
-				file="fpmate.cgi · request" language="XML"
-				code={'<beginFiscalReceipt />\n<printRecItem description="Risotto"\n  quantity="2" unitPrice="14.00"\n  department="1" />\n<printRecTotal payment="Cash"\n  amount="28.00" />\n<endFiscalReceipt />'} />
+			<Declaration project="EasyManager · 2023" breadcrumb={['EasyManager', 'View models', 'PrinterViewModel']} kind="Class" name="PrinterViewModel"
+				abstract="Composes the printer’s documents as XML, wraps them in a SOAP envelope and posts them to the Epson fiscal printer in the room."
+				availability={[{ label: 'iPadOS' }, { label: 'SwiftUI · MVVM' }, { label: 'Epson ePOS fiscal' }, { label: '2023 app', muted: true }]}
+				declaration="class PrinterViewModel: ObservableObject" more="View models: 6 in total"
+				nav={[
+					{ title: 'Views', symbols: [{ name: 'DiningView', kind: 'S' }, { name: 'OrderSheetView', kind: 'S' }, { name: 'CookingView', kind: 'S' }, { name: 'CashDesk', kind: 'S' }] },
+					{ title: 'View models', symbols: [{ name: 'RestaurantViewModel', kind: 'C' }, { name: 'OrderViewModel', kind: 'C' }, { name: 'PrinterViewModel', kind: 'C', current: true }, { name: 'TableViewModel', kind: 'C' }] },
+				]}
+				mentioned={[{ label: 'A receipt is sent once', href: '#receipt' }, { label: 'Build a receipt, one line at a time', href: '#walkthrough' }]}>
+				<p>Two document types and the closing operations. The <b>pre-bill</b> is non-fiscal, one line per dish and variant, aligned on 46 columns. The <b>fiscal receipt</b> carries one <code>printRecItem</code> per line and one <code>printRecTotal</code> per payment method. X and Z reports close the shift. It lived beside five other shared view models, and that is what the rebuild took apart.</p>
+			</Declaration>
 		</Section>
 
-		<Section title="Built in layers." lead="Feature code depends on narrow contracts, never on the app.">
-			<Layers layers={[
-				{ label: 'Features', items: ['Dining', 'Kitchen', 'Till'] },
-				{ label: 'Contracts', items: ['Order domain', 'Device lanes', 'Fiscal layer'], tone: 'mixed' },
-				{ label: 'Foundation', items: ['SQL persistence · DocC on every versioned API'], tone: 'dark' },
+		<Section id="decisions" index={4} eyebrow="EasyManager · Why it is built this way" title="Three decisions." dim="Open one for the reasoning.">
+			<PlusCards label="Decisions behind the toolkit" cards={[
+				{ eyebrow: 'Fiscal layer', title: '“Uncertain” is an answer, not an error.', text: 'When the printer does not answer, nothing is sent again.', tone: 'orange',
+					detail: 'A timeout keeps the question open for the next step instead of retrying a mutation that could print a second receipt. In the toolkit the outcome is a value, accepted, rejected or unknown, and the till can hold an unknown receipt until it is reconciled.' },
+				{ eyebrow: 'Devices', title: 'One lane per device.', text: 'Hardware is not just another API.', tone: 'violet',
+					detail: 'Two valid commands become unsafe when they interleave on the same printer. The hub keys each lane by the device’s ID, so two objects for the same address still share one queue, and cancelling a caller stops the waiting, never a document already being written.' },
+				{ eyebrow: 'Orders', title: 'Delivered, or it waits.', text: 'An order is never simply gone.', tone: 'acid',
+					detail: 'Delivery counts as a success when the order is confirmed or durably queued. DeliveryOutcome has four cases, delivered, delivered pending cleanup, queued and rejected, and “lost” is not one of them.',
+					links: [{ label: 'Read the 2023 code', href: repo2023 }] },
 			]} />
 		</Section>
 
-		<Section id="numbers" title="By the numbers." tone="dark" index={4}>
-			<Numbers items={project.outcomes} />
+		<Section id="toolkit" index={5} eyebrow="EasyManager · The 2026 toolkit" title="Rebuilt as packages." dim="Each with one job.">
+			<Bento label="The toolkit, tile by tile" tiles={[
+				{ value: '31', eyebrow: 'Package products', text: 'Documented with DocC and built by the release gate.', tone: 'acid', size: 'large' },
+				{ value: '0', eyebrow: 'Remote dependencies', text: 'Where Cloud Firestore used to sit at the core.', tone: 'dark' },
+				{ eyebrow: 'Swift 6.3', title: 'One lane per device.', text: 'Two valid commands never interleave on the same printer.', tone: 'violet' },
+				{ eyebrow: 'Engines', title: 'They point only inward.', text: 'No SwiftUI, no backend, no vendor API inside a feature engine.', size: 'wide' },
+				{ eyebrow: 'Fiscal', title: 'Italian types stay in the Italian adapter.', text: 'Checkout logic never sees them.', tone: 'blue', size: 'wide' },
+				{ eyebrow: 'Money', title: 'Whole cents.', text: 'A receipt never rounds its way to a different amount.', tone: 'orange', size: 'wide' },
+			]}>
+				<div slot="tile-1" class="mock-grid mock-grid-bento" role="img" aria-label="31 package products, three of them the order domain, device lanes and fiscal layer">
+					{Array.from({ length: 31 }, (_, k) => <span class:list={{ core: k < 3 }}></span>)}
+				</div>
+			</Bento>
 		</Section>
 
-		<Section id="eras" title="Same problem. Two eras." center index={5}>
-			<Compare columns={[
-				{ title: '2023 · The app', items: ['SwiftUI with MVVM, six shared view models', 'Firestore snapshots keep every iPad in sync', 'Pre-bill, fiscal receipt, X and Z reports', 'Connection errors left to the operator'] },
-				{ title: '2026 · The toolkit', items: ['Swift 6.3 packages separated by contract', 'SQL persistence at the boundary, DocC beside every API', 'Outbox, acknowledgement and reconciliation as phases', 'Uncertainty modelled as a domain value'] },
+		<Section split eyebrow="EasyManager · Order lifecycle" title="An order is a durable state machine." dim="A timeout keeps the question open."
+			lead="Outbox, acknowledgement and reconciliation are separate phases. Retrying on a timeout could print a second fiscal document, so the uncertainty travels to the next step instead.">
+			<StateMachine label="Order lifecycle" forbidden="silent retry · never"
+				before={[{ name: 'Draft', text: 'Being built on the pad; nothing has left the iPad.' }, { name: 'Sent', text: 'In the outbox, handed to the device.' }]}
+				fork={[{ name: 'Acknowledged', text: 'The device answered.', tone: 'blue' }, { name: 'Uncertain', text: 'No answer yet. Unknown is not the same as failed.', tone: 'orange' }]}
+				after={[{ name: 'Reconciled', text: 'Checked against what the device recorded.', tone: 'dark' }]}
+				labels={{ before: [['send', 'outbox']], fork: ['device answers', 'timeout'], join: ['reconcile', 'reconcile on the next step'] }} />
+		</Section>
+
+		<Section id="stands" index={6} eyebrow="EasyManager · How it got here" title="Change log." dim="Newest first.">
+			<ChangeLog columns={['Version', 'When', 'Changes']} releases={[
+				{ version: '0.2', when: 'Unreleased', style: 'planned', changes: [{ kind: 'planned', text: 'Work in progress, not published and not claimed on this page.' }] },
+				{ version: 'main', when: '5 Sep 2026', changes: [{ kind: 'changed', text: 'Role navigation moved into feature-owned flows.' }] },
+				{ version: '0.1.0', when: '24 Aug 2026', changes: [
+					{ kind: 'added', text: '31 products: foundations, seven feature engines, SwiftUI, hardware and fiscal adapters, testing.' },
+					{ kind: 'changed', text: 'SwiftUI distributed apart from the engines; Epson XML owned by EMEpsonEPOS.' },
+					{ kind: 'removed', text: 'Backend adapters from the public products, and every promise for the old layout.' },
+				] },
+				{ version: 'App', when: 'April 2023 · 20 commits', style: 'outline', changes: [
+					{ kind: 'added', text: 'Dining room, order pad, kitchen and till on iPad, for a real restaurant.' },
+					{ kind: 'added', text: 'Fiscal printing over HTTP: pre-bill, receipt, X and Z reports.' },
+					{ kind: 'note', text: 'Six shared view models make local changes ripple elsewhere; the seams show.' },
+				] },
 			]} />
 		</Section>
 
-		<Section title="How it got here.">
-			<Timeline steps={[
-				{ when: 'April 2023', title: 'Twenty commits', text: 'A SwiftUI app for a real restaurant: floor, kitchen, till, fiscal printer.' },
-				{ when: '2023', title: 'Scope grows', text: 'Loyalty, reservations, shifts, inventory: the seams become visible.' },
-				{ when: '2026', title: 'Re-engineering', text: 'Swift 6.3 packages separated by contract.' },
-				{ when: '0.1.0', title: 'First release', text: '31 products documented and built, no remote dependencies.' },
-			]} />
-			<Callout kind="important">The 0.1 source isn’t public yet; the release facts on this page come from a verified checkout.</Callout>
-		</Section>
+		<Limits title="What’s proven," dim="and what isn’t yet." proven={[
+			{ text: 'The 2023 application, readable in full', source: 'github.com/samuelesegrini/easymanager', href: repo2023 },
+			{ text: 'The 0.1.0 release: 31 products, no remote dependencies', source: 'Package.swift · CHANGELOG, 24 August 2026' },
+			{ text: 'Downstream builds import every public product without @testable', source: 'Fixtures/Consumers' },
+		]} notProven={[
+			{ text: 'The app running on the 0.1 API', source: 'Its migration is outside the 0.1.0 release' },
+			{ text: 'Compatibility with physical printers', source: 'No device evidence yet' },
+			{ text: 'Fiscal certification', source: 'Evidence still missing' },
+			{ text: 'A public 0.1 source', source: 'Private for now' },
+		]} />
 
-		<Section title="My part.">
-			<Specs specs={[
-				{ label: 'Role', value: project.role },
-				{ label: 'Team', value: 'Individual work' },
-				{ label: 'Client', value: 'Wape S.r.l, a working restaurant' },
-				{ label: 'Stack', value: project.technologies.join(' · ') },
-			]} />
-		</Section>
-
-		<Section title="Questions you might ask.">
-			<Faq items={[
+		<Section>
+			<Faq eyebrow="EasyManager" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
 				{ q: 'Did the restaurant actually use it?', a: 'The 2023 app was written for a real restaurant and its fiscal printer. Device compatibility and fiscal certification of the 2026 toolkit are not demonstrated yet.' },
 				{ q: 'Why rebuild instead of fixing the app?', a: 'Six shared view models made local changes carry consequences elsewhere. The re-engineering draws boundaries around orders, devices and the fiscal layer.' },
+				{ q: 'What happens when the printer doesn’t answer?', a: 'The outcome becomes “uncertain” and is reconciled on the next step, instead of being retried.' },
 				{ q: 'Can I read the code?', a: 'The 2023 application is public on GitHub. The 2026 source is not public yet.' },
 			]} />
 		</Section>
 
-		<Limits proven={['The 2023 repository, readable in full', 'The 0.1 release facts, from a verified checkout']} notProven={['Physical-device compatibility', 'Fiscal certification', 'The unreleased 0.2 work']} />
+		<KeepExploring next={next} previous={previous}
+			all={{ label: 'All previews', title: 'Project previews', text: 'One story per project, unlisted.', href: withBase('/en/preview/') }} />
 
-		<Section title="Explore the work.">
-			<Topics groups={[
-				{ title: 'Code', links: repo ? [{ label: 'Original application (2023)', href: repo, note: 'My repository · github.com' }] : [] },
-				{ title: 'Related projects', links: [{ label: next.title, href: labProjectPath('en', next.slug), note: 'Another system that has to agree across devices' }] },
-			]} />
+		<Section tone="sand">
+			<PageIndex title="EasyManager"
+				primary={[{ label: 'One order', href: '#order' }, { label: 'The floor', href: '#floor' }, { label: 'The receipt', href: '#receipt' }, { label: 'Decisions', href: '#decisions' }, { label: 'The toolkit', href: '#toolkit' }, { label: 'Change log', href: '#stands' }]}
+				groups={[
+					{ title: 'Code', links: [{ label: 'Original application, 2023', href: repo2023, note: 'My repository · github.com' }, { label: 'Toolkit 0.1 source', locked: true, note: 'Not public yet' }] },
+					{ title: 'More from the portfolio', links: [{ label: 'All projects', href: labPaths.en.work }, { label: 'About me', href: labPaths.en.about, icon: 'person' }] },
+				]} />
 		</Section>
-
-		<FullStory chapters={chapters} index={6}><Content components={{ a: LabContentLink, img: LabContentImage }} /></FullStory>
-
-		<Next title={next.title} href={labProjectPath('en', next.slug)} image={withBase(next.coverImage)} />
 	</Story>
 </ExperimentLayout>

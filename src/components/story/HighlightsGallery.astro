@@ -6,36 +6,63 @@
  * quando esce e il pallino attivo si riempie nel tempo della carta; chi tocca i controlli decide
  * lui, e con la riduzione del movimento non parte mai da sola. Senza JavaScript restano una fila
  * che si scorre a mano.
- * La carta davanti porta `data-current` e la galleria in vista `data-inview`: un disegno animato
- * dentro una carta può ripartire ogni volta che la sua carta torna davanti. Dopo il tasto di pausa
- * la galleria porta `data-still`: anche quello che in una carta si muove da sé si ferma, finché il
- * tasto non la fa ripartire. Un pallino o un trascinamento fermano solo lo scorrere delle carte.
+ * La carta davanti porta `data-current` e la galleria in vista `data-inview`. La prima volta che una
+ * carta è davanti con la galleria in vista prende `data-played` e lo tiene: il suo disegno parte lì,
+ * arriva in fondo e ci resta, anche quando la carta torna davanti (niente da rivedere da capo). I
+ * giri che non finiscono (`.st-hg-loop`) girano solo mentre la carta è davanti e in vista, e
+ * ripartono da dove erano. Un disegno fatto di animazioni scritte nella carta porta `.st-hg-anim`:
+ * resta fermo al primo fotogramma finché la carta non ha `data-played`. Dopo il tasto di pausa la
+ * galleria porta `data-still` (e la carta davanti `data-frozen`) e si ferma tutta
+ * la carta, disegno, frase e giri, finché il tasto non la
+ * fa ripartire. Un pallino porta alla sua carta e fa ripartire la riproduzione; un trascinamento
+ * ferma solo lo scorrere delle carte.
+ * La prima volta che la galleria entra in vista prende `data-arrived`: i controlli arrivano come un
+ * cerchio che sale e si apre nella pillola dei pallini e nel tasto.
+ * Il tasto accanto (`data-hg-replay`) rifà da capo il disegno della carta davanti e il suo contatore;
+ * se la galleria era in pausa riparte, come con un pallino.
+ * Ogni carta resta davanti per il suo `dwell` (in millisecondi, se no `interval`): il pallino attivo
+ * si riempie in quel tempo, così una carta con un disegno più lungo ha il tempo di finirlo.
+ * Uno slot `copy-1`, `copy-2`… prende il posto della frase quando la frase deve muoversi con il
+ * disegno; `body` aggiunge sotto la frase una riga di descrizione in corpo piccolo.
  * Tre impaginazioni per carta, come nelle gallerie di apple.com: `stack` (il testo in alto, il
  * disegno sotto), `overlay` (il disegno a tutta carta, il testo centrato sopra) e `split` (il
  * disegno a sinistra, il testo a destra). Con `lead` la frase si apre con un titolo in grassetto.
  */
-interface Card { text: string; lead?: string; meta?: string; name?: string; tone?: 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange'; layout?: 'stack' | 'overlay' | 'split'; image?: string; imageAlt?: string; wide?: boolean }
+import { storyLang } from '../../lib/story-lang';
+interface Card { text?: string; lead?: string; body?: string; dwell?: number; meta?: string; name?: string; tone?: 'paper' | 'dark' | 'ink2' | 'acid' | 'blue' | 'violet' | 'orange'; layout?: 'stack' | 'overlay' | 'split'; image?: string; imageAlt?: string; wide?: boolean }
 interface Props { cards: Card[]; label?: string; interval?: number }
-const { cards, label = 'Highlights', interval = 3400 } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
+const words = it
+	? { label: 'Punti forti', choose: 'Scegli un punto forte', dot: 'Punto forte', of: 'di', play: 'Fai scorrere i punti forti', pause: 'Ferma i punti forti', replay: 'Rivedi questo punto forte' }
+	: { label: 'Highlights', choose: 'Choose a highlight', dot: 'Highlight', of: 'of', play: 'Play the highlights', pause: 'Pause the highlights', replay: 'Replay this highlight' };
+const { cards, label = words.label, interval = 3400 } = Astro.props;
+const copy = await Promise.all(cards.map((_, i) => (Astro.slots.has(`copy-${i + 1}`) ? Astro.slots.render(`copy-${i + 1}`) : Promise.resolve(''))));
 const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
 ---
 <div class="st-hgallery" data-hgallery data-interval={interval}>
 	<ul class="st-hg-track" role="list" aria-label={label} tabindex="0" data-hg-track>
 		{cards.map((c, i) => (
-			<li class:list={['st-hg-card', `tone-${c.tone ?? 'paper'}`, `layout-${c.layout ?? 'stack'}`, { wide: c.wide }]}>
-				<div class="st-hg-copy"><p>{c.lead && <><b class="st-hg-lead">{c.lead}</b>{' '}</>}{c.text}</p>{c.meta && <span class="st-eyebrow">{c.meta}</span>}</div>
+			<li class:list={['st-hg-card', `tone-${c.tone ?? 'paper'}`, `layout-${c.layout ?? 'stack'}`, { wide: c.wide }]} data-dwell={c.dwell ?? interval}>
+				<div class="st-hg-copy">
+					{copy[i] ? <Fragment set:html={copy[i]} /> : <p>{c.lead && <><b class="st-hg-lead">{c.lead}</b>{' '}</>}{c.text}</p>}
+					{c.body && <p class="st-hg-body">{c.body}</p>}
+					{c.meta && <span class="st-eyebrow">{c.meta}</span>}
+				</div>
 				{c.image && <img class="st-hg-image" src={c.image} alt={c.imageAlt ?? ''} width="1200" height="800" loading={i === 0 ? 'eager' : 'lazy'} />}
 				{media[i] && <div class="st-hg-media"><Fragment set:html={media[i]} /></div>}
 			</li>
 		))}
 	</ul>
 	<div class="st-hg-controls" data-hg-controls hidden>
-		<div class="st-hg-dots" role="group" aria-label="Choose a highlight">
-			{cards.map((c, i) => <button type="button" aria-label={`Highlight ${i + 1} of ${cards.length}${c.name ? `: ${c.name}` : ''}`} aria-pressed={i === 0 ? 'true' : 'false'} data-hg-dot={i}><span></span></button>)}
+		<div class="st-hg-dots" role="group" aria-label={words.choose}>
+			{cards.map((c, i) => <button type="button" aria-label={`${words.dot} ${i + 1} ${words.of} ${cards.length}${c.name ? `: ${c.name}` : ''}`} aria-pressed={i === 0 ? 'true' : 'false'} data-hg-dot={i}><span></span></button>)}
 		</div>
-		<button type="button" class="st-hg-play" aria-label="Play the highlights" data-hg-play>
+		<button type="button" class="st-hg-play" aria-label={words.play} data-hg-play data-state="paused" data-label-play={words.play} data-label-pause={words.pause}>
 			<svg class="play" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg>
 			<svg class="pause" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
+		</button>
+		<button type="button" class="st-hg-play st-hg-replay" aria-label={words.replay} data-hg-replay>
+			<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5.2 13.5a7 7 0 1 0 2-6.4L5 9.3" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /><path d="M4.6 4.6v5.1h5.1" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
 		</button>
 	</div>
 </div>
@@ -50,70 +77,218 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			const cards = [...track.children] as HTMLElement[];
 			const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-hg-dot]')];
 			const play = root.querySelector<HTMLButtonElement>('[data-hg-play]')!;
+			const replay = root.querySelector<HTMLButtonElement>('[data-hg-replay]');
 			root.querySelector('[data-hg-controls]')?.removeAttribute('hidden');
 			const every = Number(root.dataset.interval) || 3400;
+			const dwell = (i: number) => Number(cards[i].dataset.dwell) || every;
 			const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 			let current = 0;
+			// un solo contatore per la carta davanti: il tempo che le resta, e da quando corre
 			let timer = 0;
-			// se la riproduzione deve girare quando la galleria è in vista: chi usa i controlli lo decide
+			let remaining = dwell(0);
+			let since = 0;
+			// playing: chi guarda vuole che scorrano; il contatore corre solo se in più la galleria è in vista
+			let playing = false;
+			// finché nessuno tocca i controlli, parte la prima volta che la galleria entra in vista
 			let wanted = !reduce();
-			root.style.setProperty('--hg-every', `${every}ms`);
-			// mentre scorre per un pallino o per la riproduzione, lo scorrimento non riassegna il pallino
-			let lock = 0;
+			let inview = false;
+			root.style.setProperty('--hg-every', `${dwell(0)}ms`);
+			// quando lo script ha mosso la fila l'ultima volta: gli scorrimenti senza un gesto più recente sono suoi
+			let lockedAt = 0;
 
+			// la carta davanti, vista una volta, parte e resta arrivata: non ripartirà più da capo
+			const reveal = () => {
+				if (inview) cards[current].toggleAttribute('data-played', true);
+			};
+			// Il tasto cambia icona da solo, con un suo attributo: il resto (la galleria che scorre o è in
+			// pausa, la carta davanti ferma) si scrive sulla galleria due fotogrammi dopo. Un attributo
+			// sulla galleria fa ricalcolare lo stile di tutte le carte, e Safari mostrava l'icona nuova
+			// solo a ricalcolo finito, con un ritardo che si vedeva.
+			let stillOn = false;
+			let applyFrame = 0;
+			const apply = () => {
+				cancelAnimationFrame(applyFrame);
+				applyFrame = requestAnimationFrame(() => {
+					applyFrame = requestAnimationFrame(() => {
+						root.dataset.playing = String(playing);
+						root.toggleAttribute('data-still', stillOn);
+						cards.forEach((c, k) => c.toggleAttribute('data-frozen', stillOn && k === current));
+					});
+				});
+			};
+			const still = (on: boolean) => {
+				stillOn = on;
+				apply();
+			};
 			const mark = (i: number) => {
 				current = i;
 				dots.forEach((d, k) => d.setAttribute('aria-pressed', String(k === i)));
 				cards.forEach((c, k) => c.toggleAttribute('data-current', k === i));
+				root.style.setProperty('--hg-every', `${dwell(i)}ms`);
+				reveal();
+				apply();
 			};
-			mark(0);
+			// il contatore riparte da capo: tempo pieno e barra del pallino di nuovo vuota
+			const arm = () => {
+				remaining = dwell(current);
+				root.dataset.lap = root.dataset.lap === '1' ? '0' : '1';
+			};
+			const hold = () => {
+				if (!timer) return;
+				window.clearTimeout(timer);
+				timer = 0;
+				remaining = Math.max(0, remaining - (performance.now() - since));
+			};
+			const run = () => {
+				if (timer || !playing || !inview) return;
+				since = performance.now();
+				timer = window.setTimeout(() => {
+					timer = 0;
+					if (!root.isConnected) return;
+					go((current + 1) % cards.length);
+					run();
+				}, remaining);
+			};
 			const go = (i: number) => {
 				const left = cards[i].offsetLeft - parseFloat(getComputedStyle(track).paddingLeft);
-				lock = performance.now() + 900;
+				lockedAt = performance.now();
 				track.scrollTo({ left, behavior: reduce() ? 'auto' : 'smooth' });
 				mark(i);
+				arm();
 			};
-			const stop = () => {
-				window.clearInterval(timer);
-				timer = 0;
-				root.dataset.playing = 'false';
-				play.setAttribute('aria-label', 'Play the highlights');
+			const label = () => play.setAttribute('aria-label', playing ? (play.dataset.labelPause ?? 'Pause the highlights') : (play.dataset.labelPlay ?? 'Play the highlights'));
+			const setPlaying = (on: boolean) => {
+				playing = on;
+				play.dataset.state = on ? 'playing' : 'paused';
+				apply();
+				label();
+				if (on) run(); else hold();
 			};
-			const start = () => {
-				timer = window.setInterval(() => {
-					if (!root.isConnected) return window.clearInterval(timer);
-					go((current + 1) % cards.length);
-				}, every);
-				root.dataset.playing = 'true';
-				play.setAttribute('aria-label', 'Pause the highlights');
-			};
+			mark(0);
 
-			dots.forEach((d, k) => d.addEventListener('click', () => { wanted = false; stop(); go(k); }));
+			// un pallino porta a quella carta e fa ripartire il contatore; se era in pausa, riparte anche la riproduzione
+			dots.forEach((d, k) => d.addEventListener('click', () => {
+				wanted = false;
+				// chi preme un controllo lo sta guardando: la galleria è in vista, qualunque sia la sua quota
+				enter();
+				settle();
+				hold();
+				go(k);
+				still(false);
+				if (playing) run(); else setPlaying(true);
+			}));
+			// pausa: la carta, la barra e i giri si fermano dove sono; riprendendo, continuano da lì
 			play.addEventListener('click', () => {
-				wanted = !timer;
-				if (timer) stop(); else start();
-				root.toggleAttribute('data-still', !timer);
+				wanted = false;
+				enter();
+				settle();
+				if (!playing && !stillOn) arm();
+				setPlaying(!playing);
+				still(!playing);
 			});
-			track.addEventListener('pointerdown', () => { wanted = false; stop(); });
-			// parte quando è in vista per metà, si ferma quando esce
-			new IntersectionObserver(([entry]) => {
-				if (entry.intersectionRatio >= 0.5) root.toggleAttribute('data-inview', true);
-				else if (entry.intersectionRatio < 0.15) root.toggleAttribute('data-inview', false);
-				if (entry.intersectionRatio >= 0.5 && wanted && !timer) start();
-				else if (entry.intersectionRatio < 0.15 && timer) stop();
-			}, { threshold: [0, 0.15, 0.5] }).observe(root);
-			// il pallino segue la carta più vicina all'inizio della fila
+			// rivedi: il disegno della carta davanti torna al primo fotogramma e riparte, con il contatore
+			replay?.addEventListener('click', () => {
+				wanted = false;
+				enter();
+				settle();
+				hold();
+				for (const a of cards[current].getAnimations({ subtree: true })) a.currentTime = 0;
+				arm();
+				still(false);
+				if (playing) run(); else setPlaying(true);
+			});
+			// I gesti sulla fila: le due dita sul trackpad, la rotella con Maiusc, il dito sul telefono,
+			// le frecce con la fila a fuoco. Uno scorrimento conta come di chi guarda solo se segue un
+			// suo gesto sulla fila, non un assestamento dello snap né la fila mossa dallo script.
+			let touched = -Infinity;
+			const touch = () => { touched = performance.now(); };
+			for (const type of ['pointerdown', 'touchstart', 'touchmove']) track.addEventListener(type, touch, { passive: true });
+			track.addEventListener('keydown', (e) => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) touch(); });
+			// col trackpad la pagina si scorre in verticale anche col puntatore sopra la fila: conta la
+			// rotella di lato, o quella in verticale con Maiusc, che alcuni browser non girano in orizzontale
+			track.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || (e.shiftKey && e.deltaY)) touch(); }, { passive: true });
+			// in vista il contatore corre; fuori vista si ferma e riprende da dove era.
+			// In vista vuol dire metà galleria nella finestra, oppure i controlli interi: arrivando dal
+			// basso i controlli si vedono prima di metà galleria, e prima restavano lì senza muovere
+			// niente (la barra ferma, il tasto che cambiava solo l'icona). Fuori vista solo sotto il 15%
+			// e con i controlli fuori: in mezzo resta com'era, per non accendersi e spegnersi al bordo.
+			let ratio = 0;
+			let controlsIn = false;
+			const settle = () => root.toggleAttribute('data-settled', true);
+			const enter = () => {
+				inview = true;
+				root.toggleAttribute('data-inview', true);
+				// la prima volta arrivano anche i controlli, con la loro entrata; poi restano
+				if (!root.hasAttribute('data-arrived')) {
+					// il cerchio parte dal fondo della finestra: la distanza la misura qui, una volta
+					const bar = root.querySelector<HTMLElement>('[data-hg-controls]')!;
+					const box = bar.getBoundingClientRect();
+					root.style.setProperty('--hg-rise', `${Math.max(120, Math.round(innerHeight - box.top))}px`);
+					// il cerchio sta al centro dei controlli: ogni pezzo parte da lì, a qualunque distanza sia
+					for (const part of bar.children as HTMLCollectionOf<HTMLElement>) {
+						const r = part.getBoundingClientRect();
+						part.style.setProperty('--hg-dx', `${Math.round(box.left + box.width / 2 - (r.left + r.width / 2))}px`);
+					}
+					root.toggleAttribute('data-arrived', true);
+					// finita l'entrata, le sue animazioni si tolgono: l'icona del tasto le rifarebbe a ogni cambio
+					window.setTimeout(settle, 1800);
+				}
+				reveal();
+				if (wanted && !playing) { wanted = false; arm(); setPlaying(true); } else run();
+			};
+			const judge = () => {
+				if (ratio >= 0.5 || controlsIn) enter();
+				else if (ratio < 0.15 && inview) {
+					inview = false;
+					root.toggleAttribute('data-inview', false);
+					hold();
+				}
+			};
+			new IntersectionObserver(([entry]) => { ratio = entry.intersectionRatio; judge(); }, { threshold: [0, 0.15, 0.5] }).observe(root);
+			new IntersectionObserver(([entry]) => { controlsIn = entry.intersectionRatio >= 0.99; judge(); }, { threshold: [0, 1] }).observe(root.querySelector('[data-hg-controls]')!);
+			// la carta più vicina all'inizio della fila; in fondo le ultime non ci arrivano: vale l'ultima
+			const nearestCard = () => {
+				const pad = parseFloat(getComputedStyle(track).paddingLeft);
+				const distance = (card: HTMLElement) => Math.abs(card.offsetLeft - pad - track.scrollLeft);
+				const nearest = cards.reduce((best, card, k) => (distance(card) < distance(cards[best]) ? k : best), 0);
+				return track.scrollLeft + track.clientWidth >= track.scrollWidth - 2 ? cards.length - 1 : nearest;
+			};
+			// Un gesto vale come un pallino: durante lo scorrimento il pallino segue la carta e il
+			// contatore aspetta; a fila ferma la carta riparte da capo e la galleria scorre, anche se era
+			// in pausa. Safari non manda scrollend: la fila è ferma quando non scorre da un momento.
+			let swiping = false;
+			let swipeTimer = 0;
+			const swiped = () => {
+				window.clearTimeout(swipeTimer);
+				if (!swiping) return;
+				swiping = false;
+				root.toggleAttribute('data-swiping', false);
+				const to = nearestCard();
+				if (to !== current) { mark(to); arm(); }
+				enter();
+				settle();
+				still(false);
+				if (playing) run(); else setPlaying(true);
+			};
+			track.addEventListener('scrollend', swiped);
 			let frame = 0;
 			track.addEventListener('scroll', () => {
 				cancelAnimationFrame(frame);
 				frame = requestAnimationFrame(() => {
-					if (performance.now() < lock) return;
-					const pad = parseFloat(getComputedStyle(track).paddingLeft);
-					const distance = (card: HTMLElement) => Math.abs(card.offsetLeft - pad - track.scrollLeft);
-					const nearest = cards.reduce((best, card, k) => (distance(card) < distance(cards[best]) ? k : best), 0);
-					// in fondo alla fila le ultime carte non arrivano all'inizio: vale l'ultima
-					const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
-					mark(atEnd ? cards.length - 1 : nearest);
+					// di chi guarda solo con un suo gesto recente, venuto dopo l'ultima mossa dello script:
+					// lo snap che si riassesta dopo (Safari lo fa) riportava il pallino alla carta prima
+					if (touched < lockedAt || performance.now() - touched > 2500) return;
+					// chi guarda prende la fila anche mentre lo script la sta muovendo
+					if (!swiping) {
+						swiping = true;
+						wanted = false;
+						root.toggleAttribute('data-swiping', true);
+						hold();
+					}
+					const to = nearestCard();
+					if (to !== current) { mark(to); arm(); }
+					window.clearTimeout(swipeTimer);
+					swipeTimer = window.setTimeout(swiped, 220);
 				});
 			}, { passive: true });
 		});

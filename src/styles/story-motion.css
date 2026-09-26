@@ -129,7 +129,7 @@
 	:is(.st-ahero-summary, .st-dhero-abstract) { animation: st-enter 1s var(--st-ease-out) .32s both; }
 	:is(.st-ahero-copy > .st-eyebrow, .st-dhero-copy > .st-eyebrow) { animation: st-enter 1s var(--st-ease-out) .4s both; }
 	:is(.st-ahero-actions, .st-mhero-foot, .st-dhero-facts, .st-dhero-note) { animation: st-enter 1s var(--st-ease-out) .48s both; }
-	:is(.st-ahero-devices, .st-mhero-art, .st-dhero-figure) { animation: st-enter-device 1.3s var(--st-ease-out) .36s both; }
+	:is(.st-ahero-devices, .st-ahero-lineup .st-lineup, .st-mhero-art, .st-dhero-figure) { animation: st-enter-device 1.3s var(--st-ease-out) .36s both; }
 	/* dietro il sipario non parte niente: la hero entra quando il sipario si alza */
 	html[data-caricando] :is(.st-ahero, .st-mhero, .st-dhero) * { animation-play-state: paused; }
 

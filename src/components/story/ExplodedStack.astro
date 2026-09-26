@@ -5,6 +5,7 @@
  * sinistra. La geometria è calcolata in src/lib/story-iso.ts; qui si disegna e basta.
  * Sotto i 1200px le note tornano un elenco sotto il disegno.
  */
+import { storyLang } from '../../lib/story-lang';
 import { defaultIso, isoStack, type IsoLayer } from '../../lib/story-iso';
 interface Layer extends IsoLayer { text: string }
 interface Props { layers: Layer[]; label?: string }
@@ -17,7 +18,9 @@ const faces: Record<IsoLayer['tint'], [string, string, string]> = {
 	orange: ['#ffd4b8', '#f0b994', '#dfa27a'],
 	paper: ['#f4f1e9', '#dcd8ce', '#c9c5bc'],
 };
-const summary = label ?? `${layers.length} layers pulled apart, from ${layers[0]?.name} on top to ${layers[layers.length - 1]?.name} at the bottom`;
+const summary = label ?? (storyLang(Astro.url) === 'it'
+	? `${layers.length} strati separati, da ${layers[0]?.name} in cima a ${layers[layers.length - 1]?.name} in fondo`
+	: `${layers.length} layers pulled apart, from ${layers[0]?.name} on top to ${layers[layers.length - 1]?.name} at the bottom`);
 const pct = (n: number) => `${(n * 100).toFixed(2)}%`;
 // da chiuso ogni piastra sta più vicina al centro della pila: di qui parte l'apertura allo scroll
 const closed = (k: number) => `--dy: ${Math.round(((stack.plates.length - 1) / 2 - k) * defaultIso.spacing * 0.72)}px`;

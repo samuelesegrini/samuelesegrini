@@ -1,0 +1,40 @@
+---
+/**
+ * L'indice delle anteprime in italiano, gemello di /en/preview/: una per progetto, con lo stato di
+ * ciascuna. Non collegata dal resto del sito, fuori dalla sitemap, noindex.
+ */
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import { Story, Section, Statement } from '../../../components/story';
+import { previews, previewPath, previewCover, previewIndex } from '../../../lib/previews';
+
+const sections = [{ kicker: 'Anteprime', value: `${previews.length} progetti`, detail: { kicker: 'Stato', value: 'non elencate' } }];
+---
+
+<ExperimentLayout lang="it" title="Anteprime dei progetti" currentHref="/it/anteprima/" sections={sections} itHref={previewIndex('it')} enHref={previewIndex('en')} noindex>
+	<Story>
+		<Section id="previews" index={0} eyebrow="Non elencate" title="Anteprime dei progetti," dim="una per progetto.">
+			<Statement>Ogni progetto raccontato con le <b>sezioni della seconda serie</b>, ciascuno con la sua forma: i grandi seguono <b>il loro filo</b>, i piccoli si leggono come una <b>breve relazione tecnica</b>.</Statement>
+			<ul class="pvx-list" role="list">
+				{previews.map((p) => (
+					<li>
+						<a href={previewPath(p.key, 'it')} class="pvx-card">
+							<img src={previewCover(p.key)} alt="" width="1200" height="800" loading="lazy" />
+							<span class="pvx-copy"><b>{p.title}</b><span>{p.it.text}</span><em>{p.it.status}</em></span>
+						</a>
+					</li>
+				))}
+			</ul>
+		</Section>
+	</Story>
+</ExperimentLayout>
+
+<style>
+	.pvx-list { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+	.pvx-card { display: flex; flex-direction: column; height: 100%; border-radius: 22px; overflow: hidden; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; color: #171713; text-decoration: none; }
+	.pvx-card:hover, .pvx-card:focus-visible { box-shadow: inset 0 0 0 3px #171713; }
+	.pvx-card img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+	.pvx-copy { display: flex; flex-direction: column; gap: 6px; padding: 20px 22px 24px; }
+	.pvx-copy b { font-size: 22px; letter-spacing: -0.02em; }
+	.pvx-copy span { font-size: 15px; line-height: 1.45; color: #3b3830; }
+	.pvx-copy em { margin-top: 6px; font-style: normal; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #5e5a53; }
+</style>

@@ -29,13 +29,13 @@ test('titles and cards rise with the scroll, and stand still with reduced motion
 });
 
 test('the segmented control slides one thumb between choices', async ({ page }) => {
-	await page.goto(poliverse);
+	await page.goto(catalogue);
 	await arriva(page);
-	const set = page.locator('.st-toggle .st-segments');
+	const set = page.locator('.st-toggle .st-segments').first();
 	await expect(set).toHaveAttribute('data-thumb', 'on');
 	const x = () => set.evaluate((el) => parseFloat(el.style.getPropertyValue('--seg-x')));
 	const before = await x();
-	await page.locator('.st-toggle').getByText('Vicino', { exact: true }).click();
+	await page.locator('.st-toggle').first().getByText('2026 · rebuild', { exact: true }).click();
 	await expect.poll(x).toBeGreaterThan(before);
 	expect(await set.evaluate((el) => parseFloat(el.style.getPropertyValue('--seg-w')))).toBeGreaterThan(40);
 });
@@ -49,7 +49,7 @@ test('the highlights play when they come into view, and never on their own with 
 	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	await expect(gallery.getByRole('button', { name: 'Pause the highlights' })).toBeVisible();
 	// il pallino attivo si riempie nel tempo di una carta
-	expect(await gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => getComputedStyle(el, '::after').animationName)).toBe('st-dot-fill');
+	expect(await gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => getComputedStyle(el, '::after').animationName)).toMatch(/^st-dot-fill/);
 
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.reload();
@@ -115,13 +115,11 @@ test('the six services keep orbiting the app until the pause button stops them',
 	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	// il giro parte con l'ingresso e non si ferma
 	expect(await moving()).toBe(true);
-	// un pallino ferma lo scorrere delle carte, non l'orbita
+	// un pallino porta alla carta e lascia scorrere le carte e l'orbita
 	await page.locator('[data-hg-dot="0"]').click();
-	await expect(gallery).toHaveAttribute('data-playing', 'false');
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	expect(await moving()).toBe(true);
 	// il tasto di pausa invece la ferma dov'è, e l'ingresso arriva comunque in fondo
-	await play.click();
-	await expect(gallery).toHaveAttribute('data-playing', 'true');
 	await play.click();
 	await expect(gallery).toHaveAttribute('data-still', '');
 	expect(await moving()).toBe(false);
@@ -132,16 +130,371 @@ test('the six services keep orbiting the app until the pause button stops them',
 	expect(await moving()).toBe(true);
 });
 
-test('each big card plays its own entrance when it comes to the front', async ({ page }) => {
+test('a dot restarts the counter, pause freezes it, and play goes on from where it stopped', async ({ page }) => {
 	await page.goto(poliverse);
 	await arriva(page);
-	await page.locator('.st-hgallery').scrollIntoViewIfNeeded();
-	await expect(page.locator('.st-hgallery')).toHaveAttribute('data-inview', '');
+	const gallery = page.locator('.st-hgallery');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	// quanto si è riempita la barra del pallino attivo
+	const fill = () => gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => {
+		const a = el.getAnimations({ subtree: true })[0];
+		return a ? { time: Number(a.currentTime), state: a.playState } : null;
+	});
+	await page.waitForTimeout(1500);
+	// un altro pallino: la carta cambia, la riproduzione resta, la barra riparte da vuota
+	await page.locator('[data-hg-dot="2"]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect(page.locator('.st-hg-card').nth(2)).toHaveAttribute('data-current', '');
+	expect((await fill())!.time).toBeLessThan(700);
+	await page.waitForTimeout(1200);
+	// pausa: la barra si ferma dov'è
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
+	const held = (await fill())!;
+	expect(held.state).toBe('paused');
+	await page.waitForTimeout(800);
+	expect((await fill())!.time).toBe(held.time);
+	// riprendendo continua da lì, non da capo
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await page.waitForTimeout(300);
+	const after = (await fill())!;
+	expect(after.state).toBe('running');
+	expect(after.time).toBeGreaterThanOrEqual(held.time);
+	// in pausa, un pallino porta alla sua carta e fa ripartire la riproduzione, con la barra da vuota
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
 	await page.locator('[data-hg-dot="1"]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect(gallery).not.toHaveAttribute('data-still', '');
 	await expect(page.locator('.st-hg-card').nth(1)).toHaveAttribute('data-current', '');
-	// il corso del piano e quello di WeBeep si incontrano, poi il corso si riempie riga per riga
-	expect(await page.locator('.pv-course').evaluate((el) => getComputedStyle(el).animationName)).toBe('pv-in-up');
-	await expect.poll(() => page.locator('.pv-jrow').evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1')), { timeout: 5000 }).toBe(true);
+	const restarted = (await fill())!;
+	expect(restarted.state).toBe('running');
+	expect(restarted.time).toBeLessThan(700);
+	// un clic dentro una carta non ferma nulla
+	await page.locator('.st-hg-card[data-current]').click({ position: { x: 40, y: 40 } });
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+});
+
+test('pause freezes the whole card in front, drawing and line, and play lets it go on', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await page.locator('[data-hg-dot="3"]').click();
+	const last = page.locator('.st-hg-card').last();
+	await expect(last).toHaveAttribute('data-played', '');
+	await page.waitForTimeout(600);
+	const states = () => last.evaluate((card) => card.getAnimations({ subtree: true }).map((a) => a.playState));
+	expect(await states()).toContain('running');
+	// il tasto cambia icona subito, da solo: la galleria e la carta seguono un paio di fotogrammi dopo
+	const swap = await page.locator('[data-hg-play]').evaluate((btn) => {
+		(btn as HTMLButtonElement).click();
+		return { state: btn.getAttribute('data-state'), pause: getComputedStyle(btn.querySelector('.pause')!).display, play: getComputedStyle(btn.querySelector('.play')!).display, gallery: btn.closest('.st-hgallery')!.getAttribute('data-playing') };
+	});
+	expect(swap).toEqual({ state: 'paused', pause: 'none', play: 'block', gallery: 'true' });
+	await expect(gallery).toHaveAttribute('data-playing', 'false');
+	await expect(gallery).toHaveAttribute('data-still', '');
+	await expect(last).toHaveAttribute('data-frozen', '');
+	expect((await states()).filter((s) => s === 'running')).toEqual([]);
+	await page.locator('[data-hg-play]').click();
+	await expect(last).not.toHaveAttribute('data-frozen', '');
+	expect(await states()).toContain('running');
+});
+
+test('the controls arrive once as a rising circle that opens into the dots and the button', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const controls = gallery.locator('.st-hg-controls');
+	// prima di entrare in vista i controlli non si vedono ancora
+	expect(await controls.evaluate((el) => getComputedStyle(el).opacity)).toBe('0');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-arrived', '');
+	const names = await page.evaluate(() => document.getAnimations().map((a) => (a as CSSAnimation).animationName).filter((n) => /^st-hg-(rise|open|drop|show)$/.test(n)));
+	expect(new Set(names)).toEqual(new Set(['st-hg-rise', 'st-hg-open', 'st-hg-drop', 'st-hg-show']));
+	// finita l'entrata restano come sempre: niente ritaglio, niente spostamento, il tasto si preme ancora
+	await expect.poll(() => page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-(rise|open|drop|show)$/.test((a as CSSAnimation).animationName)).length), { timeout: 4000 }).toBe(0);
+	expect(await controls.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+	expect(await gallery.locator('.st-hg-dots').evaluate((el) => [getComputedStyle(el).clipPath, getComputedStyle(el).translate])).toEqual(['none', 'none']);
+	// fuori e di nuovo in vista non riparte
+	await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+	await expect(gallery).not.toHaveAttribute('data-inview', '');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-inview', '');
+	expect(await page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-(rise|open|drop|show)$/.test((a as CSSAnimation).animationName)).length)).toBe(0);
+});
+
+test('the new icon shows at once on every press, during the entrance and after it', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const button = page.locator('[data-hg-play]');
+	// l'icona che si vede, subito dopo il clic: niente animazioni che la tengano trasparente
+	const pressed = () => button.evaluate((btn) => {
+		(btn as HTMLButtonElement).click();
+		const shown = [...btn.querySelectorAll('svg')].find((svg) => getComputedStyle(svg).display !== 'none')!;
+		return { icon: shown.getAttribute('class'), opacity: getComputedStyle(shown).opacity, animations: shown.getAnimations().length };
+	});
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-arrived', '');
+	// a metà entrata: la pressione la chiude e l'icona c'è
+	await page.waitForTimeout(400);
+	expect(await pressed()).toEqual({ icon: 'play', opacity: '1', animations: 0 });
+	await expect(gallery).toHaveAttribute('data-settled', '');
+	expect(await pressed()).toEqual({ icon: 'pause', opacity: '1', animations: 0 });
+	expect(await pressed()).toEqual({ icon: 'play', opacity: '1', animations: 0 });
+});
+
+test('left alone, the entrance settles and the icons still switch at once', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-settled', '', { timeout: 4000 });
+	const shown = await page.locator('[data-hg-play]').evaluate((btn) => {
+		(btn as HTMLButtonElement).click();
+		const svg = [...btn.querySelectorAll('svg')].find((el) => getComputedStyle(el).display !== 'none')!;
+		return { opacity: getComputedStyle(svg).opacity, animations: svg.getAnimations().length };
+	});
+	expect(shown).toEqual({ opacity: '1', animations: 0 });
+});
+
+test('replay starts the drawing of the card in front over, with its bar, and resumes a paused gallery', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await page.locator('[data-hg-dot="1"]').click();
+	const second = page.locator('.st-hg-card').nth(1);
+	await expect(second).toHaveAttribute('data-played', '');
+	const time = () => second.locator('[style*="pvk-grow"]').first().evaluate((el) => Number(el.getAnimations()[0]?.currentTime ?? 0));
+	const fill = () => gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => Number(el.getAnimations({ subtree: true })[0]?.currentTime ?? 0));
+	await expect.poll(time, { timeout: 5000 }).toBeGreaterThan(1500);
+	// in pausa: rivedi riporta il disegno all'inizio, la barra da vuota, e fa ripartire
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
+	await page.locator('[data-hg-replay]').click();
+	expect(await time()).toBeLessThan(500);
+	expect(await fill()).toBeLessThan(500);
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect(gallery).not.toHaveAttribute('data-still', '');
+	await expect(second).not.toHaveAttribute('data-frozen', '');
+	await expect(second).toHaveAttribute('data-current', '');
+	// e il disegno va avanti di nuovo
+	await expect.poll(time, { timeout: 3000 }).toBeGreaterThan(600);
+});
+
+test('without motion the controls are simply there', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	expect(await gallery.locator('.st-hg-controls').evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-arrived', '');
+	expect(await page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-/.test((a as CSSAnimation).animationName)).length)).toBe(0);
+	// i disegni sono già completi: niente da rivedere
+	await expect(page.locator('[data-hg-replay]')).toBeHidden();
+});
+
+test('coming back up from below, the controls work as soon as they are on screen', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const controls = gallery.locator('.st-hg-controls');
+	// prima sotto la galleria, lontano, poi su quanto basta per avere i controlli interi ma meno di metà galleria
+	const box = await gallery.evaluate((el) => { const r = el.getBoundingClientRect(); return { top: r.top + window.scrollY, height: r.height }; });
+	const vh = await page.evaluate(() => window.innerHeight);
+	await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), box.top + box.height + vh);
+	await expect(gallery).not.toHaveAttribute('data-inview', '');
+	await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), box.top + box.height - 180);
+	const shown = await gallery.evaluate((el) => { const r = el.getBoundingClientRect(); return Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)) / r.height; });
+	expect(shown).toBeLessThan(0.5);
+	await expect(controls).toBeInViewport({ ratio: 1 });
+	// i controlli interi bastano: la galleria è in vista, arrivano e le carte scorrono da sole
+	await expect(gallery).toHaveAttribute('data-inview', '');
+	await expect(gallery).toHaveAttribute('data-arrived', '');
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect.poll(() => page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-(rise|open|drop|show)$/.test((a as CSSAnimation).animationName)).length), { timeout: 4000 }).toBe(0);
+	const fill = () => gallery.locator('[data-hg-dot][aria-pressed="true"] span').evaluate((el) => el.getAnimations({ subtree: true })[0]?.playState);
+	await expect.poll(fill).toBe('running');
+	// la pausa ferma la barra, il tasto la fa ripartire, un pallino porta alla sua carta e riparte
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-still', '');
+	expect(await fill()).toBe('paused');
+	await page.locator('[data-hg-play]').click();
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	expect(await fill()).toBe('running');
+	await page.locator('[data-hg-dot="2"]').click();
+	await expect(page.locator('.st-hg-card').nth(2)).toHaveAttribute('data-current', '');
+	expect(await fill()).toBe('running');
+});
+
+test('reaching the last card keeps playing, and the snap settling does not count as a swipe', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const track = gallery.locator('[data-hg-track]');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	// la pagina scorsa in verticale col trackpad sopra la fila non è un gesto sulla fila
+	await track.hover();
+	await page.mouse.wheel(0, 30);
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	const last = page.locator('.st-hg-card').last();
+	await page.locator('[data-hg-dot="3"]').click();
+	await expect(last).toHaveAttribute('data-current', '');
+	await page.waitForTimeout(1800);
+	// lo snap che si riassesta sull'ultima carta, come fa Safari, lascia la riproduzione com'era
+	await track.evaluate((el) => el.scrollBy({ left: -1, behavior: 'instant' }));
+	await page.waitForTimeout(300);
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+	await expect(last).toHaveAttribute('data-current', '');
+	// una passata di lato porta a un'altra carta, come un pallino
+	await track.hover();
+	await page.mouse.wheel(-2000, 0);
+	await expect(last).not.toHaveAttribute('data-current', '');
+	await expect(gallery).toHaveAttribute('data-playing', 'true');
+});
+
+// Ogni modo di cambiare carta vale come un pallino: il pallino segue, la barra riparte da vuota, la
+// galleria scorre (anche se era in pausa) e il tasto lo dice. Due passate: con scrollend, e senza,
+// come in Safari, dove la fila è ferma quando non scorre da un momento.
+for (const safari of [false, true]) {
+	const tag = safari ? ' (without scrollend, as in Safari)' : '';
+	const prepare = async (page: Page) => {
+		// senza scrollend: fermato sulla finestra, prima che arrivi alla fila
+		if (safari) await page.addInitScript(() => window.addEventListener('scrollend', (e) => e.stopImmediatePropagation(), true));
+		await page.goto(poliverse);
+		await arriva(page);
+		const gallery = page.locator('.st-hgallery');
+		await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+		await expect(gallery).toHaveAttribute('data-playing', 'true');
+		await expect(gallery).toHaveAttribute('data-settled', '', { timeout: 4000 });
+		return gallery;
+	};
+	// lo stato che si vede: la carta davanti, il pallino acceso, la barra, il tasto
+	const seen = (page: Page) => page.locator('.st-hgallery').evaluate((root) => {
+		const pressed = root.querySelector('[data-hg-dot][aria-pressed="true"]')!;
+		const bar = pressed.querySelector('span')!.getAnimations({ subtree: true })[0];
+		return {
+			card: [...root.querySelectorAll('.st-hg-card')].findIndex((c) => c.hasAttribute('data-current')),
+			dot: Number(pressed.getAttribute('data-hg-dot')),
+			button: root.querySelector('[data-hg-play]')!.getAttribute('data-state'),
+			playing: root.getAttribute('data-playing'),
+			bar: bar ? { time: Number(bar.currentTime), state: bar.playState } : null,
+		};
+	});
+	const settled = async (page: Page, card: number) => {
+		await expect.poll(async () => { const s = await seen(page); return [s.card, s.dot, s.button, s.playing]; }, { timeout: 4000 }).toEqual([card, card, 'playing', 'true']);
+		await expect.poll(async () => (await seen(page)).bar?.state).toBe('running');
+		expect((await seen(page)).bar!.time).toBeLessThan(1500);
+	};
+
+	test(`a two-finger swipe moves the dot and restarts the card, like a dot${tag}`, async ({ page }) => {
+		await prepare(page);
+		await page.waitForTimeout(1500);
+		await page.locator('[data-hg-track]').hover();
+		await page.mouse.wheel(700, 0);
+		await settled(page, 1);
+		// e all'indietro
+		await page.mouse.wheel(-700, 0);
+		await settled(page, 0);
+	});
+
+	test(`a swipe on a paused gallery starts it again, like a dot${tag}`, async ({ page }) => {
+		await prepare(page);
+		await page.locator('[data-hg-play]').click();
+		await expect(page.locator('.st-hgallery')).toHaveAttribute('data-still', '');
+		await page.locator('[data-hg-track]').hover();
+		await page.mouse.wheel(700, 0);
+		await settled(page, 1);
+		await expect(page.locator('.st-hgallery')).not.toHaveAttribute('data-still', '');
+	});
+
+	test(`the mouse wheel with Shift, the arrow keys and a finger all count as a swipe${tag}`, async ({ page }) => {
+		await prepare(page);
+		const track = page.locator('[data-hg-track]');
+		// Maiusc e rotella: alcuni browser la mandano in verticale, la fila scorre comunque di lato
+		await track.hover();
+		await page.keyboard.down('Shift');
+		await page.mouse.wheel(0, 700);
+		await page.keyboard.up('Shift');
+		await track.evaluate((el) => { if (el.scrollLeft < 50) el.scrollBy({ left: 700, behavior: 'instant' }); });
+		await settled(page, 1);
+		// le frecce con la fila a fuoco
+		await track.focus();
+		await page.keyboard.press('ArrowRight');
+		await page.keyboard.press('ArrowRight');
+		await expect.poll(async () => (await seen(page)).card, { timeout: 4000 }).toBeGreaterThan(1);
+		const byKeys = (await seen(page)).card;
+		await settled(page, byKeys);
+		// un dito: il tocco, poi la fila che scorre sotto
+		await track.dispatchEvent('touchstart');
+		await track.evaluate((el) => el.scrollBy({ left: -2000, behavior: 'instant' }));
+		await settled(page, 0);
+	});
+
+	test(`while the gallery moves on its own, a swipe takes over${tag}`, async ({ page }) => {
+		await prepare(page);
+		// il primo pallino si riempie in 9 secondi: il passaggio alla seconda carta, e subito una passata indietro
+		await expect.poll(async () => (await seen(page)).card, { timeout: 12000 }).toBe(1);
+		await page.locator('[data-hg-track]').hover();
+		await page.mouse.wheel(-900, 0);
+		await settled(page, 0);
+	});
+
+	test(`a click inside a card or a vertical scroll over the row is not a swipe${tag}`, async ({ page }) => {
+		const gallery = await prepare(page);
+		await page.locator('.st-hg-card[data-current]').click({ position: { x: 40, y: 40 } });
+		await page.locator('[data-hg-track]').hover();
+		await page.mouse.wheel(0, 60);
+		await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+		await page.waitForTimeout(600);
+		const s = await seen(page);
+		expect([s.card, s.dot, s.playing]).toEqual([0, 0, 'true']);
+		// la barra ha continuato: non è ripartita
+		expect(s.bar!.time).toBeGreaterThan(1500);
+	});
+}
+
+test('each big card plays its own entrance the first time it comes to the front, then stays', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	await page.locator('.st-hgallery').evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(page.locator('.st-hgallery')).toHaveAttribute('data-inview', '');
+	const second = page.locator('.st-hg-card').nth(1);
+	// finché non è stata davanti, la seconda carta aspetta al primo fotogramma
+	await expect(second).not.toHaveAttribute('data-played', '');
+	expect(await second.locator('.pv-stage').evaluate((el) => getComputedStyle(el.querySelector('[style*="pvk-grow"]')!).animationPlayState)).toBe('paused');
+	await page.locator('[data-hg-dot="1"]').click();
+	await expect(second).toHaveAttribute('data-current', '');
+	await expect(second).toHaveAttribute('data-played', '');
+	// il tempo del disegno va avanti da quando la carta è davanti
+	const time = () => second.locator('[style*="pvk-grow"]').first().evaluate((el) => Number(el.getAnimations()[0]?.currentTime ?? 0));
+	await expect.poll(time, { timeout: 5000 }).toBeGreaterThan(1500);
+	// via e ritorno: la carta resta arrivata e non riparte da capo
+	await page.locator('[data-hg-dot="2"]').click();
+	await expect(page.locator('.st-hg-card').nth(2)).toHaveAttribute('data-played', '');
+	await page.locator('[data-hg-dot="1"]').click();
+	await expect(second).toHaveAttribute('data-current', '');
+	expect(await time()).toBeGreaterThan(1500);
+	// la carta resta davanti il suo tempo: il pallino si riempie in nove secondi
+	expect(await page.locator('.st-hgallery').evaluate((el) => el.style.getPropertyValue('--hg-every'))).toBe('9000ms');
+});
+
+test('a gathered first highlight stays gathered when it comes back', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	await page.locator('.st-hgallery').evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	const chips = page.locator('.pv-combine .pv-chip');
+	await expect.poll(() => chips.evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1')), { timeout: 5000 }).toBe(true);
+	await page.locator('[data-hg-dot="3"]').click();
+	await page.locator('[data-hg-dot="0"]').click();
+	// subito tutti in orbita: nessuno riparte dal suo punto sparso
+	expect(await chips.evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === '1'))).toBe(true);
 });
 
 test('without motion every highlight is already complete', async ({ page }) => {
@@ -150,7 +503,9 @@ test('without motion every highlight is already complete', async ({ page }) => {
 	await arriva(page);
 	const drawn = page.locator('.st-hg-media *');
 	expect(await drawn.evaluateAll((els) => els.filter((el) => getComputedStyle(el).animationName !== 'none').length)).toBe(0);
-	expect(await drawn.evaluateAll((els) => els.filter((el) => getComputedStyle(el).opacity === '0').length)).toBe(0);
+	// quello che serve solo durante il movimento (la chiave in volo, i corsi scartati, gli stati di
+	// passaggio della riga in fondo) porta data-gone: il resto si vede tutto
+	expect(await drawn.evaluateAll((els) => els.filter((el) => !el.closest('[data-gone]') && getComputedStyle(el).opacity === '0').length)).toBe(0);
 });
 
 test('the numbers count up once they are seen, and keep their value for screen readers', async ({ page }) => {

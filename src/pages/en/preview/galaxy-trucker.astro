@@ -1,0 +1,153 @@
+---
+/**
+ * Anteprima non elencata del racconto di Galaxy Trucker. Non ricalca PoliVerse: è la pagina di un
+ * sistema, letta come una documentazione. Si apre con la copertina, poi la regola in una riga
+ * (Lockup scuro), il server in una figura con le note, i moduli come una pagina "Topics", il gioco
+ * come una scheda tecnica, chi ha fatto cosa, le due ere a confronto (ToggleFigure) e le tappe
+ * (Timeline). Materiale dal caso di studio e dai due articoli. Fuori dalla sitemap, noindex.
+ */
+import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
+import {
+	Story, Section, MediaHero, Lockup, ExplainerFigure, Modules, TechSpecs, Contribution, ToggleFigure, Callout, Timeline,
+	Limits, Cards, Faq, KeepExploring,
+} from '../../../components/story';
+import { neighbours } from '../../../lib/previews';
+import { labPostPath } from '../../../components/lab/chrome';
+import { withBase } from '../../../lib/base';
+import '../../../styles/story-mocks.css';
+
+const repo = 'https://github.com/samuelesegrini/ing-sw-2025-segrini-terribile-varricchio-zanca';
+const firstGame = labPostPath('en', 'my-first-video-game-was-a-distributed-system');
+const rebuild = labPostPath('en', 'rebuilding-galaxy-trucker-with-claude');
+const { next, previous } = neighbours('galaxy-trucker');
+
+const sections = [
+	{ kicker: 'Chapter 1 of 6', value: 'The rule', detail: { kicker: 'Applied', value: 'once' } },
+	{ kicker: 'Chapter 2 of 6', value: 'Architecture', detail: { kicker: 'Events', value: '47' } },
+	{ kicker: 'Chapter 3 of 6', value: 'The game', detail: { kicker: 'Card families', value: '8' } },
+	{ kicker: 'Chapter 4 of 6', value: 'Who did what', detail: { kicker: 'Commits', value: '121 of 314' } },
+	{ kicker: 'Chapter 5 of 6', value: 'One year later', detail: { kicker: 'Days', value: '4' } },
+	{ kicker: 'Chapter 6 of 6', value: 'Read more', detail: { kicker: 'Essays', value: '2' } },
+];
+---
+
+<ExperimentLayout lang="en" title="Galaxy Trucker (preview)" currentHref="/en/preview/galaxy-trucker/" sections={sections} itHref={withBase('/it/anteprima/galaxy-trucker/')} enHref={withBase('/en/preview/galaxy-trucker/')} noindex>
+	<Story>
+		<MediaHero name="Galaxy Trucker" title="A board game, as a distributed system." tint="violet" image={withBase('/images/projects/covers/galaxy-trucker.svg')}
+			imageAlt="A spaceship built from square tiles joined by pipe connectors, with a laser, engines and an incoming meteor"
+			meta="Java 23 · JavaFX · Socket / RMI · 2025" detail="Team of four, Politecnico di Milano" action={{ label: 'Start with the rule', href: '#rule' }}
+			back={{ label: 'All previews', href: withBase('/en/preview/') }} position={{ current: 3, total: 6 }} />
+
+		<Lockup id="rule" index={1} center tone="dark" eyebrow="Galaxy Trucker · The rule" title="Validated once. Applied once." marker="Seen by everyone."
+			facts={[{ label: 'Request types', value: '31', note: '22 general, 9 during flight' }, { label: 'Response types', value: '34', note: 'Sent back to the requester only' }, { label: 'Events', value: '47', note: '32 general, 15 during flight', accent: true }]}
+			factsNote="Counted in common/message, at submission">
+			A rulebook trusts the players to remember and correct each other; software can’t. So a move starts on a client, <b>is checked against the server’s state, applied once,</b> and comes back as a response to the sender and <b>an event for everyone else</b>. The event is the only way a client learns that the world has changed.
+		</Lockup>
+
+		<Section id="server" split eyebrow="Galaxy Trucker · One server" title="Two transports, two interfaces," dim="one game."
+			lead="A terminal client on Socket and a JavaFX client on RMI can sit in the same match. Every command converges on the one server that knows what is legal.">
+			<ExplainerFigure image={withBase('/images/projects/explainers/galaxy-authoritative-server.svg')} imageAlt="Four clients with different interfaces connected to one central authoritative server"
+				caption="Fig. 1 · TUI and GUI clients, on Socket or RMI, around one authoritative server"
+				notes={[
+					{ title: 'Any client, any transport.', text: 'Terminal or JavaFX, Socket or RMI, in any mix within one game.', at: [12, 24] },
+					{ title: 'Symmetric adapters.', text: 'The rest of the system sees one network interface, so the protocol is a startup setting.', at: [30, 62] },
+					{ title: 'The only authority.', text: 'One state per game, validated and applied once.', at: [50, 50] },
+				]}
+				aside="Java serialisation carries the messages; Jackson loads the configuration and the decks." />
+		</Section>
+
+		<Section id="architecture" index={2}>
+			<Modules eyebrow="Galaxy Trucker · Architecture" title="Three roots." patterns={['Command', 'Visitor', 'Adapter', 'MVC']}
+				seeAlso={[{ label: 'Rebuilding Galaxy Trucker with Claude', href: rebuild }, { label: 'Team repository', href: repo }]}
+				groups={[
+					{ title: 'Coordination', path: 'server/core', symbols: [{ names: ['GameSessionManager'], text: 'Owns the games; several can run in one server process.' }, { names: ['PlayerSessionRegistry'], text: 'Binds identities to sessions, for multi-game support.' }, { names: ['ConnectionMonitorService'], text: 'Heartbeat and disconnections.' }] },
+					{ title: 'Transports', path: 'server · client', symbols: [{ names: ['SocketServerAdapter', 'RMIServerAdapter'], text: 'The server’s side of the two transports.' }, { names: ['SocketNetworkAdapter', 'RMINetworkAdapter'], text: 'The client’s side, seen by the rest of it as one network interface.' }] },
+					{ title: 'Domain', path: 'model/domain', symbols: [{ names: ['FlightBoard'], text: 'Positions with collision prevention; recomputes the leader after every move.' }, { names: ['AdventureCardVisitor'], text: 'Resolves eight card families, each with its own rules.' }] },
+					{ title: 'Messages', path: 'common/message', counts: [{ label: 'Requests', value: '31', text: '22 general, 9 in flight' }, { label: 'Responses', value: '34', text: 'to the requester' }, { label: 'Events', value: '47', text: '32 general, 15 in flight', accent: true }] },
+				]}>
+				<p>The code is organised by role into three roots, <code>server</code>, <code>client</code> and <code>common</code>. These are the types a reader meets first.</p>
+			</Modules>
+		</Section>
+
+		<Section id="game" index={3} tone="sand">
+			<TechSpecs title="The game, as a spec sheet." eyebrow="Galaxy Trucker" meta="Full level II rules · test flight · games side by side" groups={[
+				{ title: 'Phases', codes: [{ code: '01', title: 'Lobby', text: 'Join or start a game; several live on one server.' }, { code: '02', title: 'Construction', text: 'Everyone draws from one shared pool at once, around forbidden positions.', accent: true }, { code: '03', title: 'Validation', text: 'The server checks every ship before it may fly.' }, { code: '04', title: 'Flight', text: 'Adventure cards change ships, crews, credits and positions.' }] },
+				{ title: 'Rules the server enforces', items: [{ title: 'Cannons and batteries', text: 'Combat strength counts directional cannons, and batteries decide which fire.' }, { title: 'Shields against meteors', text: 'Only a shield facing the meteor stops it.' }, { title: 'Exposed connectors', text: 'Every open connector is a place a hit can land.' }, { title: 'Cabins for epidemics', text: 'An epidemic spreads through connected cabins.' }] },
+				{ title: 'Adventure cards', lead: 'Eight families, one visitor', tags: ['pirates', 'planets', 'meteor swarms', 'open space', 'war zones', 'epidemics'] },
+				{ title: 'State', values: [{ label: 'Tile pool', value: 'shared', text: 'drawn from at the same time' }, { label: 'Table and hand', value: 'public · private' }, { label: 'Games', value: 'many', text: 'in one process' }] },
+			]} />
+		</Section>
+
+		<Section id="team" index={4} split eyebrow="Galaxy Trucker · Who did what" title="Four people, one system." dim="My part, drawn to scale."
+			lead="Final project of Software Engineering at Politecnico di Milano, 2024–2025, group GC26. The final weeks of commits are almost all fix(…): double draws, the player–ship cycle, listeners and serialisation, timers and colours.">
+			<Contribution total={314} period="February–July 2025" shared="rules, interfaces, tests and delivery." sharedLabel="Shared by all four"
+				note="These are my contributions, not a claim of authorship over the whole."
+				me={{ name: 'Samuele Segrini', initials: 'SS', count: 121, role: 'Developer on the four-person team', tags: ['RMI', 'Commands and events', 'Sessions', 'Heartbeat', 'Construction phase'],
+					text: 'The initial package and model structure, the RMI transport, the internal command and event system, authentication, the heartbeat, the session registry for multi-game support, the construction-phase controller and the game-data loading.' }}
+				others={[{ name: 'Manuela Terribile', initials: 'MT', tone: 'violet' }, { name: 'Alessandra Varricchio', initials: 'AV', tone: 'blue' }, { name: 'Diego Zanca', initials: 'DZ', tone: 'orange' }]} />
+		</Section>
+
+		<Section id="rebuild" index={5} tone="dark" center eyebrow="Galaxy Trucker · One year later" title="One truth, not two."
+			lead="In August 2026 I rebuilt the project from the same requirements: 146 commits in four days, alone, with Claude as a collaborator. Not a blind test, and not a benchmark.">
+			<ToggleFigure label="Choose an era" options={[
+				{ label: '2025 · team', lead: '2025 · LocalGameState.', text: 'A 691-line parallel copy of the game on the client, kept in step by fifteen conversion methods.', tone: 'orange' },
+				{ label: '2026 · rebuild', lead: '2026 · ClientState.', text: 'About 150 lines. The client receives the updated state from the server and asks its views to refresh().', tone: 'acid' },
+			]}>
+				<div slot="panel-1" class="mock-flow">
+					<div class="box"><span class="st-eyebrow">Server</span><b>Game model</b><span>Authoritative, one per game.</span></div>
+					<div class="link"><span class="st-mono">serialise</span><span class="arrow" aria-hidden="true"></span></div>
+					<div class="box tone-orange"><span class="st-eyebrow">Client</span><b>LocalGameState</b><span>A parallel copy of the game, on every client.</span><span class="bits" aria-hidden="true">{Array.from({ length: 15 }, () => <i></i>)}</span><span class="st-mono">691 lines · 15 conversion methods</span></div>
+					<div class="link"><span class="st-mono">read</span><span class="arrow" aria-hidden="true"></span></div>
+					<div class="box"><span class="st-eyebrow">Views</span><b>JavaFX, TUI</b><span>Read the copy.</span></div>
+					<span class="verdict warn st-mono">Two copies of the truth</span>
+				</div>
+				<div slot="panel-2" class="mock-flow">
+					<div class="box"><span class="st-eyebrow">Server</span><b>Game model</b><span>Authoritative, one per game.</span></div>
+					<div class="link good"><span class="st-mono">updated state</span><span class="arrow" aria-hidden="true"></span></div>
+					<div class="box tone-acid"><span class="st-eyebrow">Client</span><b>ClientState</b><span>Holds what it receives and asks the views to refresh().</span><span class="st-mono">about 150 lines</span></div>
+					<div class="link good"><span class="st-mono">refresh()</span><span class="arrow" aria-hidden="true"></span></div>
+					<div class="box"><span class="st-eyebrow">Views</span><b>JavaFX, TUI</b><span>Draw it.</span></div>
+					<span class="verdict good st-mono">One truth, redrawn</span>
+				</div>
+			</ToggleFigure>
+		</Section>
+
+		<Section eyebrow="Galaxy Trucker · How it got here" title="Two builds," dim="one year apart.">
+			<Callout kind="warning" title="Fix before this page ships">The case study says the rebuilt client reads the server’s models directly; the rebuild essay says clients get immutable projections instead of model objects. The figure stays neutral until the two agree.</Callout>
+			<Timeline steps={[
+				{ when: 'Feb 2025', title: 'The structure', text: 'Packages and model first, then RMI, commands and events.' },
+				{ when: 'Jul 2025', title: 'Submission', text: 'Completed and graded, after weeks of fix(…).' },
+				{ when: 'Aug 2026', title: 'The rebuild', text: '146 commits in four days on develop, with Claude.' },
+				{ when: '27 Aug 2026', title: 'Two essays', text: 'The first game, and what the rebuild did and didn’t prove.' },
+			]} />
+		</Section>
+
+		<Limits title="Finished, and not reproducible." dim="Both are true." proven={[
+			{ text: 'The academic scope, completed and graded', source: 'Software Engineering 2024–2025, group GC26' },
+			{ text: '272 source files and 63 JUnit 5 test classes with Mockito', source: 'src/test/java at submission', href: repo },
+			{ text: 'The delivered JARs and the protocol documentation', source: 'deliverables/' },
+		]} notProven={[
+			{ text: 'A clean build of main', source: 'ClientApp imports newGUI and newUI; only newTUI is in the tree' },
+			{ text: 'A measured speed-up from the rebuild', source: 'No frozen protocol, prompts or time split' },
+		]} />
+
+		<Section id="more" index={6} eyebrow="Galaxy Trucker · Read more" title="The rest of the story," dim="in two essays.">
+			<Cards cards={[
+				{ title: 'My first video game was a distributed system', text: 'Why the build stays broken on purpose, and what four people and one match taught me.', href: firstGame, cta: 'Read the essay', tone: 'violet' },
+				{ title: 'Rebuilding Galaxy Trucker with Claude', text: 'What converged, what changed, and why the comparison is not a benchmark.', href: rebuild, cta: 'Read the essay', tone: 'dark' },
+				{ title: 'The team repository', text: 'Source, tests, deliverables and the protocol documentation.', href: repo, cta: 'Open on GitHub', tone: 'paper' },
+			]} />
+		</Section>
+
+		<Section>
+			<Faq eyebrow="Galaxy Trucker" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
+				{ q: 'Why not fix the build?', a: 'Changing the shared artifact would make the story cleaner and less accurate. The defect stays visible, next to the scope we delivered.' },
+				{ q: 'Which parts are yours?', a: '121 of the 314 commits: RMI, commands and events, sign-in, heartbeat, sessions, the construction controller and game data. Rules, interfaces, tests and delivery were shared.' },
+				{ q: 'Was the rebuild a blind test?', a: 'No. The requirements, documents and code were available to Claude, so it shows how an agent uses explicit constraints, not that it rediscovered the design.' },
+			]} />
+		</Section>
+
+		<KeepExploring next={next} previous={previous}
+			all={{ label: 'All previews', title: 'Project previews', text: 'One story per project, unlisted.', href: withBase('/en/preview/') }} />
+	</Story>
+</ExperimentLayout>
