@@ -2,12 +2,12 @@
 /**
  * Anteprima non elencata di Highway Route Planner. Un progetto piccolo e diretto ha una pagina
  * piccola e diretta: niente promesse né carte, un'affermazione sola e sei sezioni lette come una
- * breve relazione tecnica, con DocHero in apertura. Il codice è una traccia ricostruita dal caso di
+ * breve relazione tecnica, con DocHero in apertura, poi specifica, modello, figura annotata, codice a passi, pareggio e costi. Il codice è una traccia ricostruita dal caso di
  * studio, dichiarata come tale finché non c'è il sorgente. Fuori dalla sitemap, noindex.
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, DocHero, Statement, Layers, Callout, CodeSteps, Compare, Specs, Principles, TechSpecs, KeepExploring,
+	Story, Section, DocHero, Specs, Layers, Callout, ExplainerFigure, CodeSteps, Compare, Numbers, TechSpecs, KeepExploring,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
@@ -49,12 +49,19 @@ const sections = [
 		<DocHero eyebrow="Algorithms and Data Structures · 2022–2023" title="Highway Route Planner"
 			abstract="A C program that plans the fewest-stop journey along a highway, in either direction, while stations are built and demolished and fleets change. The fewest stops, and never an arbitrary one: when routes tie, the specification names the right answer."
 			note={{ label: 'Method', text: 'Individual final assignment. One ordered array, binary search, and a graph that is never built.' }}
-			image={withBase('/images/projects/explainers/highway-implicit-graph.svg')} imageAlt="Five stations connected by reachability arcs, with the minimum route 20, 30, 50 highlighted"
-			caption="Edges are evaluated only when a vehicle’s range makes the move possible; 20 → 30 → 50 reaches the destination in the fewest stops."
+			image={withBase('/images/projects/covers/highway-route-planner.svg')} imageAlt="A route jumping over unnecessary stations along a highway, from first to last in the fewest stops"
+			caption="The route skips every station it can; which ones, when two routes tie, is decided by the specification."
 			facts={[{ value: 'C', label: 'language', icon: 'code' }, { value: '5', label: 'commands', icon: 'list' }, { value: '512', label: 'vehicles per station, at most', icon: 'layers' }, { value: 'O(n²·v)', label: 'route planning, worst case', icon: 'gauge' }]} />
 
-		<Section id="problem" index={1}>
-			<Statement>Fewest stops. <b>No turning back.</b> A <b>new car at every stop</b>, from a fleet that keeps changing, on a highway where <b>stations appear and vanish</b>, and when two routes tie, <b>only one of them is right</b>.</Statement>
+		<Section id="problem" index={1} split eyebrow="Highway Route Planner · The specification" title="Fewest stops." dim="And five rules around them."
+			lead="A highway is a sequence of service stations, each identified by its distance from the start and holding a fleet of electric vehicles. Stations are built and demolished, vehicles added and scrapped, and journeys planned on whatever the highway is now.">
+			<Specs specs={[
+				{ label: 'Direction', value: 'A journey never turns back' },
+				{ label: 'Vehicles', value: 'A new one rented at every stop' },
+				{ label: 'Fleet', value: 'Up to 512 vehicles per station, each with its own range' },
+				{ label: 'Goal', value: 'The fewest possible stops' },
+				{ label: 'Ties', value: 'One right answer, named by the specification' },
+			]} />
 		</Section>
 
 		<Section id="model" split eyebrow="Highway Route Planner · The model" title="An ordered array" dim="is the whole index." index={2}
@@ -67,7 +74,19 @@ const sections = [
 			<Callout kind="important" title="The invariant">Stations stay in ascending distance. That is what lets findStationIndexByDistance use binary search, and what makes both directions a plain walk along the array. malloc, realloc, free and memmove keep it true across inserts and removals.</Callout>
 		</Section>
 
-		<Section id="graph" eyebrow="Highway Route Planner · The heart" title="A graph" dim="that is never built." index={3}>
+		<Section split eyebrow="Highway Route Planner · Route planning" title="The graph is never built." dim="Each edge is checked when needed."
+			lead="Stations are nodes; a move exists when at least one vehicle in the departure fleet has the range for it. The highlighted path reaches 50 in the fewest stops.">
+			<ExplainerFigure image={withBase('/images/projects/explainers/highway-implicit-graph.svg')} imageAlt="Five highway stations connected by reachability arcs, with the minimum route 20, 30, 50 highlighted"
+				caption="Fig. 2 · Stations at distance 20, 30, 40, 45 and 50" legend={[{ label: 'Possible move', mark: 'line' }, { label: 'Chosen route', mark: 'route' }]}
+				aside="Worst case O(n² · v), with v ≤ 512 vehicles per station." notes={[
+					{ title: 'Stations stay an ordered array.', text: 'Sorted by distance, so every lookup is a binary search.', at: [52.5, 72.5] },
+					{ title: 'A move exists only if a car can make it.', text: 'Distance is compared with the ranges in the departure fleet, on demand.', at: [71.2, 32.3] },
+					{ title: 'Two arrays remember the way back.', text: 'Minimum moves and the chosen predecessor, updated in travel order.', at: [22.5, 34.9] },
+					{ title: 'Ties go to the station nearer the start.', text: 'So 20 → 30 → 50 wins over 20 → 45 → 50, as the specification requires.', at: [90, 78.4] },
+				]} />
+		</Section>
+
+		<Section id="graph" eyebrow="Highway Route Planner · The heart" title="findOptimalPath," dim="in four steps." index={3}>
 			<CodeSteps file="findOptimalPath · outline" lang="c" label="findOptimalPath, in four steps" code={outline}
 				note="An outline rebuilt from the case study, not the original source."
 				steps={[
@@ -76,7 +95,6 @@ const sections = [
 					{ title: 'Keep the fewest moves, and the predecessor.', text: 'Two arrays: minimum moves and chosen predecessor. On a tie, the lower distance wins.', lines: [8, 9, 10, 11, 12, 13] },
 					{ title: 'Walk back, then print forward.', text: 'The destination is traced through its predecessors and printed from origin to destination.', lines: [17, 18] },
 				]}>
-				<img slot="preview" src={withBase('/images/projects/explainers/highway-implicit-graph.svg')} alt="The implicit graph, with the minimum route highlighted" width="1200" height="675" loading="lazy" />
 			</CodeSteps>
 		</Section>
 
@@ -88,24 +106,17 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section id="cost" split eyebrow="Highway Route Planner · Trade-offs" title="What it costs," dim="and what I’d change." index={5}
+		<Section id="cost" split tone="dark" eyebrow="Highway Route Planner · Trade-offs" title="What it costs," dim="and what I’d change." index={5}
 			lead="Planning compares pairs of stations and may scan the departure fleet for each move. The solution favours a direct, readable representation over the cleverest structure.">
-			<Specs specs={[
-				{ label: 'Route planning', value: 'O(n² · v) worst case' },
-				{ label: 'Vehicles per station', value: 'v ≤ 512, by specification' },
-				{ label: 'Memory', value: 'Linear in stations: moves, predecessors, route' },
-				{ label: 'Station lookup', value: 'O(log n), binary search' },
+			<Numbers items={[
+				{ value: 'O(n²·v)', label: 'route planning, worst case', method: 'pairs of stations, each scanning the departure fleet' },
+				{ value: 'O(log n)', label: 'station lookup', method: 'binary search on the ordered array' },
+				{ value: 'O(n)', label: 'memory', method: 'moves, predecessors and the rebuilt route' },
 			]} />
 		</Section>
 
-		<Section eyebrow="Highway Route Planner · Today" title="Five changes," dim="each with its reason.">
-			<Principles rules={[
-				{ title: 'Parsing apart from domain logic.', text: 'Commands and the highway would be testable separately.' },
-				{ title: 'Allocation failures handled consistently.', text: 'Every malloc and realloc checked the same way.' },
-				{ title: 'Tie-breaking isolated.', text: 'The one rule with a single right answer, in one function.' },
-				{ title: 'Reverse and unreachable routes tested.', text: 'The cases where a quiet mistake is easiest.' },
-				{ title: 'Each station’s maximum range cached.', text: 'Reachability without scanning a whole fleet.' },
-			]} />
+		<Section>
+			<Callout kind="tip" title="What I’d change today">Separate parsing from domain logic; handle allocation failures the same way everywhere; isolate tie-breaking in one function; test reverse and unreachable routes; cache each station’s maximum range so reachability doesn’t scan a whole fleet.</Callout>
 		</Section>
 
 		<Section id="specs" tone="sand">

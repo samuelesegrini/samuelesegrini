@@ -8,7 +8,7 @@
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, DocHero, Statement, ToggleFigure, CodeSplit, StateMachine, Callout, BeforeAfter, Specs, Principles, TechSpecs, KeepExploring,
+	Story, Section, DocHero, ToggleFigure, CodeSplit, StateMachine, Callout, BeforeAfter, TechSpecs, KeepExploring,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
@@ -25,11 +25,10 @@ const ops = [
 ];
 
 const sections = [
-	{ kicker: 'Section 1 of 5', value: 'The problem', detail: { kicker: 'Memory', value: 'one port' } },
-	{ kicker: 'Section 2 of 5', value: 'Four operations', detail: { kicker: 'OP', value: '00–11' } },
-	{ kicker: 'Section 3 of 5', value: 'The machine', detail: { kicker: 'States', value: '15' } },
-	{ kicker: 'Section 4 of 5', value: 'Done, too early', detail: { kicker: 'Late by', value: '2 ns' } },
-	{ kicker: 'Section 5 of 5', value: 'Results', detail: { kicker: 'Tests', value: '10 of 10' } },
+	{ kicker: 'Section 1 of 4', value: 'Four operations', detail: { kicker: 'OP', value: '00–11' } },
+	{ kicker: 'Section 2 of 4', value: 'The machine', detail: { kicker: 'States', value: '15' } },
+	{ kicker: 'Section 3 of 4', value: 'Done, too early', detail: { kicker: 'Late by', value: '2 ns' } },
+	{ kicker: 'Section 4 of 4', value: 'Results', detail: { kicker: 'Tests', value: '10 of 10' } },
 ];
 ---
 
@@ -42,11 +41,8 @@ const sections = [
 			caption="The new task enters after the existing one of equal priority; only lower-priority entries move towards higher addresses."
 			facts={[{ value: '15', label: 'finite states', icon: 'graph' }, { value: '31', label: 'tasks, at most', icon: 'list' }, { value: '68', label: 'cycles, worst insertion', icon: 'clock' }, { value: '91', label: 'LUTs', icon: 'chip' }]} />
 
-		<Section id="problem" index={1}>
-			<Statement>The queue lives <b>in the memory, not in the component</b>: address 0 holds the count, <b>one port</b> serves reads and writes, a read answers <b>2 ns later</b>, and a <b>START–DONE</b> handshake tells the master when the work is finished.</Statement>
-		</Section>
 
-		<Section id="ops" eyebrow="Priority Task Queue Manager · Operations" title="Four operations," dim="one component." index={2}
+		<Section id="ops" eyebrow="Priority Task Queue Manager · Operations" title="Four operations," dim="one component." index={1}
 			lead="A two-bit input picks the operation. The same queue, before and after each one: address 0, then the tasks as id·priority.">
 			<ToggleFigure label="Choose an operation" options={ops.map((op, i) => ({ label: op.label.split(' · ')[1], lead: op.label, text: op.text, tone: (['acid', 'orange', 'blue', 'violet'] as const)[i] }))}>
 				<div slot="panel-1" class="pq-ram" aria-hidden="true">
@@ -75,7 +71,7 @@ const sections = [
 				code={'if new_prio > entry_prio then\n  -- strictly lower: move it one up\n  ram_write(addr + 1, entry);\n  addr <= addr - 1;\nelse\n  -- equal or higher: stop, insert after it\n  ram_write(addr + 1, new_task);\nend if;'} />
 		</Section>
 
-		<Section id="machine" split eyebrow="Priority Task Queue Manager · The machine" title="15 states," dim="one clock edge." index={3}
+		<Section id="machine" split eyebrow="Priority Task Queue Manager · The machine" title="15 states," dim="one clock edge." index={2}
 			lead="Two processes: combinational logic computes the next state and outputs from explicit defaults; sequential logic commits the register record on each rising edge.">
 			<StateMachine label="One operation, start to done" forbidden="raise DONE before the write has landed"
 				before={[{ name: 'Idle', text: 'Waiting for i_start.' }, { name: 'Fetch count', text: 'Read address 0.' }]}
@@ -85,7 +81,7 @@ const sections = [
 			<Callout kind="note" title="To add">The full list of the 15 states; the case study names only the common ones.</Callout>
 		</Section>
 
-		<Section id="timing" eyebrow="Priority Task Queue Manager · The bug" title="Done," dim="2 ns too early." index={4}
+		<Section id="timing" eyebrow="Priority Task Queue Manager · The bug" title="Done," dim="2 ns too early." index={3}
 			lead="Larger testbenches read RAM[0] as soon as o_done rose, while the memory model applied the write 2 ns later. The answer was right and still arrived too early.">
 			<BeforeAfter label="Compare o_done before and after WAIT_COMMIT" start={50}
 				before={{ label: 'Before · reads 3', text: 'o_done rises in the same cycle as the write; RAM[0] changes 2 ns after the testbench samples it.' }}
@@ -108,33 +104,24 @@ const sections = [
 			</BeforeAfter>
 		</Section>
 
-		<Section id="results" split eyebrow="Priority Task Queue Manager · Results" title="Small, predictable," dim="and fast enough twelve times over." index={5}
-			lead="All ten functional tests pass, including the checks added after the RAM fix. A sequential machine trades parallel speed for small area and a latency you can predict.">
-			<Specs specs={[
-				{ label: 'Functional tests', value: '10 of 10' },
-				{ label: 'Area', value: '91 LUTs · 32 flip-flops · no latches' },
-				{ label: 'Critical path', value: '1.658 ns, about 603 MHz against 50 required' },
-				{ label: 'Worst insertion', value: '68 cycles, 1.36 µs at 50 MHz' },
-			]} />
-			<Callout kind="warning" title="To check">The case study says the worst case inserts into a 31-task queue, but 31 is the capacity. It probably means a 30-task queue, shifting 30 entries.</Callout>
-		</Section>
-
-		<Section eyebrow="Priority Task Queue Manager · Next" title="What I’d keep," dim="and what I’d add.">
-			<Principles rules={[
-				{ title: 'Keep the two-process split.', text: 'Next state and outputs in one place, registers in another: the behaviour stays inspectable.' },
-				{ title: 'Keep the backwards insertion.', text: 'One pass from the tail, and FIFO decided by a single comparison.' },
-				{ title: 'Keep the explicit commit state.', text: 'Correct includes the instant a value becomes observable.' },
-				{ title: 'Add protocol assertions.', text: 'The START–DONE contract checked in simulation, not only by the testbench’s timing.' },
-				{ title: 'Add configurable capacity.', text: '31 is a documented limit, not a law of the design.' },
-			]} />
-		</Section>
-
-		<Section id="specs" tone="sand">
+		<Section id="results" index={4} eyebrow="Priority Task Queue Manager · Results" title="Small, predictable," dim="and fast enough twelve times over.">
 			<TechSpecs eyebrow="Priority Task Queue Manager" meta="VHDL · Xilinx Vivado · Artix-7 · 2026" groups={[
-				{ title: 'Memory', values: [{ label: 'Size', value: '64 KB', text: 'single port, write-first' }, { label: 'Addresses', value: '16-bit' }, { label: 'Data', value: '8-bit' }] },
-				{ title: 'Design', counts: [{ value: '15', label: 'states' }, { value: '4', label: 'operations' }, { value: '31', label: 'tasks', accent: true }], note: 'Control unit, datapath, register bank and memory interface.' },
-				{ title: 'Source', items: [{ title: 'Not linked yet', text: 'Link the repository here, or say it isn’t public.' }] },
-			]} />
+				{ title: 'Interface', items: [{ title: 'START–DONE handshake', text: 'o_done rises only when the result is ready, and waits for i_start to fall.' }, { title: 'Two-bit operation input', text: 'Four operations on one component.' }, { title: 'External RAM', text: 'Synchronous, single-port, write-first, 2 ns read latency.' }] },
+				{ title: 'Capacity and memory', figureSide: true, items: [{ value: '31', title: 'tasks at most' }, { title: '64 KB single-port memory', text: '16-bit addresses, 8-bit data.' }, { title: 'Nothing kept locally', text: 'Every comparison reads, compares and rewrites through the memory interface, one clock at a time.' }] },
+				{ title: 'Timing', values: [{ label: 'Worst-case insertion', value: '68 cycles', text: '1.36 µs at 50 MHz' }, { label: 'Critical path', value: '1.658 ns', text: 'estimated maximum 603 MHz' }, { label: 'Required clock', value: '50 MHz', text: 'latency grows linearly with N' }] },
+				{ title: 'Synthesis', counts: [{ value: '91', label: 'LUTs' }, { value: '32', label: 'flip-flops' }, { value: '0', label: 'inferred latches', accent: true }], note: 'Two-process VHDL: combinational next state, sequential commit on the rising edge.' },
+				{ title: 'Verification', lead: '10 of 10 functional tests passed', tags: ['initialisation', 'empty-queue insert', 'priority order', 'FIFO among equals', 'head removal', 'saturating aging', 'clear', 'full and empty queue'] },
+				{ title: 'Next', items: [{ title: 'Keep', text: 'The two-process split, the backwards insertion and the explicit commit state.' }, { title: 'Add', text: 'Protocol assertions in simulation, and a configurable capacity.' }, { title: 'Source', text: 'Not linked yet: link the repository, or say it isn’t public.' }] },
+			]}>
+				<ol slot="figure-2" class="st-ts-map" aria-label="Memory map: address 0 holds the count, addresses 1 to N the ordered tasks">
+					<li class="head"><span class="st-mono">0</span><span>count = N</span></li>
+					<li class="hot"><span class="st-mono">1</span><span>highest priority</span></li>
+					<li class="warm"><span class="st-mono">2</span><span>…</span></li>
+					<li><span class="st-mono">N</span><span>lowest, newest last</span></li>
+					<li class="free"><span class="st-mono">≤ 31</span><span>free</span></li>
+				</ol>
+			</TechSpecs>
+			<Callout kind="warning" title="To check">The case study says the worst case inserts into a 31-task queue, but 31 is the capacity. It probably means a 30-task queue, shifting 30 entries.</Callout>
 		</Section>
 
 		<Section tone="sand">

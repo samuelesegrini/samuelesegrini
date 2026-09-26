@@ -1,251 +1,232 @@
 ---
 /**
- * Anteprima non elencata del racconto di EasyManager, costruita con le sezioni della seconda serie
- * come quella di PoliVerse. Il filo è un ordine solo, dal tavolo alla stampante fiscale, con tre
- * promesse: mai perso, mai due volte, mai tirato a indovinare. I fatti del 2026 vengono dal
- * repository dell'app (commit 424587c, 5 settembre 2026) e hanno la loro nota in fondo; le
- * schermate mancano ancora e lo dicono. Fuori dalla sitemap, noindex.
+ * Anteprima non elencata del racconto di EasyManager. Non ricalca PoliVerse: si apre con la
+ * copertina (MediaHero), segue un ordine solo lungo le quattro tappe (StickyScenes), poi entra nei
+ * pezzi come in una documentazione: il tavolo (Anatomy), la ricevuta (Lockup e CodeSteps), la classe
+ * che la stampa (Declaration), le tre decisioni (PlusCards), il toolkit (Bento e StateMachine).
+ * I fatti del 2026 vengono dal repository dell'app (commit 424587c); le schermate sono
+ * illustrazioni dichiarate, condivise con il catalogo. Fuori dalla sitemap, noindex.
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, AppHero, ProductShot, Statement, ObjectRow, LitText, ScrollIntro, PlusCards, HighlightsGallery,
-	FeatureExplorer, MediaCards, CodeSplit, Findings, Stats, Lockup, ThenNow, StateMachine, StickyScenes,
-	ExplodedStack, Declaration, Principles, Limits, TechSpecs, ChangeLog, Sources, Faq, KeepExploring,
+	Story, Section, MediaHero, StickyScenes, Anatomy, Lockup, CodeSteps, Declaration, PlusCards, Bento, StateMachine,
+	ChangeLog, Limits, Faq, KeepExploring, PageIndex,
 } from '../../../components/story';
-import { neighbours, previewCover } from '../../../lib/previews';
+import { neighbours } from '../../../lib/previews';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
+import '../../../styles/story-mocks.css';
 
 const repo2023 = 'https://github.com/samuelesegrini/easymanager';
 const { next, previous } = neighbours('easymanager');
 
+const fiscal = `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body>
+    <printerFiscalReceipt>
+      <beginFiscalReceipt operator="1" />
+      <printRecItem operator="1" description="Risotto"
+        quantity="2" unitPrice="14,00" department="1" />
+      <printRecTotal operator="1" description="Cash"
+        payment="28,00" paymentType="0" />
+      <endFiscalReceipt operator="1" />
+    </printerFiscalReceipt>
+  </s:Body>
+</s:Envelope>`;
+
 const sections = [
-	{ kicker: 'Chapter 1 of 8', value: 'The problem', detail: { kicker: 'Hands', value: '4, three devices' } },
-	{ kicker: 'Chapter 2 of 8', value: 'Three promises', detail: { kicker: 'In short', value: '4 highlights' } },
-	{ kicker: 'Chapter 3 of 8', value: 'One lunch', detail: { kicker: 'Stations', value: '4' } },
-	{ kicker: 'Chapter 4 of 8', value: 'The 2023 app', detail: { kicker: 'Commits', value: '20' } },
-	{ kicker: 'Chapter 5 of 8', value: 'The printer', detail: { kicker: 'Release', value: '0.1.0' } },
-	{ kicker: 'Chapter 6 of 8', value: 'What it took', detail: { kicker: 'Products', value: '31' } },
-	{ kicker: 'Chapter 7 of 8', value: 'The rules', detail: { kicker: 'Written down', value: '6 rules' } },
-	{ kicker: 'Chapter 8 of 8', value: 'Specs & FAQ', detail: { kicker: 'Dependencies', value: 'none' } },
+	{ kicker: 'Chapter 1 of 6', value: 'One order', detail: { kicker: 'Stops', value: '4' } },
+	{ kicker: 'Chapter 2 of 6', value: 'The floor', detail: { kicker: 'Table states', value: '4' } },
+	{ kicker: 'Chapter 3 of 6', value: 'The receipt', detail: { kicker: 'Sent', value: 'once' } },
+	{ kicker: 'Chapter 4 of 6', value: 'Decisions', detail: { kicker: 'Written down', value: '3' } },
+	{ kicker: 'Chapter 5 of 6', value: 'The toolkit', detail: { kicker: 'Products', value: '31' } },
+	{ kicker: 'Chapter 6 of 6', value: 'Where it stands', detail: { kicker: 'Release', value: '0.1.0' } },
 ];
 ---
 
 <ExperimentLayout lang="en" title="EasyManager (preview)" currentHref="/en/preview/easymanager/" sections={sections} itHref={labProjectPath('it', 'easymanager-operazioni-ristorante')} enHref={withBase('/en/preview/easymanager/')} noindex>
 	<Story>
-		<AppHero name="EasyManager" title="From the table to the fiscal printer." tint="acid"
-			summary="A restaurant’s orders on the iPads in the room: floor, order pad, kitchen and till, ending on a receipt that can’t be taken back. Written for a real restaurant in 2023, rebuilt in 2026 as a Swift toolkit around one idea: an order you can’t lose, print twice, or guess about."
-			meta="Individual work · Swift 6.3 · SwiftUI · 2023–2026"
-			actions={[{ label: 'Read the story', href: '#problem' }, { label: 'The 2023 code', href: repo2023 }]}>
-			<ProductShot slot="shot" priority alt="Illustration: an iPad with the dining room, tables coloured by state, beside an order ticket" src="/images/projects/covers/easymanager.svg" width={1200} height={800}
-				captions={[{ title: 'Floor', text: 'Tables by state and waiter.', file: 'DiningView' }, { title: 'Order pad', text: 'Courses, variants, VAT.', file: 'OrderSheetView' }, { title: 'Kitchen', text: 'Dishes by course.', file: 'CookingView' }]} />
-		</AppHero>
+		<MediaHero name="EasyManager" title="From the table to the fiscal printer." image={withBase('/images/projects/covers/easymanager.svg')}
+			imageAlt="An iPad showing a restaurant dining room with tables coloured by state, next to an order ticket"
+			meta="iPad app, then a Swift toolkit · 2023–2026" detail="Individual work, for a real restaurant" action={{ label: 'Follow one order', href: '#order' }}
+			back={{ label: 'All previews', href: withBase('/en/preview/') }} position={{ current: 2, total: 6 }} />
 
-		<Section id="problem" index={1}>
-			<Statement>An order passes through <b>four pairs of hands</b> and <b>three devices</b>. The last step, a fiscal receipt, <b>can’t be taken back with a tap</b>.</Statement>
-			<ObjectRow label="Who touches an order, and how each can fail" items={[
-				{ name: 'Waiter', text: 'Takes it at the table. Fails as a ticket that never reaches the kitchen.' },
-				{ name: 'Kitchen', text: 'Prepares it by course. Fails as a course fired too early, or missed.' },
-				{ name: 'Till', text: 'Closes it with one or more payments. Fails as a wrong total.' },
-				{ name: 'Fiscal printer', text: 'Turns it into a legal document. Fails as a receipt printed twice.' },
-			]} />
+		<Section id="order" index={1} eyebrow="EasyManager · One order" title="Four stops," dim="and the last one can’t be undone."
+			lead="An order passes through four pairs of hands and three devices. Every screen reads the same order; the fiscal printer turns it into a legal document.">
+			<StickyScenes device="ipad" label="An order from the table to the printer" note="Illustrations · screenshots to replace" steps={[
+				{ title: 'Taken at the table.', text: 'Dishes by course, variants with their own price, a VAT department on every line.', code: 'OrderSheetView.swift', tint: 'orange' },
+				{ title: 'Cooked by course.', text: 'The kitchen sees the same order, regrouped by course for the people who cook it.', code: 'CookingView.swift', tint: 'blue' },
+				{ title: 'Paid at the till.', text: 'A pre-bill, then the payment by method: cash, electronic, cheque or meal voucher.', code: 'CashDesk.swift', tint: 'violet' },
+				{ title: 'Printed as a fiscal receipt.', text: 'The till sends XML over HTTP to the Epson printer. From here on, a mistake is a legal document.', code: 'POST fpmate.cgi · printerFiscalReceipt', tint: 'acid' },
+			]}>
+				<div slot="scene-1" class="mock-screen mock-pad" role="img" aria-label="Illustration: the order pad for table 7, risotto for two in the first course">
+					<div class="mock-menu">
+						<div class="mock-tabs"><span class="on">Course 1</span><span>Course 2</span><span>Course 3</span></div>
+						<div class="mock-dishes"><span class="on"><b>Risotto</b><span class="st-mono">14,00</span></span>{Array.from({ length: 5 }, () => <span><i></i><i></i></span>)}</div>
+						<span class="st-eyebrow">Variants · priced per choice</span>
+					</div>
+					<div class="mock-ticket"><b>Table 7</b><span class="st-eyebrow">Course 1</span><span class="row"><span>Risotto × 2</span><span class="st-mono">28,00</span></span><span class="st-mono dept">dept. 1</span><span class="st-eyebrow">Course 2</span><span class="muted">No dishes yet</span><span class="grow"></span><span class="row total"><span>Total</span><span class="st-mono">28,00</span></span><span class="send">Send to kitchen</span></div>
+				</div>
+				<div slot="scene-2" class="mock-screen mock-kitchen" role="img" aria-label="Illustration: the kitchen view, orders grouped by course">
+					<b>Kitchen</b>
+					<div class="mock-courses">
+						<div><span class="st-eyebrow">Course 1</span><span class="ticket"><b class="st-mono">T7</b><span>Risotto × 2</span></span><span class="ticket done"><b class="st-mono">T2</b><i></i></span></div>
+						<div><span class="st-eyebrow">Course 2</span><span class="ticket"><b class="st-mono">T6</b><i></i><i></i></span></div>
+						<div><span class="st-eyebrow">Course 3</span><span class="ticket"><b class="st-mono">T11</b><i></i></span></div>
+					</div>
+				</div>
+				<div slot="scene-3" class="mock-screen mock-till" role="img" aria-label="Illustration: the till for table 7, payment methods and the fiscal receipt button">
+					<div class="st-receipt st-receipt-paper"><div class="head">PRE-BILL · TABLE 7</div><div class="rule"></div><div class="row"><span>RISOTTO 2×</span><span>28,00</span></div><div class="rule"></div><div class="row strong"><span>TOTAL</span><span>28,00</span></div></div>
+					<div class="mock-pay"><b>Till · Table 7</b><div class="methods"><span class="on">Cash</span><span>Electronic</span><span>Cheque</span><span>Meal voucher</span></div><span class="grow"></span><span class="pre">Pre-bill</span><span class="print">Print fiscal receipt</span><span class="st-mono">X and Z reports at the end of the shift</span></div>
+				</div>
+				<div slot="scene-4" class="mock-screen mock-printout" role="img" aria-label="Illustration: the fiscal receipt for table 7, beside the request that printed it">
+					<div class="st-receipt st-receipt-paper"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div><div class="row"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div><div class="barcode"></div></div>
+					<div class="mock-request st-mono"><span>POST /cgi-bin/fpmate.cgi</span><span>&lt;printRecItem description="Risotto"</span><span>&nbsp;&nbsp;quantity="2" unitPrice="14,00" /&gt;</span><span class="ok">200 · printed</span></div>
+				</div>
+			</StickyScenes>
 		</Section>
 
-		<Section>
-			<LitText eyebrow="EasyManager · The motive" tint="acid" text="Before university, a real restaurant needed it by spring. *So I wrote the app they ran on*, in twenty commits." />
+		<Section id="floor" index={2} split eyebrow="EasyManager · The floor" title="Anatomy of a table." dim="Four facts on one tile."
+			lead="In the domain a table has a state, an assigned waiter and a service start time. The tile carries all of them, readable from across the room.">
+			<Anatomy label="A table tile with its four facts" measure="the whole tile is one tap target" statesText="The four values of the domain, one fill each."
+				callouts={[
+					{ label: 'Number', text: 'The biggest thing on the tile, found from across the room.', side: 'left' },
+					{ label: 'Waiter', text: 'Who owns the table, filterable from the sidebar.', side: 'right' },
+					{ label: 'State', text: 'Named, and repeated as the fill so it reads at a glance.', side: 'right' },
+					{ label: 'Service start', text: 'When the table sat down.', side: 'left' },
+				]}
+				states={[{ label: 'Free', tone: 'acid', sample: '1' }, { label: 'Booked', tone: 'violet', sample: '3' }, { label: 'Waiting', tone: 'orange', sample: '7' }, { label: 'Occupied', tone: 'dark', sample: '2' }]}>
+				<div class="mock-tile" role="img" aria-label="Table 7, waiter 02, service started at 20:14, waiting">
+					<b>7</b><span class="st-mono waiter">W 02</span>
+					<span class="st-mono time"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>20:14</span>
+					<span class="st-mono state">Waiting</span>
+				</div>
+			</Anatomy>
 		</Section>
 
-		<ScrollIntro id="promises" index={2} tone="ink2" eyebrow="EasyManager" title="Three promises." dim="Kept on every ticket." />
-
-		<Section tone="ink2">
-			<PlusCards label="The three promises" cards={[
-				{ eyebrow: 'Promise 1', title: 'Never lost.', text: 'An order taken at the table reaches the kitchen. If the network drops, it waits on the iPad, queued and safe to send again.', tone: 'acid', detail: 'Delivery counts as a success when the order is confirmed or durably queued. Dropping it is not one of the outcomes.', links: [{ label: 'An order is delivered, or it waits', href: '#delivery' }] },
-				{ eyebrow: 'Promise 2', title: 'Never twice.', text: 'A fiscal receipt can’t be taken back. Nothing is resent blindly, and no printer hears two commands at once.', tone: 'blue', detail: 'A timeout keeps the uncertainty for the next step instead of retrying, and each device has one lane in front of it.', links: [{ label: 'Two valid commands, one ruined receipt', href: '#lanes' }] },
-				{ eyebrow: 'Promise 3', title: 'Never guesses.', text: 'When the printer doesn’t reply, the answer is “we don’t know yet”, not “failed” and not “done”.', tone: 'orange', detail: 'Unknown is a value the till can act on, next to accepted and rejected.', links: [{ label: 'Not knowing is not the same as no', href: '#took' }] },
-			]} />
-			<HighlightsGallery interval={6000} cards={[
-				{ lead: 'A real restaurant ran on it.', text: 'Floor, kitchen and till, on the iPads in the room.', meta: '2023 · Firestore sync', name: 'A real restaurant', tone: 'paper', layout: 'split', image: previewCover('easymanager'), imageAlt: 'Illustration: an iPad with the dining room beside an order ticket' },
-				{ lead: 'The Wi-Fi drops. The order waits.', text: 'Queued on the iPad, safe to replay, delivered when the network is back.', meta: 'Never lost', name: 'The order waits', tone: 'acid' },
-				{ lead: 'One lane per printer.', text: 'Two commands for the same printer queue up instead of interleaving on the paper.', meta: 'Never twice', name: 'One lane per printer', tone: 'dark' },
-				{ lead: '“Uncertain” is an answer.', text: 'Accepted, rejected, or unknown: the till knows which one it is holding.', meta: 'Never guesses', name: 'Uncertain is an answer', tone: 'orange' },
-			]} />
-		</Section>
-
-		<Section id="service" eyebrow="EasyManager · A service in it" title="One lunch," dim="four stations." index={3}>
-			<FeatureExplorer label="Stations" device="ipad" note="Screens of the 2023 app to follow" features={[
-				{ title: 'Seating', file: 'DiningView', tint: 'blue', text: 'Which table is free, booked, waiting or occupied, who is serving it and since when.' },
-				{ title: 'The order', file: 'OrdersView · OrderSheetView', tint: 'acid', text: 'Dishes by course, each with its VAT rate, a decimal quantity and variants priced on their own.' },
-				{ title: 'The pass', file: 'CookingView', tint: 'violet', text: 'The kitchen sees the same order in real time, grouped by course.' },
-				{ title: 'The bill', file: 'CashDesk · CheckOut', tint: 'orange', text: 'A pre-bill for the customer, then one fiscal receipt with one total per payment method.' },
-			]} />
-		</Section>
-
-		<Section eyebrow="EasyManager · The small things" title="Small things," dim="a restaurant notices.">
-			<MediaCards label="Small things EasyManager does" items={[
-				{ lead: 'Variants with their own price.', text: 'The total follows which variants are picked, not only the dish.', tone: 'paper' },
-				{ lead: 'Decimal quantities.', text: 'A line’s quantity can be a fraction, not only a whole number of pieces.', tone: 'acid' },
-				{ lead: 'A voided line stays visible.', text: 'Voiding flags the line instead of deleting it, so the order keeps its history.', tone: 'paper' },
-				{ lead: 'The operator on every line.', text: 'Each user has an operator number, which the fiscal printer demands on every line.', tone: 'blue' },
-				{ lead: 'A pre-bill on 46 columns.', text: 'A non-fiscal document with one line per dish and variant, aligned for the printer’s width.', tone: 'paper' },
-				{ lead: 'One bill, several payments.', text: 'Cash, cheque, electronic payment and meal voucher, each with its own total on the receipt.', tone: 'orange' },
-			]} />
-		</Section>
-
-		<Section id="first-era" eyebrow="EasyManager · The first era" title="Twenty commits," dim="for a real restaurant." index={4}>
-			<CodeSplit eyebrow="2023 · The fiscal printer" title="A receipt is an XML document, sent once."
-				text="The app wraps each receipt in a SOAP envelope and posts it to the Epson printer in the room: one line per dish with its VAT department, one total per payment method."
-				file="fpmate.cgi · request" language="XML" tone="acid"
-				code={'<beginFiscalReceipt />\n<printRecItem description="Risotto"\n  quantity="2" unitPrice="14.00"\n  department="1" />\n<printRecTotal payment="Cash"\n  amount="28.00" />\n<endFiscalReceipt />'} />
-		</Section>
-
-		<Section split eyebrow="EasyManager · 2023" title="What the first era exposed." dim="Four seams."
-			lead="Scope grew with the restaurant’s requests. None of these was a bug on the day; each made the next change harder.">
-			<Findings columns={['Severity', 'What the app did', 'When it shows', 'What the 2026 toolkit does']} note="Severity 1 can cost a fiscal document; severity 2 makes a change carry consequences elsewhere." items={[
-				{ severity: 1, title: 'A connection error was left to the operator.', text: 'When the printer didn’t reply, the app recorded the error and whoever was at the till decided.', impact: { label: 'Every unanswered receipt' }, fix: 'An unknown outcome is a domain value, not an error' },
-				{ severity: 2, title: 'Six shared view models.', text: 'Every station read and wrote the same six ObservableObjects, created at launch.', impact: { label: 'Every new feature' }, fix: 'Feature engines that point only inward' },
-				{ severity: 2, title: 'Firestore in every view model.', text: 'Snapshots rebuilt local state directly, so the backend shaped the app.', impact: { label: 'Any change of backend' }, fix: 'Persistence seams owned by each feature' },
-				{ severity: 2, title: 'Scope kept growing.', text: 'Loyalty, reservations, shifts and inventory joined the same screens.', impact: { label: 'From mid-2023' }, fix: 'One package per feature, with its own tests' },
-			]} />
-		</Section>
-
-		<Section id="turn" eyebrow="EasyManager · The turn" title="The printer didn’t answer." dim="Did it print?" index={5}>
-			<Stats items={[
-				{ label: 'Then', value: '20', text: 'commits, April 2023', method: 'the public 2023 repository', note: 1 },
-				{ label: 'Now', value: '329', text: 'commits, July–September 2026', method: 'the 2026 repository at 424587c', note: 2, accent: true },
-				{ label: 'Products', value: '31', text: 'in the 0.1.0 release', method: 'library products in Package.swift', note: 3 },
-				{ label: 'Dependencies', value: '0', text: 'remote packages', method: 'the package manifest', note: 4 },
-			]} feature={{ label: 'Release', value: '0.1.0', text: '24 August 2026, a clean-slate API' }}>
-				In 2023 the app recorded the error and left the choice to whoever was at the till. <b>Not knowing whether the printer printed is not the same as knowing it didn’t.</b> That question is where the re-engineering starts.
-			</Stats>
-		</Section>
-
-		<Lockup id="took" index={6} number="06" label="What it took" title="Not knowing" dim="is not the same as no."
-			next={{ label: 'Next: an order is delivered, or it waits', href: '#delivery' }}
-			facts={[{ label: 'Printer said yes', value: 'accepted' }, { label: 'Printer said no', value: 'rejected' }, { label: 'No reply', value: 'unknown', accent: true }]}
-			factsNote="CheckoutFiscalTransmission, EMCheckout 0.1">
-			A fiscal request leaves; the reply may never come. The toolkit gives that silence a name, so <b>the till can hold an unknown receipt</b> and reconcile it, instead of printing a second one to be safe.
+		<Lockup id="receipt" index={3} number="03" label="The receipt" title="A receipt is sent once." dim="It can’t be undone."
+			deepDive="Deep dive: when the printer doesn’t answer" next={{ label: 'Next: build one, line by line', href: '#walkthrough' }}>
+			The till wraps every receipt in a SOAP envelope and posts it to the Epson printer in the room: <b>one line per dish with its VAT department, one total per payment method.</b> When the reply never comes, the 2023 app left the decision to whoever was at the till.
+			<Fragment slot="deep-dive">
+				<p>Not knowing whether the printer printed is not the same as knowing it didn’t. Sending again could print a second legal document; not sending could lose one. That question is where the 2026 toolkit starts.</p>
+			</Fragment>
 		</Lockup>
 
+		<Section id="walkthrough" eyebrow="EasyManager · Walkthrough" title="Build a receipt," dim="one line at a time.">
+			<CodeSteps file="fpmate.cgi · request, abridged" code={fiscal} lang="xml" note="POST · printer’s address in the room"
+				meta={[{ label: '5 steps', icon: 'lines' }, { label: 'XML over HTTP', icon: 'brackets' }, { label: 'Epson fiscal printer', icon: 'printer' }]} steps={[
+					{ title: 'Wrap it in SOAP.', text: 'The app composes the document inside a SOAP envelope and posts it to fpmate.cgi on the printer in the room.', lines: '1-3, 10-12', status: 'Envelope ready, nothing to print' },
+					{ title: 'Open a fiscal receipt.', text: 'Everything until the closing tag becomes one fiscal document.', lines: '4', status: 'Receipt opened' },
+					{ title: 'One line per dish.', text: 'Description, quantity, unit price and the VAT department the rate maps to.', lines: '5-6', status: 'Line added' },
+					{ title: 'One total per payment method.', text: 'Cash, cheque, electronic payment or meal voucher, each its own total.', lines: '7-8', status: 'Total added' },
+					{ title: 'Close, then wait for the reply.', text: 'If it never comes, the 2023 app records the error and leaves the decision to the operator.', lines: '9', status: 'Sent · waiting for the printer' },
+				]}>
+				<div slot="preview" class="st-receipt">
+					<div class="empty" data-until="0">Nothing printed yet.<br />The envelope is empty.</div>
+					<div data-from="1"><div class="head">DOCUMENTO COMMERCIALE</div><div class="rule"></div></div>
+					<div data-from="2"><div class="row lit"><span>RISOTTO</span><span>2 × 14,00</span></div><div class="right">28,00</div><div class="rule"></div></div>
+					<div data-from="3"><div class="row strong"><span>TOTALE</span><span>28,00</span></div><div class="row"><span>CONTANTE</span><span>28,00</span></div></div>
+					<div data-from="4" class="barcode"></div>
+				</div>
+			</CodeSteps>
+		</Section>
+
 		<Section>
-			<ThenNow title="Same problem." dim="Two eras." baseline="The 2023 app" baselineLabel="The 2026 toolkit, compared with" changes={[
-				{ icon: 'package', title: 'Packages separated by contract', was: 'six shared view models' },
-				{ icon: 'database', title: 'Persistence at the boundary, owned by each feature', was: 'Firestore snapshots in every view model' },
-				{ icon: 'timeline', title: 'Outbox, acknowledgement and reconciliation as phases', was: 'one request, errors to the operator' },
-				{ icon: 'printer', title: 'One lane per physical device', was: 'any screen could talk to the printer' },
-				{ icon: 'warning', title: 'An unknown outcome as a value', was: 'a connection error for the operator' },
-				{ value: '0', title: 'remote package dependencies', was: 'Firebase SDKs', tone: 'acid' },
-			]} />
-		</Section>
-
-		<Section id="delivery" split eyebrow="EasyManager · Never lost" title="An order is delivered," dim="or it waits."
-			lead="Delivery succeeds when the order is confirmed or durably queued. A timeout keeps the uncertainty for the next step instead of silently retrying.">
-			<StateMachine label="Submitting an order" forbidden="drop it · or resend a fiscal command on a timeout"
-				before={[{ name: 'Draft', text: 'Built at the table.' }, { name: 'Sent', text: 'Written to the outbox, then submitted.' }]}
-				fork={[{ name: 'Delivered', text: 'The server confirmed it.', tone: 'blue' }, { name: 'Queued', text: 'Unavailable, or the outcome is uncertain.', tone: 'orange' }]}
-				after={[{ name: 'Reconciled', text: 'Replayed safely, or confirmed later.', tone: 'dark' }]}
-				labels={{ before: [['submit', 'outbox first']], fork: ['200', 'no answer'], join: ['acknowledge', 'replay, idempotent'] }} />
-		</Section>
-
-		<Section id="lanes" split eyebrow="EasyManager · Never twice" title="Two valid commands." dim="One ruined receipt."
-			lead="A printer is a one-seat resource. Two tickets sent at once to the same printer interleave in its buffer; two receipts opened at once on the same fiscal printer are worse.">
-			<StickyScenes device="none" label="One lane per device, in four steps" steps={[
-				{ title: 'Two tickets, one printer.', text: 'The floor and the till both send a command to the same printer at the same moment.', code: 'EpsonPrintDevice(host:) × 2, same address', tint: 'orange' },
-				{ title: 'The paper interleaves.', text: 'Each command is valid on its own. Together they produce paper nobody can use.', tint: 'violet' },
-				{ title: 'A lane per device, not per object.', text: 'The hub keys the lane by the device’s ID, so two objects for the same address still share one queue, and two printers stay parallel.', code: 'actor DeviceLane · keyed by HardwareDeviceID', tint: 'blue' },
-				{ title: 'Cancel stops the waiting, not the writing.', text: 'A cancelled caller stops waiting; a command already writing a fiscal document finishes, so the printer is never left half way.', tint: 'acid' },
-			]} />
-		</Section>
-
-		<Section tone="dark" split eyebrow="EasyManager · Architecture" title="Engines point" dim="only inward."
-			lead="A feature engine never imports SwiftUI, the design system, a backend or a vendor’s hardware API. Presentation, adapters and test support point toward it.">
-			<ExplodedStack layers={[
-				{ name: 'SwiftUI', tint: 'acid', chips: [{ label: 'EMDesignSystem' }, { label: '*UI products' }], text: 'Optional presentation, distributed apart from the engines.' },
-				{ name: 'Feature engines', tint: 'violet', chips: [{ label: 'EMOrderTaking' }, { label: 'EMCheckout' }, { label: 'EMFloorPlan' }], text: 'Seven engines, each owning its values, failures and small external protocols.' },
-				{ name: 'Devices and fiscal', tint: 'blue', chips: [{ label: 'EMHardwareKit' }, { label: 'EMFiscalIT' }, { label: 'EMEpsonEPOS', accent: true }], text: 'One lane per device; Italian fiscal types stay in the Italian adapter.' },
-				{ name: 'Foundations', tint: 'paper', chips: [{ label: 'EMEssentials' }, { label: 'EMMoney' }], text: 'Shared vocabulary, and money in whole cents.' },
-			]} />
-		</Section>
-
-		<Section tone="dark">
-			<Declaration project="EasyManagerKit · 0.1" breadcrumb={['EasyManagerKit', 'EMOrderTaking', 'DeliveryOutcome']} kind="Enumeration" name="DeliveryOutcome"
-				abstract="Delivery is successful when the intent is either confirmed or durably queued."
-				availability={[{ label: 'iOS 17 · macOS 14' }, { label: 'Swift 6.3 · Sendable' }, { label: 'DocC' }]}
-				declaration="enum DeliveryOutcome"
-				nav={[{ title: 'Order taking', symbols: [{ name: 'OrderSubmissionIntent', kind: 'S' }, { name: 'DeliveryOutcome', kind: 'E', current: true }, { name: 'QueueReason', kind: 'E' }, { name: 'OrderSubmissionTransport', kind: 'P' }] }, { title: 'Hardware', symbols: [{ name: 'HardwareHub', kind: 'C' }, { name: 'DeviceLane', kind: 'C' }] }]}
-				mentioned={[{ label: 'An order is delivered, or it waits', href: '#delivery' }, { label: 'Two valid commands, one ruined receipt', href: '#lanes' }]}>
-				<p>Four cases and nothing else: <code>delivered</code>, <code>deliveredPendingCleanup</code> when the server confirmed but the local envelope is still there and safe to replay, <code>queued</code> with its reason, <code>unavailable</code> or <code>uncertainOutcome</code>, and <code>rejected</code>. <b>“Lost” is not a case.</b></p>
+			<Declaration project="EasyManager · 2023" breadcrumb={['EasyManager', 'View models', 'PrinterViewModel']} kind="Class" name="PrinterViewModel"
+				abstract="Composes the printer’s documents as XML, wraps them in a SOAP envelope and posts them to the Epson fiscal printer in the room."
+				availability={[{ label: 'iPadOS' }, { label: 'SwiftUI · MVVM' }, { label: 'Epson ePOS fiscal' }, { label: '2023 app', muted: true }]}
+				declaration="class PrinterViewModel: ObservableObject" more="View models: 6 in total"
+				nav={[
+					{ title: 'Views', symbols: [{ name: 'DiningView', kind: 'S' }, { name: 'OrderSheetView', kind: 'S' }, { name: 'CookingView', kind: 'S' }, { name: 'CashDesk', kind: 'S' }] },
+					{ title: 'View models', symbols: [{ name: 'RestaurantViewModel', kind: 'C' }, { name: 'OrderViewModel', kind: 'C' }, { name: 'PrinterViewModel', kind: 'C', current: true }, { name: 'TableViewModel', kind: 'C' }] },
+				]}
+				mentioned={[{ label: 'A receipt is sent once', href: '#receipt' }, { label: 'Build a receipt, one line at a time', href: '#walkthrough' }]}>
+				<p>Two document types and the closing operations. The <b>pre-bill</b> is non-fiscal, one line per dish and variant, aligned on 46 columns. The <b>fiscal receipt</b> carries one <code>printRecItem</code> per line and one <code>printRecTotal</code> per payment method. X and Z reports close the shift. It lived beside five other shared view models, and that is what the rebuild took apart.</p>
 			</Declaration>
 		</Section>
 
-		<Section id="decisions" eyebrow="EasyManager · The rules" title="The promises," dim="written down as rules." index={7}>
-			<Principles rules={[
-				{ title: 'Deliver or queue, never drop.', text: 'An order is confirmed or waits in the outbox, safe to replay.', source: 'EMOrderTaking · DeliveryOutcome' },
-				{ title: 'Never resend a fiscal command on a timeout.', text: 'A retry could print a second legal document; the uncertainty goes to reconciliation instead.', source: 'EMCheckout · CheckoutFiscalTransmission' },
-				{ title: 'One lane per device, keyed by its ID.', text: 'Two objects for the same address must not become two streams to the printer.', source: 'EMHardwareKit · DeviceLane' },
-				{ title: 'Unknown is a value, not an error.', text: 'The till can hold and show an uncertain receipt.', source: 'CheckoutFiscalTransmission.unknown' },
-				{ title: 'Engines import no SwiftUI and no vendor.', text: 'Italian fiscal types stay in the Italian adapter; checkout logic never sees them.', source: 'scripts/check_package_architecture.sh' },
-				{ title: 'Money in whole cents.', text: 'Totals are integers, so a receipt never rounds its way to a different amount.', source: 'EMMoney · Money(cents:)' },
-			]} example={{ label: 'Rule 02, drawn', dont: { title: 'Don’t resend when the printer is silent', text: 'If the first receipt printed, the restaurant now has two.' }, do: { title: 'Hold it as unknown, then reconcile', text: 'The till shows the receipt as unconfirmed until the printer’s journal says what happened.' } }}>
-				<Fragment slot="dont"><span class="st-state">Sent</span><span class="st-arrow-label">timeout →</span><span class="st-state uncertain">Sent again</span></Fragment>
-				<Fragment slot="do"><span class="st-state">Sent</span><span class="st-arrow-label">timeout →</span><span class="st-state dark">Unknown · reconcile</span></Fragment>
-			</Principles>
+		<Section id="decisions" index={4} eyebrow="EasyManager · Why it is built this way" title="Three decisions." dim="Open one for the reasoning.">
+			<PlusCards label="Decisions behind the toolkit" cards={[
+				{ eyebrow: 'Fiscal layer', title: '“Uncertain” is an answer, not an error.', text: 'When the printer does not answer, nothing is sent again.', tone: 'orange',
+					detail: 'A timeout keeps the question open for the next step instead of retrying a mutation that could print a second receipt. In the toolkit the outcome is a value, accepted, rejected or unknown, and the till can hold an unknown receipt until it is reconciled.' },
+				{ eyebrow: 'Devices', title: 'One lane per device.', text: 'Hardware is not just another API.', tone: 'violet',
+					detail: 'Two valid commands become unsafe when they interleave on the same printer. The hub keys each lane by the device’s ID, so two objects for the same address still share one queue, and cancelling a caller stops the waiting, never a document already being written.' },
+				{ eyebrow: 'Orders', title: 'Delivered, or it waits.', text: 'An order is never simply gone.', tone: 'acid',
+					detail: 'Delivery counts as a success when the order is confirmed or durably queued. DeliveryOutcome has four cases, delivered, delivered pending cleanup, queued and rejected, and “lost” is not one of them.',
+					links: [{ label: 'Read the 2023 code', href: repo2023 }] },
+			]} />
+		</Section>
+
+		<Section id="toolkit" index={5} eyebrow="EasyManager · The 2026 toolkit" title="Rebuilt as packages." dim="Each with one job.">
+			<Bento label="The toolkit, tile by tile" tiles={[
+				{ value: '31', eyebrow: 'Package products', text: 'Documented with DocC and built by the release gate.', tone: 'acid', size: 'large' },
+				{ value: '0', eyebrow: 'Remote dependencies', text: 'Where Cloud Firestore used to sit at the core.', tone: 'dark' },
+				{ eyebrow: 'Swift 6.3', title: 'One lane per device.', text: 'Two valid commands never interleave on the same printer.', tone: 'violet' },
+				{ eyebrow: 'Engines', title: 'They point only inward.', text: 'No SwiftUI, no backend, no vendor API inside a feature engine.', size: 'wide' },
+				{ eyebrow: 'Fiscal', title: 'Italian types stay in the Italian adapter.', text: 'Checkout logic never sees them.', tone: 'blue', size: 'wide' },
+				{ eyebrow: 'Money', title: 'Whole cents.', text: 'A receipt never rounds its way to a different amount.', tone: 'orange', size: 'wide' },
+			]}>
+				<div slot="tile-1" class="mock-grid mock-grid-bento" role="img" aria-label="31 package products, three of them the order domain, device lanes and fiscal layer">
+					{Array.from({ length: 31 }, (_, k) => <span class:list={{ core: k < 3 }}></span>)}
+				</div>
+			</Bento>
+		</Section>
+
+		<Section split eyebrow="EasyManager · Order lifecycle" title="An order is a durable state machine." dim="A timeout keeps the question open."
+			lead="Outbox, acknowledgement and reconciliation are separate phases. Retrying on a timeout could print a second fiscal document, so the uncertainty travels to the next step instead.">
+			<StateMachine label="Order lifecycle" forbidden="silent retry · never"
+				before={[{ name: 'Draft', text: 'Being built on the pad; nothing has left the iPad.' }, { name: 'Sent', text: 'In the outbox, handed to the device.' }]}
+				fork={[{ name: 'Acknowledged', text: 'The device answered.', tone: 'blue' }, { name: 'Uncertain', text: 'No answer yet. Unknown is not the same as failed.', tone: 'orange' }]}
+				after={[{ name: 'Reconciled', text: 'Checked against what the device recorded.', tone: 'dark' }]}
+				labels={{ before: [['send', 'outbox']], fork: ['device answers', 'timeout'], join: ['reconcile', 'reconcile on the next step'] }} />
+		</Section>
+
+		<Section id="stands" index={6} eyebrow="EasyManager · How it got here" title="Change log." dim="Newest first.">
+			<ChangeLog columns={['Version', 'When', 'Changes']} releases={[
+				{ version: '0.2', when: 'Unreleased', style: 'planned', changes: [{ kind: 'planned', text: 'Work in progress, not published and not claimed on this page.' }] },
+				{ version: 'main', when: '5 Sep 2026', changes: [{ kind: 'changed', text: 'Role navigation moved into feature-owned flows.' }] },
+				{ version: '0.1.0', when: '24 Aug 2026', changes: [
+					{ kind: 'added', text: '31 products: foundations, seven feature engines, SwiftUI, hardware and fiscal adapters, testing.' },
+					{ kind: 'changed', text: 'SwiftUI distributed apart from the engines; Epson XML owned by EMEpsonEPOS.' },
+					{ kind: 'removed', text: 'Backend adapters from the public products, and every promise for the old layout.' },
+				] },
+				{ version: 'App', when: 'April 2023 · 20 commits', style: 'outline', changes: [
+					{ kind: 'added', text: 'Dining room, order pad, kitchen and till on iPad, for a real restaurant.' },
+					{ kind: 'added', text: 'Fiscal printing over HTTP: pre-bill, receipt, X and Z reports.' },
+					{ kind: 'note', text: 'Six shared view models make local changes ripple elsewhere; the seams show.' },
+				] },
+			]} />
 		</Section>
 
 		<Limits title="What’s proven," dim="and what isn’t yet." proven={[
 			{ text: 'The 2023 application, readable in full', source: 'github.com/samuelesegrini/easymanager', href: repo2023 },
-			{ text: 'The 0.1.0 release: 31 products built and documented, no remote dependencies', source: 'CHANGELOG · 24 August 2026' },
+			{ text: 'The 0.1.0 release: 31 products, no remote dependencies', source: 'Package.swift · CHANGELOG, 24 August 2026' },
 			{ text: 'Downstream builds import every public product without @testable', source: 'Fixtures/Consumers' },
 		]} notProven={[
 			{ text: 'The app running on the 0.1 API', source: 'Its migration is outside the 0.1.0 release' },
 			{ text: 'Compatibility with physical printers', source: 'No device evidence yet' },
-			{ text: 'Fiscal certification', source: 'No evidence yet' },
-			{ text: 'The 0.2 work, and a public source', source: 'Unreleased; the 0.1 source is private' },
+			{ text: 'Fiscal certification', source: 'Evidence still missing' },
+			{ text: 'A public 0.1 source', source: 'Private for now' },
 		]} />
 
-		<Section id="specs" tone="sand" index={8}>
-			<TechSpecs eyebrow="EasyManager" meta="Swift 6.3 · SwiftUI · iOS 17 · macOS 14 · 2026" groups={[
-				{ title: 'Two eras', items: [{ title: '2023 · the app', text: 'SwiftUI with MVVM, Cloud Firestore, Epson ePOS over SOAP.' }, { title: '2026 · the toolkit', text: 'Swift packages separated by contract, SQL at the boundary, DocC beside every API.' }] },
-				{ title: 'Code', counts: [{ value: '31', label: 'products' }, { value: '7', label: 'feature engines' }, { value: '0', label: 'dependencies', accent: true }], note: 'Engines, SwiftUI, adapters and testing products from one versioned package.' },
-				{ title: 'Role', values: [{ label: 'Work', value: 'Individual' }, { label: 'Client', value: 'Wape S.r.l', text: 'a working restaurant, 2023' }, { label: 'Licence', value: 'Apache 2.0' }] },
-				{ title: 'Verification', lead: 'One release gate, locally and in CI', tags: ['package architecture check', 'swift test', 'release build', 'consumer fixtures', 'DocC for every module'] },
-			]} />
-		</Section>
-
-		<Section tone="sand" eyebrow="EasyManager · How it got here" title="From an app" dim="to a toolkit.">
-			<ChangeLog columns={['When', 'What', 'Changes']} releases={[
-				{ version: '5 Sep 2026', when: 'After 0.1', changes: [{ kind: 'changed', text: 'Role navigation moved into feature-owned flows.' }] },
-				{ version: '0.1.0', when: '24 Aug 2026', changes: [
-					{ kind: 'added', text: 'One package with foundation, feature, SwiftUI, adapter and testing products.' },
-					{ kind: 'changed', text: 'SwiftUI distributed apart from the engines; Epson XML owned by EMEpsonEPOS.' },
-					{ kind: 'removed', text: 'Backend adapters and every compatibility promise for the old layout.' },
-				] },
-				{ version: 'July 2026', when: 'Re-engineering', changes: [{ kind: 'note', text: 'Back to the same domain, with distributed systems and hardware in between.' }] },
-				{ version: '2023', when: 'Scope grows', changes: [{ kind: 'added', text: 'Loyalty, reservations, shifts and inventory.' }] },
-				{ version: 'April 2023', when: '20 commits', style: 'outline', changes: [{ kind: 'added', text: 'Floor, kitchen, till and fiscal printer, for a real restaurant.' }] },
-			]} />
-		</Section>
-
-		<Section tone="sand">
-			<Sources eyebrow="EasyManager" checked="26 September 2026" lead="Every number on the page carries a superscript that lands here." notes={[
-				{ title: '20 commits', text: 'The 2023 application, written in April 2023.', source: 'github.com/samuelesegrini/easymanager', href: repo2023 },
-				{ title: '329 commits', text: 'Every commit on main of the 2026 repository, 19 July to 5 September 2026.', source: 'git rev-list --count HEAD at 424587c' },
-				{ title: '31 products', text: 'Library products declared by the package and built by the 0.1 release gate.', source: 'Package.swift · scripts/verify.sh' },
-				{ title: 'No dependencies', text: 'The package manifest declares no remote packages.', source: 'Package.swift' },
-			]} />
-		</Section>
-
-		<Section id="faq" tone="sand">
+		<Section>
 			<Faq eyebrow="EasyManager" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
 				{ q: 'Did the restaurant actually use it?', a: 'The 2023 app was written for a real restaurant and its fiscal printer. Device compatibility and fiscal certification of the 2026 toolkit are not demonstrated yet.' },
-				{ q: 'Why rebuild instead of fixing the app?', a: 'Six shared view models made every local change carry consequences elsewhere. The re-engineering draws boundaries around orders, devices and the fiscal layer.' },
-				{ q: 'Why not just retry when the printer is silent?', a: 'Because the first receipt may have printed. A second one is a second legal document; an unknown one can be reconciled.' },
+				{ q: 'Why rebuild instead of fixing the app?', a: 'Six shared view models made local changes carry consequences elsewhere. The re-engineering draws boundaries around orders, devices and the fiscal layer.' },
+				{ q: 'What happens when the printer doesn’t answer?', a: 'The outcome becomes “uncertain” and is reconciled on the next step, instead of being retried.' },
 				{ q: 'Can I read the code?', a: 'The 2023 application is public on GitHub. The 2026 source is not public yet.' },
 			]} />
 		</Section>
 
+		<KeepExploring next={next} previous={previous}
+			all={{ label: 'All previews', title: 'Project previews', text: 'One story per project, unlisted.', href: withBase('/en/preview/') }} />
+
 		<Section tone="sand">
-			<KeepExploring next={next} previous={previous}
-				all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
+			<PageIndex title="EasyManager"
+				primary={[{ label: 'One order', href: '#order' }, { label: 'The floor', href: '#floor' }, { label: 'The receipt', href: '#receipt' }, { label: 'Decisions', href: '#decisions' }, { label: 'The toolkit', href: '#toolkit' }, { label: 'Change log', href: '#stands' }]}
+				groups={[
+					{ title: 'Code', links: [{ label: 'Original application, 2023', href: repo2023, note: 'My repository · github.com' }, { label: 'Toolkit 0.1 source', locked: true, note: 'Not public yet' }] },
+					{ title: 'More from the portfolio', links: [{ label: 'All projects', href: labPaths.en.work }, { label: 'About me', href: labPaths.en.about, icon: 'person' }] },
+				]} />
 		</Section>
 	</Story>
 </ExperimentLayout>

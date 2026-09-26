@@ -1,244 +1,206 @@
 ---
 /**
- * Anteprima non elencata del racconto di SpinGO, costruita con le sezioni della seconda serie come
- * quella di PoliVerse. Il filo è un viaggio solo, prima, durante e dopo, nello stesso ordine del
- * questionario, con tre promesse: occhi sulla strada, più sicuri insieme, provato sulle persone.
- * Numeri e problemi vengono dal caso di studio (Deliverable 1 e 6); le esportazioni del prototipo
- * Figma e i nomi della squadra mancano ancora e lo dicono. Fuori dalla sitemap, noindex.
+ * Anteprima non elencata del racconto di SpinGO. Non ricalca PoliVerse: è una ricerca, e la pagina
+ * segue il metodo. Si apre sui dispositivi (AppHero), poi il percorso in tappe (Timeline), le tre
+ * attività con il telefono e l'orologio (MediaCards), la prova con i suoi obiettivi (Stats, BarCompare),
+ * i problemi per gravità e per fase (Findings, Matrix) e una correzione da trascinare (BeforeAfter).
+ * Numeri dal caso di studio (Deliverable 1 e 6); disegni dichiarati, condivisi con il catalogo.
+ * Fuori dalla sitemap, noindex.
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, AppHero, ProductShot, Statement, ObjectRow, LitText, ScrollIntro, PlusCards, HighlightsGallery,
-	FeatureExplorer, Anatomy, ExplainerFigure, Compare, Callout, Stats, BarCompare, Findings, Matrix, Contribution,
-	Principles, Limits, TechSpecs, Sources, Faq, Topics, KeepExploring,
+	Story, Section, AppHero, Device, Timeline, MediaCards, Stats, BarCompare, Findings, Matrix, BeforeAfter, Contribution,
+	Sources, Faq, KeepExploring,
 } from '../../../components/story';
-import { neighbours, previewCover } from '../../../lib/previews';
-import { labPaths, labProjectPath } from '../../../components/lab/chrome';
+import { neighbours } from '../../../lib/previews';
+import { labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
+import '../../../styles/story-mocks.css';
 
 const repo = 'https://github.com/milenaramosduran/hci-eco';
 const site = 'https://milenaramosduran.github.io/hci-eco/';
 const { next, previous } = neighbours('spingo');
 
 const sections = [
-	{ kicker: 'Chapter 1 of 8', value: 'The problem', detail: { kicker: 'Would ride', value: '74.2%' } },
-	{ kicker: 'Chapter 2 of 8', value: 'Three promises', detail: { kicker: 'In short', value: '4 highlights' } },
-	{ kicker: 'Chapter 3 of 8', value: 'A ride', detail: { kicker: 'Tasks', value: '3' } },
-	{ kicker: 'Chapter 4 of 8', value: 'The research', detail: { kicker: 'Responses', value: '109' } },
-	{ kicker: 'Chapter 5 of 8', value: 'The test', detail: { kicker: 'SUS', value: '89.2' } },
-	{ kicker: 'Chapter 6 of 8', value: 'My part', detail: { kicker: 'Commits', value: '112 of 119' } },
-	{ kicker: 'Chapter 7 of 8', value: 'Where it stands', detail: { kicker: 'Users', value: '7' } },
-	{ kicker: 'Chapter 8 of 8', value: 'Specs & FAQ', detail: { kicker: 'Deliverables', value: '7' } },
+	{ kicker: 'Chapter 1 of 6', value: 'The method', detail: { kicker: 'Responses', value: '109' } },
+	{ kicker: 'Chapter 2 of 6', value: 'The design', detail: { kicker: 'Tasks', value: '3' } },
+	{ kicker: 'Chapter 3 of 6', value: 'The test', detail: { kicker: 'SUS', value: '89.2' } },
+	{ kicker: 'Chapter 4 of 6', value: 'What broke', detail: { kicker: 'Severity 1', value: '1' } },
+	{ kicker: 'Chapter 5 of 6', value: 'One fix', detail: { kicker: 'Moved', value: 'Add' } },
+	{ kicker: 'Chapter 6 of 6', value: 'My part', detail: { kicker: 'Commits', value: '112 of 119' } },
 ];
 ---
 
 <ExperimentLayout lang="en" title="SpinGO (preview)" currentHref="/en/preview/spingo/" sections={sections} itHref={labProjectPath('it', 'spingo-micromobilita-sostenibile')} enHref={withBase('/en/preview/spingo/')} noindex>
 	<Story>
-		<AppHero name="SpinGO" title="A safer ride, with the phone in your pocket." tint="orange"
-			summary="A micromobility companion for bikes, e-bikes and scooters: plan a safe route, keep the essentials on the wrist while riding, and turn one rider’s report into everyone’s knowledge. An HCI project of five people at Politecnico di Milano, from 109 responses to seven usability tests."
-			meta="Team of five · Figma · React 19 · 2025–2026"
-			actions={[{ label: 'Read the story', href: '#problem' }, { label: 'Project website', href: site }]}>
-			<ProductShot slot="shot" priority alt="Illustration: a phone showing a riding route to a safe destination, with a bicycle following the same route" src="/images/projects/covers/spingo.svg" width={1200} height={800}
-				captions={[{ title: '109', text: 'questionnaire responses.', file: 'Deliverable 1' }, { title: '88%', text: 'average task success.', file: 'Deliverable 6' }, { title: '89.2', text: 'SUS score, grade A.', file: '7 participants' }]} />
+		<AppHero name="SpinGO" title="Research before code." tint="acid"
+			summary="74.2% of the people who don’t ride regularly would like to. 109 answers, 4 interviews and 7 usability sessions later, a micromobility app with a watch companion reached 88% task success and a SUS of 89.2."
+			meta="Team of five · HCI, Politecnico di Milano · 2025–2026"
+			actions={[{ label: 'Follow the method', href: '#method' }, { label: 'Project website', href: site }, { label: 'Team repository', href: repo }]}>
+			<svg slot="mark" viewBox="0 0 64 64" fill="none" stroke="#171713" stroke-width="5" stroke-linecap="round" aria-hidden="true"><path d="M16 48c0-12 32-8 32-22 0-6-4-10-10-10" /><circle cx="16" cy="48" r="5" fill="#c7ff9f" /><circle cx="38" cy="16" r="5" fill="#fffef9" /></svg>
+			<Fragment slot="devices">
+				<Device kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 276 596" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of the route screen: a safe route drawn on a map, with a start button">
+						<rect width="276" height="596" fill="#f4f1e9" />
+						<rect x="148" y="96" width="150" height="170" rx="42" fill="#e3f5d2" />
+						<g stroke="#e2ddd2" stroke-width="18" stroke-linecap="round" fill="none"><path d="M-10 170H290M-10 350H290M72 -10V610M204 -10V610M-10 520 140 420" /></g>
+						<path d="M62 474c0-66 10-86 52-106s92-26 92-96-8-116 8-150" fill="none" stroke="#171713" stroke-width="17" stroke-linecap="round" />
+						<path d="M62 474c0-66 10-86 52-106s92-26 92-96-8-116 8-150" fill="none" stroke="#c7ff9f" stroke-width="10" stroke-linecap="round" />
+						<circle cx="62" cy="474" r="11" fill="#171713" /><circle cx="62" cy="474" r="4" fill="#fffef9" />
+						<circle cx="214" cy="122" r="15" fill="#ded1ff" stroke="#171713" stroke-width="3.5" /><circle cx="214" cy="122" r="5" fill="#171713" />
+						<rect x="16" y="20" width="244" height="64" rx="18" fill="#fffefb" stroke="#171713" stroke-width="2.5" />
+						<text x="34" y="48" class="mock-svg-title">Start a safe route</text>
+						<text x="34" y="68" class="mock-svg-mono">TASK 1 · NAVIGATION</text>
+						<rect x="0" y="498" width="276" height="98" fill="#fffefb" /><path d="M0 498h276" stroke="#171713" stroke-width="2.5" />
+						<rect x="18" y="522" width="176" height="48" rx="24" fill="#171713" />
+						<text x="106" y="552" text-anchor="middle" class="mock-svg-title light">Start</text>
+						<rect x="206" y="522" width="52" height="48" rx="24" fill="#ffd4b8" stroke="#171713" stroke-width="2.5" />
+						<path d="M232 536v10M232 552v.5" stroke="#171713" stroke-width="3" stroke-linecap="round" />
+					</svg>
+				</Device>
+				<div class="st-ahero-side">
+					<Device kind="watch">
+						<div class="mock-watch"><span class="st-mono">Next turn</span><svg viewBox="0 0 48 48" width="50" height="50" fill="none" stroke="#c7ff9f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 42V24a8 8 0 0 1 8-8h18m-8-9 9 9-9 9" /></svg><b>Turn right</b></div>
+					</Device>
+					<span class="st-mono">Companion on the wrist: next turn, haptics, quick reports.</span>
+				</div>
+			</Fragment>
 		</AppHero>
 
-		<Section id="problem" index={1}>
-			<Statement><b>74.2%</b> of those who don’t ride regularly would like to. What stops them: <b>lanes that stop</b>, <b>bikes that get stolen</b>, <b>parking you can’t trust</b>, and information scattered everywhere.</Statement>
-			<ObjectRow label="Four riders, four reasons" items={[
-				{ name: 'The professional', text: 'Rides a small, unremarkable bike as an anti-theft strategy.' },
-				{ name: 'The commuter', text: 'A scooter with too little range, and no public charging.' },
-				{ name: 'The student', text: 'Uses bike sharing, and won’t buy a bike for fear of theft.' },
-				{ name: 'The graduate', text: 'Bought a bike, and never rode it.' },
+		<Section id="method" index={1} eyebrow="SpinGO · The method" title="Four steps," dim="each one feeding the next."
+			lead="The whole user-centred process, in the order it happened. Each step narrowed the one before it.">
+			<Timeline steps={[
+				{ when: 'Needfinding', title: '109 answers, 4 riders', text: 'An adaptive questionnaire that followed the trip, then four deliberately different interviews.' },
+				{ when: 'Synthesis', title: '4 directions', text: '150+ codes, 50+ needs: safety and control, trust in places, fluid trips, community.' },
+				{ when: 'Design', title: 'App and watch', text: 'The app covered the tasks; the watch kept the eyes on the road. Another team reviewed it.' },
+				{ when: 'Test', title: '7 sessions', text: 'Think-aloud, SEQ after each task, SUS at the end, against targets set in advance.' },
 			]} />
 		</Section>
 
-		<Section>
-			<LitText eyebrow="SpinGO · The motive" tint="orange" text="After distributed systems and hardware, *the first question here wasn’t how to build it.*" />
-		</Section>
-
-		<ScrollIntro id="promises" index={2} tone="ink2" eyebrow="SpinGO" title="Three promises." dim="From the first turn to parking." />
-
-		<Section tone="ink2">
-			<PlusCards label="The three promises" cards={[
-				{ eyebrow: 'Promise 1', title: 'Eyes on the road.', text: 'While moving, only the essentials, on the wrist: the next turn, a haptic nudge, a report in one gesture.', tone: 'acid', detail: 'The app keeps the richness; the watch companion keeps the rider’s attention on the road.', links: [{ label: 'The wrist, in three things', href: '#wrist' }] },
-				{ eyebrow: 'Promise 2', title: 'Safer, together.', text: 'A route is trusted because riders say so. One report becomes everyone’s knowledge.', tone: 'blue', detail: 'Community was one of the four needs the research converged on.', links: [{ label: 'Before, during, after', href: '#ride' }] },
-				{ eyebrow: 'Promise 3', title: 'Tested on people.', text: 'Every screen went in front of real riders, against targets set in advance.', tone: 'orange', detail: 'The page shows where they got stuck, not only the score.', links: [{ label: 'What the test said', href: '#test' }] },
-			]} />
-			<HighlightsGallery interval={6000} cards={[
-				{ lead: '109 voices, four needs.', text: 'Questionnaire, interviews and focus groups, down to four directions.', meta: 'Needfinding', name: 'Four needs', tone: 'paper', layout: 'split', image: withBase('/images/projects/explainers/spingo-research-loop.svg'), imageAlt: 'Research turned into needs, a prototype and a new testing cycle' },
-				{ lead: 'The next turn, on your wrist.', text: 'A haptic nudge and an arrow; the phone stays in the pocket.', meta: 'Eyes on the road', name: 'On the wrist', tone: 'acid' },
-				{ lead: 'A report becomes a route.', text: 'One rider marks a hazard; the next rider’s route knows about it.', meta: 'Safer, together', name: 'A report becomes a route', tone: 'blue' },
-				{ lead: '88% success. SUS 89.2.', text: 'Seven riders, three tasks, and the problems ranked by severity.', meta: 'Tested on people', name: 'Tested', tone: 'orange', layout: 'split', image: previewCover('spingo'), imageAlt: 'Illustration: a phone with a route and a bicycle following it' },
-			]} />
-		</Section>
-
-		<Section id="ride" eyebrow="SpinGO · A ride in it" title="Before, during," dim="after." index={3}>
-			<FeatureExplorer label="A trip" device="iphone" note="Exports of the hi-fi Figma prototype to follow" features={[
-				{ title: 'Before', file: 'Task 1', tint: 'blue', text: 'Plan a safe route and start it: lanes, lighting and parking at the destination.' },
-				{ title: 'Your Garage', file: 'Task 2', tint: 'violet', text: 'Vehicles and preferences: a bike, an e-bike, a scooter, each with how you ride it.' },
-				{ title: 'During', file: 'Watch companion', tint: 'acid', text: 'The next turn on the wrist and a haptic nudge at a hazard. In the test, riders reacted in 7.8 seconds on average.' },
-				{ title: 'After', file: 'Task 3', tint: 'orange', text: 'Park, report what you saw, and read what other riders reported.' },
-			]} />
-		</Section>
-
-		<Section id="wrist" split eyebrow="SpinGO · Eyes on the road" title="The wrist," dim="in three things."
-			lead="The app covers the three tasks; while moving, the watch shows only what a rider needs, and nothing else.">
-			<Anatomy label="The watch companion" tint="orange" callouts={[
-				{ label: 'Next turn', text: 'One arrow and a distance.', side: 'left', row: 'top' },
-				{ label: 'Haptic feedback', text: 'A nudge before the turn or a hazard.', side: 'right', row: 'top' },
-				{ label: 'Quick report', text: 'A hazard reported in one gesture.', side: 'right', row: 'bottom' },
+		<Section id="design" index={2} eyebrow="SpinGO · Design" title="Three tasks." dim="One companion on the wrist." link={{ label: 'Try the prototypes on the project site', href: site }}>
+			<MediaCards label="Design tasks" items={[
+				{ lead: 'Plan and start a safe route.', text: 'Navigation reached a 93% success rate and 6.5 out of 7 on the Single Ease Question.', tone: 'violet' },
+				{ lead: 'Manage vehicles in the Garage.', text: 'The weakest task, 82% and 4.2 out of 7: two people edited a vehicle because Add sat at the bottom of the list.', tone: 'acid', tag: 'Add moved to the top' },
+				{ lead: 'Report to the community.', text: 'One rider’s report becomes everyone’s knowledge of the street; 89% success, 5.8 out of 7.', tone: 'blue' },
+				{ lead: 'Keep the phone in the pocket.', text: 'The watch carries the next turn, haptic feedback and a one-tap report.', tone: 'orange' },
 			]}>
-				<div class="sg-watch" role="img" aria-label="Illustration: a watch face with a right-turn arrow, 120 metres, and a report button"><span class="sg-arrow">↱</span><b>120 m</b><span class="sg-report">Report</span></div>
-			</Anatomy>
-			<Callout kind="important" title="To confirm">Whether the watch companion was part of the tested hi-fi prototype, or only of the final design.</Callout>
+				<Device slot="media-1" kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 212 452" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration: route screen with a safe route on a map">
+						<rect width="212" height="452" fill="#f4f1e9" />
+						<g stroke="#e2ddd2" stroke-width="14" stroke-linecap="round"><path d="M-10 130H230M-10 270H230M56 -10V470M160 -10V470" /></g>
+						<path d="M46 360c0-50 8-66 40-80s70-20 70-72-6-88 6-112" fill="none" stroke="#171713" stroke-width="13" stroke-linecap="round" />
+						<path d="M46 360c0-50 8-66 40-80s70-20 70-72-6-88 6-112" fill="none" stroke="#c7ff9f" stroke-width="7" stroke-linecap="round" />
+						<circle cx="46" cy="360" r="9" fill="#171713" /><circle cx="162" cy="96" r="12" fill="#ded1ff" stroke="#171713" stroke-width="3" />
+						<rect x="12" y="14" width="188" height="48" rx="14" fill="#fffefb" stroke="#171713" stroke-width="2" />
+						<text x="26" y="43" class="mock-svg-title small">Safe route</text>
+						<rect x="12" y="386" width="188" height="44" rx="22" fill="#171713" />
+						<text x="106" y="413" text-anchor="middle" class="mock-svg-title small light">Start</text>
+					</svg>
+				</Device>
+				<Device slot="media-2" kind="iphone">
+					<div class="mock-garage" role="img" aria-label="Illustration: the Garage, with Add a vehicle at the top of the list">
+						<b>Garage</b><span class="add">+ Add a vehicle</span>
+						{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}
+					</div>
+				</Device>
+				<Device slot="media-3" kind="iphone">
+					<svg class="mock-fill" viewBox="0 0 212 452" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration: community screen with reports pinned on a map">
+						<rect width="212" height="452" fill="#f4f1e9" />
+						<g stroke="#e2ddd2" stroke-width="14" stroke-linecap="round"><path d="M-10 110H230M-10 250H230M70 -10V470M150 -10V470" /></g>
+						<g stroke="#171713" stroke-width="2.5" stroke-linejoin="round"><path d="M60 80 74 104H46Z" fill="#ffd4b8" /><path d="M140 170 154 194H126Z" fill="#ffd4b8" /><path d="M96 232 110 256H82Z" fill="#ffd4b8" /></g>
+						<rect x="0" y="300" width="212" height="152" fill="#fffefb" /><path d="M0 300h212" stroke="#171713" stroke-width="2" />
+						<text x="16" y="330" class="mock-svg-title small">Reports nearby</text>
+						<rect x="16" y="346" width="180" height="10" rx="5" fill="#e2ddd2" /><rect x="16" y="346" width="120" height="10" rx="5" fill="#171713" />
+						<rect x="16" y="382" width="180" height="44" rx="22" fill="#ffd4b8" stroke="#171713" stroke-width="2" />
+						<text x="106" y="409" text-anchor="middle" class="mock-svg-title small">New report</text>
+					</svg>
+				</Device>
+				<Device slot="media-4" kind="watch">
+					<div class="mock-watch"><span class="st-mono">Next turn</span><svg viewBox="0 0 48 48" width="50" height="50" fill="none" stroke="#c7ff9f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 42V24a8 8 0 0 1 8-8h18m-8-9 9 9-9 9" /></svg><b>Turn right</b></div>
+				</Device>
+			</MediaCards>
 		</Section>
 
-		<Section id="research" eyebrow="SpinGO · The research" title="109 answers, four needs," dim="one companion." index={4}>
-			<ExplainerFigure image={withBase('/images/projects/explainers/spingo-research-loop.svg')} imageAlt="User research transformed into needs, a mobile prototype and a new testing cycle"
-				caption="Questionnaire, interviews and focus groups converge into design needs; the prototype makes them testable and the tests feed new evidence back."
-				notes={[
-					{ title: '109 responses', text: 'An adaptive questionnaire following the rider’s journey: before, during, after.', at: [14, 50] },
-					{ title: '4 interviews, 2 focus groups', text: 'Deliberately different profiles, compared on six dimensions.', at: [34, 50] },
-					{ title: '150+ codes, 50+ needs', text: 'Open, axial and selective coding, then affinity mapping and dot voting.', at: [56, 50] },
-					{ title: '4 directions', text: 'Safety and control, trust in places, fluid trips, community.', at: [80, 50] },
-				]}
-				aside="43.1% of the sample were expert riders; among the others, 74.2% were interested but inactive. Latent demand is larger than use." />
-		</Section>
-
-		<Section eyebrow="SpinGO · Two directions" title="On the handlebar," dim="or in your pocket?"
-			lead="In the low-fidelity phase the group compared a dedicated handlebar device with a phone app. Neither was enough alone.">
-			<Compare columns={[
-				{ title: 'A handlebar device', items: ['Less distracting while moving', 'Too little room for the three tasks'] },
-				{ title: 'A phone app', items: ['Covers planning, the Garage and the community', 'Pulls the rider’s eyes off the road'] },
-				{ title: 'The app, with a watch companion', items: ['The app keeps the richness', 'The wrist gets the next turn, haptics and quick reports'] },
-			]} />
-		</Section>
-
-		<Section id="test" eyebrow="SpinGO · The turn" title="Seven riders." dim="Targets set before the first one sat down." index={5}>
+		<Section id="test" index={3} tone="dark" eyebrow="SpinGO · Usability testing" title="Seven sessions, three tasks." dim="Every number with its method.">
 			<Stats items={[
-				{ label: 'Participants', value: '7', text: 'aged 16–35, in person or remote', method: 'about 45 minutes each', note: 1 },
-				{ label: 'Success', value: '88', unit: '%', text: 'across the three tasks', method: '0–2 per task, 14 points maximum', note: 2, accent: true },
-				{ label: 'SUS', value: '89.2', text: 'grade A', method: 'System Usability Scale after the test', note: 3 },
-				{ label: 'Reaction', value: '7.8', unit: 's', text: 'to a hazard while navigating', method: 'mean, navigation task', note: 4 },
-			]} targets={{ title: 'The bar, written down first', rows: [
-				{ label: 'Success rate', target: 'above 85%', value: '88%', met: true },
-				{ label: 'SUS', target: 'above 70', value: '89.2', met: true },
-				{ label: 'Severity 1–2 problems', target: 'fewer than 3', value: '2', met: true },
-			] }}>
-				Think-aloud, observation, time and errors, a Single Ease Question after each task and the SUS at the end. <b>The targets were set before the first session</b>, so the result couldn’t move them.
+				{ label: 'Average success', value: '88%', text: 'across the three tasks', method: '0–2 scale per task, 7 users, 14 points maximum', note: 1, accent: true },
+				{ label: 'SUS score', value: '89.2', text: 'grade A', method: 'System Usability Scale, all 7 participants', note: 2 },
+				{ label: 'Needfinding', value: '109', text: 'questionnaire responses', method: 'Adaptive questionnaire, Deliverable 1', note: 3 },
+				{ label: 'Reaction to hazards', value: '7.8', unit: 's', text: 'mean, while navigating', method: 'Navigation task, timed in session', note: 4 },
+			]} feature={{ label: 'Strongest task', value: '93%', text: 'navigation success, 6.5 of 7 on ease' }}
+				targets={{ title: 'Targets were set before the first session.', text: 'All three were met.', rows: [{ label: 'Success rate', target: '> 85%', value: '88%' }, { label: 'SUS', target: '> 70', value: '89.2' }, { label: 'Severity 1–2 problems', target: '< 3', value: '2' }] }}>
+				Planning and starting a route was nearly effortless. <b>The Garage was the weak point at 82% and 4.2 of 7</b>, and community reporting sat in between at 89%. A positive average hides where people stalled, which is why the problems below are ranked by severity, not by count.
 			</Stats>
 		</Section>
 
-		<Section eyebrow="SpinGO · What the test said" title="Above the bar," dim="except where it wasn’t.">
-			<BarCompare label="Success rate per task" max={100} threshold={{ value: 85, label: 'Target 85%', below: 'under target' }}
-				caption="0–2 per task over 7 users. Single Ease Question beside each, out of 7."
-				rows={[
-					{ label: 'Navigation', value: 93, display: '93%', note: 'SEQ 6.5' },
-					{ label: 'Community', value: 89, display: '89%', note: 'SEQ 5.8' },
-					{ label: 'Personalisation', value: 82, display: '82%', note: 'SEQ 4.2', emphasis: true },
+		<Section eyebrow="SpinGO · Task success" title="Two tasks above the target." dim="One below it."
+			lead="Success rate per task against the 85% target set before the first session. The Garage is the one that missed.">
+			<BarCompare label="Task success by task, against the 85% target" max={100} threshold={{ value: 85, label: 'Target 85%', below: 'below target' }}
+				caption="0–2 scale per task, seven participants · Deliverable 6, usability test" rows={[
+					{ label: 'Plan and start a route', note: 'Navigation', value: 93, display: '93%', emphasis: true },
+					{ label: 'Report to the community', note: 'Community reporting', value: 89, display: '89%' },
+					{ label: 'Manage vehicles', note: 'The Garage', value: 82, display: '82%' },
+					{ label: 'All three tasks', note: 'Average success', value: 88, display: '88%', emphasis: true },
 				]} />
 		</Section>
 
-		<Section split eyebrow="SpinGO · Problems" title="Where people got stuck." dim="Ranked by severity."
-			lead="The average says the design works; the problems say where the interface doesn’t mirror what riders expect.">
-			<Findings note="Severity 1 blocks the task; severity 3 slows it." items={[
-				{ severity: 1, title: 'Saved routes live in two places.', text: 'Viewing is on Home, managing is in Profile: a distinction that doesn’t exist for the rider.', impact: { of: [2, 7], label: 'failed the task' }, fix: 'Unify viewing and managing' },
-				{ severity: 2, title: '“Add” sits at the bottom of the Garage.', text: 'Riders edited an existing vehicle instead of adding a new one.', impact: { of: [2, 7], label: 'edited instead of adding' }, fix: 'Move the create action to the top' },
-				{ severity: 3, title: 'Two Start buttons.', text: 'Redundant controls for the same action.', impact: { label: 'Not quantified' }, fix: 'One Start' },
-				{ severity: 3, title: 'Typing the starting point.', text: 'Riders entered it by hand instead of using their position.', impact: { label: 'Not quantified' }, fix: 'Smart default: where the rider is' },
+		<Section id="findings" index={4} split eyebrow="SpinGO · Usability findings" title="Ranked by severity," dim="not by count."
+			lead="A positive average doesn’t close the research. One user’s 45 seconds stalled in front of a panel describes a mental model the interface doesn’t mirror.">
+			<Findings note="Severity 1 is the most serious. Seven participants aged 16–35, about 45 minutes each, think-aloud and observation." items={[
+				{ severity: 1, title: 'Saved routes lived in two places.', text: 'Viewing sat on Home and managing in Profile, a split that doesn’t exist for the person riding.', impact: { of: [2, 7], label: 'failed saved-route management' }, fix: 'Unify viewing and managing' },
+				{ severity: 2, title: 'Add sat at the bottom of the Garage.', text: 'Two people edited a vehicle they already had instead of adding a new one.', impact: { of: [2, 7], label: 'participants' }, fix: 'Move create to the top' },
+				{ severity: 3, title: 'Start was asked twice, and typed by hand.', text: 'Redundant Start buttons, and a starting point entered manually instead of the current position.', fix: 'Smart defaults for the start' },
+				{ severity: 'unranked', title: 'Route and point icons looked alike.', text: 'Traced as the cause of the one SUS score at 70; the other six sat between 82.5 and 100.', impact: { of: [1, 7], label: 'participants' }, fix: 'Differentiate the two icons' },
 			]} />
 		</Section>
 
-		<Section eyebrow="SpinGO · From review to fix" title="Every problem," dim="from the review to the next fix.">
-			<Matrix label="Problems by phase" rowLabel="Problem" columns={[
-				{ label: 'Heuristic review', icon: 'search', tone: 'violet' },
-				{ label: 'Fixed before the test', icon: 'check', tone: 'acid' },
-				{ label: 'Seen in the test', icon: 'people', tone: 'orange' },
-				{ label: 'Next iteration', icon: 'pencil', tone: 'blue' },
-			]} rows={[
-				{ title: 'Tab bar too small', cells: ['yes', 'yes', 'unknown', 'unknown'] },
-				{ title: 'Back button outside convention', cells: ['yes', 'yes', 'unknown', 'unknown'] },
-				{ title: 'Actions without feedback', cells: ['yes', 'yes', 'unknown', 'unknown'] },
-				{ title: 'Route or point of interest?', text: 'The SUS outlier at 70 traced back to it.', cells: ['yes', 'yes', 'back', 'yes'] },
-				{ title: 'Saved routes split in two', cells: ['no', 'no', 'yes', 'yes'] },
-				{ title: 'Add at the bottom of the Garage', cells: ['no', 'no', 'yes', 'yes'] },
-				{ title: 'Typing the starting point', cells: ['no', 'no', 'yes', 'yes'] },
-			]} />
+		<Section split eyebrow="SpinGO · Heuristic evaluation" title="What the review caught," dim="and what came back."
+			lead="Another team, GreenBytes, evaluated the prototype before usability testing. Each finding is tracked across the three moments it could be seen.">
+			<Matrix label="Heuristic findings by stage" link={{ label: 'See the problems the tests ranked', href: '#findings' }}
+				columns={[{ label: 'Found in review', icon: 'search', tone: 'violet' }, { label: 'Changed before tests', icon: 'pencil', tone: 'acid' }, { label: 'Seen again in tests', icon: 'person', tone: 'orange' }]} rows={[
+					{ title: 'The tab bar was too small', text: 'Navigation enlarged and clarified', cells: ['yes', 'yes', 'no'] },
+					{ title: 'A back button outside convention', text: 'Controls moved to mobile standards', cells: ['yes', 'yes', 'no'] },
+					{ title: 'Actions without feedback', text: 'Labels and confirmations added', cells: ['yes', 'yes', 'no'] },
+					{ title: 'Points of interest and saved routes looked alike', text: 'The one SUS outlier, at 70, traced back to it', cells: ['yes', 'unknown', 'back'] },
+				]} />
 		</Section>
 
-		<Section id="part" eyebrow="SpinGO · My part" title="The design was ours." dim="The site is mine." index={6}>
-			<Contribution total={119} scope="on the project website" unit="commits"
-				me={{ name: 'Samuele Segrini', initials: 'SS', count: 112, role: 'Frontend developer', text: 'The site that gathers the research, the seven deliverables, videos of the final prototype and the Figma prototypes: React 19 with TypeScript, Vite 7, GSAP with ScrollTrigger for the deliverables timeline, personas, values and a prototype showcase, published through GitHub Actions.', tags: ['React 19', 'TypeScript', 'Vite 7', 'GSAP', 'GitHub Pages'] }}
-				others={[{ name: '[Teammate]', initials: '··', tone: 'violet' }, { name: '[Teammate]', initials: '··', tone: 'blue' }, { name: '[Teammate]', initials: '··', tone: 'orange' }, { name: '[Teammate]', initials: '··', tone: 'acid' }]}
-				shared="Needfinding, synthesis, prototypes, the heuristic review and the usability tests." note="Names to add. The design is collective work." />
+		<Section id="fix" index={5} split eyebrow="SpinGO · The Garage" title="Add moved to the top." dim="After two people missed it."
+			lead="In the tested prototype Add sat at the bottom of the vehicle list, and two of seven participants edited a vehicle they already had instead of adding one. The redesign puts it first.">
+			<BeforeAfter label="Compare the Garage in the prototype and in the redesign" start={50}
+				before={{ label: 'Prototype', text: 'Add at the bottom of the list.' }} after={{ label: 'Redesign', text: 'Add first, where the eye starts.' }}>
+				<div slot="before" class="mock-ba tone-violet"><Device kind="iphone"><div class="mock-garage" role="img" aria-label="Illustration: the Garage in the prototype, with Add a vehicle at the bottom of the list"><b>Garage</b>{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}<span class="add">+ Add a vehicle</span></div></Device></div>
+				<div slot="after" class="mock-ba tone-acid"><Device kind="iphone"><div class="mock-garage" role="img" aria-label="Illustration: the Garage after the redesign, with Add a vehicle at the top"><b>Garage</b><span class="add">+ Add a vehicle</span>{['blue', 'orange', 'violet'].map((t) => <span class="car"><i class={`tone-${t}`}></i><span><i></i><i></i></span></span>)}</div></Device></div>
+			</BeforeAfter>
 		</Section>
 
-		<Section eyebrow="SpinGO · What the test taught" title="Five rules," dim="each with its reason.">
-			<Principles rules={[
-				{ title: 'A number doesn’t close research.', text: 'SUS 89.2 describes a perception; 45 seconds stuck describes a mental model the interface misses.', source: 'Deliverable 6' },
-				{ title: 'Viewing and managing are one task to the user.', text: 'Splitting them across tabs failed 2 of 7 riders.', source: 'Severity 1' },
-				{ title: 'Create at the top.', text: 'An “Add” below the list reads as the list’s last item.', source: 'Severity 2' },
-				{ title: 'Start from where the rider is.', text: 'The current position is the default, not a field to fill.', source: 'Severity 3' },
-				{ title: 'Different things, different symbols.', text: 'A route and a point of interest must not look alike.', source: 'The SUS outlier' },
-			]} example={{ label: 'Rule 02, drawn', dont: { title: 'Don’t split viewing from managing', text: 'The rider looks for saved routes where they saw them, and can’t edit them there.' }, do: { title: 'One place for a saved route', text: 'See it, start it and edit it from the same list.' } }}>
-				<Fragment slot="dont"><span class="st-state">Home: view</span><span class="st-arrow-label">edit? →</span><span class="st-state uncertain">Profile: manage</span></Fragment>
-				<Fragment slot="do"><span class="st-state">Saved routes</span><span class="st-arrow-label">→</span><span class="st-state dark">view · start · edit</span></Fragment>
-			</Principles>
+		<Section id="part" index={6} split eyebrow="SpinGO · My part" title="The design was ours." dim="The site is mine."
+			lead="Research, prototypes and tests were the work of five people. The website that gathers them is mine.">
+			<Contribution total={119} scope="on the project website" period="2025–2026" shared="needfinding, synthesis, prototypes, the heuristic review and the tests." sharedLabel="Shared by all five"
+				note="Teammates’ names to add."
+				me={{ name: 'Samuele Segrini', initials: 'SS', count: 112, role: 'Frontend developer and HCI team member', tags: ['React 19', 'TypeScript', 'Vite 7', 'GSAP', 'GitHub Pages'],
+					text: 'The site that gathers the research, the seven deliverables, videos of the final prototype and the Figma prototypes, with a horizontal deliverables timeline in GSAP ScrollTrigger, personas, values and a prototype showcase.' }}
+				others={[{ name: '[Teammate]', initials: '··', tone: 'violet' }, { name: '[Teammate]', initials: '··', tone: 'blue' }, { name: '[Teammate]', initials: '··', tone: 'orange' }, { name: '[Teammate]', initials: '··', tone: 'acid' }]} />
 		</Section>
 
-		<Limits title="A score of 89.2, and 45 seconds stuck." dim="Both are data." proven={[
-			{ text: '109 questionnaire responses, 4 interviews, 2 focus groups', source: 'Deliverable 1' },
-			{ text: '7 usability sessions, with their method and targets', source: 'Deliverable 6' },
-			{ text: 'The website and the Figma prototypes, online', source: 'milenaramosduran.github.io/hci-eco', href: site },
-		]} notProven={[
-			{ text: 'The corrected flows in a working demo', source: 'Proposed after the test' },
-			{ text: 'A sample larger than seven', source: 'Enough for problems, not for statistics' },
-			{ text: 'Keyboard, focus and reduced motion on the site', source: 'Planned' },
-		]} />
-
-		<Section id="specs" tone="sand" index={7}>
-			<TechSpecs eyebrow="SpinGO" meta="HCI · Figma · React 19 · TypeScript · GSAP · 2025–2026" groups={[
-				{ title: 'The process', items: [{ title: 'Needfinding', text: 'Adaptive questionnaire, semi-structured interviews, focus groups.' }, { title: 'Design', text: 'Low-fidelity directions, a heuristic review with GreenBytes, a hi-fi Figma prototype.' }, { title: 'Testing', text: 'Think-aloud, SEQ after each task, SUS at the end.' }] },
-				{ title: 'Research', counts: [{ value: '109', label: 'responses' }, { value: '4', label: 'interviews' }, { value: '50+', label: 'needs', accent: true }], note: '95.4% of the sample aged 18–35; 78% in Milan or its province.' },
-				{ title: 'Test', values: [{ label: 'Success', value: '88%' }, { label: 'SUS', value: '89.2', text: 'grade A' }, { label: 'Hazard reaction', value: '7.8 s' }] },
-				{ title: 'The website', lead: '112 of 119 commits', tags: ['React 19', 'TypeScript', 'Vite 7', 'GSAP ScrollTrigger', 'GitHub Actions'] },
+		<Section tone="sand">
+			<Sources eyebrow="SpinGO" lead="Every number on the page carries a superscript that lands here: what it measures, how it was taken, and where to check it." notes={[
+				{ title: '88% average success', text: 'Each task scored 0–2: complete success, minor problems, major problems or failure. Seven users, 14 points maximum.', source: 'Deliverable 6 · usability test' },
+				{ title: 'SUS 89.2, grade A', text: 'System Usability Scale, answered by all seven after their session. Six scores between 82.5 and 100, one at 70.', source: 'Usability test · questionnaire' },
+				{ title: '109 questionnaire responses', text: 'Adaptive questionnaire shared through university groups and social media; 95.4% aged 18–35, 78% in Milan or its province.', source: 'Deliverable 1 · needfinding' },
+				{ title: '7.8 s reaction to hazards', text: 'Mean reaction time during the navigation task.', source: 'Usability test · navigation' },
 			]} />
 		</Section>
 
 		<Section tone="sand">
-			<Sources eyebrow="SpinGO" checked="26 September 2026" lead="Every number on the page carries a superscript that lands here." notes={[
-				{ title: '7 participants', text: 'Aged 16–35, in person or remotely, about 45 minutes each.', source: 'Deliverable 6' },
-				{ title: '88% success', text: '0–2 per task over 7 users, 14 points maximum, averaged across three tasks.', source: 'Deliverable 6' },
-				{ title: 'SUS 89.2', text: 'Mean of the 7 questionnaires; six between 82.5 and 100, one at 70.', source: 'Deliverable 6' },
-				{ title: '7.8 seconds', text: 'Mean reaction time to hazards in the navigation task.', source: 'Deliverable 6' },
-			]} />
-		</Section>
-
-		<Section id="faq" tone="sand">
 			<Faq eyebrow="SpinGO" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
 				{ q: 'Why a watch?', a: 'The phone app covered the three tasks better than a handlebar device, but pulled the rider’s eyes off the road. The watch keeps only what matters while moving.' },
 				{ q: 'Why only seven users?', a: 'Seven is enough to find the problems that matter, which is what the test was for; it is not enough for statistics, and the page doesn’t claim any.' },
-				{ q: 'What was yours?', a: 'The design was the group’s. The website that gathers the research, the deliverables and the prototypes is mine: 112 of its 119 commits.' },
 				{ q: 'Is there an app to download?', a: 'No. SpinGO is a tested Figma prototype; the corrected flows still need a working demo.' },
 			]} />
 		</Section>
 
-		<Section tone="sand">
-			<Topics groups={[
-				{ title: 'The project', links: [{ label: 'Project website', href: site, note: 'Research, deliverables and prototypes' }, { label: 'Team repository', href: repo, note: 'github.com' }] },
-			]} />
-		</Section>
-
-		<Section tone="sand">
-			<KeepExploring next={next} previous={previous}
-				all={{ label: 'The archive', title: 'All projects', text: 'Apps, packages, hardware and research, in one list.', href: labPaths.en.work }} />
-		</Section>
+		<KeepExploring next={next} previous={previous}
+			all={{ label: 'All previews', title: 'Project previews', text: 'One story per project, unlisted.', href: withBase('/en/preview/') }} />
 	</Story>
 </ExperimentLayout>
-
-<style>
-	.sg-watch { flex: none; box-sizing: border-box; min-width: 200px; min-height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: clamp(200px, 20vw, 240px); aspect-ratio: 5 / 6; border-radius: 52px; background: #171713; color: #fffef9; box-shadow: 0 0 0 10px #3a3a33, 0 30px 50px -30px rgba(23, 23, 19, .6); text-align: center; }
-	.sg-watch .sg-arrow { font-size: 56px; line-height: 1; color: #ffb27a; }
-	.sg-watch b { font-size: 26px; letter-spacing: -0.02em; }
-	.sg-watch .sg-report { margin-top: 6px; padding: 6px 14px; border-radius: 999px; background: #ffd4b8; color: #171713; font-size: 13px; font-weight: 700; }
-</style>

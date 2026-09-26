@@ -7,11 +7,11 @@ const arriva = (page: Page) => page.waitForFunction(() => !document.documentElem
 // Le anteprime dei racconti di progetto, una per progetto: i capitoli indicizzati nel dock, in
 // ordine, e le sezioni che ciascun racconto usa. Le brevi (relazione tecnica) aprono con DocHero.
 const previews = [
-	{ key: 'easymanager', chapters: 8, blocks: ['.st-ahero', '.st-statement', '.st-objects-row', '.st-lit', '.st-intro', '.st-plus-grid', '.st-hgallery', '.st-fx', '.st-mcards', '.st-findings', '.st-stats', '.st-lockup', '.st-thennow', '.st-states', '.st-scenes', '.st-exploded', '.st-decl', '.st-principles', '.st-limits2', '.st-techspecs', '.st-changelog', '.st-sources', '.st-faq2', '.st-keep'] },
-	{ key: 'galaxy-trucker', chapters: 7, blocks: ['.st-ahero', '.st-statement', '.st-objects-row', '.st-lit', '.st-intro', '.st-hgallery', '.st-fx', '.st-mcards', '.st-lockup', '.st-scenes', '.st-exploded', '.st-findings', '.st-stats', '.st-thennow', '.st-states', '.st-principles', '.st-limits2', '.st-techspecs', '.st-faq2', '.st-keep'] },
-	{ key: 'spingo', chapters: 7, blocks: ['.st-ahero', '.st-statement', '.st-objects-row', '.st-lit', '.st-intro', '.st-hgallery', '.st-fx', '.st-anatomy-subject', '.st-stats', '.st-findings', '.st-principles', '.st-limits2', '.st-techspecs', '.st-faq2', '.st-keep'] },
-	{ key: 'highway-route-planner', chapters: 5, blocks: ['.st-statement', '.st-techspecs', '.st-keep'] },
-	{ key: 'priority-task-queue-manager', chapters: 5, blocks: ['.st-statement', '.st-toggle', '.st-states', '.st-ba', '.st-techspecs', '.st-keep'] },
+	{ key: 'easymanager', chapters: 6, blocks: ['.st-mhero-art', '.st-scenes', '.st-anatomy-subject', '.st-lockup', '.st-cs-paper', '.st-decl', '.st-plus-grid', '.st-bento', '.st-states', '.st-changelog', '.st-limits2', '.st-faq2', '.st-keep', '.st-index'] },
+	{ key: 'galaxy-trucker', chapters: 6, blocks: ['.st-mhero-art', '.st-lockup', '.st-explainer', '.st-modules', '.st-techspecs', '.st-toggle', '.st-timeline', '.st-limits2', '.st-cards', '.st-faq2', '.st-keep'] },
+	{ key: 'spingo', chapters: 6, blocks: ['.st-ahero', '.st-timeline', '.st-mcards', '.st-stats', '.st-findings', '.st-ba', '.st-sources', '.st-faq2', '.st-keep'] },
+	{ key: 'highway-route-planner', chapters: 5, blocks: ['.st-dhero', '.st-layers', '.st-explainer', '.st-numbers', '.st-techspecs', '.st-keep'] },
+	{ key: 'priority-task-queue-manager', chapters: 4, blocks: ['.st-toggle', '.st-states', '.st-ba', '.st-techspecs', '.st-ts-map', '.st-keep'] },
 ];
 
 for (const preview of previews) {
@@ -22,8 +22,8 @@ for (const preview of previews) {
 		const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
 		expect(sections).toEqual(Array.from({ length: preview.chapters + 1 }, (_, k) => k));
 		await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-		// la fila gira: ogni anteprima porta alla successiva e alla precedente
-		await expect(page.locator('.st-keep a[href*="/en/preview/"]')).toHaveCount(2);
+		// la fila gira: ogni anteprima porta alla successiva, alla precedente e all'indice
+		await expect(page.locator('.st-keep a[href*="/en/preview/"]')).toHaveCount(3);
 	});
 }
 
