@@ -8,9 +8,9 @@
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, ToggleFigure, Stats,
-	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Declaration, Principles, Limits, TechSpecs,
-	Sources, Faq, KeepExploring, PageIndex, ScrollIntro, LitText, Bento, StickyScenes, BeforeAfter, ProductShot, Device, Icon, MediaCards,
+	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, Stats,
+	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Principles, Limits, TechSpecs,
+	Sources, Faq, KeepExploring, ScrollIntro, LitText, StickyScenes, BeforeAfter, ProductShot, Device, Icon, MediaCards,
 	Statement, ObjectRow,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
@@ -19,17 +19,6 @@ import { withBase } from '../../../lib/base';
 const repo = 'https://github.com/samuelesegrini/PoliVerse';
 const icon = (name: string) => withBase(`/images/projects/poliverse/icons/${name}.svg`);
 const cover = (name: string) => withBase(`/images/projects/covers/${name}.svg`);
-
-// I colori in cui escono Giorno e Vicino: gli stessi da cui parte un Flavor (AppIconChoice).
-const colours: [string, string][] = [
-	['classic', 'Classica'], ['lavender', 'Lavanda'], ['indigo', 'Indaco'], ['sky', 'Cielo'], ['mint', 'Menta'], ['sage', 'Salvia'],
-	['mandarin', 'Mandarino'], ['coral', 'Corallo'], ['raspberry', 'Lampone'], ['coffee', 'Caffè'], ['slate', 'Ardesia'], ['graphite', 'Grafite'],
-];
-const specials: [string, string][] = [
-	['neon', 'Neon'], ['spectrum', 'Spettro'], ['leather', 'Pelle'], ['holographic', 'Olografico'], ['hyperspace', 'Iperspazio'],
-	['blueprint', 'Blueprint'], ['circuit', 'Circuito'], ['heavens', 'Cielo'], ['observatory', 'Osservatorio'], ['soft', 'Morbido'], ['paper', 'Carta'],
-];
-const appearances: [string, string][] = [['orbit', 'Predefinita'], ['orbit-dark', 'Scura'], ['orbit-clear', 'Trasparente'], ['orbit-tinted', 'Colorata']];
 
 // La rampa del Flavor di partenza, dal diagramma DocC flavor-ramp.svg: dal più profondo al più chiaro.
 const ramp = ['#11777A', '#13758A', '#157099', '#1767A8', '#195BB8', '#1B4BC7', '#1D37D6', '#1F20E5'];
@@ -62,21 +51,6 @@ const wall = [
 	['closeup-mint', 'special-leather', 'dial-lavender', 'closeup-coral', 'special-holographic', 'dial-graphite', 'closeup-sky', 'special-circuit', 'dial-classic'],
 	['dial-coral', 'closeup-lavender', 'special-heavens', 'dial-indigo', 'closeup-mandarin', 'special-spectrum', 'dial-mint', 'closeup-slate', 'orbit'],
 	['special-blueprint', 'dial-raspberry', 'closeup-sage', 'special-observatory', 'dial-coffee', 'closeup-graphite', 'special-soft', 'dial-slate', 'closeup-classic'],
-];
-
-// La settimana che l'app ricava dagli insegnamenti scelti (PersonalTimetableView): giorno, ora, aula.
-const picks = [
-	{ name: 'Reti di Calcolatori', on: true },
-	{ name: 'Basi di Dati', on: true },
-	{ name: 'Ingegneria del Software', on: true },
-	{ name: 'Tecnologie per il Web', on: false },
-];
-const week = [
-	{ day: 1, from: 2, span: 2, room: 'T.2.1', tint: 'violet' },
-	{ day: 2, from: 1, span: 2, room: '3.1.2', tint: 'blue' },
-	{ day: 3, from: 3, span: 2, room: 'B.4.2', tint: 'orange' },
-	{ day: 4, from: 1, span: 2, room: 'T.2.1', tint: 'violet' },
-	{ day: 5, from: 2, span: 2, room: '3.1.2', tint: 'blue' },
 ];
 
 // Le piastrelle dei sei posti, ognuna del colore e della storta del suo punto nella prima carta.
@@ -410,11 +384,11 @@ const sections = [
 		<Section eyebrow="PoliVerse · Le piccole cose" title="Piccole cose," dim="che risparmiano un giro per il campus.">
 			<MediaCards label="Piccole cose che fa PoliVerse" items={[
 				{ lead: 'Un’aula libera, adesso.', text: 'Le aule libere per la prossima mezz’ora o più, campus per campus, con i loro posti.', note: 'Ricavate dalle lezioni prenotate: un’aula libera può comunque essere chiusa a chiave.', tone: 'paper' },
-				{ lead: 'La tua settimana, prima che l’agenda ce l’abbia.', text: 'Scegli i corsi che segui e l’app costruisce la settimana, con aule e indirizzi.', tone: 'blue' },
 				{ lead: 'Il tuo docente, per il tuo scaglione.', text: 'Corso di laurea e piano arrivano dal Manifesto, così ogni corso mostra il docente e il programma del tuo scaglione alfabetico.', tone: 'paper' },
 				{ lead: 'Le scadenze, con l’ora che conta.', text: 'Le consegne di WeBeep stanno in Oggi con il loro corso e l’ora esatta, così sai se stasera basta ancora.', tone: 'violet' },
-				{ lead: 'Prima quello che chiude.', text: 'Le iscrizioni in chiusura e i voti che aspettano una tua decisione vengono prima di quello che è già deciso.', tone: 'paper' },
 				{ lead: 'Una ricerca per tutti i tuoi corsi.', text: 'Corsi, lezioni e appelli da un campo solo, con aule libere e docenti a un tocco.', tone: 'acid' },
+				{ lead: 'Widget, per la prossima lezione.', text: 'Prossima lezione, oggi, carriera e aule libere. Il widget delle aule libere scarica i suoi dati da solo, con un pulsante per aggiornarli.', tone: 'blue' },
+				{ lead: 'Siri conosce i tuoi esami.', text: 'Corsi, appelli e aule sono cose che Siri e Spotlight conoscono, non solo schermate che sanno aprire.', tone: 'orange' },
 			]}>
 				<div slot="media-1" class="pv-mini" role="img" aria-label="Illustrazione: le aule libere adesso, con i loro posti, e le ore libere e occupate di un’aula">
 					<span class="pv-seg"><i>30 min</i><i class="on">1 ora</i><i>2 ore</i></span>
@@ -424,66 +398,33 @@ const sections = [
 					<span class="pv-room"><b>T.1.3</b><span><Icon name="people" size={13} stroke={2.2} />80</span></span>
 					<span class="pv-room"><b>B.2.4</b><span><Icon name="people" size={13} stroke={2.2} />64</span></span>
 				</div>
-				<div slot="media-2" class="pv-mini" role="img" aria-label="Illustrazione: tre corsi scelti e la settimana che ne viene fuori, con le aule">
-					<span class="pv-pick">{picks.map((pick) => <span class:list={[{ on: pick.on }]}><i>{pick.on && <Icon name="check" size={11} stroke={3} />}</i>{pick.name}</span>)}</span>
-					<span class="pv-week">
-						{['L', 'M', 'M', 'G', 'V'].map((d, k) => <b style={`grid-column: ${k + 1}`}>{d}</b>)}
-						{week.map((slot) => <i style={`grid-column: ${slot.day}; grid-row: ${slot.from + 1} / span ${slot.span}; background: var(--${slot.tint})`}>{slot.room}</i>)}
-					</span>
-				</div>
-				<div slot="media-3" class="pv-mini" role="img" aria-label="Illustrazione: la scheda di un corso con un docente per scaglione alfabetico, il tuo evidenziato">
+				<div slot="media-2" class="pv-mini" role="img" aria-label="Illustrazione: la scheda di un corso con un docente per scaglione alfabetico, il tuo evidenziato">
 					<b class="pv-mini-title">Basi di Dati</b>
 					<span class="pv-kicker">Docenti per scaglione</span>
 					<span class="pv-group"><b>A–K</b><span>Prof. A. R.</span></span>
 					<span class="pv-group mine"><b>L–Z</b><span>Prof. L. C.</span><em>il tuo</em></span>
 					<span class="pv-more">Programma, libri e dettagli<Icon name="chevron-right" size={14} stroke={2.4} /></span>
 				</div>
-				<div slot="media-4" class="pv-mini" role="img" aria-label="Illustrazione: due scadenze di WeBeep in Oggi, una stasera alle 23:59">
+				<div slot="media-3" class="pv-mini" role="img" aria-label="Illustrazione: due scadenze di WeBeep in Oggi, una stasera alle 23:59">
 					<span class="pv-kicker">Scadenze</span>
 					<span class="pv-deadline soon"><i class="c-orange"></i><span><b>Consegna del progetto</b><span>Tecnologie per il Web</span></span><em>oggi<br />23:59</em></span>
 					<span class="pv-deadline"><i class="c-violet"></i><span><b>Homework 2</b><span>Basi di Dati</span></span><em>ven<br />18:00</em></span>
 				</div>
-				<div slot="media-5" class="pv-mini" role="img" aria-label="Illustrazione: un’iscrizione che chiude tra due giorni, poi un voto da decidere, poi un esame">
-					<span class="pv-due c-orange"><span class="pv-tag">Iscrizioni in chiusura</span><b>Probabilità e Statistica</b><span>chiude tra 2 giorni</span></span>
-					<span class="pv-due c-violet"><span class="pv-tag">Voto da decidere</span><b>Basi di Dati</b><span class="pv-grade">27</span></span>
-					<span class="pv-due"><span class="pv-tag">Esame in arrivo</span><b>Reti di Calcolatori</b><span>8 ottobre</span></span>
-				</div>
-				<div slot="media-6" class="pv-mini" role="img" aria-label="Illustrazione: cercando Reti escono un corso, una lezione e un appello">
+				<div slot="media-4" class="pv-mini" role="img" aria-label="Illustrazione: cercando Reti escono un corso, una lezione e un appello">
 					<span class="pv-field">Reti</span>
 					<span class="pv-hit"><em>Corso</em><b>Reti di Calcolatori</b><span>10 CFU</span></span>
 					<span class="pv-hit"><em>Lezione</em><b>Reti di Calcolatori</b><span>lun 12:15 · T.2.1</span></span>
 					<span class="pv-hit"><em>Appello</em><b>Reti di Calcolatori</b><span>8 ott · 9:00</span></span>
 				</div>
-			</MediaCards>
-		</Section>
-
-		<Section eyebrow="PoliVerse · Oltre l’app" title="Ovunque guardi uno studente." dim="Non solo dentro l’app.">
-			<Bento label="Oltre l’app" tiles={[
-				{ eyebrow: 'WidgetKit', title: 'Widget.', text: 'Prossima lezione, oggi, carriera e aule libere. Il widget delle aule libere scarica i suoi dati da solo, con un pulsante per aggiornarli.', tone: 'blue', size: 'large' },
-				{ eyebrow: 'ActivityKit', title: 'La schermata di blocco.', text: 'Un’attività in tempo reale segue la lezione in corso, e l’esame il giorno dell’esame.', tone: 'dark', size: 'tall' },
-				{ eyebrow: 'watchOS', title: 'Apple Watch.', text: 'Le lezioni di oggi e il prossimo esame, mandati dal telefono.', tone: 'violet', size: 'tall' },
-				{ eyebrow: 'App Intents', title: 'Siri e Spotlight.', text: 'Corsi, appelli e aule sono cose che Siri conosce, non solo schermate che sa aprire.', tone: 'acid', size: 'wide' },
-				{ eyebrow: 'AVKit', title: 'Le registrazioni delle lezioni.', text: 'Nel lettore di sistema, riprese da dove ti eri fermato, e scaricabili quando il docente lo permette.', tone: 'orange', size: 'wide' },
-			]}>
-				<div slot="tile-1" class="pv-widgets" aria-hidden="true">
+				<div slot="media-5" class="pv-widgets pv-mc" role="img" aria-label="Illustrazione: due widget, la prossima lezione e le aule libere">
 					<span class="pv-w"><em>Prossima</em><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></span>
 					<span class="pv-w dark"><em>Aule libere</em><b>12</b><span>Leonardo</span></span>
 				</div>
-				<div slot="tile-2" class="pv-live" aria-hidden="true">
-					<span class="pv-live-time st-mono">10:41</span>
-					<span class="pv-live-card"><span><em>Lezione in corso</em><b>Ingegneria del Software</b></span><span class="pv-live-left st-mono">34 min</span><span class="pv-bar"><i style="width: 72%"></i></span></span>
-				</div>
-				<div slot="tile-3" class="pv-wrist" aria-hidden="true"><span class="pv-watch small"><span class="st-mono">Esame</span><b>Probabilità</b><span>6 ott · 9:00</span></span></div>
-				<div slot="tile-4" class="pv-siri" aria-hidden="true">
+				<div slot="media-6" class="pv-siri pv-mc" role="img" aria-label="Illustrazione: a Siri si chiede il prossimo esame, e la sua risposta">
 					<span class="pv-ask">“Quando è il prossimo esame?”</span>
 					<span class="pv-answer"><em>Probabilità e Statistica</em><b>6 ottobre, 9:00</b></span>
 				</div>
-				<div slot="tile-5" class="pv-player" aria-hidden="true">
-					<span class="pv-player-frame"><i></i></span>
-					<span class="pv-bar"><i style="width: 46%"></i></span>
-					<span class="st-mono">Riprendi da 41:12 · scaricata</span>
-				</div>
-			</Bento>
+			</MediaCards>
 		</Section>
 
 		<Section id="personalise" tone="dark" center eyebrow="PoliVerse · Personalizza" title="Falla tua," dim="senza perdere una parola." index={4}
@@ -510,29 +451,6 @@ const sections = [
 			</div>
 		</Section>
 
-		<Section tone="dark" center eyebrow="PoliVerse · L’icona" title="Un pianeta." dim="Trentasei modi di portarlo."
-			lead="Un pianeta con l’anello, il -Verse di PoliVerse, con una luna ambra per quello che viene dopo. Evita il tocco da laureato che ogni app universitaria prende per prima, non usa SF Symbols e non porta niente dell’identità del Politecnico.">
-			<ToggleFigure label="Scegli una forma dell’icona" options={[
-				{ label: 'Orbita', lead: 'Orbita, l’icona di serie.', text: 'Nei quattro aspetti che iOS chiede: predefinito, scuro, trasparente e colorato.', tone: 'blue' },
-				{ label: 'Giorno', lead: 'Giorno, la giornata come un quadrante.', text: 'La luna sul bordo della giornata, nei dodici colori da cui parte un Flavor.', tone: 'acid' },
-				{ label: 'Vicino', lead: 'Vicino, il pianeta da vicino.', text: 'Il pianeta che riempie l’angolo, negli stessi dodici colori. Abbinata a un aspetto, l’app sceglie la più vicina.', tone: 'violet' },
-				{ label: 'Speciali', lead: 'Undici speciali, gratis per tutti.', text: 'Ognuna un disegno a sé invece che un colore di una forma. L’icona cambia una volta sola, quando si chiude Personalizza, perché iOS annuncia ogni cambio.', tone: 'orange' },
-			]}>
-				<ul slot="panel-1" class="pv-icons big">
-					{appearances.map(([n, label]) => <li><img src={icon(n)} alt="" width="160" height="160" loading="lazy" /><span>{label}</span></li>)}
-				</ul>
-				<ul slot="panel-2" class="pv-icons">
-					{colours.map(([n, label]) => <li><img src={icon(`dial-${n}`)} alt="" width="96" height="96" loading="lazy" /><span>{label}</span></li>)}
-				</ul>
-				<ul slot="panel-3" class="pv-icons">
-					{colours.map(([n, label]) => <li><img src={icon(`closeup-${n}`)} alt="" width="96" height="96" loading="lazy" /><span>{label}</span></li>)}
-				</ul>
-				<ul slot="panel-4" class="pv-icons">
-					{specials.map(([n, label]) => <li><img src={icon(`special-${n}`)} alt="" width="96" height="96" loading="lazy" /><span>{label}</span></li>)}
-				</ul>
-			</ToggleFigure>
-		</Section>
-
 		<Section id="numbers" eyebrow="PoliVerse · Il repository" title="Quindici giorni, una persona." dim="E nessuna API pubblica." index={5}>
 			<Stats items={[
 				{ label: 'Commit', value: '309', text: 'dal 10 al 24 settembre 2026', method: 'ogni commit su main, tutti miei', note: 1, accent: true },
@@ -557,7 +475,7 @@ const sections = [
 				note="Da docs/endpoint-status.md, verificato l’11 settembre 2026" link={{ label: 'Leggi le note sugli endpoint', href: `${repo}/blob/main/docs/endpoint-status.md` }} changes={[
 					{ icon: 'globe', title: 'Host letti dalla configurazione ufficiale all’avvio', was: 'host fissati in costanti' },
 					{ icon: 'swap', title: 'Corsi su api.polimi.it/iae/v1/insegn/', was: 'www22.dmz.polimi.it/iae/rest/v1/insegn' },
-					{ icon: 'clock', title: 'Orario su api.polimi.it/agenda', was: 'polimiapp…/polimi_app/agenda/api/me/{m}/events' },
+					{ icon: 'clock', title: 'Orario spostato su api.polimi.it/agenda, che per ora risponde 404', was: 'polimiapp…/polimi_app/agenda/api/me/{m}/events' },
 					{ icon: 'lock', title: 'Scope di accesso scaricati da /jaf/oauth/params', was: 'una lista di scope ferma al 2023' },
 					{ value: '9', title: 'scope aggiunti a monte da allora, presi senza una nuova versione', was: 'agenda tra questi, mancante', tone: 'acid' },
 					{ value: '2', title: 'scope tolti a monte', was: 'ancora richiesti', tone: 'orange' },
@@ -588,6 +506,10 @@ const sections = [
 					<span class="pv-hello">Scegli come entrare.</span>
 					<span class="pv-choice">Entra con SPID</span>
 					<span class="pv-choice on">Entra con CIE<i></i></span>
+					<span class="pv-or">oppure</span>
+					<span class="pv-input">Codice persona</span>
+					<span class="pv-input">Password</span>
+					<span class="pv-choice quiet">Accedi</span>
 				</div>
 				<div slot="scene-2" class="pv-phone pv-handoff" role="img" aria-label="Illustrazione: PoliVerse passa l’accesso all’app CieID, con il proprio nome come origine">
 					<span class="pv-apps"><img src={icon('orbit')} alt="" width="72" height="72" /><span class="pv-arrow-long" aria-hidden="true"></span><span class="pv-card-app"><i></i></span></span>
@@ -600,6 +522,7 @@ const sections = [
 					<span class="pv-waves" aria-hidden="true"><i></i><i></i><i></i></span>
 					<span class="pv-kicker">Inserisci il PIN</span>
 					<span class="pv-pin">{Array.from({ length: 8 }, (_, k) => <i class:list={{ on: k < 5 }}></i>)}</span>
+					<span class="pv-keypad">{['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', ''].map((key) => <i class:list={{ blank: !key }}>{key}</i>)}</span>
 				</div>
 				<div slot="scene-4" class="pv-phone pv-back" role="img" aria-label="Illustrazione: di nuovo in PoliVerse, con l’accesso fatto e la scheda Oggi dietro una conferma">
 					<span class="pv-toast"><i></i>Accesso eseguito</span>
@@ -607,6 +530,10 @@ const sections = [
 					<span class="pv-date"><b>24.09</b><b>GIO</b></span>
 					<span class="pv-kicker">Lezione in corso</span>
 					<span class="pv-card now"><span class="pv-tag">10:15 – 12:15 · Aula 3.1.2</span><b>Ingegneria del Software</b><span class="pv-bar"><i style="width: 38%"></i></span></span>
+					<span class="pv-kicker">Orario</span>
+					<span class="pv-row"><i class="c-violet"></i><span><b>Reti di Calcolatori</b><span>12:15 · T.2.1</span></span></span>
+					<span class="pv-row"><i class="c-orange"></i><span><b>Basi di Dati</b><span>14:15 · B.4.2</span></span></span>
+					<span class="pv-tabs"><i class="on">Oggi</i><i>Corsi</i><i>Carriera</i><i>Cerca</i></span>
 				</div>
 			</StickyScenes>
 		</Section>
@@ -630,18 +557,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section tone="dark">
-			<Declaration project="PoliVerse · 2026" breadcrumb={['PoliVerse', 'Lo strato dei dati', 'Store']} kind="Class" name="Store"
-				abstract="Guida una Source: pubblica subito la sua copia in cache, aggiorna quando la sua finestra di caricamento lo dice, e non svuota mai quello che è già sullo schermo."
-				availability={[{ label: 'iOS 27' }, { label: 'Swift 6 · MainActor' }, { label: 'Widgets · Watch' }, { label: 'DocC', muted: true }]}
-				declaration="final class Store<S: Source>"
-				nav={[{ title: 'Lo strato dei dati', symbols: [{ name: 'Source', kind: 'P' }, { name: 'Store', kind: 'C', current: true }, { name: 'OfflineStore', kind: 'C' }, { name: 'LoadWindow', kind: 'S' }, { name: 'DataStatus', kind: 'C' }] }, { title: 'Accesso', symbols: [{ name: 'Session', kind: 'C' }, { name: 'ServiceDirectory', kind: 'C' }, { name: 'CieIDBridge', kind: 'E' }, { name: 'CieIDRouter', kind: 'C' }] }]}
-				mentioned={[{ label: 'CieID non sa chi l’ha chiamata', href: '#cie' }, { label: 'Una risposta vecchia con la data', href: '#data' }]}>
-				<p>Un <code>load()</code> legge la cache e la pubblica, chiede alla <code>LoadWindow</code> se tocca aggiornare, scarica e decodifica attraverso l’unica porta HTTP, riscrive la copia nel gruppo d’app e avvisa i widget. L’esito finisce in <code>DataStatus</code>, così l’app sa sempre dire <b>quanto è vecchio quello che mostra</b>. Un caricamento fallito non segna la finestra, così alla prossima apparizione ci riprova.</p>
-			</Declaration>
-		</Section>
-
-		<Section id="decisions" eyebrow="PoliVerse · Le regole" title="Sei regole," dim="ognuna con la sua ragione." index={7}>
+		<Section id="decisions" eyebrow="PoliVerse · Le regole" title="Sei regole," dim="ognuna con la sua ragione." index={7} link={{ label: 'Perché non scrive mai', href: `${repo}/blob/main/docs/writes-to-university-systems.md` }}>
 			<Principles rules={[
 				{ title: 'Leggere, mai scrivere.', text: 'Niente iscrizioni, niente rifiuti di un voto, niente post nel forum, niente consegne. Le richieste di scrittura non sono verificate, e una sbagliata costa una sessione allo studente.', source: 'docs/writes-to-university-systems.md' },
 				{ title: 'Mai spacciare i dati d’esempio per veri.', text: 'I dati d’esempio sono attivi di serie e ogni schermata lo dice; vengono tutti da un unico corso di laurea inventato, così carriera, orario e corsi tornano.', source: 'SampleDegree · DataStatusLine' },
@@ -649,10 +565,7 @@ const sections = [
 				{ title: 'Niente lascia il telefono da solo.', text: 'Nessun servizio di analisi e nessun raccoglitore di crash. La diagnostica e i rapporti di MetricKit restano sul dispositivo finché lo studente non li condivide.', source: 'Diagnostics · docs/field-performance.md' },
 				{ title: 'Non prendere niente che non sia nostro.', text: 'Niente SF Symbols nell’icona, come chiedono i termini di Apple, e niente dell’identità del Politecnico: l’app non è ufficiale e non deve sembrarlo.', source: 'design/app-icon/README.md' },
 				{ title: 'Controllare ogni colore.', text: 'Il blu del marchio è 13:1 sul bianco ma 1,3:1 sullo sfondo scuro, così ogni accento ha un gemello scuro. La coppia peggiore ora è 4,7:1.', source: 'Theme.swift' },
-			]} example={{ label: 'La regola 03, disegnata', dont: { title: 'Non svuotare lo schermo quando un aggiornamento fallisce', text: 'Lo studente perde quello che c’era, e non scopre niente del perché.' }, do: { title: 'Tenere la copia, e datarla', text: 'L’orario in cache resta, con una riga che dice quanto è vecchio e che l’aggiornamento è fallito.' } }}>
-				<Fragment slot="dont"><span class="st-state">In cache</span><span class="st-arrow-label">aggiornamento fallito →</span><span class="st-state uncertain">Schermo vuoto</span></Fragment>
-				<Fragment slot="do"><span class="st-state">In cache</span><span class="st-arrow-label">aggiornamento fallito →</span><span class="st-state dark">In cache · di 40 min fa</span></Fragment>
-			</Principles>
+			]} />
 		</Section>
 
 		<Limits title="Cosa è dimostrato," dim="e cosa non ancora." provenLabel="Verificati" notProvenLabel="Non dimostrati" proven={[
@@ -676,7 +589,7 @@ const sections = [
 			]} />
 		</Section>
 
-		<Section tone="sand" eyebrow="PoliVerse · Giorno per giorno" title="Cosa ha aggiunto ogni giorno." dim="Dal più recente.">
+		<Section tone="sand" eyebrow="PoliVerse · Giorno per giorno" title="Cosa hanno aggiunto gli ultimi giorni." dim="Dal più recente." link={{ label: 'Tutta la storia, commit per commit', href: `${repo}/commits/main` }}>
 			<ChangeLog columns={['Giorno', 'Commit', 'Cambiamenti']} releases={[
 				{ version: '24 set', when: '6 commit', changes: [
 					{ kind: 'added', text: 'Icone rifatte in Icon Composer: Orbita, Giorno e Vicino in ogni colore, e undici speciali.' },
@@ -698,26 +611,6 @@ const sections = [
 				{ version: '17 set', when: '39 commit', changes: [
 					{ kind: 'added', text: 'Test dell’interfaccia per navigazione, ricerca, ciclo di vita e verifiche di accessibilità.' },
 					{ kind: 'changed', text: 'iOS 27 come minimo, e 110 file di modello raggruppati per area.' },
-				] },
-				{ version: '15–16 set', when: '81 commit', changes: [
-					{ kind: 'added', text: 'L’interfaccia a quattro schede, Personalizza con la sua galleria di aspetti, e le pagine dei corsi in vetro.' },
-					{ kind: 'added', text: 'Widget, controlli e un’attività in tempo reale, registrati in un solo bundle.' },
-				] },
-				{ version: '13–14 set', when: '58 commit', changes: [
-					{ kind: 'added', text: 'Avvisi quando un esame cambia, quando WeBeep pubblica voti o soluzioni, e prima di una scadenza.' },
-					{ kind: 'added', text: 'Un orario personale costruito nell’app finché non arriva quello ufficiale, e una traduzione in inglese.' },
-				] },
-				{ version: '12 set', when: '38 commit', changes: [
-					{ kind: 'added', text: 'Mappa del campus fino alle planimetrie, piano di studi, simulazione dei voti e promemoria.' },
-					{ kind: 'fixed', text: 'Smesso di riscaricare 13,7 MB a ogni accesso.' },
-				] },
-				{ version: '11 set', when: '37 commit', changes: [
-					{ kind: 'added', text: 'WeBeep attraverso i web service di Moodle, notizie, notifiche e aule libere.' },
-					{ kind: 'changed', text: 'Host dei servizi letti dalla configurazione del Politecnico invece che scritti nel codice.' },
-					{ kind: 'fixed', text: 'L’accesso con CIE resta nell’app invece di perdersi in Safari.' },
-				] },
-				{ version: '10 set', when: '6 commit', style: 'outline', changes: [
-					{ kind: 'added', text: 'Rifatta da zero: un vero strato di accesso, calendario, carriera, ricerca, una cache su disco e i primi 24 test.' },
 				] },
 			]} />
 		</Section>
@@ -747,11 +640,6 @@ const sections = [
 				next={{ label: 'Il prossimo', title: 'EasyManager', text: 'Gli ordini di un ristorante, dal tavolo alla stampante fiscale.', href: labProjectPath('it', 'easymanager-restaurant-operations'), image: cover('easymanager'), tone: 'blue' }}
 				previous={{ label: 'Il precedente', title: 'SpinGO', href: labProjectPath('it', 'spingo-sustainable-micromobility'), image: cover('spingo'), tone: 'violet' }}
 				all={{ label: 'L’archivio', title: 'Tutti i progetti', text: 'App, pacchetti, hardware e ricerca, in un elenco solo.', href: labPaths.it.work }} />
-		</Section>
-
-		<Section tone="sand">
-			<PageIndex title="PoliVerse" primaryLabel="In questa pagina" primary={[{ label: 'Perché esiste', href: '#why' }, { label: 'Punti forti', href: '#highlights' }, { label: 'Una giornata', href: '#app' }, { label: 'Falla tua', href: '#personalise' }, { label: 'Quindici giorni', href: '#numbers' }, { label: 'Cosa è servito', href: '#backend' }, { label: 'Le regole', href: '#decisions' }, { label: 'Scheda', href: '#specs' }, { label: 'Domande', href: '#faq' }]}
-				groups={[{ title: 'Codice', links: [{ label: 'PoliVerse su GitHub', href: repo, note: 'Codice, DocC e note di ricerca' }, { label: 'Note sugli endpoint', href: `${repo}/blob/main/docs/endpoint-status.md` }, { label: 'Perché non scrive mai', href: `${repo}/blob/main/docs/writes-to-university-systems.md` }] }, { title: 'Altro dal portfolio', links: [{ label: 'EasyManager', href: labProjectPath('it', 'easymanager-restaurant-operations') }, { label: 'Tutti i progetti', href: labPaths.it.work }, { label: 'Chi sono', href: labPaths.it.about, icon: 'person' }] }]} />
 		</Section>
 	</Story>
 </ExperimentLayout>
@@ -901,14 +789,6 @@ const sections = [
 	.pv-room b { font: 700 13px var(--mono); } .pv-room span { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; }
 	.pv-day { position: relative; height: 8px; margin: -2px 4px 2px; border-radius: 4px; background: #c7ff9f; box-shadow: inset 0 0 0 1px rgba(23, 23, 19, .35); overflow: hidden; }
 	.pv-day i { position: absolute; top: 0; bottom: 0; background: #b4b0a6; }
-	.pv-pick { display: grid; gap: 5px; }
-	.pv-pick > span { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #5e5a53; }
-	.pv-pick > span.on { color: #171713; font-weight: 600; }
-	.pv-pick i { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 5px; box-shadow: inset 0 0 0 1.5px #171713; }
-	.pv-pick .on i { background: #171713; color: #c7ff9f; }
-	.pv-week { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: auto repeat(4, 24px); gap: 3px; margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(23, 23, 19, .12); }
-	.pv-week b { grid-row: 1; font: 10px var(--mono); text-align: center; color: #5e5a53; }
-	.pv-week i { display: grid; place-items: center; border-radius: 7px; box-shadow: inset 0 0 0 1.5px #171713; font: 700 9.5px var(--mono); font-style: normal; }
 	.pv-group { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; padding: 9px 10px; border-radius: 12px; box-shadow: inset 0 0 0 1.5px rgba(23, 23, 19, .25); }
 	.pv-group b { font: 700 13px var(--mono); }
 	.pv-group.mine { background: #cdefff; box-shadow: inset 0 0 0 1.5px #171713; }
@@ -931,6 +811,8 @@ const sections = [
 	}
 
 	/* Le carte "fuori dall'app". */
+	/* widget e Siri, ora in una carta delle piccole cose: occupano il riquadro come gli altri disegni */
+	.pv-mc { width: 100%; }
 	.pv-widgets { display: flex; gap: 12px; align-items: center; justify-content: center; height: 100%; }
 	.pv-w { display: grid; align-content: space-between; width: 128px; aspect-ratio: 1; padding: 14px; border-radius: 28px; background: #fffefb; box-shadow: 0 10px 24px rgba(23, 23, 19, .16), inset 0 0 0 1.5px #171713; color: #171713; }
 	.pv-w em { font-style: normal; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #0f3d6e; }
@@ -942,16 +824,11 @@ const sections = [
 	.pv-live-card em { display: block; font-style: normal; font-size: 10px; color: #c7ff9f; text-transform: uppercase; letter-spacing: .05em; }
 	.pv-live-card b { font-size: 14px; } .pv-live-left { align-self: center; font-size: 13px; }
 	.pv-live-card .pv-bar { grid-column: 1 / -1; background: rgba(255, 254, 251, .2); } .pv-live-card .pv-bar i { background: #c7ff9f; }
-	.pv-wrist { display: grid; place-items: center; height: 100%; }
 	.pv-watch.small { width: 132px; height: 158px; border-radius: 38px; box-shadow: 0 0 0 9px #171713, 0 16px 30px rgba(23, 23, 19, .3); }
 	.pv-siri { display: flex; flex-direction: column; justify-content: center; gap: 10px; height: 100%; padding: 0 18px; }
 	.pv-ask { align-self: flex-end; padding: 10px 14px; border-radius: 18px 18px 4px 18px; background: #171713; color: #fffef9; font-size: 13px; }
 	.pv-answer { display: grid; align-self: flex-start; padding: 12px 14px; border-radius: 18px 18px 18px 4px; background: #fffefb; box-shadow: inset 0 0 0 1.5px #171713; }
 	.pv-answer em { font-style: normal; font-size: 11px; color: #5e5a53; } .pv-answer b { font-size: 16px; }
-	.pv-player { display: grid; align-content: center; gap: 10px; height: 100%; padding: 0 18px; }
-	.pv-player-frame { display: grid; place-items: center; aspect-ratio: 16 / 9; border-radius: 14px; background: #171713; }
-	.pv-player-frame i { width: 0; height: 0; border-left: 18px solid #fffef9; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 4px; }
-	.pv-player .st-mono { font-size: 11px; }
 
 	/* Le scene dell'accesso con CIE: pagina di accesso, passaggio a CieID, carta e PIN, ritorno. */
 	.pv-url { align-self: center; padding: 5px 12px; border-radius: 999px; background: #e2dfd5; font-size: 9.5px; color: #5e5a53; }
@@ -980,6 +857,16 @@ const sections = [
 	.pv-pin i { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #171713; } .pv-pin i.on { background: #171713; }
 	.pv-toast { display: flex; align-items: center; gap: 8px; align-self: center; margin-bottom: 4px; padding: 9px 14px; border-radius: 999px; background: #171713; color: #fffef9; font-size: 11px; font-weight: 600; }
 	.pv-toast i { width: 8px; height: 8px; border-radius: 50%; background: #c7ff9f; }
+	/* il resto dei quattro schermi dell'accesso: le credenziali sotto SPID e CIE, il tastierino del PIN, l'orario e le schede */
+	.pv-or { align-self: center; margin-top: 4px; font-size: 10.5px; color: #5e5a53; }
+	.pv-input { display: flex; align-items: center; height: 38px; padding: 0 14px; border-radius: 12px; background: #fffefb; box-shadow: inset 0 0 0 1px #c9c4b8; color: #6f6a61; font-size: 12px; }
+	.pv-choice.quiet { height: 40px; background: #e2dfd5; box-shadow: none; color: #5e5a53; }
+	.pv-keypad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 78%; margin-top: auto; }
+	.pv-keypad i { display: grid; place-items: center; height: 40px; border-radius: 50%; background: #f4f1e9; font-style: normal; font-size: 17px; font-weight: 600; }
+	.pv-keypad i.blank { background: none; }
+	.pv-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: auto -7% -6%; padding: 10px 6px 14px; border-top: 1px solid #d6d1c4; background: #fffefb; }
+	.pv-tabs i { font-style: normal; font-size: 10px; font-weight: 600; text-align: center; color: #5e5a53; }
+	.pv-tabs i.on { color: #171713; font-weight: 800; }
 
 	/* Il contrasto: la stessa carta del corso in modalità scura, etichetta bianca o quasi nera. Il
 	   testo dell'etichetta sta nel CSS: è un esempio voluto di contrasto insufficiente, non un testo. */
@@ -1007,16 +894,7 @@ const sections = [
 	.pv-flavor figcaption { max-width: 720px; margin: 0 auto; font-size: 16px; line-height: 1.5; color: var(--st-meta); text-wrap: pretty; }
 	.pv-flavor figcaption b { color: var(--st-fg); }
 
-	/* Le icone vere, dentro il selettore di forma. */
-	.pv-icons { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(14px, 2.4vw, 30px) clamp(10px, 2vw, 24px); margin: 0 auto; padding: 0; width: 100%; max-width: 820px; list-style: none; }
-	.pv-icons.big { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 760px; }
-	.pv-icons li { display: grid; justify-items: center; gap: 10px; font-size: 13px; color: var(--st-meta); }
-	.pv-icons img { display: block; width: 100%; max-width: 104px; height: auto; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .3)); }
-	.pv-icons.big img { max-width: 150px; }
-
 	@media (max-width: 720px) {
-		.pv-icons { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-		.pv-icons.big { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 		.pv-ramp { grid-template-columns: repeat(4, 1fr); }
 		.pv-ramp li { min-height: 64px; }
 		.pv-arrow { display: none; }

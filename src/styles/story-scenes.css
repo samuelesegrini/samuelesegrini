@@ -182,6 +182,8 @@ a.st-object-name:hover { text-decoration-color: currentColor; }
 		/* le scene: il palco resta fermo, una scena ogni 90vh di scroll */
 		.st-scenes { height: calc(var(--n) * 90vh + 100vh); view-timeline: --st-scenes block; }
 		.st-scenes-stage { position: sticky; top: 0; display: grid; align-items: center; height: 100vh; height: 100svh; }
+		/* la nota sta sotto il palco fermo, non nel flusso dietro di lui: lì il palco le passava sopra e la copriva il testo della scena */
+		.st-scenes-note { position: absolute; left: 0; bottom: 0; margin: 0; transform: translateY(100%); padding-top: 20px; }
 		.st-scenes-list { gap: 0; }
 		.st-scene, .st-scene > * {
 			animation-timeline: --st-scenes;

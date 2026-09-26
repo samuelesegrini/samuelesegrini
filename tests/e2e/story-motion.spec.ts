@@ -29,13 +29,13 @@ test('titles and cards rise with the scroll, and stand still with reduced motion
 });
 
 test('the segmented control slides one thumb between choices', async ({ page }) => {
-	await page.goto(poliverse);
+	await page.goto(catalogue);
 	await arriva(page);
-	const set = page.locator('.st-toggle .st-segments');
+	const set = page.locator('.st-toggle .st-segments').first();
 	await expect(set).toHaveAttribute('data-thumb', 'on');
 	const x = () => set.evaluate((el) => parseFloat(el.style.getPropertyValue('--seg-x')));
 	const before = await x();
-	await page.locator('.st-toggle').getByText('Vicino', { exact: true }).click();
+	await page.locator('.st-toggle').first().getByText('2026 · rebuild', { exact: true }).click();
 	await expect.poll(x).toBeGreaterThan(before);
 	expect(await set.evaluate((el) => parseFloat(el.style.getPropertyValue('--seg-w')))).toBeGreaterThan(40);
 });
