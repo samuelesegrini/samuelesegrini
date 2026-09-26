@@ -12,7 +12,7 @@
  * giri che non finiscono (`.st-hg-loop`) girano solo mentre la carta è davanti e in vista, e
  * ripartono da dove erano. Un disegno fatto di animazioni scritte nella carta porta `.st-hg-anim`:
  * resta fermo al primo fotogramma finché la carta non ha `data-played`. Dopo il tasto di pausa la
- * galleria porta `data-still` (e la carta davanti, un momento dopo, `data-frozen`) e si ferma tutta
+ * galleria porta `data-still` (e la carta davanti `data-frozen`) e si ferma tutta
  * la carta, disegno, frase e giri, finché il tasto non la
  * fa ripartire. Un pallino porta alla sua carta e fa ripartire la riproduzione; un trascinamento
  * ferma solo lo scorrere delle carte.
@@ -55,7 +55,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 		<div class="st-hg-dots" role="group" aria-label={words.choose}>
 			{cards.map((c, i) => <button type="button" aria-label={`${words.dot} ${i + 1} ${words.of} ${cards.length}${c.name ? `: ${c.name}` : ''}`} aria-pressed={i === 0 ? 'true' : 'false'} data-hg-dot={i}><span></span></button>)}
 		</div>
-		<button type="button" class="st-hg-play" aria-label={words.play} data-hg-play data-label-play={words.play} data-label-pause={words.pause}>
+		<button type="button" class="st-hg-play" aria-label={words.play} data-hg-play data-state="paused" data-label-play={words.play} data-label-pause={words.pause}>
 			<svg class="play" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg>
 			<svg class="pause" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
 		</button>
@@ -95,22 +95,25 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			const reveal = () => {
 				if (inview) cards[current].toggleAttribute('data-played', true);
 			};
-			// la carta davanti si ferma tutta con la pausa. Fermarla vuol dire ricalcolare lo stile di
-			// ogni suo elemento: si fa due fotogrammi dopo, quando l'icona del tasto è già cambiata,
-			// altrimenti Safari la cambiava solo a ricalcolo finito, con un ritardo che si vedeva
-			let freezeFrame = 0;
-			const freeze = () => {
-				cancelAnimationFrame(freezeFrame);
-				freezeFrame = requestAnimationFrame(() => {
-					freezeFrame = requestAnimationFrame(() => {
-						const on = root.hasAttribute('data-still');
-						cards.forEach((c, k) => c.toggleAttribute('data-frozen', on && k === current));
+			// Il tasto cambia icona da solo, con un suo attributo: il resto (la galleria che scorre o è in
+			// pausa, la carta davanti ferma) si scrive sulla galleria due fotogrammi dopo. Un attributo
+			// sulla galleria fa ricalcolare lo stile di tutte le carte, e Safari mostrava l'icona nuova
+			// solo a ricalcolo finito, con un ritardo che si vedeva.
+			let stillOn = false;
+			let applyFrame = 0;
+			const apply = () => {
+				cancelAnimationFrame(applyFrame);
+				applyFrame = requestAnimationFrame(() => {
+					applyFrame = requestAnimationFrame(() => {
+						root.dataset.playing = String(playing);
+						root.toggleAttribute('data-still', stillOn);
+						cards.forEach((c, k) => c.toggleAttribute('data-frozen', stillOn && k === current));
 					});
 				});
 			};
 			const still = (on: boolean) => {
-				root.toggleAttribute('data-still', on);
-				freeze();
+				stillOn = on;
+				apply();
 			};
 			const mark = (i: number) => {
 				current = i;
@@ -118,7 +121,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				cards.forEach((c, k) => c.toggleAttribute('data-current', k === i));
 				root.style.setProperty('--hg-every', `${dwell(i)}ms`);
 				reveal();
-				freeze();
+				apply();
 			};
 			// il contatore riparte da capo: tempo pieno e barra del pallino di nuovo vuota
 			const arm = () => {
@@ -154,7 +157,8 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			const label = () => play.setAttribute('aria-label', playing ? (play.dataset.labelPause ?? 'Pause the highlights') : (play.dataset.labelPlay ?? 'Play the highlights'));
 			const setPlaying = (on: boolean) => {
 				playing = on;
-				root.dataset.playing = String(on);
+				play.dataset.state = on ? 'playing' : 'paused';
+				apply();
 				label();
 				if (on) run(); else hold();
 			};
@@ -174,7 +178,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			play.addEventListener('click', () => {
 				wanted = false;
 				enter();
-				if (!playing && !root.hasAttribute('data-still')) arm();
+				if (!playing && !stillOn) arm();
 				setPlaying(!playing);
 				still(!playing);
 			});

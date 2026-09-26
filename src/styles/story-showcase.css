@@ -31,8 +31,9 @@
 .st-hg-dots button[aria-pressed='true'] { width: 56px; }
 .st-hg-dots button[aria-pressed='true'] span { width: 44px; background: var(--st-fg); }
 .st-hg-play { display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 0; border-radius: 50%; background: var(--st-wash); color: var(--st-fg); cursor: pointer; }
-.st-hg-play .pause, .st-hgallery[data-playing='true'] .st-hg-play .play { display: none; }
-.st-hgallery[data-playing='true'] .st-hg-play .pause { display: block; }
+/* l'icona segue lo stato del tasto stesso, non della galleria: cambia senza ricalcolare le carte */
+.st-hg-play .pause, .st-hg-play[data-state='playing'] .play { display: none; }
+.st-hg-play[data-state='playing'] .pause { display: block; }
 /* mentre gira, il pallino attivo si riempie nel tempo di una carta */
 .st-hg-dots button span { position: relative; overflow: hidden; }
 .st-hgallery:is([data-playing='true'], [data-still]) .st-hg-dots button[aria-pressed='true'] span { background: color-mix(in srgb, var(--st-fg) 28%, transparent); }

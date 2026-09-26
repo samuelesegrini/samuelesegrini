@@ -188,8 +188,12 @@ test('pause freezes the whole card in front, drawing and line, and play lets it 
 	await page.waitForTimeout(600);
 	const states = () => last.evaluate((card) => card.getAnimations({ subtree: true }).map((a) => a.playState));
 	expect(await states()).toContain('running');
-	// il tasto cambia icona subito; la carta si ferma un paio di fotogrammi dopo
-	await page.locator('[data-hg-play]').click();
+	// il tasto cambia icona subito, da solo: la galleria e la carta seguono un paio di fotogrammi dopo
+	const swap = await page.locator('[data-hg-play]').evaluate((btn) => {
+		(btn as HTMLButtonElement).click();
+		return { state: btn.getAttribute('data-state'), pause: getComputedStyle(btn.querySelector('.pause')!).display, play: getComputedStyle(btn.querySelector('.play')!).display, gallery: btn.closest('.st-hgallery')!.getAttribute('data-playing') };
+	});
+	expect(swap).toEqual({ state: 'paused', pause: 'none', play: 'block', gallery: 'true' });
 	await expect(gallery).toHaveAttribute('data-playing', 'false');
 	await expect(gallery).toHaveAttribute('data-still', '');
 	await expect(last).toHaveAttribute('data-frozen', '');
