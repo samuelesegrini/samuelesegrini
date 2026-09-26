@@ -2,7 +2,7 @@
 /**
  * Una fila di carte con didascalia: sopra un riquadro colorato con lo schermo o il disegno (slot
  * `media-1`, `media-2`… oppure `image`), sotto una frase dove l'inizio in grassetto fa da titolo e,
- * se serve, una nota piccola: un limite, una condizione. Le frecce si spengono ai due capi della fila.
+ * se serve, una nota piccola: un limite, una condizione. Le frecce le guida Rails.
  */
 import { storyLang } from '../../lib/story-lang';
 import Icon from './Icon.astro';
@@ -12,7 +12,7 @@ const it = storyLang(Astro.url) === 'it';
 const { items, label = it ? 'Carte' : 'Cards' } = Astro.props;
 const media = await Promise.all(items.map((_, i) => (Astro.slots.has(`media-${i + 1}`) ? Astro.slots.render(`media-${i + 1}`) : Promise.resolve(''))));
 ---
-<div class="st-rail st-mcards" data-rail data-rail-ends>
+<div class="st-rail st-mcards" data-rail>
 	<ul class="st-mc-track" role="list" aria-label={label} tabindex="0" data-rail-track>
 		{items.map((it, i) => (
 			<li>

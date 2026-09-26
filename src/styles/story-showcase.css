@@ -99,7 +99,6 @@
 .st-mcards .st-mc-track p { font-size: 17px; line-height: 1.45; color: var(--st-meta); text-wrap: pretty; }
 .st-mcards p b { color: var(--st-fg); font-weight: 600; }
 .st-mcards .st-mc-note { margin-top: -12px; font-size: 12px; line-height: 1.5; color: var(--st-meta); }
-.st-mcards .st-rail-controls button:disabled { opacity: .45; cursor: default; }
 
 /* FeatureExplorer */
 .st-fx { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: clamp(32px, 4vw, 60px); align-items: start; }

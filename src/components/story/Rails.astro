@@ -1,6 +1,13 @@
 <script>
-	// I pulsanti ← → delle file orizzontali: scorrono di una carta e si spengono ai due capi.
-	// Senza JavaScript resta lo scorrimento a mano.
+	// Le file orizzontali (Gallery, Highlights, MediaCards): le frecce ← → portano alla carta
+	// accanto, e ogni modo di muovere la fila le tiene giuste. Senza JavaScript resta lo scorrimento
+	// a mano.
+	// - Una freccia va alla carta successiva, non di una larghezza fissa: più clic di fila contano
+	//   dalla carta verso cui la fila sta già andando, non da dove è arrivata a metà strada.
+	// - Ai due capi la freccia si spegne; se era lei ad avere il fuoco, il fuoco passa all'altra.
+	// - Le frecce seguono ogni movimento: due dita sul trackpad, un dito, le frecce della tastiera
+	//   con la fila a fuoco, la finestra che cambia misura, le immagini che arrivano dopo.
+	// - Se le carte stanno tutte nella finestra non c'è niente da scorrere: le frecce spariscono.
 	function montaRails() {
 		document.querySelectorAll<HTMLElement>('[data-rail]').forEach((rail) => {
 			if (rail.dataset.bound) return;
@@ -8,20 +15,57 @@
 			const track = rail.querySelector<HTMLElement>('[data-rail-track]')!;
 			const prev = rail.querySelector<HTMLButtonElement>('[data-rail-prev]');
 			const next = rail.querySelector<HTMLButtonElement>('[data-rail-next]');
+			const items = [...track.children] as HTMLElement[];
+			const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+			const max = () => track.scrollWidth - track.clientWidth;
+			// dove la fila deve stare per avere la carta i all'inizio, come la mette lo snap
+			const leftOf = (i: number) => {
+				const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+				return Math.min(max(), Math.max(0, items[i].getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft - inset));
+			};
+			const nearest = () => items.reduce((best, _, k) => (Math.abs(leftOf(k) - track.scrollLeft) < Math.abs(leftOf(best) - track.scrollLeft) ? k : best), 0);
+			// la carta verso cui la fila sta andando per una freccia; dimenticata quando la fila si ferma o la muove altro
+			let target = -1;
+			let quiet = 0;
 			const step = (dir: number) => {
-				const item = track.firstElementChild as HTMLElement | null;
-				track.scrollBy({ left: dir * ((item?.offsetWidth ?? 300) + 20), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+				const from = target >= 0 ? target : nearest();
+				let i = Math.min(items.length - 1, Math.max(0, from + dir));
+				// in fondo più carte hanno lo stesso punto d'arrivo: si salta alla prima che sposta davvero la fila
+				while (i > 0 && i < items.length - 1 && Math.abs(leftOf(i) - leftOf(from)) < 2) i += dir;
+				target = i;
+				track.scrollTo({ left: leftOf(i), behavior: reduce() ? 'auto' : 'smooth' });
 			};
 			const ends = () => {
-				if (prev) prev.disabled = track.scrollLeft <= 2;
-				if (next) next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+				const scrollable = max() > 2;
+				rail.toggleAttribute('data-rail-static', !scrollable);
+				const atStart = track.scrollLeft <= 2;
+				const atEnd = track.scrollLeft >= max() - 2;
+				for (const [button, off, other] of [[prev, atStart, next], [next, atEnd, prev]] as const) {
+					if (!button) continue;
+					// un tasto che si spegne sotto il fuoco lo perderebbe: passa all'altro
+					if (off && document.activeElement === button && other && !(other === prev ? atStart : atEnd)) other.focus();
+					button.disabled = off;
+				}
 			};
 			prev?.addEventListener('click', () => step(-1));
 			next?.addEventListener('click', () => step(1));
-			if (rail.hasAttribute('data-rail-ends')) {
-				track.addEventListener('scroll', () => requestAnimationFrame(ends), { passive: true });
-				ends();
-			}
+			// un gesto sulla fila la prende: la prossima freccia conta da dove l'ha lasciata
+			const forget = () => { target = -1; };
+			for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown']) track.addEventListener(type, forget, { passive: true });
+			let frame = 0;
+			track.addEventListener('scroll', () => {
+				cancelAnimationFrame(frame);
+				frame = requestAnimationFrame(ends);
+				// Safari non manda scrollend: la fila è ferma quando non scorre da un momento
+				window.clearTimeout(quiet);
+				quiet = window.setTimeout(forget, 180);
+			}, { passive: true });
+			track.addEventListener('scrollend', () => { window.clearTimeout(quiet); forget(); ends(); });
+			// la fila e le carte: le carte possono cambiare misura senza che la fila la cambi
+			const sizes = new ResizeObserver(() => ends());
+			for (const el of [track, ...items]) sizes.observe(el);
+			track.querySelectorAll('img').forEach((img) => { if (!img.complete) img.addEventListener('load', ends, { once: true }); });
+			ends();
 		});
 	}
 	montaRails();
