@@ -155,7 +155,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			track.addEventListener('scrollend', () => { lock = false; window.clearTimeout(lockTimer); });
 			// uno scorrimento conta come di chi guarda solo se segue un suo gesto sulla fila, non un assestamento dello snap
 			let touched = -Infinity;
-			for (const type of ['pointerdown', 'wheel', 'keydown', 'touchstart']) track.addEventListener(type, () => { touched = performance.now(); }, { passive: true });
+			for (const type of ['pointerdown', 'wheel', 'keydown', 'touchstart', 'touchmove']) track.addEventListener(type, () => { touched = performance.now(); }, { passive: true });
 			// in vista per metà il contatore corre; fuori vista si ferma e riprende da dove era
 			new IntersectionObserver(([entry]) => {
 				if (entry.intersectionRatio >= 0.5) {
@@ -174,12 +174,13 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			track.addEventListener('scroll', () => {
 				cancelAnimationFrame(frame);
 				frame = requestAnimationFrame(() => {
-					if (lock) return;
+					// solo un gesto sposta i pallini: lo snap che si assesta, o la fila mossa dallo script, mai.
+					// Safari non manda scrollend e può riassestare lo snap dopo lo scorrimento dello script:
+					// senza questa regola riportava il pallino alla carta prima e ne faceva ripartire il contatore
+					if (lock || performance.now() - touched > 2500) return;
 					// la fila l'ha spostata chi guarda: le carte smettono di scorrere da sole, i giri no
-					if (performance.now() - touched < 1500) {
-						wanted = false;
-						if (playing) { setPlaying(false); root.toggleAttribute('data-still', false); }
-					}
+					wanted = false;
+					if (playing) { setPlaying(false); root.toggleAttribute('data-still', false); }
 					const pad = parseFloat(getComputedStyle(track).paddingLeft);
 					const distance = (card: HTMLElement) => Math.abs(card.offsetLeft - pad - track.scrollLeft);
 					const nearest = cards.reduce((best, card, k) => (distance(card) < distance(cards[best]) ? k : best), 0);
