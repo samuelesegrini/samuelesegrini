@@ -226,6 +226,41 @@ test('the controls arrive once as a rising circle that opens into the dots and t
 	expect(await page.evaluate(() => document.getAnimations().filter((a) => /^st-hg-(rise|open|drop|show)$/.test((a as CSSAnimation).animationName)).length)).toBe(0);
 });
 
+test('the new icon shows at once on every press, during the entrance and after it', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	const button = page.locator('[data-hg-play]');
+	// l'icona che si vede, subito dopo il clic: niente animazioni che la tengano trasparente
+	const pressed = () => button.evaluate((btn) => {
+		(btn as HTMLButtonElement).click();
+		const shown = [...btn.querySelectorAll('svg')].find((svg) => getComputedStyle(svg).display !== 'none')!;
+		return { icon: shown.getAttribute('class'), opacity: getComputedStyle(shown).opacity, animations: shown.getAnimations().length };
+	});
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-arrived', '');
+	// a metà entrata: la pressione la chiude e l'icona c'è
+	await page.waitForTimeout(400);
+	expect(await pressed()).toEqual({ icon: 'play', opacity: '1', animations: 0 });
+	await expect(gallery).toHaveAttribute('data-settled', '');
+	expect(await pressed()).toEqual({ icon: 'pause', opacity: '1', animations: 0 });
+	expect(await pressed()).toEqual({ icon: 'play', opacity: '1', animations: 0 });
+});
+
+test('left alone, the entrance settles and the icons still switch at once', async ({ page }) => {
+	await page.goto(poliverse);
+	await arriva(page);
+	const gallery = page.locator('.st-hgallery');
+	await gallery.evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+	await expect(gallery).toHaveAttribute('data-settled', '', { timeout: 4000 });
+	const shown = await page.locator('[data-hg-play]').evaluate((btn) => {
+		(btn as HTMLButtonElement).click();
+		const svg = [...btn.querySelectorAll('svg')].find((el) => getComputedStyle(el).display !== 'none')!;
+		return { opacity: getComputedStyle(svg).opacity, animations: svg.getAnimations().length };
+	});
+	expect(shown).toEqual({ opacity: '1', animations: 0 });
+});
+
 test('without motion the controls are simply there', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.goto(poliverse);

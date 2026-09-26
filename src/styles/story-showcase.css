@@ -48,13 +48,16 @@
    ricade e ci si ancora con un rimbalzo (--hg-rise, la distanza dal fondo, la misura lo script);
    poi si allunga nella pillola dei pallini
    mentre il tasto si stacca a destra come una goccia, poi compaiono i pallini e l'icona. Il cerchio
-   è la pillola stessa ritagliata al centro: il tasto e il suo spazio (56 + 14) la spostano di 35px. */
+   è la pillola stessa ritagliata al centro: il tasto e il suo spazio (56 + 14) la spostano di 35px.
+   Finita l'entrata la galleria prende data-settled e queste animazioni se ne vanno: le due icone del
+   tasto si alternano con display, e un elemento che torna visibile rifà le sue animazioni, quindi
+   ogni pressione faceva aspettare all'icona nuova il ritardo dell'entrata, più di un secondo. */
 @media (prefers-reduced-motion: no-preference) {
 	.st-hgallery[data-bound]:not([data-arrived]) .st-hg-controls { opacity: 0; }
-	.st-hgallery[data-arrived] .st-hg-controls { animation: st-hg-rise 1.05s backwards; }
-	.st-hgallery[data-arrived] .st-hg-dots { animation: st-hg-open .6s cubic-bezier(.34, 1.25, .64, 1) .98s backwards; }
-	.st-hgallery[data-arrived] .st-hg-play { animation: st-hg-drop .6s cubic-bezier(.34, 1.4, .64, 1) .98s backwards; }
-	.st-hgallery[data-arrived] :is(.st-hg-dots button, .st-hg-play svg) { animation: st-hg-show .35s ease-out 1.3s backwards; }
+	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-controls { animation: st-hg-rise 1.05s backwards; }
+	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-dots { animation: st-hg-open .6s cubic-bezier(.34, 1.25, .64, 1) .98s backwards; }
+	.st-hgallery[data-arrived]:not([data-settled]) .st-hg-play { animation: st-hg-drop .6s cubic-bezier(.34, 1.4, .64, 1) .98s backwards; }
+	.st-hgallery[data-arrived]:not([data-settled]) :is(.st-hg-dots button, .st-hg-play svg) { animation: st-hg-show .35s ease-out 1.3s backwards; }
 }
 @keyframes st-hg-rise {
 	0% { transform: translateY(var(--hg-rise, 120px)) scale(.8); animation-timing-function: cubic-bezier(.15, .75, .35, 1); }

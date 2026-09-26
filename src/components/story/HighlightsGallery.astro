@@ -169,6 +169,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 				wanted = false;
 				// chi preme un controllo lo sta guardando: la galleria è in vista, qualunque sia la sua quota
 				enter();
+				settle();
 				hold();
 				go(k);
 				still(false);
@@ -178,6 +179,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			play.addEventListener('click', () => {
 				wanted = false;
 				enter();
+				settle();
 				if (!playing && !stillOn) arm();
 				setPlaying(!playing);
 				still(!playing);
@@ -195,6 +197,7 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 			// e con i controlli fuori: in mezzo resta com'era, per non accendersi e spegnersi al bordo.
 			let ratio = 0;
 			let controlsIn = false;
+			const settle = () => root.toggleAttribute('data-settled', true);
 			const enter = () => {
 				inview = true;
 				root.toggleAttribute('data-inview', true);
@@ -204,6 +207,8 @@ const media = await Promise.all(cards.map((_, i) => (Astro.slots.has(`media-${i 
 					const top = root.querySelector('[data-hg-controls]')!.getBoundingClientRect().top;
 					root.style.setProperty('--hg-rise', `${Math.max(120, Math.round(innerHeight - top))}px`);
 					root.toggleAttribute('data-arrived', true);
+					// finita l'entrata, le sue animazioni si tolgono: l'icona del tasto le rifarebbe a ogni cambio
+					window.setTimeout(settle, 1800);
 				}
 				reveal();
 				if (wanted && !playing) { wanted = false; arm(); setPlaying(true); } else run();
