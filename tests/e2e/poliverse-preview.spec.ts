@@ -23,6 +23,33 @@ test('the PoliVerse story renders every chapter and indexes them in the dock', a
 	for (const note of await notes.all()) await expect(page.locator((await note.getAttribute('href'))!)).toHaveCount(1);
 });
 
+test('the dock shows at most five squares, and the row slides to keep the chapter in view', async ({ page }) => {
+	await page.goto(route);
+	await arriva(page);
+	const index = page.locator('.toolbar-shell .shuffle-index');
+	const strip = index.locator('.shuffle-strip');
+	// una fila sola sopra il mazzo, un quadratino per capitolo, ma una finestra di cinque
+	await expect(page.locator('.toolbar-shell .shuffle-index')).toHaveCount(1);
+	const squares = await strip.locator('i').count();
+	expect(squares).toBeGreaterThan(5);
+	const box = await index.evaluate((el) => el.clientHeight - parseFloat(getComputedStyle(el).paddingTop) * 2);
+	const step = await strip.evaluate((el) => (el.children[1] as HTMLElement).offsetTop - (el.children[0] as HTMLElement).offsetTop);
+	expect(Math.floor((box + step) / step)).toBe(5);
+	const sections = await page.$$eval('.page-sheet [data-section]', (els) => els.map((el) => el.getBoundingClientRect().top + scrollY));
+	const at = async (k: number) => {
+		await page.evaluate((y) => scrollTo(0, y), sections[k] - 100);
+		await expect(strip.locator('i').nth(k - 1)).toHaveClass(/\bon\b/);
+		return strip.evaluate((el) => el.style.getPropertyValue('--shift'));
+	};
+	// all'inizio la finestra è ferma, poi scorre con il capitolo acceso nel mezzo, e in fondo si ferma sull'ultimo
+	expect(await at(1)).toBe('0');
+	expect(await at(5)).toBe('2');
+	expect(await at(sections.length - 1)).toBe(String(squares - 5));
+	// i quadratini sul bordo con altri capitoli oltre si fanno piccoli
+	await at(5);
+	await expect(strip.locator('i.edge')).toHaveCount(2);
+});
+
 test('every highlight shows its picture', async ({ page }) => {
 	await page.goto(route);
 	await arriva(page);

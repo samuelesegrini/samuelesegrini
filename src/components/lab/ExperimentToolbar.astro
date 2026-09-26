@@ -137,9 +137,14 @@ const { lang, name, ticker, routes, sections, languages, cv, labels, mailHref } 
     .shuffle-card[data-pos="in"]{z-index:2;transform:none;opacity:1}
     .shuffle-card[data-pos="above"]{z-index:1;transform:translateY(-110%) rotateX(40deg);opacity:0}
     .shuffle-card[data-pos="below"]{z-index:0;transform:translateY(110%) rotateX(-35deg);opacity:0}
-    .shuffle-index{position:absolute;right:11px;top:50%;display:grid;gap:4px;transform:translateY(-50%)}
-    .shuffle-index i{width:6px;height:6px;border-radius:2px;background:#111;opacity:.22;transition:opacity .3s ease,transform .3s ease}
-    .shuffle-index i.on{opacity:1;transform:scale(1.3)}
+    /* l'indice sta sopra il mazzo e non gira con le carte: mostra al massimo cinque quadratini e,
+       con più sezioni, la fila scorre per tenere quello acceso nel mezzo; quelli sul bordo della
+       finestra, con altre sezioni oltre, si fanno piccoli come i pallini delle pagine di iOS */
+    .shuffle-index{--dot:6px;--gap:4px;--seen:5;position:absolute;z-index:3;right:9px;top:50%;box-sizing:content-box;height:calc(var(--seen) * var(--dot) + (var(--seen) - 1) * var(--gap));padding:2px;overflow:hidden;transform:translateY(-50%);pointer-events:none}
+    .shuffle-strip{display:grid;gap:var(--gap);transform:translateY(calc(var(--shift, 0) * (var(--dot) + var(--gap)) * -1));transition:transform .45s var(--ease)}
+    .shuffle-strip i{width:var(--dot);height:var(--dot);border-radius:2px;background:#111;opacity:.22;transition:opacity .3s ease,transform .3s ease}
+    .shuffle-strip i.edge{transform:scale(.55)}
+    .shuffle-strip i.on{opacity:1;transform:scale(1.3)}
     .toggle-square{justify-content:center;padding:1px;background:transparent}
     .segmented{position:relative;display:grid;width:100%;height:100%;grid-template-rows:1fr 1fr;gap:1px}
     .segment-bed{position:absolute;z-index:0;inset:0 0 auto;height:calc(50% - .5px);border-radius:13px;background:#242424}.segment-bed.bottom{inset:auto 0 0}
@@ -162,9 +167,9 @@ const { lang, name, ticker, routes, sections, languages, cv, labels, mailHref } 
       .mode-group{grid-template-columns:1fr}.mode-group [data-detail],.mode-group .top-slot{display:none}.cv-slot{padding:9px 11px;gap:8px}.cv-slot b{font-size:13px}.cv-slot i{width:26px;height:26px;font-size:13px}.cv-slot .lungo{display:none}.cv-slot .corto{display:inline}
       /* la carta rimpicciolisce per stare in due colonne senza troncare il nome della sezione */
       .shuffle-card{padding:9px 10px}.shuffle-card b{left:10px;bottom:10px;font-size:15px;letter-spacing:-.04em}
-      .shuffle-index{right:8px;gap:3px}.shuffle-index i{width:5px;height:5px}
+      .shuffle-index{--dot:5px;--gap:3px;right:6px}
     }
-    @media(prefers-reduced-motion:reduce){.segmented:before{transition:none}}
+    @media(prefers-reduced-motion:reduce){.segmented:before,.shuffle-strip,.shuffle-strip i{transition:none}}
     @media(prefers-reduced-motion:reduce){.toolbar-shell,.nav-panel,.menu-icon i{transition:none}.ticker-track{animation:none}}
 </style>
 
@@ -308,9 +313,23 @@ function montaIndice(shell) {
   carta.innerHTML = sezioni.map((sezione, i) => `
     <span class="shuffle-card" data-section="${i}" data-pos="${i === 0 ? 'in' : 'below'}" style="background:${ACCENTI[i % ACCENTI.length]}">
       <small>${sezione.kicker}</small><b>${sezione.value}</b>
-      <i class="shuffle-index" aria-hidden="true">${sezioni.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</i>
-    </span>`).join('')
+    </span>`).join('') + `<i class="shuffle-index" aria-hidden="true"><i class="shuffle-strip">${sezioni.map(() => '<i></i>').join('')}</i></i>`
   const carte = [...carta.querySelectorAll('.shuffle-card')]
+  // l'indice: una finestra di al massimo cinque quadratini che scorre con la carta davanti
+  const finestra = Math.min(5, sezioni.length)
+  const fila = carta.querySelector('.shuffle-strip')
+  const quadratini = [...fila.children]
+  carta.querySelector('.shuffle-index').style.setProperty('--seen', String(finestra))
+  const segna = a => {
+    const primo = Math.max(0, Math.min(a - Math.floor(finestra / 2), sezioni.length - finestra))
+    const ultimo = primo + finestra - 1
+    fila.style.setProperty('--shift', String(primo))
+    quadratini.forEach((q, j) => {
+      q.classList.toggle('on', j === a)
+      q.classList.toggle('edge', j !== a && ((j === primo && primo > 0) || (j === ultimo && ultimo < sezioni.length - 1)))
+    })
+  }
+  segna(0)
   let indice = 0, precedente = null
   shell.__blocco = 0
 
@@ -353,6 +372,7 @@ function montaIndice(shell) {
     precedente = indice
     indice = a
     disponi(direzione)
+    segna(a)
     cambiaDettaglio(a)
     carta.setAttribute('aria-label', `${sezioni[indice].kicker}: ${sezioni[indice].value}`)
   }
