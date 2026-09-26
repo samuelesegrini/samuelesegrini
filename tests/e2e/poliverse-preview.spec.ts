@@ -83,7 +83,7 @@ test('il racconto di PoliVerse in italiano ha gli stessi capitoli e rimanda al g
 	await page.goto(rotta);
 	await arriva(page);
 	await expect(page.locator('html')).toHaveAttribute('lang', 'it');
-	await expect(page.locator('#why-title, #why h2').first()).toContainText('Sei posti');
+	await expect(page.locator('#why .st-statement')).toContainText('sei posti');
 	const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
 	expect(sections).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
 	await expect(page.locator('.st-hg-card')).toHaveCount(4);
