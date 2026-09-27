@@ -1,10 +1,18 @@
 ---
 /**
  * La fila dei dispositivi sotto l'apertura da app: MacBook aperto, Watch, iPhone e iPad di traverso,
- * disegnati in un solo svg su un palco nero. Gli schermi sono spenti: le schermate vere arrivano dopo.
+ * disegnati in un solo svg su un palco nero. In `screens` vanno le schermate vere, una per
+ * dispositivo (percorsi di `public/`); quella del Mac è già piegata nel trapezio dello schermo.
+ * Uno schermo senza immagine resta spento. `alt` descrive l'insieme; senza, il disegno è decorativo.
  */
+import { withBase } from '../../lib/base';
+interface Screens { mac?: string; watch?: string; iphone?: string; ipad?: string }
+interface Props { screens?: Screens; alt?: string }
+const { screens = {}, alt } = Astro.props;
+const src = (path?: string) => (path ? withBase(path) : undefined);
+const mac = src(screens.mac), watch = src(screens.watch), iphone = src(screens.iphone), ipad = src(screens.ipad);
 ---
-<svg class="st-lineup" viewBox="0 0 2000 943" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif" aria-hidden="true" focusable="false">
+<svg class="st-lineup" viewBox="0 0 2000 943" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif" role={alt ? 'img' : undefined} aria-label={alt} aria-hidden={alt ? undefined : 'true'} focusable="false">
 <defs>
 <linearGradient id="dl-base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a2c"></stop><stop offset=".08" stop-color="#1e1e20"></stop><stop offset=".55" stop-color="#151516"></stop><stop offset="1" stop-color="#000000"></stop></linearGradient>
 <linearGradient id="dl-baseSides" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"></stop><stop offset=".06" stop-color="#000" stop-opacity="0"></stop><stop offset=".94" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity=".55"></stop></linearGradient>
@@ -18,6 +26,10 @@
 <linearGradient id="dl-band" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1a1a1c"></stop><stop offset=".5" stop-color="#29292c"></stop><stop offset="1" stop-color="#1a1a1c"></stop></linearGradient>
 <linearGradient id="dl-padRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6a6a6e"></stop><stop offset=".5" stop-color="#3a3a3d"></stop><stop offset="1" stop-color="#5a5a5e"></stop></linearGradient>
 <pattern id="dl-grille" width="4.2" height="4.2" patternUnits="userSpaceOnUse"><circle cx="2.1" cy="2.1" r=".75" fill="#050505"></circle></pattern>
+<clipPath id="dl-mac-screen"><path d="M146 186 H869 Q881 186 880 198 L835 418 H182 L136 198 Q135 186 146 186 Z"></path></clipPath>
+<clipPath id="dl-watch-screen"><rect x="983" y="201" width="68" height="84" rx="15"></rect></clipPath>
+<clipPath id="dl-iphone-screen"><rect x="949" y="408" width="140" height="307" rx="21"></rect></clipPath>
+<clipPath id="dl-ipad-screen"><rect x="1206" y="273" width="499" height="346" rx="17"></rect></clipPath>
 </defs>
 <g transform="translate(79 -44)">
 
@@ -227,7 +239,8 @@
 <path d="M142 175 H873 Q894 175 893 196 L844 440 H174 L122 196 Q121 175 142 175 Z" fill="url(#dl-lidRim)"></path>
 <path d="M143 178 H872 Q890 178 889 196 L841 436 H177 L125 196 Q124 178 143 178 Z" fill="#050505"></path>
 <path d="M146 186 H869 Q881 186 880 198 L835 418 H182 L136 198 Q135 186 146 186 Z" fill="url(#dl-glass)"></path>
-<path d="M146 186 H440 L300 418 H182 L136 198 Q135 186 146 186 Z" fill="#ffffff" opacity="0.025"></path>
+{mac && <image href={mac} x="136" y="186" width="745" height="232" preserveAspectRatio="none" clip-path="url(#dl-mac-screen)"></image>}
+{!mac && <path d="M146 186 H440 L300 418 H182 L136 198 Q135 186 146 186 Z" fill="#ffffff" opacity="0.025"></path>}
 <path d="M462 186 H536 V190 Q536 197 529 197 H469 Q462 197 462 190 Z" fill="#050505"></path>
 <circle cx="499" cy="190.5" r="1.8" fill="#15161a"></circle>
 
@@ -238,6 +251,7 @@
 <rect x="975" y="193" width="84" height="100" rx="22" fill="url(#dl-watchCase)"></rect>
 <rect x="977.5" y="195.5" width="79" height="95" rx="20" fill="#050505"></rect>
 <rect x="983" y="201" width="68" height="84" rx="15" fill="url(#dl-glass)"></rect>
+{watch && <image href={watch} x="983" y="201" width="68" height="84" preserveAspectRatio="xMidYMid slice" clip-path="url(#dl-watch-screen)"></image>}
 
 <rect x="941" y="468" width="3" height="16" rx="1.5" fill="#4a5059"></rect>
 <rect x="941" y="498" width="3" height="30" rx="1.5" fill="#4a5059"></rect>
@@ -246,12 +260,14 @@
 <rect x="943" y="402" width="152" height="319" rx="27" fill="url(#dl-phoneRim)"></rect>
 <rect x="945" y="404" width="148" height="315" rx="25" fill="#050505"></rect>
 <rect x="949" y="408" width="140" height="307" rx="21" fill="url(#dl-glass)"></rect>
+{iphone && <image href={iphone} x="949" y="408" width="140" height="307" preserveAspectRatio="xMidYMid slice" clip-path="url(#dl-iphone-screen)"></image>}
 <rect x="997" y="412" width="44" height="13" rx="6.5" fill="#000000"></rect>
 
 <rect x="1410" y="255" width="46" height="3" rx="1.5" fill="#4a4a4d"></rect>
 <rect x="1190" y="257" width="531" height="378" rx="31" fill="url(#dl-padRim)"></rect>
 <rect x="1192" y="259" width="527" height="374" rx="29" fill="#050505"></rect>
 <rect x="1206" y="273" width="499" height="346" rx="17" fill="url(#dl-glass)"></rect>
+{ipad && <image href={ipad} x="1206" y="273" width="499" height="346" preserveAspectRatio="xMidYMid slice" clip-path="url(#dl-ipad-screen)"></image>}
 <circle cx="1437" cy="266" r="2" fill="#15161a"></circle>
 </g>
 </svg>

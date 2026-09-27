@@ -22,7 +22,7 @@
 .st-ahero-copy { position: relative; display: grid; justify-items: center; }
 .st-ahero-mark { --base: #cbbdf5; display: grid; place-items: center; width: 104px; height: 104px; border-radius: 28px; box-shadow: inset 0 0 0 2.5px var(--ink), 0 10px 0 -4px var(--base), 0 11px 0 -4px var(--ink); }
 .st-ahero-mark.tone-acid { --base: #a9e07f; } .st-ahero-mark.tone-blue { --base: #a9d9ef; } .st-ahero-mark.tone-orange { --base: #f0b994; }
-.st-ahero-mark svg { width: 60px; height: 60px; }
+.st-ahero-mark :is(svg, img) { width: 60px; height: 60px; }
 .st-ahero-name { margin-top: 26px; font-size: 28px; font-weight: 600; line-height: 1; letter-spacing: -.03em; }
 .st-ahero h1 { margin: 16px 0 0; font-size: clamp(50px, 6.6vw, 96px); font-weight: 600; line-height: .95; letter-spacing: -.062em; text-wrap: balance; }
 .st-ahero .st-ahero-summary { max-width: 740px; margin-top: 26px; font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; letter-spacing: -.01em; color: var(--st-text2); text-wrap: balance; }

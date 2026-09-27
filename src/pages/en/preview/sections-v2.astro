@@ -16,9 +16,12 @@ import {
 import { labPaths, labPostPath, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 import { storyDark } from '../../../lib/story-code';
+import { previewPath } from '../../../lib/previews';
 import '../../../styles/story-mocks.css';
 
 const cover = (name: string) => withBase(`/images/projects/covers/${name}.svg`);
+// le schermate vere di PoliVerse, sui dati di esempio, per la fila sotto l'apertura da app
+const lineup = (name: string) => `/images/projects/poliverse/lineup/${name}.webp`;
 const explainer = (name: string) => withBase(`/images/projects/explainers/${name}.svg`);
 const project = (slug: string) => labProjectPath('en', slug);
 const repo = {
@@ -26,6 +29,7 @@ const repo = {
 	galaxy: 'https://github.com/samuelesegrini/ing-sw-2025-segrini-terribile-varricchio-zanca',
 	spingo: 'https://github.com/milenaramosduran/hci-eco',
 	spingoSite: 'https://milenaramosduran.github.io/hci-eco/',
+	poliverse: 'https://github.com/samuelesegrini/PoliVerse',
 };
 
 // il dock fa da indice dei cinque gruppi, come nelle pagine di progetto
@@ -74,12 +78,14 @@ const tables = [
 		</div>
 
 		<p class="cat-mark"><code>&lt;AppHero /&gt;</code><span>new · opener</span></p>
-		<AppHero id="hero-app" index={null} name="SpinGO" title="Research before code."
-			summary="109 answers, 4 interviews and 7 usability sessions took a micromobility app to an 88% task success rate and a SUS score of 89.2."
-			meta="Team of five · HCI, Politecnico di Milano · 2025–2026"
-			actions={[{ label: 'Read the case study', href: '#findings' }, { label: 'Project website', href: repo.spingoSite }, { label: 'Team repository', href: repo.spingo }]}>
-			<svg slot="mark" viewBox="0 0 64 64" fill="none" stroke="#171713" stroke-width="5" stroke-linecap="round" aria-hidden="true"><path d="M16 48c0-12 32-8 32-22 0-6-4-10-10-10" /><circle cx="16" cy="48" r="5" fill="#c7ff9f" /><circle cx="38" cy="16" r="5" fill="#fffef9" /></svg>
-			<DeviceLineup slot="lineup" />
+		<AppHero id="hero-app" index={null} name="PoliVerse" title="Your whole Politecnico. In one app." tint="blue"
+			summary="An unofficial app for Politecnico di Milano students: timetable, courses, WeBeep materials, lesson recordings, exams and rooms, on iPhone, iPad, Apple Watch and the Lock Screen. It opens with content, even offline."
+			meta="Individual work · SwiftUI · iOS 27 · September 2026"
+			actions={[{ label: 'Read the story', href: previewPath('poliverse') }, { label: 'Source on GitHub', href: repo.poliverse }]}>
+			<img slot="mark" src={withBase('/images/projects/poliverse/icons/orbit.svg')} alt="" width="60" height="60" />
+			<DeviceLineup slot="lineup"
+				screens={{ mac: lineup('mac'), watch: lineup('watch'), iphone: lineup('iphone'), ipad: lineup('ipad') }}
+				alt="PoliVerse on MacBook, Apple Watch, iPhone and iPad, on sample data: the career with its average on the Mac, the next exams on the watch, the Today tab on the iPhone and the courses on the iPad." />
 		</AppHero>
 
 		<p class="cat-mark"><code>&lt;DocHero /&gt;</code><span>new · opener</span></p>
