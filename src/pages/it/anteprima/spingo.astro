@@ -75,9 +75,9 @@ const sections = [
 
 		<Section id="progetto" index={2} eyebrow="SpinGO · Progetto" title="Tre compiti." dim="Un compagno al polso." link={{ label: 'Prova i prototipi sul sito del progetto', href: site }}>
 			<MediaCards label="I compiti del progetto" items={[
-				{ lead: 'Pianifica e parti su un percorso sicuro.', text: 'La navigazione ha raggiunto il 93% di successo e 6,5 su 7 nella Single Ease Question.', tone: 'violet' },
-				{ lead: 'Gestisci i veicoli nel Garage.', text: 'Il compito più debole, 82% e 4,2 su 7: due persone hanno modificato un veicolo perché Aggiungi stava in fondo alla lista.', tone: 'acid', tag: 'Aggiungi spostato in cima' },
-				{ lead: 'Segnala alla comunità.', text: 'La segnalazione di una persona diventa quello che tutti sanno di quella strada; 89% di successo, 5,8 su 7.', tone: 'blue' },
+				{ lead: 'Pianifica e parti su un percorso sicuro.', text: 'Il primo compito: scegliere dove andare, poi partire sul percorso che l’app pianifica.', tone: 'violet' },
+				{ lead: 'Gestisci i veicoli nel Garage.', text: 'Il secondo compito: i veicoli che usi, tenuti in una lista sola.', tone: 'acid' },
+				{ lead: 'Segnala alla comunità.', text: 'Il terzo compito: la segnalazione di una persona diventa quello che tutti sanno di quella strada.', tone: 'blue' },
 				{ lead: 'Il telefono resta in tasca.', text: 'L’orologio porta la prossima svolta, le vibrazioni e una segnalazione con un tocco.', tone: 'orange' },
 			]}>
 				<Device slot="media-1" kind="iphone">
@@ -123,9 +123,9 @@ const sections = [
 				{ label: 'Punteggio SUS', value: '89,2', text: 'grado A', method: 'System Usability Scale, tutti e 7 i partecipanti', note: 2 },
 				{ label: 'Needfinding', value: '109', text: 'risposte al questionario', method: 'Questionario adattivo, Deliverable 1', note: 3 },
 				{ label: 'Reazione ai pericoli', value: '7,8', unit: 's', text: 'in media, navigando', method: 'Compito di navigazione, cronometrato in sessione', note: 4 },
-			]} feature={{ label: 'Compito più forte', value: '93%', text: 'di successo in navigazione, 6,5 su 7 di facilità' }}
+			]}
 				targets={{ title: 'Gli obiettivi erano fissati prima della prima sessione.', text: 'Sono stati raggiunti tutti e tre.', rows: [{ label: 'Tasso di successo', target: '> 85%', value: '88%' }, { label: 'SUS', target: '> 70', value: '89,2' }, { label: 'Problemi di gravità 1–2', target: '< 3', value: '2' }] }}>
-				Pianificare e far partire un percorso è stato quasi immediato. <b>Il Garage è stato il punto debole, con l’82% e 4,2 su 7</b>, e le segnalazioni alla comunità stavano in mezzo, all’89%. Una media positiva nasconde dove le persone si sono fermate: per questo i problemi qui sotto sono ordinati per gravità, non per numero.
+				Una media positiva nasconde dove le persone si sono fermate: per questo i problemi qui sotto sono ordinati per gravità, non per numero.
 			</Stats>
 		</Section>
 
@@ -190,7 +190,6 @@ const sections = [
 
 		<Section tone="sand">
 			<Faq eyebrow="SpinGO" title="Domande," dim="con risposta." open={0} lead="Quelle che chi valuta fa per prime." contact={{ label: 'Scrivimi di questo progetto', href: 'mailto:samuele.segrini@gmail.com' }} items={[
-				{ q: 'Perché un orologio?', a: 'L’app copriva i tre compiti meglio di un dispositivo sul manubrio, ma portava lo sguardo via dalla strada. L’orologio tiene solo quello che serve mentre ci si muove.' },
 				{ q: 'Perché solo sette persone?', a: 'Sette bastano a trovare i problemi che contano, ed era quello lo scopo del test; non bastano per una statistica, e la pagina non ne rivendica.' },
 				{ q: 'C’è un’app da scaricare?', a: 'No. SpinGO è un prototipo Figma testato; i flussi corretti hanno ancora bisogno di una demo funzionante.' },
 			]} />

@@ -220,6 +220,8 @@
 .st-callout.important { background: var(--blue); border-color: transparent; }
 .st-callout.warning { background: var(--orange); border-color: transparent; }
 .st-callout.tip { background: var(--acid); border-color: transparent; }
+/* il riquadro ha sempre il suo fondo chiaro: il testo resta scuro anche dentro una sezione scura */
+.st-callout { color: var(--ink); }
 .st-section .st-callout { margin: 24px 0 0; }
 
 /* citazione */

@@ -3,13 +3,12 @@
  * Anteprima non elencata del racconto di Galaxy Trucker. Non ricalca PoliVerse: è la pagina di un
  * sistema, letta come una documentazione. Si apre con la copertina, poi la regola in una riga
  * (Lockup scuro), il server in una figura con le note, i moduli come una pagina "Topics", il gioco
- * come una scheda tecnica, chi ha fatto cosa, le due ere a confronto (ToggleFigure) e le tappe
- * (Timeline). Materiale dal caso di studio e dai due articoli. Fuori dalla sitemap, noindex.
+ * come una scheda tecnica, chi ha fatto cosa e le due ere a confronto (ToggleFigure). Materiale dal caso di studio e dai due articoli. Fuori dalla sitemap, noindex.
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, MediaHero, Lockup, ExplainerFigure, Modules, TechSpecs, Contribution, ToggleFigure, Callout, Timeline,
-	Limits, Cards, Faq, KeepExploring,
+	Story, Section, MediaHero, Lockup, ExplainerFigure, Modules, TechSpecs, Contribution, ToggleFigure, Callout,
+	Limits, Cards, KeepExploring,
 } from '../../../components/story';
 import { neighbours } from '../../../lib/previews';
 import { labPostPath } from '../../../components/lab/chrome';
@@ -63,7 +62,6 @@ const sections = [
 					{ title: 'Coordination', path: 'server/core', symbols: [{ names: ['GameSessionManager'], text: 'Owns the games; several can run in one server process.' }, { names: ['PlayerSessionRegistry'], text: 'Binds identities to sessions, for multi-game support.' }, { names: ['ConnectionMonitorService'], text: 'Heartbeat and disconnections.' }] },
 					{ title: 'Transports', path: 'server · client', symbols: [{ names: ['SocketServerAdapter', 'RMIServerAdapter'], text: 'The server’s side of the two transports.' }, { names: ['SocketNetworkAdapter', 'RMINetworkAdapter'], text: 'The client’s side, seen by the rest of it as one network interface.' }] },
 					{ title: 'Domain', path: 'model/domain', symbols: [{ names: ['FlightBoard'], text: 'Positions with collision prevention; recomputes the leader after every move.' }, { names: ['AdventureCardVisitor'], text: 'Resolves eight card families, each with its own rules.' }] },
-					{ title: 'Messages', path: 'common/message', counts: [{ label: 'Requests', value: '31', text: '22 general, 9 in flight' }, { label: 'Responses', value: '34', text: 'to the requester' }, { label: 'Events', value: '47', text: '32 general, 15 in flight', accent: true }] },
 				]}>
 				<p>The code is organised by role into three roots, <code>server</code>, <code>client</code> and <code>common</code>. These are the types a reader meets first.</p>
 			</Modules>
@@ -110,16 +108,7 @@ const sections = [
 					<span class="verdict good st-mono">One truth, redrawn</span>
 				</div>
 			</ToggleFigure>
-		</Section>
-
-		<Section eyebrow="Galaxy Trucker · How it got here" title="Two builds," dim="one year apart.">
 			<Callout kind="warning" title="Fix before this page ships">The case study says the rebuilt client reads the server’s models directly; the rebuild essay says clients get immutable projections instead of model objects. The figure stays neutral until the two agree.</Callout>
-			<Timeline steps={[
-				{ when: 'Feb 2025', title: 'The structure', text: 'Packages and model first, then RMI, commands and events.' },
-				{ when: 'Jul 2025', title: 'Submission', text: 'Completed and graded, after weeks of fix(…).' },
-				{ when: 'Aug 2026', title: 'The rebuild', text: '146 commits in four days on develop, with Claude.' },
-				{ when: '27 Aug 2026', title: 'Two essays', text: 'The first game, and what the rebuild did and didn’t prove.' },
-			]} />
 		</Section>
 
 		<Limits title="Finished, and not reproducible." dim="Both are true." proven={[
@@ -136,14 +125,6 @@ const sections = [
 				{ title: 'My first video game was a distributed system', text: 'Why the build stays broken on purpose, and what four people and one match taught me.', href: firstGame, cta: 'Read the essay', tone: 'violet' },
 				{ title: 'Rebuilding Galaxy Trucker with Claude', text: 'What converged, what changed, and why the comparison is not a benchmark.', href: rebuild, cta: 'Read the essay', tone: 'dark' },
 				{ title: 'The team repository', text: 'Source, tests, deliverables and the protocol documentation.', href: repo, cta: 'Open on GitHub', tone: 'paper' },
-			]} />
-		</Section>
-
-		<Section>
-			<Faq eyebrow="Galaxy Trucker" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
-				{ q: 'Why not fix the build?', a: 'Changing the shared artifact would make the story cleaner and less accurate. The defect stays visible, next to the scope we delivered.' },
-				{ q: 'Which parts are yours?', a: '121 of the 314 commits: RMI, commands and events, sign-in, heartbeat, sessions, the construction controller and game data. Rules, interfaces, tests and delivery were shared.' },
-				{ q: 'Was the rebuild a blind test?', a: 'No. The requirements, documents and code were available to Claude, so it shows how an agent uses explicit constraints, not that it rediscovered the design.' },
 			]} />
 		</Section>
 

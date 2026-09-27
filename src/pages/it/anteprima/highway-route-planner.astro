@@ -75,13 +75,7 @@ const sections = [
 		<Section split eyebrow="Highway Route Planner · Pianificare il percorso" title="Il grafo non viene mai costruito." dim="Ogni arco si controlla quando serve."
 			lead="Le stazioni sono nodi; una mossa esiste quando almeno un veicolo del parco di partenza ha l’autonomia per farla. Il percorso evidenziato arriva a 50 con meno tappe possibili.">
 			<ExplainerFigure image={withBase('/images/projects/explainers/highway-implicit-graph.svg')} imageAlt="Cinque stazioni autostradali collegate da archi di raggiungibilità, con il percorso minimo 20, 30, 50 evidenziato"
-				caption="Fig. 2 · Stazioni a distanza 20, 30, 40, 45 e 50" legend={[{ label: 'Mossa possibile', mark: 'line' }, { label: 'Percorso scelto', mark: 'route' }]}
-				aside="Caso peggiore O(n² · v), con v ≤ 512 veicoli per stazione." notes={[
-					{ title: 'Le stazioni restano un array ordinato.', text: 'Ordinate per distanza, così ogni ricerca è binaria.', at: [52.5, 72.5] },
-					{ title: 'Una mossa esiste solo se un’auto può farla.', text: 'La distanza si confronta con le autonomie del parco di partenza, quando serve.', at: [71.2, 32.3] },
-					{ title: 'Due array ricordano la strada del ritorno.', text: 'Mosse minime e predecessore scelto, aggiornati nell’ordine di viaggio.', at: [22.5, 34.9] },
-					{ title: 'I pareggi vanno alla stazione più vicina all’inizio.', text: 'Così 20 → 30 → 50 vince su 20 → 45 → 50, come chiede la specifica.', at: [90, 78.4] },
-				]} />
+				caption="Fig. 2 · Stazioni a distanza 20, 30, 40, 45 e 50" legend={[{ label: 'Mossa possibile', mark: 'line' }, { label: 'Percorso scelto', mark: 'route' }]} />
 		</Section>
 
 		<Section id="graph" eyebrow="Highway Route Planner · Il cuore" title="findOptimalPath," dim="in quattro passi." index={3}>
@@ -111,9 +105,6 @@ const sections = [
 				{ value: 'O(log n)', label: 'ricerca di una stazione', method: 'ricerca binaria sull’array ordinato' },
 				{ value: 'O(n)', label: 'memoria', method: 'mosse, predecessori e il percorso ricostruito' },
 			]} />
-		</Section>
-
-		<Section>
 			<Callout kind="tip" title="Cosa cambierei oggi">Separare il parsing dalla logica di dominio; gestire allo stesso modo ovunque i fallimenti di allocazione; isolare lo spareggio in una funzione; testare i percorsi all’indietro e quelli irraggiungibili; memorizzare l’autonomia massima di ogni stazione, così la raggiungibilità non scorre un parco intero.</Callout>
 		</Section>
 

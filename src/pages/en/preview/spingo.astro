@@ -78,9 +78,9 @@ const sections = [
 
 		<Section id="design" index={2} eyebrow="SpinGO · Design" title="Three tasks." dim="One companion on the wrist." link={{ label: 'Try the prototypes on the project site', href: site }}>
 			<MediaCards label="Design tasks" items={[
-				{ lead: 'Plan and start a safe route.', text: 'Navigation reached a 93% success rate and 6.5 out of 7 on the Single Ease Question.', tone: 'violet' },
-				{ lead: 'Manage vehicles in the Garage.', text: 'The weakest task, 82% and 4.2 out of 7: two people edited a vehicle because Add sat at the bottom of the list.', tone: 'acid', tag: 'Add moved to the top' },
-				{ lead: 'Report to the community.', text: 'One rider’s report becomes everyone’s knowledge of the street; 89% success, 5.8 out of 7.', tone: 'blue' },
+				{ lead: 'Plan and start a safe route.', text: 'The first task: choose where to go, then set off on the route the app plans.', tone: 'violet' },
+				{ lead: 'Manage vehicles in the Garage.', text: 'The second task: the vehicles you ride, kept in one list.', tone: 'acid' },
+				{ lead: 'Report to the community.', text: 'The third task: one rider’s report becomes everyone’s knowledge of the street.', tone: 'blue' },
 				{ lead: 'Keep the phone in the pocket.', text: 'The watch carries the next turn, haptic feedback and a one-tap report.', tone: 'orange' },
 			]}>
 				<Device slot="media-1" kind="iphone">
@@ -126,9 +126,9 @@ const sections = [
 				{ label: 'SUS score', value: '89.2', text: 'grade A', method: 'System Usability Scale, all 7 participants', note: 2 },
 				{ label: 'Needfinding', value: '109', text: 'questionnaire responses', method: 'Adaptive questionnaire, Deliverable 1', note: 3 },
 				{ label: 'Reaction to hazards', value: '7.8', unit: 's', text: 'mean, while navigating', method: 'Navigation task, timed in session', note: 4 },
-			]} feature={{ label: 'Strongest task', value: '93%', text: 'navigation success, 6.5 of 7 on ease' }}
+			]}
 				targets={{ title: 'Targets were set before the first session.', text: 'All three were met.', rows: [{ label: 'Success rate', target: '> 85%', value: '88%' }, { label: 'SUS', target: '> 70', value: '89.2' }, { label: 'Severity 1–2 problems', target: '< 3', value: '2' }] }}>
-				Planning and starting a route was nearly effortless. <b>The Garage was the weak point at 82% and 4.2 of 7</b>, and community reporting sat in between at 89%. A positive average hides where people stalled, which is why the problems below are ranked by severity, not by count.
+				A positive average hides where people stalled, which is why the problems below are ranked by severity, not by count.
 			</Stats>
 		</Section>
 
@@ -193,7 +193,6 @@ const sections = [
 
 		<Section tone="sand">
 			<Faq eyebrow="SpinGO" title="Questions," dim="answered." open={0} lead="The ones a reviewer asks first." contact={{ label: 'Ask about this project', href: 'mailto:samuele.segrini@gmail.com' }} items={[
-				{ q: 'Why a watch?', a: 'The phone app covered the three tasks better than a handlebar device, but pulled the rider’s eyes off the road. The watch keeps only what matters while moving.' },
 				{ q: 'Why only seven users?', a: 'Seven is enough to find the problems that matter, which is what the test was for; it is not enough for statistics, and the page doesn’t claim any.' },
 				{ q: 'Is there an app to download?', a: 'No. SpinGO is a tested Figma prototype; the corrected flows still need a working demo.' },
 			]} />

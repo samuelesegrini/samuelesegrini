@@ -6,8 +6,8 @@
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, MediaHero, Lockup, ExplainerFigure, Modules, TechSpecs, Contribution, ToggleFigure, Callout, Timeline,
-	Limits, Cards, Faq, KeepExploring,
+	Story, Section, MediaHero, Lockup, ExplainerFigure, Modules, TechSpecs, Contribution, ToggleFigure, Callout,
+	Limits, Cards, KeepExploring,
 } from '../../../components/story';
 import { neighbours, previewIndex } from '../../../lib/previews';
 import { labPostPath } from '../../../components/lab/chrome';
@@ -61,7 +61,6 @@ const sections = [
 					{ title: 'Coordinamento', path: 'server/core', symbols: [{ names: ['GameSessionManager'], text: 'Gestisce le partite; ne possono girare più d’una nello stesso processo.' }, { names: ['PlayerSessionRegistry'], text: 'Lega le identità alle sessioni, per le partite multiple.' }, { names: ['ConnectionMonitorService'], text: 'Heartbeat e disconnessioni.' }] },
 					{ title: 'Trasporti', path: 'server · client', symbols: [{ names: ['SocketServerAdapter', 'RMIServerAdapter'], text: 'Il lato server dei due trasporti.' }, { names: ['SocketNetworkAdapter', 'RMINetworkAdapter'], text: 'Il lato client, che il resto del client vede come una sola interfaccia di rete.' }] },
 					{ title: 'Dominio', path: 'model/domain', symbols: [{ names: ['FlightBoard'], text: 'Le posizioni, senza collisioni; ricalcola chi guida dopo ogni mossa.' }, { names: ['AdventureCardVisitor'], text: 'Risolve otto famiglie di carte, ognuna con le sue regole.' }] },
-					{ title: 'Messaggi', path: 'common/message', counts: [{ label: 'Richieste', value: '31', text: '22 generali, 9 in volo' }, { label: 'Risposte', value: '34', text: 'a chi ha chiesto' }, { label: 'Eventi', value: '47', text: '32 generali, 15 in volo', accent: true }] },
 				]}>
 				<p>Il codice è organizzato per ruolo in tre radici, <code>server</code>, <code>client</code> e <code>common</code>. Questi sono i tipi che si incontrano per primi.</p>
 			</Modules>
@@ -108,16 +107,7 @@ const sections = [
 					<span class="verdict good st-mono">Una verità, ridisegnata</span>
 				</div>
 			</ToggleFigure>
-		</Section>
-
-		<Section eyebrow="Galaxy Trucker · Com’è arrivato qui" title="Due versioni," dim="a un anno di distanza.">
 			<Callout kind="warning" title="Da correggere prima di pubblicare">Il caso di studio dice che il client ricostruito legge direttamente i modelli del server; l’articolo sulla ricostruzione dice che i client ricevono proiezioni immutabili invece degli oggetti del modello. La figura resta neutra finché i due non concordano.</Callout>
-			<Timeline steps={[
-				{ when: 'feb 2025', title: 'La struttura', text: 'Prima package e modello, poi RMI, comandi ed eventi.' },
-				{ when: 'lug 2025', title: 'Consegna', text: 'Completato e valutato, dopo settimane di fix(…).' },
-				{ when: 'ago 2026', title: 'La ricostruzione', text: '146 commit in quattro giorni su develop, con Claude.' },
-				{ when: '27 ago 2026', title: 'Due articoli', text: 'Il primo gioco, e cosa la ricostruzione ha dimostrato e cosa no.' },
-			]} />
 		</Section>
 
 		<Limits title="Completato, e non riproducibile." dim="Sono vere entrambe." provenLabel="Verificato" notProvenLabel="Non dimostrato" proven={[
@@ -134,14 +124,6 @@ const sections = [
 				{ title: 'Il mio primo videogioco era un sistema distribuito', text: 'Perché la compilazione resta rotta di proposito, e cosa mi hanno insegnato quattro persone e una partita.', href: firstGame, cta: 'Leggi l’articolo', tone: 'violet' },
 				{ title: 'Ricostruire Galaxy Trucker con Claude', text: 'Cosa è convergito, cosa è cambiato, e perché il confronto non è un benchmark.', href: rebuild, cta: 'Leggi l’articolo', tone: 'dark' },
 				{ title: 'Il repository della squadra', text: 'Sorgente, test, consegne e documentazione del protocollo.', href: repo, cta: 'Apri su GitHub', tone: 'paper' },
-			]} />
-		</Section>
-
-		<Section>
-			<Faq eyebrow="Galaxy Trucker" title="Domande," dim="con risposta." open={0} lead="Quelle che chi valuta fa per prime." contact={{ label: 'Scrivimi di questo progetto', href: 'mailto:samuele.segrini@gmail.com' }} items={[
-				{ q: 'Perché non sistemare la compilazione?', a: 'Cambiare il lavoro condiviso renderebbe la storia più pulita e meno vera. Il difetto resta visibile, accanto al perimetro che abbiamo consegnato.' },
-				{ q: 'Quali parti sono tue?', a: '121 dei 314 commit: RMI, comandi ed eventi, accesso, heartbeat, sessioni, il controller della costruzione e i dati di gioco. Regole, interfacce, test e consegna erano condivisi.' },
-				{ q: 'La ricostruzione era una prova alla cieca?', a: 'No. Requisiti, documenti e codice erano a disposizione di Claude, quindi mostra come un agente usa vincoli espliciti, non che abbia riscoperto il progetto da solo.' },
 			]} />
 		</Section>
 

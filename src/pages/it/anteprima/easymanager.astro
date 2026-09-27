@@ -7,11 +7,10 @@
  */
 import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
-	Story, Section, MediaHero, StickyScenes, Anatomy, Lockup, CodeSteps, Declaration, PlusCards, Bento, StateMachine,
-	ChangeLog, Limits, Faq, KeepExploring, PageIndex,
+	Story, Section, MediaHero, StickyScenes, Anatomy, Lockup, CodeSteps, PlusCards, Bento,
+	ChangeLog, Limits, Faq, KeepExploring,
 } from '../../../components/story';
 import { neighbours, previewIndex } from '../../../lib/previews';
-import { labPaths } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
 import '../../../styles/story-mocks.css';
 
@@ -128,20 +127,6 @@ const sections = [
 			</CodeSteps>
 		</Section>
 
-		<Section>
-			<Declaration project="EasyManager · 2023" breadcrumb={['EasyManager', 'View model', 'PrinterViewModel']} kind="Classe" name="PrinterViewModel"
-				abstract="Compone i documenti della stampante in XML, li avvolge in una busta SOAP e li invia alla stampante fiscale Epson in sala."
-				availability={[{ label: 'iPadOS' }, { label: 'SwiftUI · MVVM' }, { label: 'Epson ePOS fiscale' }, { label: 'app del 2023', muted: true }]}
-				declaration="class PrinterViewModel: ObservableObject" more="View model: 6 in tutto"
-				nav={[
-					{ title: 'Viste', symbols: [{ name: 'DiningView', kind: 'S' }, { name: 'OrderSheetView', kind: 'S' }, { name: 'CookingView', kind: 'S' }, { name: 'CashDesk', kind: 'S' }] },
-					{ title: 'View model', symbols: [{ name: 'RestaurantViewModel', kind: 'C' }, { name: 'OrderViewModel', kind: 'C' }, { name: 'PrinterViewModel', kind: 'C', current: true }, { name: 'TableViewModel', kind: 'C' }] },
-				]}
-				mentioned={[{ label: 'Uno scontrino si manda una volta', href: '#scontrino' }, { label: 'Costruisci uno scontrino, una riga alla volta', href: '#passo-passo' }]}>
-				<p>Due tipi di documento e le chiusure. Il <b>preconto</b> non è fiscale: una riga per piatto e variante, allineata su 46 colonne. Lo <b>scontrino fiscale</b> porta un <code>printRecItem</code> per riga e un <code>printRecTotal</code> per metodo di pagamento. Le chiusure X e Z chiudono il turno. Stava accanto ad altri cinque view model condivisi, ed è quello che la ricostruzione ha smontato.</p>
-			</Declaration>
-		</Section>
-
 		<Section id="decisioni" index={4} eyebrow="EasyManager · Perché è fatto così" title="Tre decisioni." dim="Aprine una per il ragionamento.">
 			<PlusCards label="Le decisioni dietro il toolkit" cards={[
 				{ eyebrow: 'Livello fiscale', title: '“Incerto” è una risposta, non un errore.', text: 'Quando la stampante non risponde, non si rimanda niente.', tone: 'orange',
@@ -158,7 +143,6 @@ const sections = [
 			<Bento label="Il toolkit, tessera per tessera" tiles={[
 				{ value: '31', eyebrow: 'Prodotti del pacchetto', text: 'Documentati con DocC e compilati dal controllo di rilascio.', tone: 'acid', size: 'large' },
 				{ value: '0', eyebrow: 'Dipendenze remote', text: 'Dove prima al centro c’era Cloud Firestore.', tone: 'dark' },
-				{ eyebrow: 'Swift 6.3', title: 'Una corsia per dispositivo.', text: 'Due comandi validi non si intrecciano mai sulla stessa stampante.', tone: 'violet' },
 				{ eyebrow: 'Motori', title: 'Puntano solo verso l’interno.', text: 'Niente SwiftUI, niente backend, nessuna API di un produttore dentro un motore.', size: 'wide' },
 				{ eyebrow: 'Fiscale', title: 'I tipi italiani restano nell’adattatore italiano.', text: 'La logica di cassa non li vede mai.', tone: 'blue', size: 'wide' },
 				{ eyebrow: 'Denaro', title: 'Centesimi interi.', text: 'Uno scontrino non arrotonda mai verso un importo diverso.', tone: 'orange', size: 'wide' },
@@ -167,15 +151,6 @@ const sections = [
 					{Array.from({ length: 31 }, (_, k) => <span class:list={{ core: k < 3 }}></span>)}
 				</div>
 			</Bento>
-		</Section>
-
-		<Section split eyebrow="EasyManager · Ciclo di vita della comanda" title="Una comanda è una macchina a stati durevole." dim="Un timeout lascia aperta la domanda."
-			lead="Uscita, conferma e riconciliazione sono fasi separate. Ripetere dopo un timeout potrebbe stampare un secondo documento fiscale, quindi l’incertezza passa al passo successivo.">
-			<StateMachine label="Ciclo di vita della comanda" forbidden="ripetere in silenzio · mai"
-				before={[{ name: 'Bozza', text: 'In costruzione sul blocco; non ha ancora lasciato l’iPad.' }, { name: 'Inviata', text: 'Nella coda d’uscita, affidata al dispositivo.' }]}
-				fork={[{ name: 'Confermata', text: 'Il dispositivo ha risposto.', tone: 'blue' }, { name: 'Incerta', text: 'Ancora nessuna risposta. Sconosciuto non vuol dire fallito.', tone: 'orange' }]}
-				after={[{ name: 'Riconciliata', text: 'Verificata con quello che il dispositivo ha registrato.', tone: 'dark' }]}
-				labels={{ before: [['invio', 'coda d’uscita']], fork: ['il dispositivo risponde', 'timeout'], join: ['riconcilia', 'riconcilia al passo dopo'] }} />
 		</Section>
 
 		<Section id="punto" index={6} eyebrow="EasyManager · Com’è arrivato qui" title="Registro delle modifiche." dim="Dal più recente.">
@@ -210,7 +185,6 @@ const sections = [
 			<Faq eyebrow="EasyManager" title="Domande," dim="con risposta." open={0} lead="Quelle che chi valuta fa per prime." contact={{ label: 'Scrivimi di questo progetto', href: 'mailto:samuele.segrini@gmail.com' }} items={[
 				{ q: 'Il ristorante l’ha usata davvero?', a: 'L’app del 2023 è stata scritta per un ristorante vero e per la sua stampante fiscale. La compatibilità con i dispositivi e la certificazione fiscale del toolkit del 2026 non sono ancora dimostrate.' },
 				{ q: 'Perché ricostruire invece di sistemare l’app?', a: 'Sei view model condivisi facevano ricadere altrove ogni cambio locale. La ricostruzione traccia confini attorno a comande, dispositivi e livello fiscale.' },
-				{ q: 'Cosa succede quando la stampante non risponde?', a: 'L’esito diventa “incerto” e si riconcilia al passo successivo, invece di essere ripetuto.' },
 				{ q: 'Posso leggere il codice?', a: 'L’applicazione del 2023 è pubblica su GitHub. Il sorgente del 2026 non è ancora pubblico.' },
 			]} />
 		</Section>
@@ -218,13 +192,5 @@ const sections = [
 		<KeepExploring title="Continua a esplorare." next={next} previous={previous}
 			all={{ label: 'Tutte le anteprime', title: 'Anteprime dei progetti', text: 'Un racconto per progetto, non elencato.', href: previewIndex('it') }} />
 
-		<Section tone="sand">
-			<PageIndex title="EasyManager"
-				primary={[{ label: 'Una comanda', href: '#comanda' }, { label: 'La sala', href: '#sala' }, { label: 'Lo scontrino', href: '#scontrino' }, { label: 'Decisioni', href: '#decisioni' }, { label: 'Il toolkit', href: '#toolkit' }, { label: 'Registro', href: '#punto' }]}
-				groups={[
-					{ title: 'Codice', links: [{ label: 'Applicazione originale, 2023', href: repo2023, note: 'Il mio repository · github.com' }, { label: 'Sorgente del toolkit 0.1', locked: true, note: 'Non ancora pubblico' }] },
-					{ title: 'Altro dal portfolio', links: [{ label: 'Tutti i progetti', href: labPaths.it.work }, { label: 'Chi sono', href: labPaths.it.about, icon: 'person' }] },
-				]} />
-		</Section>
 	</Story>
 </ExperimentLayout>

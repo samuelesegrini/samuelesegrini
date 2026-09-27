@@ -6,9 +6,10 @@ const arriva = (page: Page) => page.waitForFunction(() => !document.documentElem
 
 // Le anteprime dei racconti di progetto, una per progetto: i capitoli indicizzati nel dock, in
 // ordine, e le sezioni che ciascun racconto usa. Le brevi (relazione tecnica) aprono con DocHero.
+// `gone`: quello che la revisione ha tolto perché la pagina lo dice già altrove, e non torna.
 const previews = [
-	{ key: 'easymanager', chapters: 6, blocks: ['.st-mhero-art', '.st-scenes', '.st-anatomy-subject', '.st-lockup', '.st-cs-paper', '.st-decl', '.st-plus-grid', '.st-bento', '.st-states', '.st-changelog', '.st-limits2', '.st-faq2', '.st-keep', '.st-index'] },
-	{ key: 'galaxy-trucker', chapters: 6, blocks: ['.st-mhero-art', '.st-lockup', '.st-explainer', '.st-modules', '.st-techspecs', '.st-toggle', '.st-timeline', '.st-limits2', '.st-cards', '.st-faq2', '.st-keep'] },
+	{ key: 'easymanager', chapters: 6, blocks: ['.st-mhero-art', '.st-scenes', '.st-anatomy-subject', '.st-lockup', '.st-cs-paper', '.st-plus-grid', '.st-bento', '.st-changelog', '.st-limits2', '.st-faq2', '.st-keep'], gone: ['.st-decl', '.st-states', '.st-index'] },
+	{ key: 'galaxy-trucker', chapters: 6, blocks: ['.st-mhero-art', '.st-lockup', '.st-explainer', '.st-modules', '.st-techspecs', '.st-toggle', '.st-limits2', '.st-cards', '.st-keep'], gone: ['.st-timeline', '.st-faq2'] },
 	{ key: 'spingo', chapters: 6, blocks: ['.st-ahero', '.st-timeline', '.st-mcards', '.st-stats', '.st-findings', '.st-ba', '.st-sources', '.st-faq2', '.st-keep'] },
 	{ key: 'highway-route-planner', chapters: 5, blocks: ['.st-dhero', '.st-layers', '.st-explainer', '.st-numbers', '.st-techspecs', '.st-keep'] },
 	{ key: 'priority-task-queue-manager', chapters: 4, blocks: ['.st-toggle', '.st-states', '.st-ba', '.st-techspecs', '.st-ts-map', '.st-keep'] },
@@ -27,6 +28,7 @@ for (const { lang, root, other } of langs) {
 			await arriva(page);
 			await expect(page.locator('html')).toHaveAttribute('lang', lang);
 			for (const block of preview.blocks) await expect(page.locator(`.st-page ${block}`).first(), block).toBeAttached();
+			for (const block of preview.gone ?? []) await expect(page.locator(`.st-page ${block}`), block).toHaveCount(0);
 			const sections = await page.locator('.page-sheet [data-section]').evaluateAll((nodes) => nodes.map((node) => Number((node as HTMLElement).dataset.section)));
 			expect(sections).toEqual(Array.from({ length: preview.chapters + 1 }, (_, k) => k));
 			await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
@@ -36,6 +38,21 @@ for (const { lang, root, other } of langs) {
 			await expect(page.locator(`a[href$="${other}${preview.key}/"]`).first()).toBeAttached();
 		});
 	}
+
+	test(`each preview says each thing once (${lang})`, async ({ page }) => {
+		// SpinGO: le carte del progetto raccontano i compiti, i risultati stanno nel capitolo della prova
+		await page.goto(`${root}spingo/`);
+		await arriva(page);
+		expect(await page.locator('.st-mcards').innerText()).not.toMatch(/\d+\s?%/);
+		await expect(page.locator('.st-mcards .st-mc-tag')).toHaveCount(0);
+		await expect(page.locator('.st-stats-feature')).toHaveCount(0);
+		await expect(page.locator('.st-faq > details')).toHaveCount(2);
+		// Highway: la figura del grafo non ripete in nota le sezioni intorno, e cosa cambierei sta con i costi
+		await page.goto(`${root}highway-route-planner/`);
+		await arriva(page);
+		await expect(page.locator('.st-explainer-notes')).toHaveCount(0);
+		await expect(page.locator('#cost .st-callout.tip')).toHaveCount(1);
+	});
 
 	test(`the preview index (${lang}) lists every project and links to each`, async ({ page }) => {
 		await page.goto(root);

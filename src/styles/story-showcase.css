@@ -179,6 +179,8 @@
 
 /* ExplainerFigure */
 .st-explainer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 320px); gap: 40px; align-items: start; }
+/* senza note la figura prende tutta la larghezza, invece di lasciare vuota la colonna delle note */
+.st-explainer:not(:has(.st-explainer-notes)) { grid-template-columns: minmax(0, 1fr); }
 .st-explainer figure { display: grid; gap: 18px; margin: 0; }
 .st-explainer-art { position: relative; }
 .st-explainer-art img { width: 100%; height: auto; }
