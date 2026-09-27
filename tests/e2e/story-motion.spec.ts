@@ -628,7 +628,8 @@ test('the hero shows every device with its real screen, whole', async ({ page })
 		const lineup = page.locator('.st-ahero-lineup .st-lineup');
 		// una schermata per dispositivo: Mac, Watch, iPhone e iPad
 		await expect(lineup.locator('image')).toHaveCount(4);
-		// e intera: sta nella finestra, e il fondo dell'apertura non la taglia
+		// e intera, a entrata finita: sta nella finestra, e il fondo dell'apertura non la taglia
+		await lineup.evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)));
 		const { height, below } = await lineup.evaluate((el) => {
 			const r = el.getBoundingClientRect();
 			return { height: r.height, below: el.closest('.st-ahero')!.getBoundingClientRect().bottom - r.bottom };
