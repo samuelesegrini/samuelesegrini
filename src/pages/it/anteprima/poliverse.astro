@@ -10,11 +10,12 @@ import ExperimentLayout from '../../../layouts/ExperimentLayout.astro';
 import {
 	Story, Section, AppHero, Lockup, HighlightsGallery, FeatureExplorer, Stats,
 	ChangeLog, ThenNow, Findings, StateMachine, ExplodedStack, Principles, Limits, TechSpecs,
-	Sources, Faq, KeepExploring, ScrollIntro, LitText, StickyScenes, BeforeAfter, ProductShot, Icon, MediaCards,
+	Sources, Faq, KeepExploring, ScrollIntro, LitText, StickyScenes, BeforeAfter, DeviceLineup, Icon, MediaCards,
 	Statement, ObjectRow,
 } from '../../../components/story';
 import { labPaths, labProjectPath } from '../../../components/lab/chrome';
 import { withBase } from '../../../lib/base';
+import { poliverseScreens, poliverseScreensAlt } from '../../../lib/lineup';
 
 const repo = 'https://github.com/samuelesegrini/PoliVerse';
 const icon = (name: string) => withBase(`/images/projects/poliverse/icons/${name}.svg`);
@@ -76,7 +77,7 @@ const sections = [
 			meta="Lavoro individuale · SwiftUI · iOS 27 · settembre 2026"
 			actions={[{ label: 'Leggi il racconto', href: '#why' }, { label: 'Codice su GitHub', href: repo }]}>
 			<img slot="mark" src={icon('orbit')} alt="" width="104" height="104" class="pv-mark" />
-			<ProductShot slot="shot" priority src="/assets/projects/poliverse-devices.png" alt="Illustrazione: PoliVerse su iPhone e Apple Watch. La lezione in corso sulla schermata di blocco, la scheda Oggi con l’orario e il prossimo esame sull’orologio." />
+			<DeviceLineup slot="lineup" screens={poliverseScreens} alt={poliverseScreensAlt.it} />
 		</AppHero>
 
 		<Section id="why" index={1}>

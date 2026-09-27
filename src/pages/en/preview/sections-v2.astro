@@ -17,11 +17,10 @@ import { labPaths, labPostPath, labProjectPath } from '../../../components/lab/c
 import { withBase } from '../../../lib/base';
 import { storyDark } from '../../../lib/story-code';
 import { previewPath } from '../../../lib/previews';
+import { poliverseScreens, poliverseScreensAlt } from '../../../lib/lineup';
 import '../../../styles/story-mocks.css';
 
 const cover = (name: string) => withBase(`/images/projects/covers/${name}.svg`);
-// le schermate vere di PoliVerse, sui dati di esempio, per la fila sotto l'apertura da app
-const lineup = (name: string) => `/images/projects/poliverse/lineup/${name}.webp`;
 const explainer = (name: string) => withBase(`/images/projects/explainers/${name}.svg`);
 const project = (slug: string) => labProjectPath('en', slug);
 const repo = {
@@ -83,9 +82,7 @@ const tables = [
 			meta="Individual work · SwiftUI · iOS 27 · September 2026"
 			actions={[{ label: 'Read the story', href: previewPath('poliverse') }, { label: 'Source on GitHub', href: repo.poliverse }]}>
 			<img slot="mark" src={withBase('/images/projects/poliverse/icons/orbit.svg')} alt="" width="60" height="60" />
-			<DeviceLineup slot="lineup"
-				screens={{ mac: lineup('mac'), watch: lineup('watch'), iphone: lineup('iphone'), ipad: lineup('ipad') }}
-				alt="PoliVerse on MacBook, Apple Watch, iPhone and iPad, on sample data: the career with its average on the Mac, the next exams on the watch, the Today tab on the iPhone and the courses on the iPad." />
+			<DeviceLineup slot="lineup" screens={poliverseScreens} alt={poliverseScreensAlt.en} />
 		</AppHero>
 
 		<p class="cat-mark"><code>&lt;DocHero /&gt;</code><span>new · opener</span></p>
