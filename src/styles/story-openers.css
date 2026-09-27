@@ -38,8 +38,18 @@
 .st-ahero-side .st-frame-watch { flex: none; width: 184px; }
 .st-ahero-side .st-mono { max-width: 160px; font-size: 11px; line-height: 1.5; color: var(--st-meta); }
 /* la fila su palco nero: da bordo a bordo, il disegno centrato e mai più largo del suo */
-.st-ahero-lineup { position: relative; justify-self: stretch; margin: 72px calc(-1 * var(--pad)) 0; padding: clamp(24px, 4vw, 56px) 0 0; background: linear-gradient(#000 86%, #101010); }
+.st-ahero-lineup { position: relative; justify-self: stretch; margin: 72px calc(-1 * var(--pad)) 0; padding: clamp(24px, 4vw, 56px) 0 0; }
 .st-ahero-lineup .st-lineup { display: block; width: 100%; max-width: 2000px; height: auto; margin-inline: auto; }
+/* con la fila l'apertura è tutta scura, dello stesso inchiostro dei capitoli scuri: il testo si
+   accende, la quadrettatura sbiadisce verso i dispositivi invece di comparire, e la sezione dopo
+   sale di 40px sopra il fondo come un foglio con gli angoli tondi */
+.st-ahero.with-lineup { --ink: #f4f1e9; --st-text2: #c9c5bc; --st-meta: #8b877f; padding-bottom: 40px; background: #171713; color: #f4f1e9; }
+.st-ahero.with-lineup::before { background-image: linear-gradient(rgba(244, 241, 233, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(244, 241, 233, .06) 1px, transparent 1px); -webkit-mask-image: linear-gradient(to bottom, #000 0, transparent 70%); mask-image: linear-gradient(to bottom, #000 0, transparent 70%); }
+.st-ahero.with-lineup .st-ahero-action.primary { color: #171713; }
+.st-ahero.with-lineup .st-ahero-action.outline { box-shadow: inset 0 0 0 1px rgba(244, 241, 233, .45); }
+.st-page .st-ahero.with-lineup .st-ahero-action.primary:hover { background: #fffef9; }
+.st-page .st-ahero.with-lineup .st-ahero-action.outline:hover { box-shadow: inset 0 0 0 1px #f4f1e9, 0 0 0 1px #f4f1e9; }
+.st-ahero.with-lineup + * { position: relative; margin-top: -40px; border-radius: 40px 40px 0 0; background: var(--paper); }
 /* la foto al posto delle cornici: ferma e intera, sopra il fondo quadrettato, con il suo respiro sotto */
 .st-ahero-shot { position: relative; width: 100%; margin: 72px 0 clamp(56px, 7vw, 104px); }
 
@@ -111,6 +121,8 @@
 	.st-ahero-devices { gap: 16px; height: 400px; margin-top: 48px; }
 	.st-ahero-shot { margin-top: 48px; }
 	.st-ahero-lineup { margin-top: 48px; }
+	.st-ahero.with-lineup { padding-bottom: 28px; }
+	.st-ahero.with-lineup + * { margin-top: -28px; border-radius: 28px 28px 0 0; }
 	.st-ahero-devices > .st-frame-iphone { width: 220px; }
 	.st-ahero-side { flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 120px; }
 	.st-ahero-side .st-frame-watch { width: 120px; }

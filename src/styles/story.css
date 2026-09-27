@@ -51,6 +51,14 @@
 .st-section.ink2 .st-lead { color: #c9c5bc; }
 .st-section:is(.dark, .ink2, .sand) + .st-section:is(.dark, .ink2, .sand) { margin-top: 0; }
 .st-section:is(.dark, .ink2) .st-eyebrow { color: var(--st-meta); }
+/* i capitoli scuri sono isole: un solo inchiostro, 16px dentro i bordi, angoli tondi e lo stesso
+   respiro sopra e sotto. Due di fila fanno un'isola sola. Il margine esce dal padding, così il
+   contenuto resta largo quanto nelle sezioni chiare; clip e non hidden, perché il titolo fermo
+   dell'intro resta sticky */
+.st-page > :is(.st-section.dark, .st-section.ink2, .st-intro.tone-dark, .st-intro.tone-ink2) { margin-inline: 16px; padding-inline: calc(var(--pad) - 16px); border-radius: 40px; background: #171713; overflow: clip; }
+.st-page > .st-intro:is(.tone-dark, .tone-ink2) { margin-top: 150px; }
+.st-page > :is(.st-section.dark, .st-section.ink2, .st-intro.tone-dark, .st-intro.tone-ink2):has(+ :is(.st-section.dark, .st-section.ink2, .st-intro.tone-dark, .st-intro.tone-ink2)) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.st-page > :is(.st-section.dark, .st-section.ink2, .st-intro.tone-dark, .st-intro.tone-ink2) + :is(.st-section.dark, .st-section.ink2, .st-intro.tone-dark, .st-intro.tone-ink2) { margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
 .st-head-title { display: grid; gap: 12px; }
 .st-section.center .st-head-title { justify-items: center; }
 .st-head h2 > span { display: block; }
@@ -270,6 +278,8 @@
 	.st-head.split, .st-head.has-link { grid-template-columns: minmax(0, 1fr); row-gap: 16px; }
 	.st-head.has-link > .st-head-link { grid-column: 1; grid-row: auto; justify-self: start; min-height: 0; }
 	.st-section:is(.ink2, .sand) { margin-top: 96px; padding-bottom: 72px; }
+	.st-page > :is(.st-section.dark, .st-section.ink2, .st-intro.tone-dark, .st-intro.tone-ink2) { margin-inline: 8px; padding-inline: calc(var(--pad) - 8px); border-radius: 28px; }
+	.st-page > .st-intro:is(.tone-dark, .tone-ink2) { margin-top: 96px; }
 	.st-hero { grid-template-columns: minmax(0, 1fr); min-height: 0; padding: 48px var(--pad) 0; }
 	.st-hero img { border-radius: 24px; transform: none; }
 	.st-bento, .st-code-split, .st-compare { grid-template-columns: minmax(0, 1fr); }

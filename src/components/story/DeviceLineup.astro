@@ -4,18 +4,19 @@
  * disegnati in un solo svg su un palco nero. In `screens` vanno le schermate vere, una per
  * dispositivo (percorsi di `public/`); quella del Mac è già piegata nel trapezio dello schermo.
  * Uno schermo senza immagine resta spento. `alt` descrive l'insieme; senza, il disegno è decorativo.
+ * `stage` è il colore del palco: il fondo del Mac sfuma in quello.
  */
 import { withBase } from '../../lib/base';
 interface Screens { mac?: string; watch?: string; iphone?: string; ipad?: string }
-interface Props { screens?: Screens; alt?: string }
-const { screens = {}, alt } = Astro.props;
+interface Props { screens?: Screens; alt?: string; stage?: string }
+const { screens = {}, alt, stage = '#171713' } = Astro.props;
 const src = (path?: string) => (path ? withBase(path) : undefined);
 const mac = src(screens.mac), watch = src(screens.watch), iphone = src(screens.iphone), ipad = src(screens.ipad);
 ---
 <svg class="st-lineup" viewBox="0 0 2000 943" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif" role={alt ? 'img' : undefined} aria-label={alt} aria-hidden={alt ? undefined : 'true'} focusable="false">
 <defs>
-<linearGradient id="dl-base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a2c"></stop><stop offset=".08" stop-color="#1e1e20"></stop><stop offset=".55" stop-color="#151516"></stop><stop offset="1" stop-color="#000000"></stop></linearGradient>
-<linearGradient id="dl-baseSides" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"></stop><stop offset=".06" stop-color="#000" stop-opacity="0"></stop><stop offset=".94" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity=".55"></stop></linearGradient>
+<linearGradient id="dl-base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a2c"></stop><stop offset=".08" stop-color="#1e1e20"></stop><stop offset=".55" stop-color="#151516"></stop><stop offset="1" stop-color={stage}></stop></linearGradient>
+<linearGradient id="dl-baseSides" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color={stage} stop-opacity=".55"></stop><stop offset=".06" stop-color={stage} stop-opacity="0"></stop><stop offset=".94" stop-color={stage} stop-opacity="0"></stop><stop offset="1" stop-color={stage} stop-opacity=".55"></stop></linearGradient>
 <linearGradient id="dl-well" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0a0b"></stop><stop offset="1" stop-color="#080808"></stop></linearGradient>
 <linearGradient id="dl-keycap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#161618"></stop><stop offset="1" stop-color="#0d0d0e"></stop></linearGradient>
 <linearGradient id="dl-pad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1b1d"></stop><stop offset=".6" stop-color="#121213"></stop><stop offset="1" stop-color="#050505" stop-opacity="0"></stop></linearGradient>
