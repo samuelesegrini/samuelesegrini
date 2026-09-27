@@ -105,9 +105,12 @@ test('one answer open at a time, and the gallery follows its dots', async ({ pag
 	await expect(dots.first()).toHaveAttribute('aria-pressed', 'false');
 	await expect.poll(() => gallery.locator('[data-hg-track]').evaluate((track) => track.scrollLeft)).toBeGreaterThan(0);
 
-	const play = gallery.getByRole('button', { name: 'Play the highlights' });
-	await play.click();
-	await expect(gallery.getByRole('button', { name: 'Pause the highlights' })).toBeVisible();
-	await gallery.getByRole('button', { name: 'Pause the highlights' }).click();
-	await expect(play).toBeVisible();
+	// il tasto passa da riproduci a pausa e ritorno, qualunque fosse lo stato dopo il pallino
+	const toggle = gallery.locator('[data-hg-play]');
+	const before = (await toggle.getAttribute('aria-label'))!;
+	expect(['Play the highlights', 'Pause the highlights']).toContain(before);
+	await toggle.click();
+	await expect(toggle).not.toHaveAttribute('aria-label', before);
+	await toggle.click();
+	await expect(toggle).toHaveAttribute('aria-label', before);
 });

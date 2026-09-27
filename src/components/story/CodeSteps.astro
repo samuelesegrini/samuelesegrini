@@ -12,6 +12,7 @@ import Icon from './Icon.astro';
 import type { IconName } from './icons';
 import { parseLines, storyDark, storyLines } from '../../lib/story-code';
 import { storyId } from '../../lib/story-id';
+import { storyLang } from '../../lib/story-lang';
 interface Step { title: string; text: string; lines: string | number[]; status?: string }
 interface Props {
 	code: string;
@@ -23,7 +24,9 @@ interface Props {
 	previewLabel?: string;
 	label?: string;
 }
-const { code, lang = 'xml', file, steps, note, meta = [], previewLabel = 'Preview', label = 'Steps' } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
+const words = it ? { step: 'Passo', of: 'di', prev: 'Passo precedente', next: 'Passo successivo' } : { step: 'Step', of: 'of', prev: 'Previous step', next: 'Next step' };
+const { code, lang = 'xml', file, steps, note, meta = [], previewLabel = it ? 'Anteprima' : 'Preview', label = it ? 'Passi' : 'Steps' } = Astro.props;
 const id = storyId('cs');
 const lit = steps.map((s) => parseLines(s.lines));
 const hasPreview = Astro.slots.has('preview');
@@ -51,7 +54,7 @@ const css = `@supports selector(:has(a)){#${id} .st-pre .line.is-lit{background:
 			<label>
 				<input class="st-sr" type="radio" name={id} value={i} checked={i === 0} aria-labelledby={`${id}-t${i}`} aria-describedby={`${id}-d${i}`} />
 				<span class="st-cs-step">
-					<span class="st-cs-chip st-mono">Step {i + 1}</span>
+					<span class="st-cs-chip st-mono">{words.step} {i + 1}</span>
 					<span class="st-cs-title" id={`${id}-t${i}`}>{s.title}</span>
 					<span class="st-cs-text" id={`${id}-d${i}`}>{s.text}</span>
 				</span>
@@ -59,13 +62,13 @@ const css = `@supports selector(:has(a)){#${id} .st-pre .line.is-lit{background:
 		))}
 	</fieldset>
 	<figure class="st-cs-code">
-		<figcaption class="st-mono"><span><span class="st-cs-led" aria-hidden="true"></span>{file}</span><span class="st-cs-stack">{steps.map((_, i) => <span data-cs-step={i}>Step {i + 1} of {steps.length}</span>)}</span></figcaption>
+		<figcaption class="st-mono"><span><span class="st-cs-led" aria-hidden="true"></span>{file}</span><span class="st-cs-stack">{steps.map((_, i) => <span data-cs-step={i}>{words.step} {i + 1} {words.of} {steps.length}</span>)}</span></figcaption>
 		<Code code={code} lang={lang} theme={storyDark} transformers={[storyLines(lit[0])]} />
 		<div class="st-cs-foot">
 			{note && <span class="st-mono">{note}</span>}
 			<span class="st-cs-arrows" data-cs-arrows hidden>
-				<button type="button" class="st-round" data-cs-prev aria-label="Previous step"><Icon name="chevron-left" size={16} stroke={2.4} /></button>
-				<button type="button" class="st-round next" data-cs-next aria-label="Next step"><Icon name="chevron-right" size={16} stroke={2.4} /></button>
+				<button type="button" class="st-round" data-cs-prev aria-label={words.prev}><Icon name="chevron-left" size={16} stroke={2.4} /></button>
+				<button type="button" class="st-round next" data-cs-next aria-label={words.next}><Icon name="chevron-right" size={16} stroke={2.4} /></button>
 			</span>
 		</div>
 	</figure>

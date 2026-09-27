@@ -6,8 +6,8 @@
  */
 interface Note { title: string; text: string; at: [number, number] }
 interface Legend { label: string; mark: 'line' | 'route' | 'dash' | 'dot'; tone?: 'acid' | 'blue' | 'violet' | 'orange' }
-interface Props { image: string; imageAlt: string; notes: Note[]; caption?: string; legend?: Legend[]; aside?: string; width?: number; height?: number }
-const { image, imageAlt, notes, caption, legend = [], aside, width = 1200, height = 675 } = Astro.props;
+interface Props { image: string; imageAlt: string; notes?: Note[]; caption?: string; legend?: Legend[]; aside?: string; width?: number; height?: number }
+const { image, imageAlt, notes = [], caption, legend = [], aside, width = 1200, height = 675 } = Astro.props;
 ---
 <div class="st-explainer">
 	<figure>
@@ -20,8 +20,8 @@ const { image, imageAlt, notes, caption, legend = [], aside, width = 1200, heigh
 			{legend.length > 0 && <ul class="st-legend" role="list">{legend.map((l) => <li><span class={`st-swatch ${l.mark}`} style={l.tone ? `--tint: var(--${l.tone})` : undefined}></span>{l.label}</li>)}</ul>}
 		</figcaption>}
 	</figure>
-	<ol class="st-explainer-notes" role="list">
+	{(notes.length > 0 || aside) && <ol class="st-explainer-notes" role="list">
 		{notes.map((n, i) => <li><span class="st-badge st-mono" aria-hidden="true">{i + 1}</span><span><b>{n.title}</b><span>{n.text}</span></span></li>)}
 		{aside && <li class="st-explainer-aside st-mono">{aside}</li>}
-	</ol>
+	</ol>}
 </div>

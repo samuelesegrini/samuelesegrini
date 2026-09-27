@@ -4,7 +4,9 @@
  * centrata, chi e quando, poi le azioni e i dispositivi che salgono dal fondo quadrettato.
  * Nello slot `mark` va il disegno del segno (un svg 64×64), nello slot `devices` le cornici.
  * Al posto delle cornici, nello slot `shot` va una foto ferma (un ProductShot): si vede intera,
- * non sale e non si taglia contro il fondo.
+ * non sale e non si taglia contro il fondo. Nello slot `lineup` va la fila intera su palco nero
+ * (un DeviceLineup), da bordo a bordo: con la fila l'apertura è tutta scura, come la foto di famiglia
+ * di apple.com, e la sezione dopo le torna sopra come un foglio chiaro.
  */
 import LinkIcon from '../lab/LinkIcon.astro';
 import Icon from './Icon.astro';
@@ -13,7 +15,7 @@ interface Action { label: string; href: string }
 interface Props { name: string; title: string; summary: string; meta?: string; actions?: Action[]; tint?: 'violet' | 'acid' | 'blue' | 'orange'; id?: string; index?: number | null }
 const { name, title, summary, meta, actions = [], tint = 'violet', id = 'overview', index = 0 } = Astro.props;
 ---
-<header class="st-ahero" id={id} data-section={index ?? undefined}>
+<header class:list={['st-ahero', { 'with-lineup': Astro.slots.has('lineup') }]} id={id} data-section={index ?? undefined}>
 	<div class="st-ahero-copy">
 		{Astro.slots.has('mark') && <span class={`st-ahero-mark tone-${tint}`}><slot name="mark" /></span>}
 		<span class="st-ahero-name">{name}</span>
@@ -29,5 +31,6 @@ const { name, title, summary, meta, actions = [], tint = 'violet', id = 'overvie
 		})}</div>}
 	</div>
 	{Astro.slots.has('devices') && <div class="st-ahero-devices"><slot name="devices" /></div>}
+	{Astro.slots.has('lineup') && <div class="st-ahero-lineup"><slot name="lineup" /></div>}
 	{Astro.slots.has('shot') && <div class="st-ahero-shot"><slot name="shot" /></div>}
 </header>

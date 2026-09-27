@@ -4,19 +4,22 @@
  * esempio) e quella del resto della squadra, poi la mia carta con cosa ho fatto davvero e le
  * carte dei compagni, con quello che era di tutti. Serve a non prendersi il merito dell'insieme.
  */
+import { storyLang } from '../../lib/story-lang';
+
 interface Me { name: string; initials: string; count: number; role?: string; text: string; tags?: string[] }
 interface Mate { name: string; initials: string; role?: string; tone?: 'violet' | 'blue' | 'orange' | 'acid' }
 interface Props { me: Me; others: Mate[]; total: number; unit?: string; scope?: string; period?: string; shared?: string; sharedLabel?: string; note?: string }
-const { me, others, total, unit = 'commits', scope = 'on main', period, shared, sharedLabel = 'Shared by all', note } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
+const { me, others, total, unit = it ? 'commit' : 'commits', scope = it ? 'su main' : 'on main', period, shared, sharedLabel = it ? 'Condiviso da tutti' : 'Shared by all', note } = Astro.props;
 const mine = Math.round((me.count / total) * 1000) / 10;
 const rest = total - me.count;
 const first = me.name.split(' ')[0];
 const names = others.map((o) => o.name.split(' ')[0]);
-const theirs = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0];
+const theirs = names.length > 1 ? `${names.slice(0, -1).join(', ')} ${it ? 'e' : 'and'} ${names[names.length - 1]}` : names[0];
 ---
 <div class="st-contrib">
 	<figure class="st-contrib-share">
-		<div class="st-contrib-bar" role="img" aria-label={`${me.count} of ${total} ${unit} ${scope} are mine; ${rest} are by ${theirs}.`}>
+		<div class="st-contrib-bar" role="img" aria-label={it ? `${me.count} ${unit} su ${total} ${scope} sono miei; ${rest} sono di ${theirs}.` : `${me.count} of ${total} ${unit} ${scope} are mine; ${rest} are by ${theirs}.`}>
 			<span class="me" style={`width: ${mine}%`}><b>{first}</b><span class="st-mono">{me.count}</span></span>
 			<span class="them"><b>{names.join(', ')}</b><span class="st-mono">{rest}</span></span>
 		</div>

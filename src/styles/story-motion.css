@@ -25,12 +25,14 @@
 @media (prefers-reduced-motion: no-preference) {
 	@supports (animation-timeline: view()) {
 		/* ciò che sale; dentro una fila che scorre di lato sale la fila intera, non le carte:
-		   una carta dentro un contenitore che scorre legherebbe la sua linea del tempo a quello */
+		   una carta dentro un contenitore che scorre legherebbe la sua linea del tempo a quello.
+		   La fila di dispositivi dell'apertura porta anche lei .st-lineup, ma entra con la hero e poi
+		   resta ferma: qui la sua salita la lasciava a metà strada, tagliata dal fondo dell'apertura */
 		.st-page :is(
 			.st-head, .st-lockup-chapter, .st-lockup h2, .st-lockup-lead, .st-lockup-actions, .st-lockup-facts > li,
 			.st-hgallery, .st-mcards, .st-fx-list, .st-fx-figure, .st-toggle, .st-explainer,
 			.st-stats-grid > li, .st-stats-feature, .st-stats-targets,
-			.st-thennow-head, .st-thennow-grid > li, .st-thennow-foot, .st-lineup, .st-matrix, .st-findings-cols, .st-findings-list > li,
+			.st-thennow-head, .st-thennow-grid > li, .st-thennow-foot, .st-lineup:not(.st-ahero-lineup *), .st-matrix, .st-findings-cols, .st-findings-list > li,
 			.st-techspecs-head, .st-techspecs-group, .st-limits2-head, .st-limits2-col, .st-sources-head, .st-sources-list > li,
 			.st-decl-main, .st-decl-nav, .st-cs-meta, .st-cs-steps, .st-cs-code, .st-anatomy-figure, .st-modules-head, .st-modules-card,
 			.st-states-figure, .st-states-legend > li, .st-changelog-legend, .st-changelog-list > li,
@@ -129,7 +131,7 @@
 	:is(.st-ahero-summary, .st-dhero-abstract) { animation: st-enter 1s var(--st-ease-out) .32s both; }
 	:is(.st-ahero-copy > .st-eyebrow, .st-dhero-copy > .st-eyebrow) { animation: st-enter 1s var(--st-ease-out) .4s both; }
 	:is(.st-ahero-actions, .st-mhero-foot, .st-dhero-facts, .st-dhero-note) { animation: st-enter 1s var(--st-ease-out) .48s both; }
-	:is(.st-ahero-devices, .st-mhero-art, .st-dhero-figure) { animation: st-enter-device 1.3s var(--st-ease-out) .36s both; }
+	:is(.st-ahero-devices, .st-ahero-lineup .st-lineup, .st-mhero-art, .st-dhero-figure) { animation: st-enter-device 1.3s var(--st-ease-out) .36s both; }
 	/* dietro il sipario non parte niente: la hero entra quando il sipario si alza */
 	html[data-caricando] :is(.st-ahero, .st-mhero, .st-dhero) * { animation-play-state: paused; }
 

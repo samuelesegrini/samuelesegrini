@@ -3,12 +3,14 @@
  * Dove andare dopo, seconda versione di Next: una carta grande per il progetto successivo, una più
  * piccola per il precedente e una per l'archivio. I puntini dicono a che punto dell'archivio si è.
  */
+import { storyLang } from '../../lib/story-lang';
 import Icon from './Icon.astro';
 import { storyId } from '../../lib/story-id';
 type Tone = 'acid' | 'blue' | 'violet' | 'orange' | 'paper';
 interface Project { label: string; title: string; href: string; image: string; tone?: Tone; text?: string; cta?: string }
 interface Props { title?: string; next: Project; previous?: Project; all?: { label: string; title: string; text?: string; href: string; cta?: string }; position?: { current: number; total: number }; index?: number }
-const { title = 'Keep exploring.', next, previous, all, position, index } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
+const { title = it ? 'Continua a esplorare.' : 'Keep exploring.', next, previous, all, position, index } = Astro.props;
 const headingId = storyId('keep');
 const two = (n: number) => String(n).padStart(2, '0');
 ---
@@ -24,7 +26,7 @@ const two = (n: number) => String(n).padStart(2, '0');
 		<a class={`st-keep-next tone-${next.tone ?? 'orange'}`} href={next.href}>
 			<img src={next.image} alt="" width="1200" height="800" loading="lazy" />
 			<span class="st-keep-copy"><span class="st-eyebrow">{next.label}</span><b>{next.title}</b>{next.text && <span>{next.text}</span>}</span>
-			<span class="st-keep-cta">{next.cta ?? 'Read the case study'}<span aria-hidden="true"><Icon name="arrow-right" size={16} stroke={2.4} /></span></span>
+			<span class="st-keep-cta">{next.cta ?? (it ? 'Leggi il caso' : 'Read the case study')}<span aria-hidden="true"><Icon name="arrow-right" size={16} stroke={2.4} /></span></span>
 		</a>
 		{(previous || all) && <div class="st-keep-side">
 			{previous && <a class={`st-keep-prev tone-${previous.tone ?? 'acid'}`} href={previous.href}>
@@ -34,7 +36,7 @@ const two = (n: number) => String(n).padStart(2, '0');
 			{all && <a class="st-keep-all" href={all.href}>
 				<span class="st-eyebrow">{all.label}</span>
 				<span class="st-keep-copy"><b>{all.title}</b>{all.text && <span>{all.text}</span>}</span>
-				<span class="st-link">{all.cta ?? 'Open the list'}<Icon name="arrow-right" size={15} /></span>
+				<span class="st-link">{all.cta ?? (it ? 'Apri l’elenco' : 'Open the list')}<Icon name="arrow-right" size={15} /></span>
 			</a>}
 		</div>}
 	</div>

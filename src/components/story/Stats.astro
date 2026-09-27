@@ -6,6 +6,7 @@
  * risultati con gli obiettivi fissati prima di misurare.
  */
 import Icon from './Icon.astro';
+import { storyLang } from '../../lib/story-lang';
 interface Item { label: string; value: string; unit?: string; text: string; method?: string; note?: number; accent?: boolean }
 interface Target { label: string; target: string; value: string; met?: boolean }
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 	targets?: { title: string; text?: string; rows: Target[] };
 }
 const { items, feature, targets } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
 ---
 <div class="st-stats">
 	<ul class="st-stats-grid" role="list">
@@ -22,7 +24,7 @@ const { items, feature, targets } = Astro.props;
 				<span class="st-eyebrow">{s.label}</span>
 				<b class:list={{ accent: s.accent }}><span class="st-sr">{s.value}</span><span aria-hidden="true" data-count={s.value}>{s.value}</span>{s.unit && <span class="unit"> {s.unit}</span>}</b>
 				<span class="st-stats-text">{s.text}</span>
-				{(s.method || s.note) && <span class="st-stats-method st-mono">{s.method}{s.note && <sup><a href={`#note-${s.note}`} aria-label={`Source ${s.note}`}>{s.note}</a></sup>}</span>}
+				{(s.method || s.note) && <span class="st-stats-method st-mono">{s.method}{s.note && <sup><a href={`#note-${s.note}`} aria-label={it ? `Fonte ${s.note}` : `Source ${s.note}`}>{s.note}</a></sup>}</span>}
 			</li>
 		))}
 	</ul>
@@ -35,9 +37,9 @@ const { items, feature, targets } = Astro.props;
 		<span class="st-stats-target-copy"><b>{targets.title}</b>{targets.text && <span>{targets.text}</span>}</span>
 		<table>
 			<caption class="st-sr">{targets.title}</caption>
-			<thead class="st-sr"><tr><th scope="col">Measure</th><th scope="col">Target</th><th scope="col">Result</th></tr></thead>
+			<thead class="st-sr"><tr><th scope="col">{it ? 'Misura' : 'Measure'}</th><th scope="col">{it ? 'Obiettivo' : 'Target'}</th><th scope="col">{it ? 'Risultato' : 'Result'}</th></tr></thead>
 			<tbody>{targets.rows.map((r) => (
-				<tr><th scope="row">{r.label}</th><td class="st-mono">target {r.target}</td><td class:list={{ met: r.met !== false }}>{r.value}{r.met === false && <span class="st-sr"> (missed)</span>}</td></tr>
+				<tr><th scope="row">{r.label}</th><td class="st-mono">{it ? 'obiettivo' : 'target'} {r.target}</td><td class:list={{ met: r.met !== false }}>{r.value}{r.met === false && <span class="st-sr">{it ? ' (mancato)' : ' (missed)'}</span>}</td></tr>
 			))}</tbody>
 		</table>
 	</div>}

@@ -11,7 +11,7 @@ interface Props { items: Item[]; label?: string }
 const { items, label = 'The family' } = Astro.props;
 const objects = await Promise.all(items.map((_, i) => (Astro.slots.has(`object-${i + 1}`) ? Astro.slots.render(`object-${i + 1}`) : Promise.resolve(''))));
 ---
-<ul class="st-objects-row" role="list" aria-label={label} style={`--count: ${items.length}`}>
+<ul class="st-objects-row" role="list" aria-label={label} tabindex="0" style={`--count: ${items.length}`}>
 	{items.map((it, i) => {
 		const external = it.href ? /^https?:/.test(it.href) : false;
 		const Name = it.href ? 'a' : 'b';

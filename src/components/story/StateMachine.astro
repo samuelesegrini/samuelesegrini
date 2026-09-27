@@ -5,6 +5,7 @@
  * ramo incerto all'indietro, sbarrata. Sotto, una carta per stato. Il disegno è calcolato qui dai
  * nomi; chi usa lo screen reader riceve le stesse transizioni come elenco.
  */
+import { storyLang } from '../../lib/story-lang';
 import { storyId } from '../../lib/story-id';
 interface State { name: string; text: string; tone?: 'paper' | 'blue' | 'orange' | 'dark' | 'acid' | 'violet' }
 type EdgeLabel = string | [string, string];
@@ -16,7 +17,9 @@ interface Props {
 	forbidden?: string;
 	label?: string;
 }
-const { before, fork, after, labels = {}, forbidden, label = 'State machine' } = Astro.props;
+const it = storyLang(Astro.url) === 'it';
+const to = it ? 'verso' : 'to';
+const { before, fork, after, labels = {}, forbidden, label = it ? 'Macchina a stati' : 'State machine' } = Astro.props;
 
 // geometria: una colonna per stato, il bivio occupa una colonna con due righe
 const H = 420, CY = 210, UP = 120, DOWN = 300, NODE = 60, PAD = 64;
@@ -52,12 +55,12 @@ const lower = nodes[forkCol + 1];
 const back = forbidden ? { d: `M${lower.x + 34} ${DOWN + NODE / 2 + 4}C${lower.x - 6} ${H - 20} ${xs[forkCol - 1] + 40} ${H - 20} ${xs[forkCol - 1] + colW[forkCol - 1] / 2} ${CY + NODE / 2 + 6}`, x: (lower.x + 34 + xs[forkCol - 1] + colW[forkCol - 1] / 2) / 2, y: H - 34 } : null;
 const flat = (l?: EdgeLabel) => (l === undefined ? '' : typeof l === 'string' ? l : l.join(', '));
 const steps = [
-	...before.slice(1).map((s, i) => `${before[i].name} to ${s.name}${labels.before?.[i] ? ` (${flat(labels.before[i])})` : ''}`),
-	`${before[before.length - 1].name} to ${fork[0].name}${labels.fork?.[0] ? ` (${labels.fork[0]})` : ''}`,
-	`${before[before.length - 1].name} to ${fork[1].name}${labels.fork?.[1] ? ` (${labels.fork[1]})` : ''}`,
-	`${fork[0].name} to ${after[0].name}${labels.join?.[0] ? ` (${labels.join[0]})` : ''}`,
-	`${fork[1].name} to ${after[0].name}${labels.join?.[1] ? ` (${labels.join[1]})` : ''}`,
-	...(forbidden ? [`${fork[1].name} back to ${before[before.length - 1].name}: ${forbidden}`] : []),
+	...before.slice(1).map((s, i) => `${before[i].name} ${to} ${s.name}${labels.before?.[i] ? ` (${flat(labels.before[i])})` : ''}`),
+	`${before[before.length - 1].name} ${to} ${fork[0].name}${labels.fork?.[0] ? ` (${labels.fork[0]})` : ''}`,
+	`${before[before.length - 1].name} ${to} ${fork[1].name}${labels.fork?.[1] ? ` (${labels.fork[1]})` : ''}`,
+	`${fork[0].name} ${to} ${after[0].name}${labels.join?.[0] ? ` (${labels.join[0]})` : ''}`,
+	`${fork[1].name} ${to} ${after[0].name}${labels.join?.[1] ? ` (${labels.join[1]})` : ''}`,
+	...(forbidden ? [`${fork[1].name} ${it ? 'di nuovo verso' : 'back to'} ${before[before.length - 1].name}: ${forbidden}`] : []),
 ];
 const arrow = storyId('arrow');
 const tones = (s: State, i: number) => s.tone ?? (i === nodes.length - 1 ? 'dark' : 'paper');
