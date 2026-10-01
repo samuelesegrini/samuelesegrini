@@ -1,0 +1,91 @@
+/* Il tavolo dei progetti: una griglia a quattro colonne in cui la prima carta visibile prende
+   un blocco due per due nella tinta della sezione, e le altre restano piccole. Sul telefono la
+   carta in evidenza va a tutta larghezza e le altre diventano righe con la miniatura. */
+.tavolo { --tavolo-tinta: var(--orange); }
+.work-archive .tavolo { padding-top: 24px; padding-bottom: 96px; scroll-margin-top: 24px; }
+.tavolo-testa { display: flex; justify-content: space-between; align-items: end; gap: 32px; flex-wrap: wrap; border-top: 1px solid #bfc3b8; padding-top: 28px; margin-bottom: 36px; }
+.tavolo-testa h2 { margin: 0; font-size: clamp(34px, 4vw, 56px); font-weight: 500; letter-spacing: -.05em; line-height: 1.1; }
+.tavolo-testa sup { margin-left: 14px; font-size: 12px; letter-spacing: 0; vertical-align: top; }
+.tavolo-filtri { display: flex; flex-wrap: wrap; gap: 8px; }
+.tavolo-filtri[hidden] { display: none; }
+.tavolo-filtri button { display: flex; flex: none; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border: 1px solid #bfc3b8; border-radius: 999px; background: transparent; color: inherit; font: inherit; font-size: 13px; cursor: pointer; transition: background-color .2s, border-color .2s, color .2s; }
+.tavolo-filtri button:hover { background: #d8ffa2; }
+.tavolo-filtri button[aria-pressed='true'] { border-color: #20221f; background: #20221f; color: #f4f3ed; }
+.tavolo-filtri small { font: 10px var(--mono); }
+.tavolo-filtri button:focus-visible { outline: 3px solid #20221f; outline-offset: 3px; }
+
+.tavolo-annuncio, .tavolo-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.tavolo-carte { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: dense; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.tavolo-carta { min-width: 0; }
+.tavolo-carta[hidden] { display: none; }
+.tavolo-carta[data-featured] { grid-column: span 2; grid-row: span 2; }
+.tavolo-link { display: flex; flex-direction: column; height: 100%; border: 1px solid #d5d8ce; border-radius: 22px; overflow: clip; background: #fffef9; color: inherit; text-decoration: none; }
+.tavolo-art { position: relative; }
+.tavolo-art img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.tavolo-freccia { position: absolute; right: 36px; bottom: 18px; display: none; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #20221f; color: #f4f3ed; font-size: 24px; transition: transform .3s ease; }
+.tavolo-copy { display: flex; flex-direction: column; flex-grow: 1; gap: 10px; padding: 20px 22px 22px; }
+.tavolo-meta { display: flex; justify-content: space-between; gap: 12px; font: 10px/1.5 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: #625e55; }
+.tavolo-evidenza, .tavolo-estratto, .tavolo-piede { display: none; }
+.tavolo-carta h3 { margin: 0; font-size: 28px; font-weight: 500; letter-spacing: -.055em; line-height: 1.05; overflow-wrap: anywhere; }
+.tavolo-stato { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: auto; padding-top: 12px; font-size: 11px; color: #5f605e; }
+.tavolo-stato > span:last-child { font-size: 18px; color: #20221f; }
+
+/* la carta in evidenza: tinta, copertina incorniciata, estratto e invito */
+.tavolo-carta[data-featured] .tavolo-link { border-color: #20221f1f; background: var(--tavolo-tinta); }
+.tavolo-carta[data-featured] .tavolo-art { padding: 18px 18px 0; }
+.tavolo-carta[data-featured] .tavolo-art img { border-radius: 14px; }
+.tavolo-carta[data-featured] .tavolo-freccia { display: grid; }
+.tavolo-carta[data-featured] .tavolo-copy { gap: 16px; padding: 28px 32px 32px; }
+.tavolo-carta[data-featured] .tavolo-meta { color: #514d45; }
+.tavolo-carta[data-featured] .tavolo-evidenza { display: inline; }
+.tavolo-carta[data-featured] h3 { font-size: clamp(38px, 4vw, 56px); letter-spacing: -.065em; line-height: 1; }
+.tavolo-carta[data-featured] .tavolo-estratto { display: block; max-width: 520px; margin: 0; font-size: 16px; line-height: 1.6; color: #262520; }
+.tavolo-carta[data-featured] .tavolo-stato { display: none; }
+.tavolo-carta[data-featured] .tavolo-piede { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: auto; padding-top: 18px; border-top: 1px solid #20221f33; font-size: 12px; }
+.tavolo-tech { color: #262520; }
+.tavolo-cta { flex: none; }
+
+.tavolo-link:focus-visible { outline: 3px solid #20221f; outline-offset: 5px; }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+	.tavolo-link { transition: transform .3s ease; }
+	.tavolo-link:hover { transform: translateY(-5px); }
+	.tavolo-link:hover .tavolo-freccia { transform: translate(3px, -3px) rotate(5deg); }
+}
+
+@media (max-width: 1000px) {
+	.tavolo-carte { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.tavolo-carta[data-featured] { grid-row: auto; }
+}
+
+@media (max-width: 640px) {
+	.tavolo-testa { flex-direction: column; align-items: start; gap: 20px; }
+	.tavolo-carte { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+	.tavolo-carta[data-featured] { grid-column: auto; margin-bottom: 14px; }
+	.tavolo-carta[data-featured] .tavolo-art { padding: 14px 14px 0; }
+	.tavolo-carta[data-featured] .tavolo-freccia { right: 26px; bottom: 12px; }
+	.tavolo-carta[data-featured] .tavolo-copy { gap: 14px; padding: 22px; }
+	.tavolo-carta[data-featured] h3 { font-size: 38px; }
+	.tavolo-carta[data-featured] .tavolo-estratto { font-size: 15px; }
+	.tavolo-carta[data-featured] .tavolo-piede { flex-direction: column; align-items: stretch; gap: 10px; }
+	.tavolo-carta[data-featured] .tavolo-cta { display: flex; justify-content: space-between; align-items: center; min-height: 44px; border-top: 1px solid #20221f33; }
+	.tavolo-carta[data-featured] .tavolo-piede { border-top: 0; padding-top: 0; }
+	.tavolo-carta[data-featured] .tavolo-tech { font: 10px/1.6 var(--mono); color: #514d45; }
+	.tavolo-carta:not([data-featured]) .tavolo-link { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: 14px; padding: 10px 14px 10px 10px; border-radius: 18px; }
+	.tavolo-carta:not([data-featured]) .tavolo-art img { border-radius: 10px; }
+	.tavolo-carta:not([data-featured]) .tavolo-copy { gap: 6px; padding: 0; }
+	.tavolo-carta:not([data-featured]) .tavolo-meta { font-size: 9px; }
+	.tavolo-carta:not([data-featured]) h3 { font-size: 19px; letter-spacing: -.045em; line-height: 1.1; }
+	.tavolo-carta:not([data-featured]) .tavolo-stato { padding-top: 0; }
+}
+
+@media (max-width: 560px) {
+	/* i filtri scorrono di lato fino al bordo dello schermo (la scena qui ha 20px di margine) */
+	.tavolo-filtri { flex-wrap: nowrap; width: calc(100% + 40px); margin-inline: -20px; padding-inline: 20px; overflow-x: auto; scrollbar-width: none; }
+	.tavolo-filtri::-webkit-scrollbar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tavolo-filtri button, .tavolo-link, .tavolo-freccia { transition: none; }
+}
