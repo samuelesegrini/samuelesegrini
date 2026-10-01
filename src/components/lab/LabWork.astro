@@ -1,5 +1,5 @@
 ---
-/** Archivio progetti: le sezioni sono i tipi di lavoro, così la barra naviga l'archivio. */
+/** Archivio progetti come bacheca: un tavolo solo, filtrato per tipo, con il primo progetto in evidenza. */
 import ExperimentLayout from '../../layouts/ExperimentLayout.astro';
 import { getProjectKinds } from '../../lib/content';
 import { getPortfolioContent } from '../../lib/portfolio';
@@ -7,82 +7,87 @@ import { getLabCopy } from '../../lib/lab-copy';
 import { labPaths, labProjectPath, type LabLocale } from './chrome';
 import LabCover from './LabCover.astro';
 import '../../styles/lab-work.css';
+import '../../styles/lab-tavolo.css';
 
 interface Props { lang: LabLocale }
 const { lang } = Astro.props;
+const it = lang === 'it';
 const { projects } = await getPortfolioContent();
-const pubblicati = projects.filter((p) => p.locale === lang && !p.draft);
+const pubblicati = projects
+	.filter((p) => p.locale === lang && !p.draft)
+	.toSorted((a, b) => (a.featuredRank ?? 99) - (b.featuredRank ?? 99) || b.year - a.year);
 // getProjectKinds restituisce i tipi nell'ordine dei file: qui conta la scala del lavoro
 const ordine = ['app', 'package', 'open-source', 'experiment'];
 const tipi = getProjectKinds(projects, lang).sort((a, b) => ordine.indexOf(a) - ordine.indexOf(b));
 
 const copy = await getLabCopy(lang);
-const t = { ...copy.work, kicker: copy.common.section, em: copy.work.emphasis };
 const nome = (tipo: string) => copy.work.kinds[tipo as keyof typeof copy.work.kinds]?.label ?? tipo;
-const descrizioni: Record<string, string> = lang === 'it' ? {
-  app: 'Interfacce, interazioni e logica di prodotto: dai prototipi ai progetti universitari.',
-  package: 'Confini, contratti e componenti riusabili, a partire da problemi concreti.',
-  'open-source': 'Contributi e percorsi aperti: il contesto e lo stato sono parte del lavoro.',
-  experiment: 'Algoritmi e interfacce esplorati attraverso prove circoscritte.',
-} : {
-  app: 'Interfaces, interactions and product logic: from prototypes to university projects.',
-  package: 'Boundaries, contracts and reusable components, built around concrete problems.',
-  'open-source': 'Contributions and open explorations: context and status are part of the work.',
-  experiment: 'Algorithms and interfaces explored through focused experiments.',
-};
-const testoTipo = (tipo: string) => descrizioni[tipo] ?? '';
 const conta = (n: number) => `${n} ${n === 1 ? copy.work.one : copy.work.many}`;
-const stato = lang === 'it' ? { verified: 'Verificato', archived: 'Archiviato', prototype: 'Prototipo', 'in-progress': 'In corso' } : { verified: 'Verified', archived: 'Archived', prototype: 'Prototype', 'in-progress': 'In progress' };
+const due = (n: number) => String(n).padStart(2, '0');
+const stato = it ? { verified: 'Verificato', archived: 'Archiviato', prototype: 'Prototipo', 'in-progress': 'In corso' } : { verified: 'Verified', archived: 'Archived', prototype: 'Prototype', 'in-progress': 'In progress' };
+const autori = it ? { individual: 'Individuale', team: 'Team', contribution: 'Contributo' } : { individual: 'Individual', team: 'Team', contribution: 'Contribution' };
+const anni = pubblicati.map((p) => p.year);
+const periodo = `${Math.min(...anni)} — ${Math.max(...anni)}`;
 
-const sezioni = tipi.map((tipo) => {
-	const dentro = pubblicati.filter((p) => p.kind === tipo);
-	return {
-		id: tipo,
-		kicker: t.kicker,
-		value: nome(tipo),
-		testo: testoTipo(tipo),
-		progetti: dentro.toSorted((a, b) => (a.featuredRank ?? 99) - (b.featuredRank ?? 99) || b.year - a.year),
-		detail: { kicker: nome(tipo), value: conta(dentro.length) },
-	};
-});
+const t = it
+	? { topline: 'Samuele Segrini / Archivio', lead: 'Dal problema al software.', intro: 'Applicazioni, sistemi e piccoli esperimenti. Modi diversi di progettare, costruire e capire come funzionano le cose.', tavolo: 'Sul tavolo', filtro: 'Filtra per tipo', tutti: 'Tutti', evidenza: 'In evidenza', cta: 'Dentro il progetto', tecnologie: 'Tecnologie', mostrati: 'Mostrati', salta: 'Vai ai progetti' }
+	: { topline: 'Samuele Segrini / Archive', lead: 'From problem to software.', intro: 'Applications, systems and small experiments. Different ways to design, build and understand how things work.', tavolo: 'On the table', filtro: 'Filter by kind', tutti: 'All', evidenza: 'Featured', cta: 'Inside the project', tecnologie: 'Technologies', mostrati: 'Showing', salta: 'Skip to projects' };
+
+const filtri = [
+	{ id: 'all', label: t.tutti, n: pubblicati.length },
+	...tipi.map((tipo) => ({ id: tipo, label: nome(tipo), n: pubblicati.filter((p) => p.kind === tipo).length })),
+];
+
+// la barra indicizza le due tappe della pagina: l'apertura e il tavolo
+const sections = [
+	{ kicker: copy.common.section, value: copy.work.title, detail: { kicker: periodo, value: conta(pubblicati.length) } },
+	{ kicker: copy.common.section, value: t.tavolo, detail: { kicker: t.filtro, value: `${tipi.length} ${it ? 'tipi' : 'kinds'}` } },
+];
 ---
 
-<ExperimentLayout lang={lang} title={t.title} currentHref={labPaths[lang].work}
-	sections={sezioni.map(({ kicker, value, detail }) => ({ kicker, value, detail }))}
-	itHref={labPaths.it.work} enHref={labPaths.en.work}>
-  <a class="work-skip skip-link" href={`#${tipi[0]}`}>{lang === 'it' ? 'Vai ai progetti' : 'Skip to projects'}</a>
+<ExperimentLayout lang={lang} title={copy.work.title} currentHref={labPaths[lang].work}
+	sections={sections} itHref={labPaths.it.work} enHref={labPaths.en.work}>
+  <a class="work-skip skip-link" href="#tavolo">{t.salta}</a>
   <div class="work-archive">
-    <!-- Oversized typography sits above the archive's ruled background. -->
     <header class="scene work-hero" id="inizio" data-section="0">
       <div class="work-backdrop depth-0" data-depth="0" aria-hidden="true"></div>
       <div class="work-grid depth-2" data-depth="2" aria-hidden="true"></div>
       <div class="work-hero-content depth-4" data-depth="4" data-work-reveal>
-        <div class="work-topline"><span>{lang === 'it' ? 'Samuele Segrini / Archivio' : 'Samuele Segrini / Archive'}</span><span>{Math.min(...pubblicati.map(p => p.year))} — {Math.max(...pubblicati.map(p => p.year))}</span></div>
-        <h1>{lang === 'it' ? 'Progetti' : 'Projects'}<sup>({String(pubblicati.length).padStart(2, '0')})</sup></h1>
-        <div class="work-intro"><span>{lang === 'it' ? 'Dal problema al software.' : 'From problem to software.'}</span><p>{lang === 'it' ? 'Applicazioni, sistemi e piccoli esperimenti. Modi diversi di progettare, costruire e capire come funzionano le cose.' : 'Applications, systems and small experiments. Different ways to design, build and understand how things work.'}</p></div>
-        <nav class="work-jump" aria-label={lang === 'it' ? 'Categorie dei progetti' : 'Project categories'}>{sezioni.map(s => <a href={`#${s.id}`}><span>{s.value}</span><small>{String(s.progetti.length).padStart(2, '0')}</small><span aria-hidden="true">↓</span></a>)}</nav>
+        <div class="work-topline"><span>{t.topline}</span><span>{periodo}</span></div>
+        <h1>{copy.work.title}<sup>({due(pubblicati.length)})</sup></h1>
+        <div class="work-intro"><span>{t.lead}</span><p>{t.intro}</p></div>
       </div>
     </header>
-    {sezioni.map((sezione, i) => (
-      <section class="scene work-group" id={sezione.id} data-section={i + 1} aria-labelledby={`work-${sezione.id}`}>
-        <div class="work-backdrop depth-0" data-depth="0" aria-hidden="true"></div>
-        <span class="work-group-number depth-2" data-depth="2" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-        <div class="work-group-heading depth-4" data-depth="4" data-work-reveal><h2 id={`work-${sezione.id}`}>{sezione.value}<sup>{String(sezione.progetti.length).padStart(2, '0')}</sup></h2><p>{sezione.testo}</p></div>
-        <ul class="work-cards">
-          {sezione.progetti.map(project => <li class="work-card" data-work-reveal data-depth="3">
-            <a class="work-card-link" href={labProjectPath(lang, project.slug)} aria-labelledby={`title-${project.translationKey}`}>
-              <div class="work-card-art depth-3" data-depth="3"><LabCover src={project.coverImage} alt={project.coverAlt} width={1200} height={800} loading="lazy" decoding="async" sizes="(max-width: 700px) 100vw, 420px" widths={[420, 640, 840]} /><span class="work-card-arrow" aria-hidden="true">↗</span></div>
-              <div class="work-card-copy depth-4" data-depth="4">
-                <div class="work-card-meta"><span>{project.year} / {stato[project.lifecycle]}</span><span>{project.authorship === 'team' ? (lang === 'it' ? 'Team' : 'Team') : project.authorship === 'individual' ? (lang === 'it' ? 'Individuale' : 'Individual') : (lang === 'it' ? 'Contributo' : 'Contribution')}</span></div>
-                <h3 id={`title-${project.translationKey}`}>{project.title}</h3><p>{project.excerpt}</p>
-                <ul class="work-tags" aria-label={lang === 'it' ? 'Tecnologie' : 'Technologies'}>{project.technologies.slice(0, 4).map(tech => <li>{tech}</li>)}</ul>
-                <span class="work-card-cta">{lang === 'it' ? 'Dentro il progetto' : 'Inside the project'} <span aria-hidden="true">↗</span></span>
+    <section class="scene tavolo" id="tavolo" data-section="1" aria-labelledby="tavolo-titolo">
+      <div class="work-backdrop depth-0" data-depth="0" aria-hidden="true"></div>
+      <div class="tavolo-testa depth-4" data-depth="4">
+        <h2 id="tavolo-titolo">{t.tavolo}<sup data-shown>{due(pubblicati.length)}</sup></h2>
+        <!-- senza JavaScript il filtro non servirebbe a niente: lo mostra lo script -->
+        <div class="tavolo-filtri" role="group" aria-label={t.filtro} data-filtri hidden>
+          {filtri.map((f) => <button type="button" data-kind={f.id} aria-pressed={f.id === 'all' ? 'true' : 'false'}>{f.label}<small>{due(f.n)}</small></button>)}
+        </div>
+      </div>
+      <p class="tavolo-annuncio" aria-live="polite" data-annuncio data-prefisso={t.mostrati} data-uno={copy.work.one} data-molti={copy.work.many}></p>
+      <ul class="tavolo-carte depth-4" data-depth="4">
+        {pubblicati.map((project, i) => (
+          <li class="tavolo-carta" data-kind={project.kind} data-featured={i === 0 ? '' : undefined} data-work-reveal>
+            <a class="tavolo-link" href={labProjectPath(lang, project.slug)} aria-labelledby={`tavolo-${project.translationKey}`}>
+              <div class="tavolo-art">
+                <LabCover src={project.coverImage} alt={project.coverAlt} width={1200} height={800} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 640px" widths={[420, 640, 840]} />
+                <span class="tavolo-freccia" aria-hidden="true">↗</span>
+              </div>
+              <div class="tavolo-copy">
+                <div class="tavolo-meta"><span><span class="tavolo-evidenza">{t.evidenza} · </span>{nome(project.kind)}</span><span>{project.year}</span></div>
+                <h3 id={`tavolo-${project.translationKey}`}>{project.title}</h3>
+                <p class="tavolo-estratto">{project.excerpt}</p>
+                <span class="tavolo-stato"><span>{stato[project.lifecycle]} · {autori[project.authorship]}</span><span aria-hidden="true">↗</span></span>
+                <span class="tavolo-piede"><span class="tavolo-tech"><span class="tavolo-sr">{t.tecnologie}: </span>{project.technologies.slice(0, 4).join(' · ')}</span><span class="tavolo-cta">{t.cta} <span aria-hidden="true">↗</span></span></span>
               </div>
             </a>
-          </li>)}
-        </ul>
-      </section>
-    ))}
+          </li>
+        ))}
+      </ul>
+    </section>
   </div>
   <script is:inline defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script>
@@ -117,7 +122,43 @@ const sezioni = tipi.map((tipo) => {
       };
       media.addEventListener('change', stop);
       root.querySelectorAll('[data-work-reveal]').forEach(el => observer.observe(el));
-      cleanup = () => { observer.disconnect(); stop(); media.removeEventListener('change', stop); };
+
+      // il filtro: nasconde le carte di altri tipi e mette in evidenza la prima che resta
+      const perPagina = new AbortController();
+      const filtri = root.querySelector<HTMLElement>('[data-filtri]');
+      const carte = [...root.querySelectorAll<HTMLElement>('.tavolo-carta')];
+      const annuncio = root.querySelector<HTMLElement>('[data-annuncio]');
+      if (filtri) {
+        const bottoni = [...filtri.querySelectorAll<HTMLButtonElement>('button[data-kind]')];
+        const tipi = new Set(bottoni.map(b => b.dataset.kind));
+        const applica = (tipo: string, annuncia: boolean) => {
+          let n = 0;
+          for (const carta of carte) {
+            const dentro = tipo === 'all' || carta.dataset.kind === tipo;
+            carta.hidden = !dentro;
+            carta.toggleAttribute('data-featured', dentro && n === 0);
+            if (dentro) n++;
+          }
+          bottoni.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.kind === tipo)));
+          root.querySelectorAll('[data-shown]').forEach(el => { el.textContent = String(n).padStart(2, '0'); });
+          if (annuncio && annuncia) {
+            const { prefisso, uno, molti } = annuncio.dataset;
+            annuncio.textContent = `${prefisso} ${n} ${n === 1 ? uno : molti}`;
+          }
+        };
+        filtri.hidden = false;
+        // un indirizzo con #tipo (anche i vecchi salti alle categorie) apre il tavolo già filtrato
+        const iniziale = location.hash.slice(1);
+        if (tipi.has(iniziale)) applica(iniziale, false);
+        filtri.addEventListener('click', event => {
+          const bottone = (event.target as Element).closest<HTMLButtonElement>('button[data-kind]');
+          if (!bottone?.dataset.kind) return;
+          const tipo = bottone.dataset.kind;
+          applica(tipo, true);
+          history.replaceState(history.state, '', tipo === 'all' ? location.pathname + location.search : `#${tipo}`);
+        }, { signal: perPagina.signal });
+      }
+      cleanup = () => { observer.disconnect(); stop(); media.removeEventListener('change', stop); perPagina.abort(); };
     }
     mountArchive();
     document.addEventListener('astro:page-load', mountArchive);
